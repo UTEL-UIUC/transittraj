@@ -386,14 +386,22 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
 #' Projects points to linear distances along a route shape.
 #'
-#' This function takes spatial points and projects them onto a route, returning the linear distance from the terminus of the route.
+#' @description
+#' This function takes spatial points and projects them onto a route, returning
+#' the linear distance from the terminus of the route.
 #'
-#' @param gtfs A GTFS with a complete shape file.
-#' @param points Can be either: a dataframe representing point coordinates, with fields "lon" and "lat"; or, an SF point object.
-#' @param shape Optional. The GTFS shape_id to use. Must be a single value. Default is NULL, where the shape_id which appears first will be used.
-#' @param original_crs Optional. If a dataframe is provided for "points", will be used to define the coordinate system of the lon/lat.
-#' @param project_crs Optional. The projection to use when performing spatial calculations. Consider setting to a Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS 84 ellipsoid).
-#' @return The "points" input (either dataframe or SF) with an appended column for the linear distance along the route.
+#' @param gtfs A tidygtfs object.
+#' @param points Can be either: a dataframe representing point coordinates,
+#' with fields "longitude" and "latitude"; or, an SF or SFC point object.
+#' @param original_crs Optional. A numeric ESPG identifier. If a dataframe is
+#' provided for "points", this will be used to define the coordinate system of
+#' the longitude / latitude values.
+#' @param project_crs Optional. A numeric ESPG identifier. The projection to use
+#' when performing spatial calculations. Consider setting to a Euclidian
+#' projection, such as the appropriate UTM zone. Default is 4326 (WGS 84
+#' ellipsoid).
+#' @return The "points" input (either dataframe or SF) with an appended column
+#' for the linear distance along the route.
 #' @export
 project_onto_route <- function(shape_geometry, points,
                                original_crs = 4326, project_crs = 4326) {
@@ -456,15 +464,21 @@ project_onto_route <- function(shape_geometry, points,
   return(points_dist)
 }
 
-#' Get the distances between stops along the route.
+#' Get the distances of stops along routes.
 #'
-#' This function returns the linear distance of each stop along one route in one direction.
+#' @description
+#' This function returns the linear distance of each stop along a route shape,
+#' starting from the route's beginning terminal.
 #'
 #' @param route_gtfs A tidygtfs object.
 #' @param shape_geometry Optional. The SF (not shape_id) to use for distances.
-#' If NULL, each trip will be referenced to its assigned shape. Default is NULL.
-#' @param project_crs Optional. The projection to use when performing spatial calculations. Consider setting to a Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS 84 ellipsoid).
-#' @return The GTFS stops file, with an appended column for the distance of each stop from the route's terminus.
+#' Default is NULL, where each stop will be projected onto each shape it is
+#' served by.
+#' @param project_crs Optional. The projection to use when performing spatial
+#' calculations. Consider setting to a Euclidian projection, such as the
+#' appropriate UTM zone. Default is 4326 (WGS 84 ellipsoid).
+#' @return The GTFS stops file, with an appended column for the distance of
+#' each stop from the route's terminus.
 #' @export
 get_stop_distances <- function(route_gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
