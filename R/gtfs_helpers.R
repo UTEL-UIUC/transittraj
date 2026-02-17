@@ -3,7 +3,7 @@
 #' @description
 #' This function returns a new `tidygtfs` object with only the information
 #' relevant to your desired routes and directions. All fields included in the
-#' input `gtfs` will be filtered. Se `Details` for more information about
+#' input `gtfs` will be filtered. See `Details` for more information about
 #' required files and fields
 #'
 #' @details
@@ -300,199 +300,65 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   return(new_gtfs)
 }
 
-#' Get unique identifiers for each between-stop segment
-#'
-#' This function uses a GTFS of a single route in a single direction to find two things:
-#' first, the numeric stop ID corresponding to the starting stop of that route and direction;
-#' and second, a vector of numeric IDs corresponding to the segments between all successive stops.
-#' This segment ID is the concatenation of the "from" stop ID with the "to" stop ID.
-#'
-#' @param route_gtfs A GTFS for a single route in a single direction. Must contain at least stop times file.
-#' @return List containing: an integer of the starting stop ID; a vector with numeric IDs for each segment between two stops.
-#' @export
-get_segment_ids <- function(route_gtfs) {
-  # Get list of complete trip IDs
-  longest_trip_ids <- route_gtfs$stop_times %>%
-    dplyr::count(trip_id) %>%
-    dplyr::filter(n == max(n)) %>%
-    dplyr::arrange(trip_id)
-
-  # Get a complete trip ID
-  longest_trip_id <- as.numeric(longest_trip_ids$trip_id[1])
-
-  # Get that complete trip
-  longest_trip <- route_gtfs$stop_times %>%
-    dplyr::filter(trip_id == longest_trip_id) %>%
-    dplyr::arrange(stop_sequence) %>%
-    dplyr::select(stop_id)
-
-  # Start stop
-  start_stop_id <- longest_trip$stop_id[1]
-
-  # Get ids for each segment
-  segment_ids = c()
-  for (stop_index in 1:(length(longest_trip$stop_id) - 1)) {
-    current_from <- longest_trip$stop_id[stop_index]
-    current_to <- longest_trip$stop_id[stop_index + 1]
-    current_id <- as.numeric(paste(current_from, current_to, sep = ""))
-    segment_ids <- append(segment_ids, current_id)
-  }
-
-  return(list(start_stop_id = start_stop_id,
-              segment_ids = segment_ids))
-}
-
-#' Get the length of each segment in meters, i.e. the distance between all adjacent stop pairs.
-#'
-#' This function returns
-#' @param route_gtfs A GTFS for a single route in a single direction. Must contain at least stop times file.
-#' @param start_stop A numeric for the starting stop ID.
-#' @param segment_ids A vector of all stop IDs expected along this route and direction.
-#' @return List containing two dataframes: segment_distances, distance between each segment; and start_distances, distance from each stop to the route start.
-get_segment_distances <- function(route_gtfs, start_stop, segment_ids) {
-  # Get distances between all stop pairs along the route
-  all_distances <- tidytransit::stop_distances(route_gtfs$stops) %>%
-    dplyr::mutate(segment_id = as.numeric(paste0(from_stop_id, to_stop_id, sep = "")))
-
-  # Get distances along each segment
-  segment_distances <- all_distances %>%
-    dplyr::filter(segment_id %in% segment_ids)  %>%
-    dplyr::select(distance, segment_id)
-
-  # Get distances between the route start and each stop
-  start_distances <- all_distances %>%
-    dplyr::filter(from_stop_id == start_stop) %>%
-    dplyr::select(to_stop_id, distance) %>%
-    dplyr::mutate(to_stop_id = as.numeric(to_stop_id)) %>%
-    dplyr::rename(stop_id = to_stop_id)
-
-  return(list(segment_distances = segment_distances,
-              start_distances = start_distances))
-}
-
-#' Get a series of spatial waypoints along a route alignment.
-#'
-#' This function generates a series of points along a route ("waypoints") from GTFS shapes. Each waypoint also includes the distance of that waypoint from the line's terminus.
-#'
-#' @param gtfs A GTFS with a complete shape file.
-#' @param shape Optional. The GTFS shape_id to use. Can be a single value, or a vector. Default is NULL, where all shape_ids will be used.
-#' @param n_int Optional. The number of points to split the route into. Default is NULL, where the GTFS "shape" waypoints will be used. Specify a higher value to increase the resolution (or smoothness) of vehicle animations.
-#' @param project_crs Optional. The projection to use when performing spatial calculations. Consider setting to a Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS 84).
-#' @return A dataframe with a numeric column "X", a numeric column "Y", numeric "seq" sequence of waypoint along route, and numeric "distance" cumulative distance of the waypoint along its shape.
-#' @export
-get_waypoints <- function(gtfs, shape = NULL, n_int = NULL, project_crs = 4326) {
-
-  # If shape not provided, use all unique shape IDs
-  if (is.null(shape)) {
-    shape = unique(gtfs$shapes$shape_id)
-  }
-
-  # Get raw waypoints from GTFS
-  shape_waypoints <- gtfs$shapes %>%
-    dplyr::filter(shape_id %in% shape) %>%
-    dplyr::rename(lat = shape_pt_lat,
-                  lon = shape_pt_lon,
-                  seq = shape_pt_sequence) %>%
-    dplyr::arrange(shape_id, seq)
-
-  # Convert raw waypoints to SF
-  shape_sf <- sf::st_as_sf(shape_waypoints,
-                           coords = c("lon", "lat"),
-                           crs = 4326) %>%
-    sf::st_transform(crs = project_crs) %>%
-    dplyr::group_by(shape_id) %>%
-    dplyr::summarize(do_union = FALSE) %>%
-    sf::st_cast("LINESTRING") %>%
-    sf::st_cast("MULTILINESTRING")
-
-  # Initialize global DF
-  waypoints_df <- data.frame()
-
-  # Loop through each shape to calculate distance along each
-  for (current_shape in unique(shape_waypoints$shape_id)) {
-
-    # Filter SF for just current shape
-    current_shape_sf <- shape_sf %>%
-      filter(shape_id == current_shape)
-
-    # Get non-normalized distances along shape
-    current_shape_len <- sf::st_length(current_shape_sf)
-
-    # Turn route SF into SFC for interpolation
-    current_shape_sfc <- sf::st_geometry(current_shape_sf)
-
-    if(is.null(n_int)) {
-
-      # Filter to current shape's GTFS waypoints
-      current_waypoints <- shape_waypoints %>%
-        dplyr::filter(shape_id == current_shape) %>%
-        mutate(seq = row_number())
-
-      # Get GTFS waypoints SFC
-      current_waypoints_sfc <- sf::st_as_sf(current_waypoints,
-                                            coords = c("lon", "lat"),
-                                            crs = 4326) %>%
-        sf::st_transform(crs = project_crs) %>%
-        sf::st_geometry()
-
-      # Project waypoints onto line to get distances
-      dist_norm <- sf::st_line_project(line = current_shape_sfc, point = current_waypoints_sfc,
-                                       normalized = TRUE)
-      waypoints_dist = dist_norm * current_shape_len
-      units(waypoints_dist) <- NULL
-
-      # Add distance column
-      current_waypoints <- sf::st_coordinates(current_waypoints_sfc) %>%
-        as.data.frame() %>%
-        dplyr::mutate(seq = row_number(),
-                      shape_id = current_shape,
-                      distance = waypoints_dist)
-
-    } else {
-      waypoint_seq <- seq(from = 0, to = 1, by = 1/n_int)
-
-      # Get distances along shape
-      current_shape_dist <- waypoint_seq * current_shape_len
-      units(current_shape_dist) <- NULL
-
-      # Turn route SF into SFC for interpolation
-      current_shape_sfc <- sf::st_geometry(current_shape_sf)
-
-      # Interpolate along line
-      int_waypoints <- sf::st_line_interpolate(line = current_shape_sfc,
-                                               dist = waypoint_seq,
-                                               normalized = TRUE)
-
-      # Turn coords into dataframe
-      current_waypoints <- sf::st_coordinates(int_waypoints) %>%
-        as.data.frame() %>%
-        dplyr::mutate(seq = row_number(),
-                      shape_id = current_shape,
-                      distance = current_shape_dist)
-    }
-
-    # Bind to global DF
-    waypoints_df <- rbind(waypoints_df, current_waypoints)
-
-  }
-
-  return(waypoints_df)
-
-}
-
 #' Get the geometry of a route shape.
 #'
-#' This function returns an SF multilinestring of the route alignments from GTFS shapes.
-#' Similar to tidytransit's get_geometry(), but allows filtering by shape_id and projection to a new coordinate system.
+#' @description
+#' This function returns an SF multilinestring of the route alignments from
+#' GTFS shapes. Similar to tidytransit's `get_geometry()`, but allows filtering
+#' by `shape_id` and projection to a new coordinate system. See `Details` for
+#' requirements on the input GTFS.
 #'
-#' @param gtfs A GTFS with a complete shape file.
-#' @param shape Optional. The GTFS shape_id to use. Can be a single value, or a vector. Default is NULL, where all shape_ids will be used.
-#' @param project_crs Optional. The projection to use when performing spatial calculations. Consider setting to a Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS 84 ellipsoid).
-#' @return An SF multilinestring collection, with one multilinestring object per GTFS shape_id.
+#' @details
+#' A `shapes` file must be present in your GTFS object. This file must contain
+#' at least the following fields:
+#'
+#' - `shape_id`
+#'
+#' - `shape_pt_lat`
+#'
+#' - `shape_pt_lon`
+#'
+#' - `shape_pt_sequence`
+#'
+#' @param gtfs A tidygtfs object with a complete `shapes` file.
+#' @param shape Optional. The GTFS shape_id to use. Can be a single value, or
+#' a vector. Default is NULL, where all `shape_id`s will be used.
+#' @param project_crs Optional. The projection to use when performing spatial
+#' calculations. Consider setting to a Euclidian projection, such as the
+#' appropriate UTM zone. Default is 4326 (WGS 84 ellipsoid).
+#' @return An SF multilinestring, with one multilinestring object per GTFS
+#' shape_id.
 #' @export
 get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
-  # If shape not provided, use all unique shape IDs
+  # --- Validate ---
+  # Check if GTFS is tidygtfs object
+  if (!("tidygtfs" %in% class(gtfs))) {
+    stop("Provided GTFS not a tidygtfs object.")
+  }
+
+  # Check if shapes is present and has required fields
+  gtfs_val <- attr(gtfs, "validation_result")
+  shapes_present <- all(gtfs_val$file_provided_status[gtfs_val$file == "shapes"])
+  shapes_fields <- c(all(gtfs_val$field_provided_status[gtfs_val$field == "shape_id" &
+                                                          gtfs_val$file == "shapes"]),
+                     all(gtfs_val$field_provided_status[gtfs_val$field == "shape_pt_sequence" &
+                                                          gtfs_val$file == "shapes"]),
+                     all(gtfs_val$field_provided_status[gtfs_val$field == "shape_pt_lat" &
+                                                          gtfs_val$file == "shapes"]),
+                     all(gtfs_val$field_provided_status[gtfs_val$field == "shape_pt_lon" &
+                                                          gtfs_val$file == "shapes"]))
+  if (!shapes_present) {
+    stop("shapes not present in provided GTFS")
+  }
+  if (!all(shapes_fields)) {
+    stop(paste("shapes missing the following required fields: ",
+               c("shape_id", "shape_pt_sequence",
+                 "shape_pt_lat", "shape_pt_lon")[!shapes_fields], sep = ""))
+  }
+
+  # --- Get geometry ---
+  # If specific shape not provided, use all unique shape IDs
   if (is.null(shape)) {
     shape = unique(gtfs$shapes$shape_id)
   }
