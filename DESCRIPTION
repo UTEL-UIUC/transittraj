@@ -1,13 +1,30 @@
 Package: transittraj
-Title: What the Package Does (One Line, Title Case)
+Title: Reconstruct and Visualize Transit Vehicle Trajectories
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: c(
+    person("Benjamin", "O'Brien",
+        email = "obrienbenjaminj@gmail.com",
+        role = c("aut", "cre")),
+    person("Lewis", "Lehe",
+        email = "lehe@illinois.edu",
+        role = "aut"))
+Description: Today's public transit vehicles produce a large amount of automatic
+    vehicle location (AVL) data. This data is very useful for planning and
+    performance studies, but can be noisy, error-prone, and sparse. This package
+    provides tools for cleaning AVL point data and turning it into continuous,
+    differentiable, monotonic, and invertible vehicle trajectory functions.
+License: use_gpl_license()
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 URL: https://github.com/obrien-ben/transittraj
 BugReports: https://github.com/obrien-ben/transittraj/issues
+Imports: 
+    dplyr,
+    gganimate,
+    ggnewscale,
+    ggplot2,
+    purrr,
+    sf,
+    tidyr,
+    tidytransit
