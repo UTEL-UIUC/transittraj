@@ -125,8 +125,7 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
     if (all(routes_fields)) {
       # Get new route and agencies
       new_routes <- gtfs$routes %>%
-        dplyr::filter(route_id %in% route_ids) %>%
-        dplyr::mutate(agency_id = agency_id %>% as.numeric())
+        dplyr::filter(route_id %in% route_ids)
 
       # Check if new routes empty -- no matching route IDs in original GTFS
       if (dim(new_routes)[1] == 0) {
@@ -401,7 +400,7 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #'
 #' @description
 #' This function takes spatial points and projects them onto a route, returning
-#' the linear distance from the terminus of the route.
+#' the linear distance from the beginning terminal of the route.
 #'
 #' @inheritParams get_shape_geometry
 #' @param shape_geometry The SF object to project onto. Must include the field
@@ -409,7 +408,7 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #' @param points Can be either: a dataframe representing point coordinates,
 #' with fields `longitude` and `latitude`; or, an SF or SFC point object.
 #' @param original_crs Optional. A numeric EPSG identifier. If a dataframe is
-#' provided for "points", this will be used to define the coordinate system of
+#' provided for `points`, this will be used to define the coordinate system of
 #' the longitude / latitude values. Default is 4326 (WGS 84 ellipsoid).
 #' @return The `points` input (either dataframe or SF) with an appended column
 #' for the linear distance along the route. If `points` is an SFC, a vector of

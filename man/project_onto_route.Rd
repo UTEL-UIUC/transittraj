@@ -19,7 +19,7 @@ project_onto_route(
 with fields \code{longitude} and \code{latitude}; or, an SF or SFC point object.}
 
 \item{original_crs}{Optional. A numeric EPSG identifier. If a dataframe is
-provided for "points", this will be used to define the coordinate system of
+provided for \code{points}, this will be used to define the coordinate system of
 the longitude / latitude values. Default is 4326 (WGS 84 ellipsoid).}
 
 \item{project_crs}{Optional. A numeric EPSG identifer indicating the
@@ -35,5 +35,5 @@ used (e.g., meters if using UTM).
 }
 \description{
 This function takes spatial points and projects them onto a route, returning
-the linear distance from the terminus of the route.
+the linear distance from the beginning terminal of the route.
 }
