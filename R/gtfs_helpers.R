@@ -332,7 +332,7 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 #'
 #' - `shape_pt_sequence`
 #'
-#' @param gtfs A tidygtfs object with a complete `shapes` file.
+#' @param gtfs A tidygtfs object.
 #' @param shape Optional. The GTFS shape_id to use. Can be a single value, or
 #' a vector. Default is NULL, where all `shape_id`s will be used.
 #' @param project_crs Optional. The projection to use when performing spatial
@@ -419,7 +419,7 @@ project_onto_route <- function(shape_geometry, points,
                                original_crs = 4326, project_crs = 4326) {
 
   # Check length of shapes -- should only be one
-  if (length(shape_geometry) > 1) {
+  if (length(shape_geometry$shape_id) > 1) {
     stop("Please provide only one shape.")
   }
 
@@ -500,7 +500,6 @@ get_stop_distances <- function(route_gtfs, shape_geometry = NULL,
     stop("Provided GTFS not a tidygtfs object.")
   }
 
-
   #  --- Check that required fields are present ---
   # For each file, we will check if it is present & has required fields for matching
   gtfs_val <- attr(route_gtfs, "validation_result")
@@ -533,21 +532,42 @@ get_stop_distances <- function(route_gtfs, shape_geometry = NULL,
                c("shape_id")[!shapes_fields], sep = ""))
   }
 
-
   # --- Spatial geometry ---
   # Route shape
   if (is.null(shape_geometry)) {
-    # If a specific shape has not been provided,
-    # extract geometries from those present in trips
-    used_shapes <- unique(route_gtfs$trips$shape_id)
     shape_geometry <- get_shape_geometry(route_gtfs,
-                                         shape = used_shapes,
                                          project_crs = project_crs)
+  } else {
+    # If own shape_geometry provided, ensure it has shape_id
+    # Needed to match to appropriate stops
+    if (!("shape_id" %in% names(shape_geometry))) {
+      stop("shape_id field not found in provided shape_geometry.")
+    }
   }
 
-  # Point shapes
-  stop_points <- route_gtfs$stops %>%
-    dplyr::select(stop_id, stop_lat, stop_lon) %>%
+  # Get correct shape_ids & trip_ids
+  use_shape_ids <- unique(shape_geometry$shape_id)
+  trip_shape_pairs <- gtfs$trips %>%
+    dplyr::filter(shape_id %in% use_shape_ids) %>%
+    dplyr::distinct(trip_id, shape_id)
+  stop_shape_pairs <- gtfs$stop_times %>%
+    dplyr::left_join(y = trip_shape_pairs, by = "trip_id") %>%
+    dplyr::distinct(stop_id, shape_id)
+
+  # Join stops and shapes
+  stops_with_shapes <- route_gtfs$stops %>%
+    # Associate each stop with its shape ID
+    dplyr::left_join(y = stop_shape_pairs, by = "stop_id",
+                     relationship = "one-to-many") %>%
+    dplyr::select(stop_id, stop_lat, stop_lon, shape_id) %>%
+    dplyr::filter(!is.na(shape_id))
+
+  if (dim(stops_with_shapes)[1] == 0) {
+    stop("No stops served by provided shapes.")
+  }
+
+  # Spatial
+  stop_points <- stops_with_shapes %>%
     sf::st_as_sf(coords = c("stop_lon", "stop_lat"),
                  crs = 4326) %>%
     sf::st_transform(crs = project_crs)
@@ -557,42 +577,34 @@ get_stop_distances <- function(route_gtfs, shape_geometry = NULL,
   shape_sfc <- sf::st_geometry(shape_geometry)
   if (num_shapes == 1) {
     # If only one shape
+    current_shape_id <- shape_geometry$shape_id[1]
+    current_stops <- stop_points %>%
+      dplyr::filter(shape_id == current_shape_id)
+
     stop_dist_df <- project_onto_route(shape_geometry = shape_geometry,
                                        points = stop_points,
                                        project_crs = project_crs) %>%
       sf::st_drop_geometry() %>%
-      dplyr::mutate(shape_id = shape_geometry$shape_id[1])
-
-
-    # dist_norm <- sf::st_line_project(line = shape_sfc, point = stop_points,
-    #                                  normalized = TRUE)
-    # dist = dist_norm * shape_len
-    # units(dist) <- NULL
-    #
-    # stop_dist_df <- data.frame(stop_id = route_gtfs$stops$stop_id,
-    #                            distance = dist,
-    #                            shape_id = shape_geometry$shape_id[1])
+      dplyr::mutate(shape_id = current_shape_id)
   } else {
     # If multiple shapes, must project onto one shape at a time
     # Initialize list
     stop_dist_list <- vector("list", num_shapes)
     # Loop through shapes
     for (iter in 1:num_shapes) {
+      current_shape_id <- shape_geometry$shape_id[iter]
       current_shape <- shape_sfc[iter]
+      current_stops <- stop_points %>%
+        dplyr::filter(shape_id == current_shape_id)
+      if (dim(current_stops)[1] == 0) {
+        next
+      }
+
       stop_dist_list[[iter]] <- project_onto_route(shape_geometry = current_shape,
-                                                   points = stop_points,
+                                                   points = current_stops,
                                                    project_crs = project_crs) %>%
         sf::st_drop_geometry() %>%
-        dplyr::mutate(shape_id = shape_geometry$shape_id[iter])
-
-      # dist_norm <- sf::st_line_project(line = current_shape, point = stop_points,
-      #                                  normalized = TRUE)
-      # dist = dist_norm * shape_len[iter]
-      # units(dist) <- NULL
-      #
-      # stop_dist_list[[iter]] <- data.frame(stop_id = route_gtfs$stops$stop_id,
-      #                                      distance = dist,
-      #                                      shape_id = shape_geometry$shape_id[iter])
+        dplyr::mutate(shape_id = current_shape_id)
     }
     # Merge list into single dataframe
     stop_dist_df <- purrr::list_rbind(stop_dist_list)
