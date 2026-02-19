@@ -1,8 +1,25 @@
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+#' @param lhs A value or the magrittr placeholder.
+#' @param rhs A function call using the magrittr semantics.
+#' @return The result of calling `rhs(lhs)`.
+NULL
+
 #' Set global variables to use throughout, silencing notes during check.
 #'
 #' These variables are generally those expected in the standard data formats
 #' used, such as GTFS and TIDES. Whenever one of these variable names must be
 #' used, checks are performed to ensure they are present in the input data.
+#'
+#' @name set_globals
 utils::globalVariables(c(
   # GTFS
   "agency_id", "service_id", "roud_id", "stop_id", "stop_lat", "stop_lon",

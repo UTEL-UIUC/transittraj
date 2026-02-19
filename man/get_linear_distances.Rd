@@ -14,13 +14,13 @@ get_linear_distances(
 }
 \arguments{
 \item{avl_df}{A dataframe of raw AVL data. Must include at least \code{longitude}
-and \code{latitude} columns.}
+and \code{latitude} columns. See \code{validate_tides()}.}
 
-\item{shape_geometry}{The SF object to project onto. Must include the field
-\code{shape_id}. See \code{get_shape_geometry()}.}
+\item{shape_geometry}{The SF object to project onto. Must be only one shape.
+See \code{get_shape_geometry()}.}
 
-\item{clip_buffer}{Optional. The distance, in units of the used projection,
-to clip the GPS points. Only points within this distance of the
+\item{clip_buffer}{Optional. The distance, in units of the used spatial
+projection, to clip the GPS points. Only points within this distance of the
 \code{shape_geometry} will be kept. Default is NULL, where no clip will be
 applied.}
 

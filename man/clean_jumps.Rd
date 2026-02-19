@@ -2,7 +2,8 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{clean_jumps}
 \alias{clean_jumps}
-\title{Applies a Hampel filter to detect large jumps (i.e., outliers) in the trajectories.}
+\title{Applies median filters to detect large jumps (i.e., outliers) in the
+trajectories.}
 \usage{
 clean_jumps(
   distance_df,
@@ -17,31 +18,87 @@ clean_jumps(
 )
 }
 \arguments{
-\item{distance_df}{Dataframe of linear AVL distances. Must include: "trip_id_performed", "event_timestamp", and numeric "distance".}
+\item{distance_df}{A dataframe of linearized AVL data. Must include
+\code{trip_id_performed}, \code{event_timestamp}, and \code{distance}.}
 
-\item{neighborhood_width}{Optional. An integer representing the total sliding window width around each observation. Default is 7.}
+\item{neighborhood_width}{Optional. An integer representing the total sliding
+window width around each observation. Default is 7 (3 on either side).}
 
-\item{t_cutoff}{Optional. For filter_method = "MAD" only. Number of MADs away to consider an outlier. Default is 3.}
+\item{t_cutoff}{Optional. For Hampel filters, number of standardized MADs
+away to consider an outlier. Default is 3.}
 
-\item{min_median_deviation}{Optional. For filter_method = "heuristic" only. The minimum distance of each observation from the sliding median. Default is -Inf.}
+\item{min_median_deviation}{Optional. A numeric, the minimum allowed
+deviation of an observation from its window median, in units of distance.
+Default is \code{-Inf}.}
 
-\item{max_median_deviation}{Optional. For filter_method = "heuristic" only. The maximum distance of each observation from the sliding median. Default is Inf.}
+\item{max_median_deviation}{Optional. A numeric, the maximum allowed
+deviation of an observation from its window median, in units of distance.
+Default is \code{-Inf}.}
 
-\item{evaluate_implosions}{Optional. A boolean, should points in an implosion sequence be evaluated? "Implosions" occur when more than half of a window is constant; the point will always be identified as an outlier. Default is TRUE.}
+\item{evaluate_tails}{Optional. A boolean, should the beginning and ending
+observations, before a complete window can be formed, be evaluated? Default
+is \code{FALSE}.}
 
-\item{replace_outliers}{Optional. For filter_method = "MAD" only. A boolean representing whether violating observations should be replaced with their sliding medians. Default is FALSE (points are removed entirely).}
+\item{evaluate_implosions}{Optional. A boolean, should points in implosion
+sequences be evaluated? "Implosions" occur when more than half of a window is
+constant. Default is \code{FALSE}.}
 
-\item{return_removals}{Optional. A boolean, should the function return a dataframe of points removed and why? Default is FALSE.}
+\item{replace_outliers}{Optional. A boolean, should points identified as
+outliers be replaced by their window median? Default is \code{FALSE}.}
 
-\item{filter_method}{Optional. A string, either "MAD" or "deviation". Default is "MAD".}
+\item{return_removals}{Optional. A boolean, should the function return
+a dataframe of points removed and why? Default is FALSE.}
 }
 \value{
-The input distance_df, with violating points corrected or removed.
+The input \code{distance_df} with violating points removed. If
+\code{return_removals = TRUE}, a dataframe with observations removed and why.
 }
 \description{
-Noise in GPS trajectories can manifest itself as one or more points lying far away from points recorded at a similar time.
-This function identifies these "jumps" using a Hampel filter. The Hampel filter constructs a sliding window around each point and calculates the median of this window.
-Points are identified as outliers using either their raw deviation (filter_method = "deviation") or median absolute deviation (filter_method = "MAD").
-Acceptable cutoffs can be defined for eithe scenario: for the former, as maximum and minimums in the units of "distance"; and for the latter, as a t-value.
-Violating observations can either be removed, or replaced with the observed sliding median.
+Noise in GPS trajectories can manifest itself as one or more points lying far
+away from points recorded at a similar time. This function identifies these
+points using median filters. By default, outliers are removed. See \code{Details}
+for a discussion of removal methodologies.
+}
+\details{
+There are many different types of median filters. In general, these filters
+create a sliding window around each point (here, controlled by
+\code{neighborhood_width}) and treats a point based on its deviation from the
+median of that window. This function supports two main ways of classifying
+outliers based on their deviation:
+\itemize{
+\item Raw deviation: \code{min_median_deviation} and \code{max_median_deviation} set
+bounds for an acceptable deviation between a point and the median of the
+window around it, in units of the input \code{distance} column.
+\item Hampel filter: Uses the median absolute deviation (MAD), the median of
+deviations from the median. With a conversion factor ($s = 1.48$), this is
+analogous to a standard error. The \code{t_cutoff}, then, is analogous to an
+acceptable window of $t$ values.
+}
+
+Both of these can be used at the same time. If multiple criteria are set,
+a point will be removed if it violates any criterion.
+
+A Hampel filter is generally considered highly robust, and is the recommended
+approach. There are, however, two main limitations to be aware of:
+\itemize{
+\item It can struggle at the beginnings and ends of trips, before a complete
+window can be formed. Use \code{evaluate_tails} to skip these.
+\item When more than hald of a window has the same value, the MAD is 0 and an
+observation is guaranteed to be flagged as an outlier. This is known as an
+"implosion". As we expect noise in GPS data, even when a vehicle is standing
+still, this is unlikely. It can occur, however, near trip terminals, where
+many GPS points snap to the exact same point on the route alignment. Use
+\code{evaluate_implosions} to identify and skip points in an implosion.
+}
+
+Once a point has been identified as an outlier, there are two possible
+treatments, controlled by \code{replace_outliers}:
+\itemize{
+\item Replacement with the window median. This is the most common approach to
+median filters, but is likely not appropriate for AVL data. Replacement
+may introduce non-monotonicities.
+\item Removal of the point. This is a less common approach, but may be a more
+sensible approach, given that interpolating curves will be fit later in the
+cleaning process.
+}
 }
