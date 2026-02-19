@@ -3,14 +3,14 @@
 #' These variables are generally those expected in the standard data formats
 #' used, such as GTFS and TIDES. Whenever one of these variable names must be
 #' used, checks are performed to ensure they are present in the input data.
-utils::globalVariables(
+utils::globalVariables(c(
   # GTFS
   "agency_id", "service_id", "roud_id", "stop_id", "stop_lat", "stop_lon",
   "stop_sequence", "trip_id", "shape_pt_lat", "shape_pt_lon",
   # TIDES
   "trip_id_performed", "event_timestamp", "vehicle_id", "location_ping_id",
   "operator_id", "speed", "latitude", "longitude"
-  )
+  ))
 
 #' Calculates numerical inverse of a trajectory function
 #'
