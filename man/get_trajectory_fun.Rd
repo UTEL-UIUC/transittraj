@@ -2,37 +2,122 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{get_trajectory_fun}
 \alias{get_trajectory_fun}
-\title{Fits a continuous function of distance versus time interpolating curve.}
+\title{Fits continuous interpolating curves for transit vehicle distance and time.}
 \usage{
 get_trajectory_fun(
   distance_df,
   interp_method = "monoH.FC",
   use_speeds = TRUE,
-  return_group_function = TRUE,
   find_inverse_function = TRUE,
-  inv_tol = 0.01
+  inv_tol = 0.01,
+  return_group_function = TRUE
 )
 }
 \arguments{
-\item{distance_df}{Dataframe of linear AVL distances. Must include: "trip_id_performed", "event_timestamp", and numeric "distance".}
+\item{distance_df}{A dataframe of linearized AVL data. Must include
+\code{trip_id_performed}, \code{event_timestamp}, and \code{distance}. If
+\code{use_speed = TRUE}, must also include \code{speed}.}
 
-\item{interp_method}{Optional. The type of interpolation function to be fit. Either "linear", or a spline method from stats::splinefun(). Default is "monoH.FC" (stats::splinefunH()).}
+\item{interp_method}{Optional. The type of interpolation function to be fit.
+Either "linear", or a spline method from \code{stats::splinefun()}. Default is
+\code{"monoH.FC"}.}
 
-\item{use_speeds}{Optional. A boolean, should curves be constrained by observed AVL speeds? Should only be used with interp_method = "monoH.FC", but monoH.FC does not require speeds. Default is TRUE.}
+\item{use_speeds}{Optional. A boolean, should curves be constrained by
+observed AVL speeds? Should only be used with \code{interp_method = "monoH.FC"},
+but \code{monoH.FC} does not require speeds. Default is \code{TRUE}.}
 
-\item{return_group_function}{Optional. A boolean, should the returned trajectory object be grouped into a single function? If FALSE, will return a list (named by trip_id_performed) of single trajectory objects. Default is TRUE.}
+\item{find_inverse_function}{Optional. A boolean, should the numeric inverse
+function (time ~ distance) be calculated? Default is \code{TRUE}.}
 
-\item{find_inverse_function}{Optional. A boolean, should the numeric inverse function (time ~ distance) be calculated? Default is TRUE.}
+\item{inv_tol}{Optional. A numeric in the units of distance_df$distance, the
+tolerance used when calculating the numeric inverse function. Default is
+0.01.}
 
-\item{inv_tol}{Optional. A numeric in the units of distance_df$distance, the tolerance used when calculating the numeric inverse function. Default is 0.01.}
+\item{return_group_function}{Optional. A boolean, should the returned
+trajectory object be grouped into a single function? If FALSE, will return a
+list (indexed by \code{trip_id_performed}) of single trajectory objects. Default
+is \code{TRUE}.}
 }
 \value{
-If return_group_function = TRUE, a grouped trajectory object. If FALSE, a list of single trajectory objects, named by their trip_id_performed.
+If \code{return_group_function = TRUE}, a grouped trajectory object. If
+\code{FALSE}, a list of single trajectory objects, index by their
+\code{trip_id_performed}.
 }
 \description{
-This function fits a continuous vehicle trajectory function to observed AVL points, returning a trajectory object.
-Interpolation can be done linearly (interp_method = "linear"), or via any method support by stats::splinefun().
-By default (interp_method = "monoH.FC" and use_speeds = TRUE), a velocity-informed Fritsch-Carlson piecewise cubic polynomial will be fit. Input data must be striclty monotonic.
-By default, both a trajectory (distance ~ time) and inverse trajectory (time ~ distance) will be fit. Input data must be striclty monotonic.
-If using speeds, interp_method should be monoH.FC. If speeds are not available, ensure use_speeds = FALSE.
+This function fits a continuous vehicle trajectory function to observed AVL
+points, returning a trajectory object. Interpolation can be done linearly
+(\code{interp_method = "linear"}), or via any method support by
+\code{stats::splinefun()}.
+}
+\details{
+\subsection{Interpolating Methods}{
+
+The goal of this function is to fit a continuous function representing a
+vehicle's distance traveled as a function of time, for each trip. This
+function supports to types of interpolating curves:
+\itemize{
+\item Linear interpolation, for \code{interp_method = "linear"}. This will fit a
+simple linear function, ignorant of recorded \code{speed} values.
+\item Spline interpolation, for \code{interp_method} set to any method supported by
+\code{stats::splinefun()} (i.e., \code{"fmm"}, \code{"natural"}, \code{"periodic"}, \code{"monoH.FC"},
+or \code{"hyman"}.) Only \code{interp_method = "monoH.FC"} supports use of recorded
+\code{speed} values.
+}
+
+By default, \code{interp_method = "monoH.FC"} and \code{use_speeds = TRUE}. This will
+yield a continuous, differentiable, monotonic, and invertible trajectory,
+and is the standard transit trajectory interpolation technique. If the input
+\code{distance} and \code{speed} values satisfy Fritsch-Carlson, the interpolating
+function is guaranteed to be montonic. See \code{make_monotonic()} and
+\code{validate_monotonicity()}.
+
+Note that \code{use_speeds = TRUE} requires \code{interp_method = "monoH.FC"}, but
+\code{interp_method = "monoH.FC"} does not require \code{use_speeds = TRUE}. In this
+scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
+can be created. If input \code{distance} values are monotonic, this curve is
+guaranteed to be monotonic.
+}
+
+\subsection{Inverse Functions}{
+
+Often times, we are concerned not with the position of a vehicle at a
+particular time, but when a bus crosses a specific point in space. This can
+be accomplished by computing an inverse trajectory function. If
+\code{find_inverse_function = TRUE} (the default), a numeric inverse to the fit
+trajectory function will be found, with a tolerance controlled by \code{inv_tol}.
+
+Because a numeric inverse if calculated, this can be found for any type of
+interpolating curve (linear or spline). However, the input data must be
+strictly monotonic for the trajectory curve to be invertible. If
+\code{find_inverse_function = TRUE}, this will be verified before proceeding (see
+\code{validate_monotonicity()}).
+}
+
+\subsection{The Trajectory Object}{
+
+A trajectory function does not exist by itself; rather, it requires the
+context about the trip it describes, as well as its inverse function. As
+such, \code{get_trajectory_fun()} returns an AVL trajectory object. If
+\code{return_group_function = TRUE} (the default), the function will return a
+single object containing:
+\itemize{
+\item A vector of \code{trip_id_performed}s present in \code{distance_df}.
+\item A list of fit trajectory functions, indexed by their \code{trip_id_performed}.
+\item A list of fit inverse trajectory functions, indexed by their
+\code{trip_id_performed}.
+\item Information about how the trajectory and inverse trajectory functions were
+fit, including \code{interp_method}, \code{use_speeds}, and \code{inv_tol}.
+\item A vector each for the minimum distances, maximum distances, minimum times,
+and maximum times of each trip. These inform the domain and range of the
+trajectory function and its inverse, preventing extrapolation beyond the
+time or distance range actually served by a trip.
+}
+
+Alternatively, if \code{return_group_function = FALSE}, a separate trajectory
+object will be fit for each trip. \code{get_trajectory_fun()} will return a list
+of trajectory objects indexed by their \code{trip_id_performed}.
+
+More information about the trajectory object classes and how to use them is
+available at (xyz).
+}
 }

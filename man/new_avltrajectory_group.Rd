@@ -21,7 +21,7 @@ new_avltrajectory_group(
 )
 }
 \description{
-Not intended for external use.
-This superclass holds a single, combined trajectory function.
-Plus vectors of all trip IDs described by that function, and vectors of the time & distance ranges of those trips.
+This superclass holds a single, combined trajectory function. Plus vectors of
+all trip IDs described by that function, and vectors of the time & distance
+ranges of those trips. Not intended for external use.
 }
