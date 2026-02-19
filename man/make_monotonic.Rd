@@ -2,7 +2,8 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{make_monotonic}
 \alias{make_monotonic}
-\title{Corrects distance observations, and optionally speeds, to be weakly or strictly monotonic.}
+\title{Corrects distance observations, and optionally speeds, to be weakly or
+strictly monotonic.}
 \usage{
 make_monotonic(
   distance_df,
@@ -12,21 +13,71 @@ make_monotonic(
 )
 }
 \arguments{
-\item{distance_df}{Dataframe of linear AVL distances. Must include: "trip_id_performed", "event_timestamp", numeric "distance", and numeric "speed".}
+\item{distance_df}{A dataframe of linearized AVL data. Must include
+\code{trip_id_performed}, \code{event_timestamp}, and \code{distance}. If
+\code{correct_speed = TRUE}, must also include \code{speed}.}
 
-\item{correct_speed}{Optional. Boolean, should speeds be corrected to meet adjusted distances and Fritsch-Carlson conditions? Default is FALSE.}
+\item{correct_speed}{Optional. A boolean, should speeds be corrected to meet
+adjusted distances and Fritsch-Carlson conditions? Default is \code{FALSE}.}
 
-\item{add_distance_error}{Optional. If non-zero, "flat" periods will be identified and given a slight upward slope. Each "flat" observation will be adjusted by this amount forwards, in meters. Speeds will also be made non-zero, by this amount divided by the time change between observations. Default is 0.}
+\item{add_distance_error}{Optional. If non-zero, each "flat" observation will
+be adjusted by this amount forwards, in units of input \code{distance}. Default is
+0.}
 }
 \value{
-The input distance_df, with distance (and optionally speed) columns replaced with corrected, monotone versions.
+The input \code{distance_df} with distances and speeds adjusted. If
+\code{return_changes = TRUE}, a dataframe with observations changed.
 }
 \description{
-Due to error in GPS position and speed measurements, raw AVL data is often not monotonic, creating difficulties for advanced analyses.
-This functions presents a variety of options to correct data. Observations which move backwards are "moved up" to maximum observed distance before that timepoint.
-Optionally, "flat" segments are identified and given a slight upward slope, resulting in a strictly monotone, one-to-one trajectory.
-If making this adjustment (add_distance_error > 0), be sure to choose a very small distance. Large distances
-Optionally, speeds can also be corrected. If chosen, two corrections will be applied:
-First, on all points in which distances have been adjusted, the speed will be updated to the maximum of the observed speed and the implied speed by the corrected distance;
-and second, to meet the Fritsch-Carlson conditions for the fitting of a monotone spline.
+Due to error in GPS position and speed measurements, raw AVL data is often
+not monotonic, creating difficulties for advanced analyses. This function
+presents a variety of options to correct data, resulting in distance values,
+and optionally speeds, which form a strictly or weakly monotonic curve. See
+\code{Details} for more information.
+}
+\details{
+There are two primary types of monotonicity:
+\itemize{
+\item Weak monotonicity: The trajectory is increasing or constant. To make points
+weakly monotonic, this function replaces each point with the cumulative
+maximum \code{distance} value at that point in the trip. This means that
+backtracking points will be "pulled up" to the largest the bus has achieved.
+\item Strict monotonicity: The trajectory is increasing only, never constant. To
+make points strictly monotonic, we first begin with a weakly monotonic
+trajectory. Then, constant portions (adjacent points with equal \code{distance}
+values) are identified, and \code{add_distance_error} is added to each point. The
+function identifies and prevents "overshoots". Effectively, this gives flat
+portions of the trajectory a slight upward slope.
+}
+
+Weak monotonicity most accurately describes real transit vehicle trajectories:
+we expect the vehicle to either move forwards, or stand still at a stop.
+However, strict monotonicity is a nice mathematical property that allows us
+to find the inverse trajectory (i.e., retrieve time as a function of
+distance). Choose between these two options by setting \code{add_distance_error}.
+If \code{add_distance_error = 0} (the default), a weakly monotonic trajectory is
+returned. Otherwise, the trajectory will be strictly monotonic.
+
+In addition to distance corrections, some applications (e.g., fitting a
+velocity-informed interpolation spline) require speeds to satisfy certain
+monotonic conditions. If \code{correct_speed = TRUE}, the following corrections
+will be made:
+\itemize{
+\item For strict monotonicity (\code{add_distance_error > 0}), speeds must be
+non-zero. At each point where the recorded \code{speed == 0}, the speed will be
+replaced by \code{add_distance_error} divided by the time between that point and
+the previous point.
+\item For both strict and weak monotonicity, speeds will be adjusted to meet the
+\href{https://epubs.siam.org/doi/10.1137/0717021}{Fritsch-Carlson (1980)}
+constraints. Often, only a handful of input \code{speed} values will be adjusted.
+}
+
+If recorded speed values are not present, set \code{correct_speed = FALSE}.
+However, if you are interested in later fitting a velocity-informed
+interpolating curve, such as Fritsch-Carlson's piecewise cubic polynomials,
+consider setting \code{correct_speed = TRUE} to guarantee a monotonic
+interpolating curve.
+
+After using this function to perform corrections, use \code{verify_montonicity()}
+to check if weak, strict, and Fritsch-Carlson speed conditions are met.
 }

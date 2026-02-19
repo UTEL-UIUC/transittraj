@@ -87,6 +87,80 @@ validate_tides <- function(avl_df) {
   return(validation_results)
 }
 
+#' Check if an AVL dataframe satisfies assumptions of monotonicity.
+#'
+#' @description
+#' This function checks whether the provided AVL dataframe of linearized
+#' distances satisfies three conditions:
+#'
+#' - Weak monotonicity, either flat or increasing
+#'
+#' - Strict monotonicty, increasing only
+#'
+#' - Speeds satisfy Fritsch-Carlson constraints
+#'
+#' See `make_monotonic()` for more information.
+#'
+#' @param distance_df A dataframe of linearized AVL data. Must include
+#' `trip_id_performed`, `event_timestamp`, and `distance`. If
+#' `check_speed = TRUE`, must also include `speed`.
+#' @param check_speed Optional. A boolean, should the Fritsch-Carlson conditions
+#' for slopes be checked? Default is `FALSE`, where the speed check will return
+#' `NA`.
+#' @return A named vector of booleans indicating whether each of the three
+#' conditions are satisfied.
+#' @export
+validate_monotonicity <- function(distance_df, check_speed = FALSE,
+                                  return_full = FALSE) {
+
+  # Check for weak and strict position monotonicity by point.
+  check_mon <- distance_df %>%
+    dplyr::arrange(trip_id_performed, event_timestamp) %>%
+    dplyr::group_by(trip_id_performed) %>%
+    dplyr::mutate(is_weak = distance <= dplyr::lead(distance),
+                  is_strict = distance < dplyr::lead(distance),
+                  is_weak = tidyr::replace_na(is_weak, TRUE),
+                  is_strict = tidyr::replace_na(is_strict, TRUE)) %>%
+    dplyr::select(trip_id_performed, event_timestamp, distance, location_ping_id, is_weak, is_strict)
+
+  if (check_speed) {
+    # Compute FC statistics to check if speed will result in monotonic FC Hermite curve.
+    check_speed_mon <- distance_df %>%
+      dplyr::arrange(trip_id_performed, event_timestamp) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(time_sec = as.numeric(event_timestamp),
+                    fc_delta = (dplyr::lead(distance) - distance) / (dplyr::lead(time_sec) / time_sec),
+                    fc_alpha = speed / fc_delta,
+                    fc_beta = dplyr::lead(speed) / fc_delta,
+                    sum_sq = fc_alpha^2 + fc_beta^2,
+                    is_fc_speed = (round(sum_sq, 5) <= 9),
+                    is_fc_speed = tidyr::replace_na(is_fc_speed, TRUE)) %>%
+      dplyr::select(trip_id_performed, event_timestamp, distance, is_fc_speed)
+  } else {
+    speed_check <- NA
+  }
+
+  if (return_full) {
+    check_df <- check_mon %>%
+      dplyr::left_join(y = check_speed_mon, by = c("trip_id_performed", "event_timestamp", "distance")) %>%
+      dplyr::mutate(all_ok = (is_weak & is_strict & is_fc_speed))
+
+    return(check_df)
+  } else {
+    # Check that all points satisfy conditions
+    weak_check <- all(check_mon$is_weak)
+    strict_check <- all(check_mon$is_strict)
+    speed_check <- all(check_speed_mon$is_fc_speed)
+
+    # Combine all checks into named vector
+    check_results <- c("weak" = weak_check,
+                       "strict" = strict_check,
+                       "speed" = speed_check)
+
+    return(check_results)
+  }
+}
+
 #' Uses `validate_tides` and an input vector of needed fields to check whether
 #' an AVL DF meets the requirements of a given function.
 #'
