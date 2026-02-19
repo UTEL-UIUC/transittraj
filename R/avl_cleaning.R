@@ -177,29 +177,75 @@ get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
   return(dist_df)
 }
 
-#' Removes trips with multiple overlapping operators or vehicles assigned to the same trip number.
+#' Removes trips with multiple overlapping operators or vehicles assigned to the
+#' same trip number.
 #'
-#' In some AVL vendors, multiple vehicles or operators may be logged to the same trip ID at the same time.
-#' This may be acceptable in some scenarios (e.g., a vehicle/operator tradeoff mid-trip). Other times, it may be an error, with these distinct (trip, vehicle, operator) running simulataneously.
-#' This function identifies both scenarios, and gives the option to remove one or both.
+#' @description
+#' In some AVL vendors, multiple vehicles or operators may be logged to the same
+#' trip ID at the same time. This may be acceptable in some scenarios (e.g., a
+#' vehicle/operator tradeoff mid-trip). Other times, it may be an error, with
+#' these distinct (trip, vehicle, operator) truples running simulataneously.
+#' This function identifies both scenarios, and gives the option to remove one
+#' or both.
 #'
-#' @param distance_df A dataframe containing "event_timestamp", "trip_id_performed", "operator_id", and "vehicle_id". Either linearized or raw AVL points will work.
-#' @param remove_single_observations Optional. A boolean, should subtrips with only one observation be removed? Default is TRUE.
-#' @param remove_non_overlapping Optional. A boolean, should trips with multiple vehicles or operators that do not overlap be removed? Default is FALSE.
-#' @param return_removals Optional. A boolean, should the function return a dataframe of trips removed and why? Default is FALSE.
-#' @return The input distance_df, with violating trips removed. If return_removals = TRUE, a dataframe with trip IDs and the reason why it was identified for removal.
-clean_overlapping_subtrips <- function(distance_df, remove_single_observations = TRUE,
+#' @param distance_df A dataframe of linearized AVL data. Must include
+#' `event_timestamp`, `trip_id_performed`, and `vehicle_id`. Optionally, may
+#' include `operator_id`.
+#' @param check_operator Optional. A boolean, should overlaps of multiple
+#' `operator_id`s be checked for? Default is FALSE.
+#' @param remove_single_observations Optional. A boolean, should subtrips with
+#'  only one observation be removed? Default is TRUE.
+#' @param remove_non_overlapping Optional. A boolean, should trips with multiple
+#' vehicles or operators that do not overlap be removed? Default is FALSE.
+#' @param return_removals Optional. A boolean, should the function return a
+#' dataframe of trips removed and why? Default is FALSE.
+#' @return The input distance_df, with violating trips removed. If
+#' return_removals = TRUE, a dataframe with trip IDs and the reason why it was
+#' identified for removal.
+clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
+                                       remove_single_observations = TRUE,
                                        remove_non_overlapping = FALSE,
                                        return_removals = FALSE) {
+  # --- Validate AVL ---
+  if (check_operator) {
+    needed_fields <- c("operator_id", "event_timestamp", "trip_id_performed",
+                       "vehicle_id")
+  } else {
+    needed_fields <- c("event_timestamp", "trip_id_performed",
+                       "vehicle_id")
+  }
+  avl_val <- validate_tides(distance_df) %>%
+    dplyr::filter(required_field %in% needed_fields)
+  # Check presence of fields
+  if (!all(avl_val$field_present)) {
+    stop(paste(c("Missing required fields:",
+               avl_val$required_field[!avl_val$field_present]),
+               collapse = " "))
+  }
+  # Check data types of fields
+  if (!all(avl_val$field_type_ok)) {
+    stop(paste(c("The following fields do not have the correct data type:",
+               avl_val$required_field[!avl_val$field_type_ok]),
+               collapse = " "))
+  }
+
 
   # If all trips with multiple operators or vehicles should be removed
   if (remove_non_overlapping) {
-    trip_counts <- distance_df %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::summarise(n_veh = length(unique(vehicle_id)),
-                       n_oper = length(unique(operator_id))) %>%
-      dplyr::mutate(remove_trip = ((n_veh > 1) | (n_oper > 1))) %>%
-      dplyr::filter(remove_trip)
+    if (check_operator) {
+      trip_counts <- distance_df %>%
+        dplyr::group_by(trip_id_performed) %>%
+        dplyr::summarise(n_veh = length(unique(vehicle_id)),
+                         n_oper = length(unique(operator_id))) %>%
+        dplyr::mutate(remove_trip = ((n_veh > 1) | (n_oper > 1))) %>%
+        dplyr::filter(remove_trip)
+    } else {
+      trip_counts <- distance_df %>%
+        dplyr::group_by(trip_id_performed) %>%
+        dplyr::summarise(n_veh = length(unique(vehicle_id))) %>%
+        dplyr::mutate(remove_trip = (n_veh > 1)) %>%
+        dplyr::filter(remove_trip)
+    }
     if (return_removals) {
       # If removed trips to be returned
       return(trip_counts %>% dplyr::mutate(reason = "multiple operators or vehicles",
@@ -214,15 +260,27 @@ clean_overlapping_subtrips <- function(distance_df, remove_single_observations =
 
   # Otherwise, identify which trips have overlapping segments
   # Calculate time ranges of trips
-  trip_ranges <- distance_df %>%
-    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-    dplyr::group_by(trip_id_performed, vehicle_id, operator_id) %>%
-    dplyr::summarise(t_start = min(event_timestamp),
-                     t_end = max(event_timestamp),
-                     n_obs = dplyr::n(),
-                     .groups = "keep") %>%
-    dplyr::mutate(subtrip = paste(trip_id_performed, operator_id, vehicle_id, sep = "-")) %>%
-    dplyr::ungroup()
+  if (check_operator) {
+    trip_ranges <- distance_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed, vehicle_id, operator_id) %>%
+      dplyr::summarise(t_start = min(event_timestamp),
+                       t_end = max(event_timestamp),
+                       n_obs = dplyr::n(),
+                       .groups = "keep") %>%
+      dplyr::mutate(subtrip = paste(trip_id_performed, operator_id, vehicle_id, sep = "-")) %>%
+      dplyr::ungroup()
+  } else {
+    trip_ranges <- distance_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed, vehicle_id) %>%
+      dplyr::summarise(t_start = min(event_timestamp),
+                       t_end = max(event_timestamp),
+                       n_obs = dplyr::n(),
+                       .groups = "keep") %>%
+      dplyr::mutate(subtrip = paste(trip_id_performed, vehicle_id, sep = "-")) %>%
+      dplyr::ungroup()
+  }
 
   # Find overlapping intervals
   trip_intervals <- trip_ranges %>%
@@ -257,11 +315,19 @@ clean_overlapping_subtrips <- function(distance_df, remove_single_observations =
       return(removed_trips)
     } else {
       # Otherwise, clean the DF
-      clean_df <- distance_df %>%
-        dplyr::mutate(subtrip = paste(trip_id_performed, operator_id, vehicle_id, sep = "-")) %>%
-        dplyr::filter(!(subtrip %in% subtrips_single$subtrip)) %>%
-        dplyr::filter(!(trip_id_performed %in% trips_with_overlaps$trip_id_performed)) %>%
-        dplyr::select(-subtrip)
+      if (check_operator) {
+        clean_df <- distance_df %>%
+          dplyr::mutate(subtrip = paste(trip_id_performed, operator_id, vehicle_id, sep = "-")) %>%
+          dplyr::filter(!(subtrip %in% subtrips_single$subtrip)) %>%
+          dplyr::filter(!(trip_id_performed %in% trips_with_overlaps$trip_id_performed)) %>%
+          dplyr::select(-subtrip)
+      } else {
+        clean_df <- distance_df %>%
+          dplyr::mutate(subtrip = paste(trip_id_performed, vehicle_id, sep = "-")) %>%
+          dplyr::filter(!(subtrip %in% subtrips_single$subtrip)) %>%
+          dplyr::filter(!(trip_id_performed %in% trips_with_overlaps$trip_id_performed)) %>%
+          dplyr::select(-subtrip)
+      }
       return(clean_df)
     }
   } else {
