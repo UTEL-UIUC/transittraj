@@ -1,7 +1,13 @@
-#' Linearizes latitude-longitude GPS points to a provided linestring.
+#' Linearizes latitude-longitude GPS points to a provided route shape.
 #'
+#' @description
 #' This functions projects GPS data is recorded as latitude-longitude points onto a provided linestring, returning the linear distance of each GPS point along that line.
 #' Linearizing GPS data has multiple advantages. First, analysis becomes much simpler under reduced dimensionality, and second, it cleans lateral noise in the observations.
+#'
+#' @inheritParams project_onto_route
+#' @param gps_df asd
+#' @param clip_buffer Optional. The distance, in units of the used projection,
+#' to use for . Default is NULL, where no clip will be applied.
 get_linear_distances <- function(gps_df, shape_geometry, clip_buffer = NULL,
                                  original_crs = 4326, project_crs = 4326) {
 
