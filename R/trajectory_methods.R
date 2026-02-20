@@ -1,6 +1,16 @@
-#' Summary function for grouped trajectories.
+#' Summary function for AVL trajectories.
+#'
+#' @description
+#' This function prints a summary for grouped or single trajectory object
+#' If the input is a single trajectory, the trip's ID and distance & time range
+#' will be printed. If the input is a grouped trajectory, the number of trips
+#' and the distance & time range across all trips will be printed. For both,
+#' the interpolating curve methods will be printed.
+#'
+#' @param object A single or grouped trajectory object.
+#' @return A summary character string.
 #' @export
-summary.avltrajectory_group <- function(object) {
+summary.avltrajectory_group <- function(object, ...) {
   num_trips <- length(object)
   min_dist <- min(attr(object, "min_dist"))
   max_dist <- max(attr(object, "max_dist"))
@@ -33,9 +43,8 @@ summary.avltrajectory_group <- function(object) {
   invisible(object)
 }
 
-#' Summary function for single trajectories
-#' @export
-summary.avltrajectory_single <- function(object) {
+#' @rdname summary.avltrajectory_group
+summary.avltrajectory_single <- function(object, ...) {
   trip_id <- unclass(object)
   min_dist <- attr(object, "min_dist")
   max_dist <- attr(object, "max_dist")
@@ -68,36 +77,133 @@ summary.avltrajectory_single <- function(object) {
   invisible(object)
 }
 
-#' Print function for grouped trajectories
+#' Print function for AVL trajectories
+#'
+#' @description
+#' This function prints a one-line report for grouped or single trajectory
+#' objects. For a single trajectory, the trip ID will be printed. For grouped
+#' trajectories, the number of trips will be printed.
+#'
+#' @param object A single or grouped trajectory object.
+#' @return A printing character string.
 #' @export
-print.avltrajectory_group <- function(object) {
+print.avltrajectory_group <- function(object, ...) {
   print(paste("AVL group trajectory with ", length(object), " trips.",
               sep = ""))
 }
 
-#' Print function for single trajectories
-#' @export
-print.avltrajectory_single <- function(object) {
+#' @rdname print.avltrajectory_group
+print.avltrajectory_single <- function(object, ...) {
   print(paste("AVL single trajectory for trip ID ", unclass(object),
               sep = ""))
 }
 
-#' Interpolate time or distance points using a grouped trajectory function.
+#' Interpolate time or distance points using AVL trajectories.
 #'
-#' Using a function stored in a trajectory object, new points will be interpolated along a trajectory.
-#' Depending on whether new_times or new_distances is provided, the function will utilize the direct or inverse trajectory function.
-#' Only one of new_times and new_distances may be provided. At least one must be provided.
-#' This function will automatically protect against extrapolation. New points will not be found outside the original time and distance range of each trip.
+#' @description
+#' Using a function stored in a grouped or single trajectory object, new points
+#' will be interpolated along a trajectory. Depending on whether new_times or
+#' new_distances is provided, the function will utilize the direct or inverse
+#' trajectory function.
 #'
-#' @param object The grouped trajectory object.
-#' @param new_times Optional. A vector of numeric timepoints, or a dataframe with at least the column "event_timestamp" of new timepoints to interpolate at. Default is NULL.
-#' @param new_distances Optional. A vector of numeric distances, or a dataframe with at least the column "distance" of new distances to interpolate at. Default is NULL.
-#' @param deriv Optional. The derivative with which to calculate at. Default is 0.
-#' @param trips Optional. A vector of trip_id_performed to interpolate for. Default is NULL, which will use all trips found in the trajectory object.
-#' @return The input dataframe, with an additional column "interp" of the interpolated values requested, and an additional "trip_id_performed" column will all trips for which that point is within range.
+#' @details
+#' This function is the recommended way to use a fit trajectory function. It has
+#' a few key features:
+#'
+#' ## Interpolate for Distance or Time
+#'
+#' If `new_times` is provided, the function will find the `distance` of each
+#' trip at each new time using the direct trajectory function. Conversely, if
+#' `new_distances` is provided, the function will find the `event_timestamp` at
+#' which each trip crossed that distance using the inverse trajectory function.
+#' If an input trajectory object does not contain an inverse function, an error
+#' will be thrown.
+#'
+#' These new points can be either vectors or dataframes:
+#'
+#' - If the input is a vector, the returned value will be a dataframe
+#' associating each trip with each new point and a column `interp` indicating
+#' the interpolated value.
+#'
+#' - If the input is a dataframe, it must contain a column names
+#' `event_timestamp` or `distance`, depending on whether it is put into
+#' `new_times` or `new_distances`. All other columns will be preserved in the
+#' output. Each row will be duplicated for each trip, and a column `interp` will
+#' be added indicating the interpolated value.
+#'
+#' The latter option is particularly useful for finding crossing times of
+#' particular features, or the positions at notable points in time. For
+#' instance, `new_distance` may be a dataframe of corridors, with a column
+#' `name` for the corridor name and `inout` for whether each row is the
+#' entrance or exit to the corridor. The returned value will append the column
+#' `trip_id_performed` for each trip that crosses those distances, and `interp`
+#' for the time the trip passes the entrance or exit.
+#'
+#' ## Finding Derivatives
+#'
+#' Depending on the `interp_method` used when fitting the trajectory object, a
+#' its derivative may be able to be found:
+#'
+#' - `interp_method = "linear"`. This will not allow derivatives. This is
+#' because, at each observation, the piecewise linear function is not
+#' differentiable.
+#'
+#' - `interp_method` is a spline from `stats::splinefun()`. This will typically
+#' be differentiable up to the third degree.
+#'
+#' The derivative returned (as column `interp`) is the derivative of distance
+#' with respect to time. This means the first derivative is velocity, second is
+#' acceleration, and third is jerk. The derivative is taken from the direct
+#' trajectory, not the inverse, and the inverse trajectory cannot be used to
+#' find derivatives. This means that if `new_distances` is provided, `deriv `
+#' must equal 0. If starting from distance values, but derivatives are desired,
+#' consider interpolating for timepoints first, then using these as `new_times`
+#' to find the derivative.
+#'
+#' ## Prevents Extrapolation
+#'
+#' By default, many fit interpolating curves will allow extrapolation (i.e.,
+#' the input of an `event_timestamp` beyond the original time domain of the
+#' trip). This is especially true for splines fit using `stats::splinefun()`.
+#' In general, this will not be reasonable for transit vehicles: time points
+#' should be constrained by the time that a trip has actually been observed,
+#' and distances should be constrained to the part of a route a trip actually
+#' ran.
+#'
+#' This function uses the maximum and minimum time and distance values stored
+#' in the trajectory object to identify if an input `new_times` or
+#' `new_distances` is beyond the domain/range of each trip individually. The
+#' returned output will only include `interp` values for trips within the
+#' domain/range of the input.
+#'
+#' ## Accessing the Raw Trajectory Function
+#'
+#' Because of the above features and protections, it is recommend that these
+#' `predict()` functions are used to access the fit trajectory and inverse
+#' trajectory functions. However, if the raw function itself is desired,
+#' it can be accessed using `attr(trajectory, "traj_fun")` or
+#' `attr(trajectory, "inv_traj_fun")`. For a group trajectory object, these
+#' will return lists of individual trip functions indexed by
+#' `trip_id_performed`; for single trajectory objects, these will return the
+#' single function for that trip.
+#'
+#' @param object The single or grouped trajectory object.
+#' @param new_times Optional. A vector of numeric timepoints, or a dataframe
+#' with at least the column `"event_timestamp"` of new timepoints to interpolate
+#' at. Default is `NULL`.
+#' @param new_distances Optional. A vector of numeric distances, or a dataframe
+#' with at least the column `"distance"` of new distances to interpolate at.
+#' Default is `NULL`.
+#' @param deriv Optional. The derivative with which to calculate at. Default is
+#' 0.
+#' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
+#' Default is `NULL`, which will use all trips found in the trajectory object.
+#' @return The input dataframe, with an additional column `"interp"` of the
+#' interpolated values requested, and an additional `"trip_id_performed"`
+#' column will all trips for which that point is within range.
 #' @export
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
-                                        deriv = 0, trips = NULL) {
+                                        deriv = 0, trips = NULL, ...) {
 
   # Check DFs provided
   if ((!is.null(new_times)) & (!is.null(new_distances))) {
@@ -205,20 +311,9 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
   }
 }
 
-#' Interpolate time or distance points using a single trajectory function.
-#'
-#' Using a function stored in a trajectory object, new points will be interpolated along a trajectory.
-#' Depending on whether new_times or new_distances is provided, the function will utilize the direct or inverse trajectory function.
-#' Only one of new_times and new_distances may be provided. At least one must be provided.
-#' This function will automatically protect against extrapolation. New points will not be found outside the original time and distance range of the trip.
-#'
-#' @param object The single trajectory object.
-#' @param new_times Optional. A vector of numeric timepoints, or a dataframe with at least the column "event_timestamp" of new timepoints to interpolate at. Default is NULL.
-#' @param new_distances Optional. A vector of numeric distances, or a dataframe with at least the column "distance" of new distances to interpolate at. Default is NULL.
-#' @param deriv Optional. The derivative with which to calculate at. Default is 0.
-#' @return The input dataframe, with an additional column "interp" of the interpolated values requested.
+#' @rdname predict.avltrajectory_group
 predict.avltrajectory_single <- function(object, new_times = NULL, new_distances = NULL,
-                                         deriv = 0) {
+                                         deriv = 0, ...) {
 
   # Check DFs provided
   if ((!is.null(new_times)) & (!is.null(new_distances))) {
@@ -429,7 +524,7 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' @param object The single trajectory object.
 #' @return A ggplot2 object with a single trajectory.
 #' @export
-plot.avltrajectory_single <- function(object) {
+plot.avltrajectory_single <- function(object, ...) {
   # Creat DF for plotting
   plot_seq <- seq(from = attr(object, "min_time"),
                   to = attr(object, "max_time"),
@@ -458,7 +553,7 @@ plot.avltrajectory_single <- function(object) {
 #' @param object The grouped trajectory object.
 #' @return A ggplot2 object with up to 50 individual trajectories.
 #' @export
-plot.avltrajectory_group <- function(object) {
+plot.avltrajectory_group <- function(object, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.
   if (length(object) > 50) {
