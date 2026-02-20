@@ -32,6 +32,12 @@ utils::globalVariables(c(
 #' Calculates numerical inverse of a trajectory function
 #'
 #' Not intended for external use
+#'
+#' @param f Direct traj function
+#' @param lower lower distance range
+#' @param upper upper distance range
+#' @param inv_tol tolerance for numeric inverse
+#' @return function for inverse trajectory
 get_inverse_traj <- function(f, lower, upper, inv_tol) {
   Vectorize(function(distance) {
     stats::uniroot(f = function(x) {f(x) - distance},

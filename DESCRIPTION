@@ -13,7 +13,7 @@ Description: Today's public transit vehicles produce a large amount of automatic
     performance studies, but can be noisy, error-prone, and sparse. This package
     provides tools for cleaning AVL point data and turning it into continuous,
     differentiable, monotonic, and invertible vehicle trajectory functions.
-License: use_gpl_license()
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
@@ -26,6 +26,7 @@ Imports:
     ggplot2,
     magrittr,
     purrr,
+    rlang,
     sf,
     tidyr,
     tidytransit

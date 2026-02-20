@@ -7,6 +7,14 @@ an AVL DF meets the requirements of a given function.}
 \usage{
 validate_input_to_tides(needed_fields, avl_df)
 }
+\arguments{
+\item{needed_fields}{Vector of fields desired}
+
+\item{avl_df}{DF of TIDES AVL data}
+}
+\value{
+boolean for each field
+}
 \description{
 Intended for internal use only.
 }

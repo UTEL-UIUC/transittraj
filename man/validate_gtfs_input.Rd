@@ -7,6 +7,16 @@ fields within those tables.}
 \usage{
 validate_gtfs_input(gtfs, table, needed_fields)
 }
+\arguments{
+\item{gtfs}{tidygtfs.}
+
+\item{table}{The gtfs table to look for.}
+
+\item{needed_fields}{fields in that table to look for.}
+}
+\value{
+Throws error if not satisfied
+}
 \description{
 Not intended for external use.
 }

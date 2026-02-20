@@ -11,6 +11,8 @@
 }
 \arguments{
 \item{object}{A single or grouped trajectory object.}
+
+\item{...}{Other parameters (not used).}
 }
 \value{
 A summary character string.

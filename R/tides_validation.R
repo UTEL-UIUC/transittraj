@@ -105,6 +105,8 @@ validate_tides <- function(avl_df) {
 #' `trip_id_performed`, `event_timestamp`, and `distance`. If
 #' `check_speed = TRUE`, must also include `speed`.
 #' @param check_speed Optional. A boolean, should the Fritsch-Carlson conditions
+#' @param return_full Optional. Should a dataframe of each point checked be
+#' returned? Default is `FALSE`.
 #' for slopes be checked? Default is `FALSE`, where the speed check will return
 #' `NA`.
 #' @return A named vector of booleans indicating whether each of the three
@@ -165,6 +167,10 @@ validate_monotonicity <- function(distance_df, check_speed = FALSE,
 #' an AVL DF meets the requirements of a given function.
 #'
 #' Intended for internal use only.
+#'
+#' @param needed_fields Vector of fields desired
+#' @param avl_df DF of TIDES AVL data
+#' @return boolean for each field
 validate_input_to_tides <- function(needed_fields, avl_df) {
 
   # Get validation -- filter & sort

@@ -5,12 +5,14 @@
 \alias{print.avltrajectory_single}
 \title{Print function for AVL trajectories}
 \usage{
-\method{print}{avltrajectory_group}(object, ...)
+\method{print}{avltrajectory_group}(x, ...)
 
-\method{print}{avltrajectory_single}(object, ...)
+\method{print}{avltrajectory_single}(x, ...)
 }
 \arguments{
-\item{object}{A single or grouped trajectory object.}
+\item{x}{A single or grouped trajectory object.}
+
+\item{...}{Other parameters (not used).}
 }
 \value{
 A printing character string.

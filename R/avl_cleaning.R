@@ -613,6 +613,8 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' @param add_distance_error Optional. If non-zero, each "flat" observation will
 #' be adjusted by this amount forwards, in units of input `distance`. Default is
 #' 0.
+#' @param return_changes Optional. Should a dataframe of each observation
+#' changed be returned? Default is `FALSE`.
 #' @return The input `distance_df` with distances and speeds adjusted. If
 #' `return_changes = TRUE`, a dataframe with observations changed.
 #' @export

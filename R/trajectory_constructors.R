@@ -3,6 +3,21 @@
 #' This superclass holds a single, combined trajectory function. Plus vectors of
 #' all trip IDs described by that function, and vectors of the time & distance
 #' ranges of those trips. Not intended for external use.
+#'
+#' @param trip_id_performed Character if trip ids.
+#' @param traj_fun List or single trajectory functions.
+#' @param inv_traj_fun List or single inverse trajectory functions.
+#' @param min_dist Vector if minimum distance values.
+#' @param max_dist Vector of maximum distance values.
+#' @param min_time Vector of minimum time values.
+#' @param max_time Vector of maximum time values.
+#' @param traj_type Interp method character string
+#' @param inv_tol Tolerance used in numeric inverse
+#' @param max_deriv Max derivative allowed
+#' @param used_speeds Whether speeds were used
+#' @param ... Other inputs
+#' @param class Object class
+#' @return Grouped trajectory object
 new_avltrajectory_group <- function(trip_id_performed = character(),
                                     traj_fun, inv_traj_fun = NULL,
                                     min_dist, max_dist, min_time, max_time,
@@ -29,6 +44,9 @@ new_avltrajectory_group <- function(trip_id_performed = character(),
 #' only one trip. Trajectory function is inteded to describe only one trip.
 #' Associated trip properties (ID & ranges) should describe only that trip. Not
 #' intended for external use.
+#'
+#' @inheritParams new_avltrajectory_group
+#' @return Single trajectory object
 new_avltrajectory_single <- function(trip_id_performed = character(),
                                      traj_fun, inv_traj_fun = NULL,
                                      min_dist, max_dist, min_time, max_time,

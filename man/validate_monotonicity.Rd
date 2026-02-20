@@ -11,7 +11,10 @@ validate_monotonicity(distance_df, check_speed = FALSE, return_full = FALSE)
 \code{trip_id_performed}, \code{event_timestamp}, and \code{distance}. If
 \code{check_speed = TRUE}, must also include \code{speed}.}
 
-\item{check_speed}{Optional. A boolean, should the Fritsch-Carlson conditions
+\item{check_speed}{Optional. A boolean, should the Fritsch-Carlson conditions}
+
+\item{return_full}{Optional. Should a dataframe of each point checked be
+returned? Default is \code{FALSE}.
 for slopes be checked? Default is \code{FALSE}, where the speed check will return
 \code{NA}.}
 }

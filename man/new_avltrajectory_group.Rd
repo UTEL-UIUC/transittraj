@@ -20,6 +20,36 @@ new_avltrajectory_group(
   class = character()
 )
 }
+\arguments{
+\item{trip_id_performed}{Character if trip ids.}
+
+\item{traj_fun}{List or single trajectory functions.}
+
+\item{inv_traj_fun}{List or single inverse trajectory functions.}
+
+\item{min_dist}{Vector if minimum distance values.}
+
+\item{max_dist}{Vector of maximum distance values.}
+
+\item{min_time}{Vector of minimum time values.}
+
+\item{max_time}{Vector of maximum time values.}
+
+\item{traj_type}{Interp method character string}
+
+\item{inv_tol}{Tolerance used in numeric inverse}
+
+\item{max_deriv}{Max derivative allowed}
+
+\item{used_speeds}{Whether speeds were used}
+
+\item{...}{Other inputs}
+
+\item{class}{Object class}
+}
+\value{
+Grouped trajectory object
+}
 \description{
 This superclass holds a single, combined trajectory function. Plus vectors of
 all trip IDs described by that function, and vectors of the time & distance

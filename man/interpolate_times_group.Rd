@@ -2,9 +2,19 @@
 % Please edit documentation in R/trajectory_methods.R
 \name{interpolate_times_group}
 \alias{interpolate_times_group}
-\title{Distance interpolation for single trajectories}
+\title{Time interpolation for grouped trajectories}
 \usage{
 interpolate_times_group(trip_extremes, new_distances, inv_trajectory_function)
+}
+\arguments{
+\item{trip_extremes}{DF of max and min time values}
+
+\item{new_distances}{DF of new distance points}
+
+\item{inv_trajectory_function}{Inverse trajectory function list}
+}
+\value{
+DF of interpolated values
 }
 \description{
 Not intended for external use.

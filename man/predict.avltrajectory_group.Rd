@@ -32,6 +32,8 @@ Default is \code{NULL}.}
 
 \item{trips}{Optional. A vector of \code{trip_id_performed}s to interpolate for.
 Default is \code{NULL}, which will use all trips found in the trajectory object.}
+
+\item{...}{Other parameters (not used).}
 }
 \value{
 The input dataframe, with an additional column \code{"interp"} of the

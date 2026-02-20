@@ -23,6 +23,9 @@ adjusted distances and Fritsch-Carlson conditions? Default is \code{FALSE}.}
 \item{add_distance_error}{Optional. If non-zero, each "flat" observation will
 be adjusted by this amount forwards, in units of input \code{distance}. Default is
 0.}
+
+\item{return_changes}{Optional. Should a dataframe of each observation
+changed be returned? Default is \code{FALSE}.}
 }
 \value{
 The input \code{distance_df} with distances and speeds adjusted. If

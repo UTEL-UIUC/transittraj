@@ -6,6 +6,18 @@
 \usage{
 get_inverse_traj(f, lower, upper, inv_tol)
 }
+\arguments{
+\item{f}{Direct traj function}
+
+\item{lower}{lower distance range}
+
+\item{upper}{upper distance range}
+
+\item{inv_tol}{tolerance for numeric inverse}
+}
+\value{
+function for inverse trajectory
+}
 \description{
 Not intended for external use
 }

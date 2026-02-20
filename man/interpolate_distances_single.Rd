@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_methods.R
 \name{interpolate_distances_single}
 \alias{interpolate_distances_single}
-\title{Time interpolation for grouped trajectories}
+\title{Distance interpolation for single trajectories}
 \usage{
 interpolate_distances_single(
   trip_extremes,
@@ -10,6 +10,18 @@ interpolate_distances_single(
   trajectory_function,
   deriv
 )
+}
+\arguments{
+\item{trip_extremes}{DF of max and min distance values}
+
+\item{new_times}{DF of new time points}
+
+\item{trajectory_function}{trajectory function}
+
+\item{deriv}{derivative to use}
+}
+\value{
+DF of interpolated values
 }
 \description{
 Not intended for external use.

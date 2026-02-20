@@ -18,6 +18,32 @@ new_avltrajectory_single(
   used_speeds = FALSE
 )
 }
+\arguments{
+\item{trip_id_performed}{Character if trip ids.}
+
+\item{traj_fun}{List or single trajectory functions.}
+
+\item{inv_traj_fun}{List or single inverse trajectory functions.}
+
+\item{min_dist}{Vector if minimum distance values.}
+
+\item{max_dist}{Vector of maximum distance values.}
+
+\item{min_time}{Vector of minimum time values.}
+
+\item{max_time}{Vector of maximum time values.}
+
+\item{traj_type}{Interp method character string}
+
+\item{inv_tol}{Tolerance used in numeric inverse}
+
+\item{max_deriv}{Max derivative allowed}
+
+\item{used_speeds}{Whether speeds were used}
+}
+\value{
+Single trajectory object
+}
 \description{
 This is a subclass (special case) of a grouped trajectory, in which there is
 only one trip. Trajectory function is inteded to describe only one trip.

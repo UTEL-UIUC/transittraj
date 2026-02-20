@@ -11,6 +11,18 @@ validate_shape_geometry(
   match_crs = NULL
 )
 }
+\arguments{
+\item{shape_geometry}{SF multilinestring}
+
+\item{max_length}{numeric of max number of objects in SF}
+
+\item{require_shape_id}{should shape ID be required in SF?}
+
+\item{match_crs}{CRS that SF should have}
+}
+\value{
+Throws error if not satisfied
+}
 \description{
 Checks:
 \itemize{

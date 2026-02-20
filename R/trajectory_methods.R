@@ -8,6 +8,7 @@
 #' the interpolating curve methods will be printed.
 #'
 #' @param object A single or grouped trajectory object.
+#' @param ... Other parameters (not used).
 #' @return A summary character string.
 #' @export
 summary.avltrajectory_group <- function(object, ...) {
@@ -84,17 +85,18 @@ summary.avltrajectory_single <- function(object, ...) {
 #' objects. For a single trajectory, the trip ID will be printed. For grouped
 #' trajectories, the number of trips will be printed.
 #'
-#' @param object A single or grouped trajectory object.
+#' @param x A single or grouped trajectory object.
+#' @param ... Other parameters (not used).
 #' @return A printing character string.
 #' @export
-print.avltrajectory_group <- function(object, ...) {
-  print(paste("AVL group trajectory with ", length(object), " trips.",
+print.avltrajectory_group <- function(x, ...) {
+  print(paste("AVL group trajectory with ", length(x), " trips.",
               sep = ""))
 }
 
 #' @rdname print.avltrajectory_group
-print.avltrajectory_single <- function(object, ...) {
-  print(paste("AVL single trajectory for trip ID ", unclass(object),
+print.avltrajectory_single <- function(x, ...) {
+  print(paste("AVL single trajectory for trip ID ", unclass(x),
               sep = ""))
 }
 
@@ -198,6 +200,7 @@ print.avltrajectory_single <- function(object, ...) {
 #' 0.
 #' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
 #' Default is `NULL`, which will use all trips found in the trajectory object.
+#' @param ... Other parameters (not used).
 #' @return The input dataframe, with an additional column `"interp"` of the
 #' interpolated values requested, and an additional `"trip_id_performed"`
 #' column will all trips for which that point is within range.
@@ -405,9 +408,15 @@ predict.avltrajectory_single <- function(object, new_times = NULL, new_distances
   }
 }
 
-#' Distance interpolation for grouped trajectories
+#' Distance interpolation for group trajectories
 #'
 #' Not intended for external use.
+#'
+#' @param trip_extremes DF of max and min distance values
+#' @param new_times DF of new time points
+#' @param trajectory_function trajectory function list
+#' @param deriv derivative to use
+#' @return DF of interpolated values
 interpolate_distances_group <- function(trip_extremes, new_times, trajectory_function, deriv) {
 
   use_trips <- trip_extremes$trip_id_performed
@@ -441,9 +450,15 @@ interpolate_distances_group <- function(trip_extremes, new_times, trajectory_fun
   return(int_df)
 }
 
-#' Time interpolation for grouped trajectories
+#' Distance interpolation for single trajectories
 #'
 #' Not intended for external use.
+#'
+#' @param trip_extremes DF of max and min distance values
+#' @param new_times DF of new time points
+#' @param trajectory_function trajectory function
+#' @param deriv derivative to use
+#' @return DF of interpolated values
 interpolate_distances_single <- function(trip_extremes, new_times, trajectory_function, deriv) {
   # Filter to allowed range
   filt_df <- new_times %>%
@@ -470,9 +485,14 @@ interpolate_distances_single <- function(trip_extremes, new_times, trajectory_fu
   return(int_df)
 }
 
-#' Distance interpolation for single trajectories
+#' Time interpolation for grouped trajectories
 #'
 #' Not intended for external use.
+#'
+#' @param trip_extremes DF of max and min time values
+#' @param new_distances DF of new distance points
+#' @param inv_trajectory_function Inverse trajectory function list
+#' @return DF of interpolated values
 interpolate_times_group <- function(trip_extremes, new_distances, inv_trajectory_function) {
 
   use_trips <- unique(trip_extremes$trip_id_performed)
@@ -499,6 +519,11 @@ interpolate_times_group <- function(trip_extremes, new_distances, inv_trajectory
 #' Time interpolation for single trajectories
 #'
 #' Not intended for external use.
+#'
+#' @param trip_extremes DF of max and min time values
+#' @param new_distances DF of new distance points
+#' @param inv_trajectory_function Inverse trajectory function
+#' @return DF of interpolated values
 interpolate_times_single <- function(trip_extremes, new_distances, inv_trajectory_function) {
   # Filter to allowed range
   filt_df <- new_distances %>%
@@ -516,20 +541,13 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
   return(int_df)
 }
 
-#' Quickly plots a single trajectory.
-#'
-#' This function generates a quick plot of a single trajectory object. Using the trajectory function, the entire trajectory will be plotted at a temporal resolution of 1 second.
-#' For more control over plotting and formatting, see plot_trajectory().
-#'
-#' @param object The single trajectory object.
-#' @return A ggplot2 object with a single trajectory.
-#' @export
-plot.avltrajectory_single <- function(object, ...) {
+#' @rdname plot.avltrajectory_group
+plot.avltrajectory_single <- function(x, ...) {
   # Creat DF for plotting
-  plot_seq <- seq(from = attr(object, "min_time"),
-                  to = attr(object, "max_time"),
-                  by = 1)
-  plot_df <- predict(object = object, new_times = plot_seq) %>%
+  plot_seq <- seq(from = attr(x, "min_time"),
+                  to = attr(x, "max_time"),
+                  by = 10)
+  plot_df <- predict(object = x, new_times = plot_seq) %>%
     rename(distance = interp)
 
   # Creaet & return plot
@@ -544,30 +562,32 @@ plot.avltrajectory_single <- function(object, ...) {
   traj_plot
 }
 
-#' Quickly plots a group of trajectories.
+#' #' Quickly plots an AVL trajectory.
 #'
-#' This function generates a quick plot of a group of trajectories. Using the trajectory function, the entire trajectory will be generated at a spatial resolution of 10 meters.
-#' Only the first 50 trips in the grouped object will be plotted.
-#' For more control over plotting and formatting, see plot_trajectory().
+#' This function generates a quick plot of a single or grouped trajectory
+#' object. Using the trajectory function, the entire trajectory will be plotted
+#' at a temporal resolution of 10 seconds. For more control over plotting and
+#' formatting, see `plot_trajectory()`.
 #'
-#' @param object The grouped trajectory object.
-#' @return A ggplot2 object with up to 50 individual trajectories.
+#' @param x The single trajectory object.
+#' @param ... Other parameters (not used).
+#' @return A ggplot2 object with a single trajectory.
 #' @export
-plot.avltrajectory_group <- function(object, ...) {
+plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.
-  if (length(object) > 50) {
+  if (length(x) > 50) {
     warning("Many trajectories detected. Plotting first 50 only. See plot_trajectory() for additional controls.")
-    plot_trips <- unclass(object)[1:50]
+    plot_trips <- unclass(x)[1:50]
   } else {
-    plot_trips <- unclass(object)
+    plot_trips <- unclass(x)
   }
 
   # Get DF
-  plot_seq <- seq(from = min(attr(object, "min_time")),
-                  to = max(attr(object, "max_time")),
-                  by = 15)
-  plot_df <- predict(object = object, new_times = plot_seq, trips = plot_trips) %>%
+  plot_seq <- seq(from = min(attr(x, "min_time")),
+                  to = max(attr(x, "max_time")),
+                  by = 10)
+  plot_df <- predict(object = x, new_times = plot_seq, trips = plot_trips) %>%
     rename(distance = interp)
 
   # Generate color palette
