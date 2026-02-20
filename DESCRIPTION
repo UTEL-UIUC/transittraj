@@ -24,6 +24,7 @@ Imports:
     gganimate,
     ggnewscale,
     ggplot2,
+    leaflet,
     magrittr,
     purrr,
     rlang,

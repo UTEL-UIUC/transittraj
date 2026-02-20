@@ -1,0 +1,1051 @@
+#' Generate an animated vehicle plot along a straight line.
+#'
+#' This function simplifies trajectories to a single linear line. Animations are used to show vehicles progressing along this line.
+#' If a trajectory object is provided, the interpolating function(s) will be plotted at the desired temporal resolution. If a distance_df is provided, the points will be plotted.
+#' Optionally, spatial "feature" can be added as points along the route line. These may be stations, traffic signals, etc. Optionally, a label may be added to these features.
+#' The outline colors and shapes of both vehicles and features can be mapped to their respective attributes.
+#' If using this mapping, provide a dataframe with at least the columns "outline" or "shape", plus only one column matching a column in distance_df or feature_distances. If using a trajectory object, only "trip_id_performed" can be mapped to.
+#' Feature labels will automatically match the colors of features.
+#' A gganimate object is returned, which can be further modified and customized as desired.
+#'
+#' @param trajectory Optional. A trajectory object, either a single trajectory or grouped trajectory. If provided, distance_df must not be provided. Default is NULL.
+#' @param distance_df Optional. A dataframe of time and distance points. Must include at least "event_timestamp" and numeric "distance". If provided, trajectory must not be provided. Default is NULL.
+#' @param plot_trips Optional. A vector of trip IDs to plot. Default is NULL, which will plot all trips provided in the trajectory object or distance_df.
+#' @param timestep Optional. If a trajectory is provided, the time interval, in seconds, between interpolated observations to plot. Default is 5.
+#' @param distance_lim Optional. A vector with (minimum, maximum) distance values to plot.
+#' @param center_vehicles Optional. A boolean, should all vehicle points be centered to start at the same time (0 seconds)? Default is FALSE.
+#' @param feature_distances Optional. A dataframe with at least numeric "distance" for features. Default is NULL.
+#' @param transition_style Optional. A gganimate transition style, specifying how individual points are animated between. Default is "linear".
+#' @param route_color Optional. A color string for the color of the background route. Default is "coral".
+#' @param route_width Optional. A numeric, the linewidth of the background route. Default is 3.
+#' @param route_alpha Optional. A numeric, the opacity of the background route. Default is 1.
+#' @param feature_shape Optional. A numeric specifying the ggplot2 point shape, or a dataframe mapping an attribute in feature_distances to a shape. Must contain column "shape". Default is 21 (circle).
+#' @param feature_outline Optional. A color string, or a dataframe mapping an attribute in feature_distances to a color. Must contain column "outline". Default is "black".
+#' @param feature_fill Optional. A color string, the inside fill of feature points. Default is "white".
+#' @param feature_size Optional. A numeric, the size of the feature point. Default is 2.
+#' @param feature_stroke Optional. A numeric, the linewidth of the feature point outline. Default is 1.25.
+#' @param feature_alpha Optional. A numeric, the opacity of the feature point Default is 1.
+#' @param veh_shape Optional. A numeric specifying the ggplot2 point shape, or a dataframe mapping an attribute in distance_df or the trajectory object to a shape. Must contain column "shape". Default is 23 (diamond).
+#' @param veh_outline Optional. A color string, or a dataframe mapping an attribute in distance_df or the trajectory object to a color. Must contain column "outline". Default is "grey30".
+#' @param veh_fill Optional. A color string, the inside fill of the vehicle point. Default is "white".
+#' @param veh_size Optional. A numeric, the size of the vehicle point. Default is 3.
+#' @param veh_stroke Optional. A numeric, the linewidth of the vehicle point outline. Default is 2.
+#' @param veh_alpha Optional. A numeric, the opacity of the feature point Default is 0.8.
+#' @param label_field Optional. A string specifying the column in feature_distances with which to label the feature lines. Default is NULL, where no labels will be plotted.
+#' @param label_size Optional. The font size of the feature labels. Default is 3.
+#' @param label_alpha Optional. The opacity of the feature labels. Default is 0.6.
+#' @param label_pos Optional. A string specifying the label position on the graph. Must be either "left" or "right". Default is "left".
+#' @returns A gganimate object.
+#' @export
+plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
+                               timestep = 5, distance_lim = NULL, center_vehicles = FALSE,
+                               feature_distances = NULL, transition_style = "linear",
+                               # Format route
+                               route_color = "coral", route_width = 3, route_alpha = 1,
+                               # Format features
+                               feature_shape = 21, feature_outline = "black",
+                               feature_fill = "white", feature_size = 2,
+                               feature_stroke = 1.25, feature_alpha = 1,
+                               # Format vehicles
+                               veh_shape = 23, veh_outline = "grey30",
+                               veh_fill = "white", veh_size = 3, veh_stroke = 2,
+                               veh_alpha = 0.8,
+                               # Format labels
+                               label_field = NULL, label_size = 3,
+                               label_alpha = 0.6, label_pos = "left") {
+
+  # --- Vehicle DF setup ---
+  # Check provided trajectories & distance DF, and filter as needed
+  if (!is.null(trajectory) & !is.null(distance_df)) {
+    stop("Please provide only one of trajectory and distance_df")
+  } else if (!is.null(trajectory)) {
+    # If trajectory is provided, generate the DF by predicting from functions
+
+    # Get times to interpolate over
+    from_time <- min(attr(trajectory, "min_time"))
+    to_time <- max(attr(trajectory, "max_time"))
+    time_seq <- seq(from = from_time, to = to_time,
+                    by = timestep)
+
+    # Depending on object type, get distances at times
+    if ("avltrajectory_single" %in% class(trajectory)) {
+      # If single trajectory, should not filter by trips
+      trips_df <- predict(trajectory, new_times = time_seq) %>%
+        dplyr::rename(distance = interp) %>%
+        dplyr::mutate(trip_id_performed = unclass(trajectory))
+    } else if ("avltrajectory_group" %in% class(trajectory)) {
+      # If grouped trajectory, handle trips
+      trips_df <- predict(trajectory, trips = plot_trips,
+                          new_times = time_seq) %>%
+        dplyr::rename(distance = interp)
+    } else {
+      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
+    }
+  } else {
+    # If distance_df is provided, filter to desired trips
+    # Get trips if not provided
+    if (is.null(plot_trips)) {
+      plot_trips <- unique(distance_df$trip_id_performed)
+    }
+
+    # Filter
+    trips_df <- distance_df %>%
+      dplyr::filter(trip_id_performed %in% plot_trips)
+  }
+
+  # Filter observations to distance limits
+  if (!is.null(distance_lim)) {
+    trips_df <- trips_df %>%
+      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+    # If features, filter these to be within distance range
+    if (!is.null(feature_distances)) {
+      feature_distances <- feature_distances %>%
+        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+    }
+  }
+
+  # Center trajectories to all begin at same point
+  if (center_vehicles) {
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+      dplyr::ungroup()
+  }
+
+  # Add x-value at which to plot vehicles
+  trips_df <- trips_df %>% dplyr::mutate(x = 0)
+  if (!is.null(feature_distances)) {
+    feature_distances <- feature_distances %>% dplyr::mutate(x = 0)
+  }
+
+  # --- Route DF setup ---
+  if (is.null(distance_lim)) {
+    # If distance limits are not provided, draw route between lowest & highest observed distance
+    route_df <- data.frame(distance = c(min(trips_df$distance), max(trips_df$distance)),
+                           x = c(0, 0))
+  } else {
+    # If distance limits are provided, draw route between these limits
+    route_df <- data.frame(distance = distance_lim,
+                           x = c(0, 0))
+  }
+
+
+  # --- Formatting ---
+  # Vehicle outline setup
+  if (is.character(veh_outline)) {
+    show_legend_vehcolor <- "none"
+    trips_df <- trips_df %>%
+      dplyr::mutate(temp_color = 1)
+    veh_outline_by <- "temp_color"
+    veh_outline_vals <- c(veh_outline)
+    names(veh_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("outline" %in% names(veh_outline)) {
+    show_legend_vehcolor <- "legend"
+    veh_outline_names <- names(veh_outline)
+    veh_outline_by <- veh_outline_names[(veh_outline_names != "outline") & (veh_outline_names != "shape")]
+    veh_outline_vals <- as.character(veh_outline$outline)
+    names(veh_outline_vals) <- as.character(veh_outline[[veh_outline_by]])
+  } else {
+    stop("veh_outline dataframe: outline column not provided")
+  }
+
+  # Vehicle shape setup
+  if (is.numeric(veh_shape)) {
+    show_legend_vehshape <- "none"
+    trips_df <- trips_df %>%
+      dplyr::mutate(temp_shape = 1)
+    veh_shape_by = "temp_shape"
+    veh_shape_vals <- c(veh_shape)
+    names(veh_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("shape" %in% names(veh_shape)) {
+    show_legend_vehshape <- "legend"
+    veh_shape_names <- names(veh_shape)
+    veh_shape_by <- veh_shape_names[(veh_shape_names != "shape") & (veh_shape_names != "outline")]
+    veh_shape_vals <- veh_shape$shape
+    names(veh_shape_vals) <- as.character(veh_shape[[veh_shape_by]])
+  } else {
+    stop("veh_shape dataframe: shape column not provided")
+  }
+
+  if (!is.null(feature_distances)) {
+    # Feature outline setup
+    if (is.character(feature_outline)) {
+      show_legend_featurecolor = "none"
+      feature_distances <- feature_distances %>%
+        dplyr::mutate(temp_outline = 1)
+      feature_outline_by = "temp_outline"
+      feature_outline_vals <- c(feature_outline)
+      names(feature_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("outline" %in% names(feature_outline)) {
+      show_legend_featurecolor = "legend"
+      feature_outline_names <- names(feature_outline)
+      feature_outline_by <- feature_outline_names[(feature_outline_names != "outline") & (feature_outline_names != "shape")]
+      feature_outline_vals <- as.character(feature_outline$outline)
+      names(feature_outline_vals) <- as.character(feature_outline[[feature_outline_by]])
+    } else {
+      stop("outline column not provided")
+    }
+
+    # Feature shape setup
+    if (is.numeric(feature_shape)) {
+      show_legend_featureshape = "none"
+      feature_distances <- feature_distances %>%
+        dplyr::mutate(temp_shape = 1)
+      feature_shape_by = "temp_shape"
+      feature_shape_vals <- c(feature_shape)
+      names(feature_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("shape" %in% names(feature_shape)) {
+      show_legend_featureshape = "legend"
+      feature_shape_names <- names(feature_shape)
+      feature_shape_by <- feature_shape_names[(feature_shape_names != "shape") & (feature_shape_names != "outline")]
+      feature_shape_vals <- feature_shape$shape
+      names(feature_shape_vals) <- as.character(feature_shape[[feature_shape_by]])
+    } else {
+      stop("shape column not provided")
+    }
+
+    # Label setup
+    if (!is.null(label_field)) {
+      # Check that requested field is in feature DF
+      if (!(label_field %in% names(feature_distances))) {
+        stop("feature_distances: label_field not found in field names")
+      }
+
+      # Label position setup
+      if (label_pos == "left") {
+        label_nudge = -0.05
+        label_just = "right"
+        x_lims <- c(-1, 0)
+      } else if (label_pos == "right") {
+        label_nudge = 0.05
+        label_just = "left"
+        x_lims <- c(0, 1)
+      } else {
+        stop("Unknown label position. Please enter \"left\" or \"right\".")
+      }
+    } else {
+      x_lims <- c(-1, 1)
+    }
+  }
+
+  # Generate plot of routeline
+  bus_plot <- ggplot() +
+    # Add route line
+    ggplot2::geom_line(data = route_df, aes(y = distance, x = x),
+                       linewidth = route_width, color = route_color, alpha = route_alpha)
+
+  # Add features
+  if (!is.null(feature_distances)) {
+    bus_plot <- bus_plot +
+      ggplot2::geom_point(data = feature_distances,
+                          ggplot2::aes(y = distance, x = x,
+                                       color = factor(!!ensym(feature_outline_by)),
+                                       shape = factor(!!ensym(feature_shape_by))),
+                          size = feature_size, stroke = feature_stroke,
+                          fill = feature_fill, alpha = feature_alpha) +
+      ggplot2::scale_color_manual(name = feature_outline_by,
+                                  values = feature_outline_vals,
+                                  guide = show_legend_featurecolor) +
+      ggplot2::scale_shape_manual(name = feature_shape_by,
+                                  values = feature_shape_vals,
+                                  guide = show_legend_featureshape)
+
+    # Add labels
+    if (!is.null(label_field)) {
+      bus_plot <- bus_plot +
+        ggplot2::geom_label(data = feature_distances,
+                            aes(x = 0, y = distance,
+                                label = !!ensym(label_field),
+                                color = factor(!!ensym(feature_outline_by))),
+                            hjust = label_just,
+                            nudge_x = label_nudge,
+                            alpha = label_alpha, size = label_size,
+                            show.legend = FALSE)
+    }
+  }
+
+  # Add vehicles
+  bus_plot <- bus_plot +
+    ggnewscale::new_scale("color") +
+    ggnewscale::new_scale("shape") +
+    ggplot2::geom_point(data = trips_df,
+                        ggplot2::aes(y = distance, x = x, group = trip_id_performed,
+                                     color = factor(!!ensym(veh_outline_by)),
+                                     shape = factor(!!ensym(veh_shape_by))),
+                        size = veh_size, stroke = veh_stroke,
+                        fill = veh_fill, alpha = veh_alpha) +
+    ggplot2::scale_color_manual(name = veh_outline_by,
+                                values = veh_outline_vals,
+                                guide = show_legend_vehcolor) +
+    ggplot2::scale_shape_manual(name = veh_shape_by,
+                                values = veh_shape_vals,
+                                guide = show_legend_vehshape) +
+    # Add time component
+    gganimate::transition_components(event_timestamp) +
+    gganimate::ease_aes(transition_style)
+
+  # Theming
+  bus_plot <- bus_plot +
+    ggplot2::labs(title = "AVL Animation",
+                  subtitle = "Time: {round(frame_time})",
+                  y = "Distance") +
+    ggplot2::scale_x_continuous(breaks = NULL, name = NULL,
+                                limits = x_lims) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(face = "bold", size = 12),
+                   plot.subtitle = ggplot2::element_text(size = 10))
+
+  # Subtitle time -- depends on datatype
+  if (is.numeric(trips_df$event_timestamp)) {
+    # If time is a numeric seconds value
+    bus_plot <- bus_plot +
+      ggplot2::labs(subtitle = "Time: {round(frame_time)} sec")
+  } else {
+    # Otherwise, time has to be a date
+    bus_plot <- bus_plot +
+      ggplot2::labs(subtitle = "{round_date(frame_time, unit = \"second\")}")
+  }
+
+  return(bus_plot)
+}
+
+#' Generate an animated vehicle map along a route's alignment.
+#'
+#' This function generates a spatial plot of a route's alignment, as animates vehicles moving along this alignment.
+#' This function is designed to work with linearized distances, not raw GPS points. Linear distances are spatialized using the input route_geom.
+#' If a trajectory object is provided, the interpolating function(s) will be plotted at the desired temporal resolution. If a distance_df is provided, the points will be plotted.
+#' Optionally, spatial "features" can be added as points along the route line. These may be stations, traffic signals, etc.
+#' As with the trajectories, these features should be linearized (i.e., the distance along the route at which the feature occurs), not spatial. These distances are spatialized using the input route_geom.
+#' Optionally, a label may be added to these features.
+#' The outline colors and shapes of both vehicles and features can be mapped to their respective attributes.
+#' If using this attribute mapping, provide a dataframe with at least the columns "outline" or "shape", plus only one column matching a column in distance_df or feature_distances. If using a trajectory object, only "trip_id_performed" can be mapped to.
+#' Feature labels will automatically match the colors of features.
+#' A gganimate object is returned, which can be further modified and customized as desired.
+#'
+#' @param route_geom An SF linestring object for a single route shape. Ideally, should be the shape used to initially linearize trajectories or stop distances. The CRS of route_geom will be used for the entire map.
+#' @param trajectory Optional. A trajectory object, either a single trajectory or grouped trajectory. If provided, distance_df must not be provided. Default is NULL.
+#' @param distance_df Optional. A dataframe of time and distance points. Must include at least "event_timestamp" and numeric "distance". If provided, trajectory must not be provided. Default is NULL.
+#' @param plot_trips Optional. A vector of trip IDs to plot. Default is NULL, which will plot all trips provided in the trajectory object or distance_df.
+#' @param timestep Optional. If a trajectory is provided, the time interval, in seconds, between interpolated observations to plot. Default is 5.
+#' @param distance_lim Optional. A vector with (minimum, maximum) distance values to plot.
+#' @param center_vehicles Optional. A boolean, should all vehicle points be centered to start at the same time (0 seconds)? Default is FALSE.
+#' @param feature_distances Optional. A dataframe with at least numeric "distance" for features. Default is NULL.
+#' @param background Optional. The OSM background (basemap) for the animation. See 'rosm::osm.image()'. Default is "cartolight".
+#' @param background_zoom Optional. The zoom, relative to the "correct" level, for the background basemap. Default is 0, which will use the zoom most appropriate for the input spatial data. Entering a negative number will yield a lower resolution, "zoomed out" basemap, substantially speeding up rendering.
+#' @param bbox_expand Optional. The distance, in the units of the route_geom CRS (e.g., meters if UTM), by which to expand the plotting window in both directions. Default is NULL, which will expand the window by 0.05% of the larger dimension (or 0.0025% if distance_lim is provided).
+#' @param transition_style Optional. A gganimate transition style, specifying how individual points are animated between. Default is "linear".
+#' @param route_color Optional. A color string for the color of the background route. Default is "coral".
+#' @param route_width Optional. A numeric, the linewidth of the background route. Default is 3.
+#' @param route_alpha Optional. A numeric, the opacity of the background route. Default is 1.
+#' @param feature_shape Optional. A numeric specifying the ggplot2 point shape, or a dataframe mapping an attribute in feature_distances to a shape. Must contain column "shape". Default is 21 (circle).
+#' @param feature_outline Optional. A color string, or a dataframe mapping an attribute in feature_distances to a color. Must contain column "outline". Default is "black".
+#' @param feature_fill Optional. A color string, the inside fill of feature points. Default is "white".
+#' @param feature_size Optional. A numeric, the size of the feature point. Default is 2.
+#' @param feature_stroke Optional. A numeric, the linewidth of the feature point outline. Default is 1.25.
+#' @param feature_alpha Optional. A numeric, the opacity of the feature point Default is 1.
+#' @param veh_shape Optional. A numeric specifying the ggplot2 point shape, or a dataframe mapping an attribute in distance_df or the trajectory object to a shape. Must contain column "shape". Default is 23 (diamond).
+#' @param veh_outline Optional. A color string, or a dataframe mapping an attribute in distance_df or the trajectory object to a color. Must contain column "outline". Default is "grey30".
+#' @param veh_fill Optional. A color string, the inside fill of the vehicle point. Default is "white".
+#' @param veh_size Optional. A numeric, the size of the vehicle point. Default is 3.
+#' @param veh_stroke Optional. A numeric, the linewidth of the vehicle point outline. Default is 2.
+#' @param veh_alpha Optional. A numeric, the opacity of the feature point Default is 0.8.
+#' @param label_field Optional. A string specifying the column in feature_distances with which to label the feature lines. Default is NULL, where no labels will be plotted.
+#' @param label_size Optional. The font size of the feature labels. Default is 3.
+#' @param label_alpha Optional. The opacity of the feature labels. Default is 0.6.
+#' @param label_pos Optional. A string specifying the label position on the graph. Must be an abbreviated cardinal or intermediate direction (e.g., "N", "SW", etc.), or "in" or "out". Default is "out".
+#' @returns A gganimate object.
+#' @export
+plot_animated_map <- function(route_geom, trajectory = NULL, distance_df = NULL,
+                              plot_trips = NULL, timestep = 5, distance_lim = NULL,
+                              center_vehicles = FALSE, feature_distances = NULL,
+                              background = "cartolight", background_zoom = 0,
+                              bbox_expand = NULL, transition_style = "linear",
+                              # Format route
+                              route_color = "coral", route_width = 3, route_alpha = 1,
+                              # Format features
+                              feature_shape = 21, feature_outline = "black",
+                              feature_fill = "white", feature_size = 2,
+                              feature_stroke = 1.25, feature_alpha = 1,
+                              # Format vehicles
+                              veh_shape = 23, veh_outline = "grey30",
+                              veh_fill = "white", veh_size = 3, veh_stroke = 2,
+                              veh_alpha = 0.8,
+                              # Format labels
+                              label_field = NULL, label_size = 3,
+                              label_alpha = 0.6, label_pos = "out") {
+
+  # --- Vehicle DF setup ---
+  # Check provided trajectories & distance DF, and filter as needed
+  if (!is.null(trajectory) & !is.null(distance_df)) {
+    stop("Please provide only one of trajectory and distance_df")
+  } else if (!is.null(trajectory)) {
+    # If trajectory is provided, generate the DF by predicting from functions
+
+    # Get times to interpolate over
+    from_time <- min(attr(trajectory, "min_time"))
+    to_time <- max(attr(trajectory, "max_time"))
+    time_seq <- seq(from = from_time, to = to_time,
+                    by = timestep)
+
+    # Depending on object type, get distances at times
+    if ("avltrajectory_single" %in% class(trajectory)) {
+      # If single trajectory, should not filter by trips
+      trips_df <- predict(trajectory, new_times = time_seq) %>%
+        dplyr::rename(distance = interp) %>%
+        dplyr::mutate(trip_id_performed = unclass(trajectory))
+    } else if ("avltrajectory_group" %in% class(trajectory)) {
+      # If grouped trajectory, handle trips
+      trips_df <- predict(trajectory, trips = plot_trips,
+                          new_times = time_seq) %>%
+        dplyr::rename(distance = interp)
+    } else {
+      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
+    }
+  } else {
+    # If distance_df is provided, filter to desired trips
+    # Get trips if not provided
+    if (is.null(plot_trips)) {
+      plot_trips <- unique(distance_df$trip_id_performed)
+    }
+
+    # Filter
+    trips_df <- distance_df %>%
+      dplyr::filter(trip_id_performed %in% plot_trips)
+  }
+
+  # Filter observations to distance limits
+  if (!is.null(distance_lim)) {
+    trips_df <- trips_df %>%
+      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+    # Check that observations remain after filtering.
+    if (dim(trips_df)[1] == 0) {
+      stop("No trip observations within distance limit.")
+    }
+
+    # If features, filter these to be within distance range
+    if (!is.null(feature_distances)) {
+      feature_distances <- feature_distances %>%
+        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+      # Check that feature values remain after filtering.
+      if (dim(feature_distances)[1] == 0) {
+        stop("No features within distance limit.")
+      }
+    }
+  }
+
+  # Center trajectories to all begin at same point
+  if (center_vehicles) {
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+      dplyr::ungroup()
+  }
+
+
+  # --- Formatting ---
+  # Vehicle outline setup
+  if (is.character(veh_outline)) {
+    show_legend_vehcolor <- "none"
+    trips_df <- trips_df %>%
+      dplyr::mutate(temp_color = 1)
+    veh_outline_by <- "temp_color"
+    veh_outline_vals <- c(veh_outline)
+    names(veh_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("outline" %in% names(veh_outline)) {
+    show_legend_vehcolor <- "legend"
+    veh_outline_names <- names(veh_outline)
+    veh_outline_by <- veh_outline_names[(veh_outline_names != "outline") & (veh_outline_names != "shape")]
+    veh_outline_vals <- as.character(veh_outline$outline)
+    names(veh_outline_vals) <- as.character(veh_outline[[veh_outline_by]])
+  } else {
+    stop("veh_outline dataframe: outline column not provided")
+  }
+
+  # Vehicle shape setup
+  if (is.numeric(veh_shape)) {
+    show_legend_vehshape <- "none"
+    trips_df <- trips_df %>%
+      dplyr::mutate(temp_shape = 1)
+    veh_shape_by = "temp_shape"
+    veh_shape_vals <- c(veh_shape)
+    names(veh_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("shape" %in% names(veh_shape)) {
+    show_legend_vehshape <- "legend"
+    veh_shape_names <- names(veh_shape)
+    veh_shape_by <- veh_shape_names[(veh_shape_names != "shape") & (veh_shape_names != "outline")]
+    veh_shape_vals <- veh_shape$shape
+    names(veh_shape_vals) <- as.character(veh_shape[[veh_shape_by]])
+  } else {
+    stop("veh_shape dataframe: shape column not provided")
+  }
+
+  if (!is.null(feature_distances)) {
+    # Feature outline setup
+    if (is.character(feature_outline)) {
+      show_legend_featurecolor = "none"
+      feature_distances <- feature_distances %>%
+        dplyr::mutate(temp_outline = 1)
+      feature_outline_by = "temp_outline"
+      feature_outline_vals <- c(feature_outline)
+      names(feature_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("outline" %in% names(feature_outline)) {
+      show_legend_featurecolor = "legend"
+      feature_outline_names <- names(feature_outline)
+      feature_outline_by <- feature_outline_names[(feature_outline_names != "outline") & (feature_outline_names != "shape")]
+      feature_outline_vals <- as.character(feature_outline$outline)
+      names(feature_outline_vals) <- as.character(feature_outline[[feature_outline_by]])
+    } else {
+      stop("outline column not provided")
+    }
+
+    # Feature shape setup
+    if (is.numeric(feature_shape)) {
+      show_legend_featureshape = "none"
+      feature_distances <- feature_distances %>%
+        dplyr::mutate(temp_shape = 1)
+      feature_shape_by = "temp_shape"
+      feature_shape_vals <- c(feature_shape)
+      names(feature_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("shape" %in% names(feature_shape)) {
+      show_legend_featureshape = "legend"
+      feature_shape_names <- names(feature_shape)
+      feature_shape_by <- feature_shape_names[(feature_shape_names != "shape") & (feature_shape_names != "outline")]
+      feature_shape_vals <- feature_shape$shape
+      names(feature_shape_vals) <- as.character(feature_shape[[feature_shape_by]])
+    } else {
+      stop("shape column not provided")
+    }
+  }
+
+  # --- Spatial ---
+  # Get coordinates for trips_df, but leave as dataframe
+  trips_sf <- trips_df %>%
+    dplyr::mutate(point_geom = sf::st_line_interpolate(line = route_geom,
+                                                       dist = distance,
+                                                       normalized = FALSE),
+                  x_spatial = sf::st_coordinates(point_geom)[,1],
+                  y_spatial = sf::st_coordinates(point_geom)[,2])
+
+  # Convert features into SF points
+  if (!is.null(feature_distances)) {
+    features_sf <- feature_distances %>%
+      dplyr::mutate(point_geom = sf::st_line_interpolate(line = route_geom,
+                                                         dist = distance,
+                                                         normalized = FALSE),
+                    x_spatial = sf::st_coordinates(point_geom)[,1],
+                    y_spatial = sf::st_coordinates(point_geom)[,2]) %>%
+      dplyr::select(-point_geom)
+  }
+
+  bbox <- sf::st_bbox(trips_sf$point_geom)
+  trips_sf <- trips_sf %>% dplyr::select(-point_geom)
+  # If bounding box expansion not provided, calculate as portion of bbox
+  if (is.null(bbox_expand)) {
+    if (is.null(distance_lim)) {
+      bbox_expand <- 0.0005 * max(c(bbox[1], bbox[2]))
+    } else {
+      # Use closer zoom if a distance limit provided
+      bbox_expand <- 0.000025 * max(c(bbox[1], bbox[2]))
+    }
+  }
+
+  # Label setup
+  if (!is.null(label_field)) {
+    # Check that requested field is in feature DF
+    if (!(label_field %in% names(feature_distances))) {
+      stop("feature_distances: label_field not found in field names")
+    }
+
+    # Label position setup
+    if (label_pos == "N") {
+      label_nudge_y = 0.125 * bbox_expand
+      label_nudge_x = 0
+      label_hjust = "middle"
+      label_vjust = "bottom"
+    } else if (label_pos == "S") {
+      label_nudge_y = -0.125 * bbox_expand
+      label_nudge_x = 0
+      label_hjust = "middle"
+      label_vjust = "top"
+    } else if (label_pos == "E") {
+      label_nudge_y = 0 * bbox_expand
+      label_nudge_x = 0.125 * bbox_expand
+      label_hjust = "left"
+      label_vjust = "center"
+    } else if (label_pos == "W") {
+      label_nudge_y = 0
+      label_nudge_x = -0.125 * bbox_expand
+      label_hjust = "right"
+      label_vjust = "center"
+    } else if (label_pos == "NE") {
+      label_nudge_y = 0.125 * bbox_expand
+      label_nudge_x = 0.125 * bbox_expand
+      label_hjust = "left"
+      label_vjust = "bottom"
+    } else if (label_pos == "NW") {
+      label_nudge_y = 0.125 * bbox_expand
+      label_nudge_x = -0.125 * bbox_expand
+      label_hjust = "right"
+      label_vjust = "bottom"
+    } else if (label_pos == "SE") {
+      label_nudge_y = -0.125 * bbox_expand
+      label_nudge_x = 0.125 * bbox_expand
+      label_hjust = "left"
+      label_vjust = "top"
+    } else if (label_pos == "SW") {
+      label_nudge_y = -0.125 * bbox_expand
+      label_nudge_x = -0.125 * bbox_expand
+      label_hjust = "right"
+      label_vjust = "top"
+    } else if (label_pos == "in") {
+      label_nudge_y = 0
+      label_nudge_x = 0
+      label_hjust = "inward"
+      label_vjust = "inward"
+    } else if (label_pos == "out") {
+      label_nudge_y = 0
+      label_nudge_x = 0
+      label_hjust = "outward"
+      label_vjust = "outward"
+    } else {
+      stop("Unknown label position. Please enter \"N\", \"S\", \"E\", \"W\", \"NE\", \"NW\", \"SE\", \"SW\", \"in\", or \"out\".")
+    }
+  }
+
+  # --- Plotting ---
+  # Build basemap & route
+  anim_map <- ggplot2::ggplot() +
+    # Set basemap
+    ggspatial::annotation_map_tile(type = background, zoomin = background_zoom,
+                                   progress = "none") +
+    # Plot route
+    ggspatial::geom_sf(data = route_geom, color = route_color, size = route_width) +
+    # Set bounding box
+    ggspatial::coord_sf(xlim = c((bbox[1] - bbox_expand), (bbox[3] + bbox_expand)),
+                        ylim = c((bbox[2] - bbox_expand), (bbox[4] + bbox_expand)),
+                        crs = sf::st_crs(route_geom))
+
+  # Add features
+  if (!is.null(feature_distances)) {
+    anim_map <- anim_map +
+      ggplot2::geom_point(data = features_sf,
+                          ggspatial::aes(x = x_spatial, y = y_spatial,
+                                         color = factor(!!ensym(feature_outline_by)),
+                                         shape = factor(!!ensym(feature_shape_by))),
+                          fill = feature_fill, alpha = feature_alpha,
+                          stroke = feature_stroke, size = feature_size) +
+      ggplot2::scale_color_manual(name = feature_outline_by,
+                                  values = feature_outline_vals,
+                                  guide = show_legend_featurecolor) +
+      ggplot2::scale_shape_manual(name = feature_shape_by,
+                                  values = feature_shape_vals,
+                                  guide = show_legend_featureshape)
+
+    # Add labels
+    if (!is.null(label_field)) {
+      anim_map <- anim_map +
+        ggplot2::geom_label(data = features_sf,
+                            aes(x = x_spatial, y = y_spatial,
+                                label = !!ensym(label_field),
+                                color = factor(!!ensym(feature_outline_by))),
+                            hjust = label_hjust, vjust = label_vjust,
+                            nudge_x = label_nudge_x, nudge_y = label_nudge_y,
+                            alpha = label_alpha, size = label_size,
+                            show.legend = FALSE, fill = "white")
+    }
+  }
+
+  # Add vehicles
+  anim_map <- anim_map +
+    ggnewscale::new_scale("color") +
+    ggnewscale::new_scale("shape") +
+    ggplot2::geom_point(data = trips_sf,
+                        ggplot2::aes(x = x_spatial, y = y_spatial,
+                                     group = trip_id_performed,
+                                     color = factor(!!ensym(veh_outline_by)),
+                                     shape = factor(!!ensym(veh_shape_by))),
+                        fill = veh_fill, size = veh_size, stroke = veh_stroke) +
+    ggplot2::scale_color_manual(name = veh_outline_by,
+                                values = veh_outline_vals,
+                                guide = show_legend_vehcolor) +
+    ggplot2::scale_shape_manual(name = veh_shape_by,
+                                values = veh_shape_vals,
+                                guide = show_legend_vehshape) +
+    gganimate::transition_components(event_timestamp) +
+    gganimate::ease_aes(transition_style)
+
+  # Theming
+  anim_map <- anim_map +
+    ggplot2::theme_void() +
+    ggplot2::labs(title = "AVL Animation",
+                  xlab = NULL, ylab = NULL) +
+    ggplot2::scale_x_discrete(breaks = NULL, name = NULL) +
+    ggplot2::scale_y_discrete(breaks = NULL, name = NULL)
+
+  # Subtitle time -- depends on datatype
+  if (is.numeric(trips_sf$event_timestamp)) {
+    # If time is a numeric seconds value
+    anim_map <- anim_map +
+      ggplot2::labs(subtitle = "Time: {round(frame_time)} sec")
+  } else {
+    # Otherwise, time has to be a date
+    anim_map <- anim_map +
+      ggplot2::labs(subtitle = "{round_date(frame_time, unit = \"second\")}")
+  }
+
+  return(anim_map)
+}
+
+#' Generates a plot of one or many trajectories.
+#'
+#' This function generates a plot of vehicle trajectories, with time on the x-axis and space on the y-axis.
+#' If a trajectory object is provided, the interpolating function(s) will be plotted at the desired temporal resolution. If a distance_df is provided, the points will be plotted and connected linearly.
+#' Optionally, spatial "feature" can be added as horizontal lines on the plot. These may be stations, traffic signals, etc. Optionally, a label may be added to these features.
+#' The colors and linetypes of both trajectories and features can be mapped to their respective attributes.
+#' If using this mapping, provide a dataframe with at least the columns "color" or "linetype", plus one column matching a column in distance_df or feature_distances. If using a trajectory object, only "trip_id_performed" can be mapped to.
+#' Feature labels will automatically match the colors of features.
+#' A ggplot2 object is returned, which can be further modified and customized as desired.
+#'
+#' @param trajectory Optional. A trajectory object, either a single trajectory or grouped trajectory. If provided, distance_df must not be provided. Default is NULL.
+#' @param distance_df Optional. A dataframe of time and distance points. Must include at least "event_timestamp" and numeric "distance". If provided, trajectory must not be provided. Default is NULL.
+#' @param plot_trips Optional. A vector of trip IDs to plot. Default is NULL, which will plot all trips provided in the trajectory object or distance_df.
+#' @param timestep Optional. If a trajectory is provided, the time interval, in seconds, between interpolated observations to plot. Default is 5.
+#' @param distance_lim Optional. A vector with (minimum, maximum) distance values to plot.
+#' @param center_trajectories Optional. A boolean, should all trajectories be centered to start at the same time (0 seconds)? Default is FALSE.
+#' @param feature_distances Optional. A dataframe with at least numeric "distance" for features. Default is NULL.
+#' @param traj_color Optional. A color string, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a color. Must contain column "color". Default is "coral".
+#' @param traj_type Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a linetype. Must contain column "linetype". Default is "solid".
+#' @param traj_width Optional. A numeric, the width of the trajectory line. Default is 1.
+#' @param traj_alpha Optional. A numeric, the opacity of the trajectory line. Default is 1.
+#' @param feature_color Optional. A color string, or a dataframe mapping an attribute in feature_distances to a color. Must contain column "color". Default is "grey30".
+#' @param feature_type Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in feature_distances to a linetype Must contain column "linetype". Default is "dashed".
+#' @param feature_width Optional. A numeric, the width of the feature line. Default is 0.8.
+#' @param feature_alpha Optional. A numeric, the opacity of the feature line. Default is 0.8.
+#' @param label_field Optional. A string specifying the column in feature_distances with which to label the feature lines. Default is NULL, where no labels will be plotted.
+#' @param label_size Optional. The font size of the feature labels. Default is 3.
+#' @param label_alpha Optional. The opacity of the feature labels. Default is 0.6.
+#' @param label_pos Optional. A string specifying the label position on the graph. Must be either "left" or "right". Default is "left".
+#' @return A ggplot object.
+#' @export
+plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
+                            timestep = 5, distance_lim = NULL, center_trajectories = FALSE,
+                            feature_distances = NULL,
+                            # Trajectory line customization
+                            traj_color = "coral", traj_type = "solid",
+                            traj_width = 1, traj_alpha = 1,
+                            # Feature line customization
+                            feature_color = "grey30", feature_type = "dashed",
+                            feature_width = 0.8, feature_alpha = 0.8,
+                            # Feature label customization
+                            label_field = NULL, label_size = 3,
+                            label_alpha = 0.6, label_pos = "left") {
+
+  # --- Plotting DF setup ---
+  # Check provided trajectories & distance DF, and filter as needed
+  if (!is.null(trajectory) & !is.null(distance_df)) {
+    stop("Please provide only one of trajectory and distance_df")
+  } else if (!is.null(trajectory)) {
+    # If trajectory is provided, generate the DF by predicting from functions
+
+    # Get times to interpolate over
+    from_time <- min(attr(trajectory, "min_time"))
+    to_time <- max(attr(trajectory, "max_time"))
+    time_seq <- seq(from = from_time, to = to_time,
+                    by = timestep)
+
+    # Depending on object type, get distances at times
+    if ("avltrajectory_single" %in% class(trajectory)) {
+      # If single trajectory, should not filter by trips
+      trips_df <- predict(trajectory, new_times = time_seq) %>%
+        dplyr::rename(distance = interp) %>%
+        dplyr::mutate(trip_id_performed = unclass(trajectory))
+    } else if ("avltrajectory_group" %in% class(trajectory)) {
+      # If grouped trajectory, handle trips
+      trips_df <- predict(trajectory, trips = plot_trips,
+                          new_times = time_seq) %>%
+        dplyr::rename(distance = interp)
+    } else {
+      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
+    }
+  } else {
+    # If distance_df is provided, filter to desired trips
+    # Get trips if not provided
+    if (is.null(plot_trips)) {
+      plot_trips <- unique(distance_df$trip_id_performed)
+    }
+
+    # Filter
+    trips_df <- distance_df %>%
+      dplyr::filter(trip_id_performed %in% plot_trips)
+  }
+
+  # Filter observations to distance limits
+  if (!is.null(distance_lim)) {
+    trips_df <- trips_df %>%
+      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+    # If features, filter these to be within distance range
+    if (!is.null(feature_distances)) {
+      feature_distances <- feature_distances %>%
+        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+    }
+  }
+
+  # Center trajectories to all begin at same point
+  if (center_trajectories) {
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+      dplyr::ungroup()
+  }
+
+
+  # --- Formatting setup ---
+  # Traj line color setup
+  if (is.character(traj_color)) {
+    show_legend_trajcolor <- "none"
+    trips_df <- trips_df %>%
+      dplyr::mutate(temp_color = 1)
+    color_by = "temp_color"
+    color_vals <- c(traj_color)
+    names(color_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("color" %in% names(traj_color)) {
+    show_legend_trajcolor <- "legend"
+    color_names <- names(traj_color)
+    color_by <- color_names[(color_names != "color") & (color_names != "linetype")]
+    color_vals <- as.character(traj_color$color)
+    names(color_vals) <- as.character(traj_color[[color_by]])
+  } else {
+    stop("traj_color dataframe: color column not provided")
+  }
+
+  # Traj linetype setup
+  if (is.character(traj_type)) {
+    show_legend_trajtype <- "none"
+    trips_df <- trips_df %>%
+      mutate(temp_line = 1)
+    traj_type_by = "temp_line"
+    traj_type_vals <- c(traj_type)
+    names(traj_type_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+  } else if ("linetype" %in% names(traj_type)) {
+    show_legend_trajtype <- "legend"
+    traj_type_names <- names(traj_type)
+    traj_type_by <- traj_type_names[(traj_type_names != "linetype") & (traj_type_names != "color")]
+    traj_type_vals <- traj_type$linetype
+    names(traj_type_vals) <- as.character(traj_type[[traj_type_by]])
+  } else {
+    stop("traj_type dataframe: linetype column not provided")
+  }
+
+  # Feature setup
+  if (!is.null(feature_distances)) {
+    # Feature color setup
+    if (is.character(feature_color)) {
+      show_legend_featurecolor <- "none"
+      feature_distances <- feature_distances %>%
+        dplyr::mutate(temp_color = 1)
+      feature_color_by = "temp_color"
+      feature_color_vals <- c(feature_color)
+      names(feature_color_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("color" %in% names(feature_color)) {
+      show_legend_featurecolor <- "legend"
+      feature_color_names <- names(feature_color)
+      feature_color_by <- feature_color_names[(feature_color_names != "color") & (feature_color_names != "linetype")]
+      feature_color_vals <- as.character(feature_color$color)
+      names(feature_color_vals) <- as.character(feature_color[[feature_color_by]])
+    } else {
+      stop("feature_color dataframe: color column not provided")
+    }
+
+    # Feature linetype setup
+    if (is.character(feature_type)) {
+      show_legend_featuretype <- "none"
+      feature_distances <- feature_distances %>%
+        mutate(temp_line = 1)
+      feature_type_by = "temp_line"
+      feature_type_vals <- c(feature_type)
+      names(feature_type_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
+    } else if ("linetype" %in% names(feature_type)) {
+      show_legend_featuretype <- "legend"
+      feature_type_names <- names(feature_type)
+      feature_type_by <- feature_type_names[(feature_color_names != "color") & (feature_color_names != "linetype")]
+      feature_type_vals <- feature_type$linetype
+      names(feature_type_vals) <- as.character(feature_type[[feature_type_by]])
+    } else {
+      stop("feature_type dataframe: linetype column not provided")
+    }
+
+    # Label setup
+    if (!is.null(label_field)) {
+      # Check that requested field is in feature DF
+      if (!(label_field %in% names(feature_distances))) {
+        stop("feature_distances: label_field not found in field names")
+      }
+
+      # Label position setup
+      if (label_pos == "left") {
+        label_t = min(trips_df$event_timestamp)
+      } else if (label_pos == "right") {
+        label_t = max(trips_df$event_timestamp)
+      } else {
+        stop("Unknown label position. Please enter \"left\" or \"right\".")
+      }
+    }
+  }
+
+  # Create trajectory line and stop points
+  traj_plot <- ggplot() +
+    # Add lines
+    ggplot2::geom_line(data = trips_df,
+                       ggplot2::aes(y = distance, x = event_timestamp,
+                                    group = trip_id_performed,
+                                    color = factor(!!ensym(color_by)),
+                                    linetype = factor(!!ensym(traj_type_by))),
+                       linewidth = traj_width, alpha = traj_alpha) +
+    ggplot2::scale_color_manual(name = color_by,
+                                values = color_vals,
+                                guide = show_legend_trajcolor) +
+    ggplot2::scale_linetype_manual(name = traj_type_by,
+                                   values = traj_type_vals,
+                                   guide = show_legend_trajtype)
+
+  # Add features
+  if (!is.null(feature_distances)) {
+    traj_plot <- traj_plot +
+      ggnewscale::new_scale("color") +
+      ggnewscale::new_scale("linetype") +
+      ggplot2::geom_hline(data = feature_distances,
+                          aes(yintercept = distance,
+                              color = factor(!!ensym(feature_color_by)),
+                              linetype = factor(!!ensym(feature_type_by))),
+                          linewidth = feature_width, alpha = feature_alpha) +
+      ggplot2::scale_color_manual(name = feature_color_by,
+                                  values = feature_color_vals,
+                                  guide = show_legend_featurecolor) +
+      ggplot2::scale_linetype_manual(name = feature_type_by,
+                                     values = feature_type_vals,
+                                     guide = show_legend_featuretype)
+
+    # Add labels
+    if (!is.null(label_field)) {
+      traj_plot <- traj_plot +
+        ggplot2::geom_label(data = feature_distances,
+                            aes(x = label_t, y = distance,
+                                label = !!ensym(label_field),
+                                color = factor(!!ensym(feature_color_by))),
+                            hjust = label_pos, alpha = label_alpha,
+                            size = label_size, show.legend = FALSE)
+    }
+  }
+
+  # Theming
+  traj_plot <- traj_plot +
+    ggplot2::labs(title = "AVL Trajectories",
+                  x = "Time",
+                  y = "Distance") +
+    ggplot2::theme_minimal()
+
+  return(traj_plot)
+}
+
+#' Generates a Leaflet viewer of GTFS routes and stops.
+#'
+#' This function generates a Leaflet-based interactive map viewer using a GTFS object
+#' from tidytransit.
+#'
+#' @param gtfs A tidytransit GTFS object. As many routes as you like.
+#' @param background Optional. A string for the background of the transit map, from Leaflet's provider library. Default is Esri's light gray canvas (Esri.WorldGrayCanvas).
+#' @param color_palette Optional. A string for the Leaflet color palette to color routes. If "gtfs", will use color codes in the GTFS routes.txt. Default is "Dark2".
+#' @return A Leaftlet map object.
+#' @export
+plot_interactive_gtfs <- function(gtfs, background = "Esri.WorldGrayCanvas", color_palette = "Dark2") {
+  # Prepare GTFS
+  gtfs_simple <- tidytransit::gtfs_as_sf(gtfs) # Convert GTFS to simple features for plotting
+  gtfs_geometries <- tidytransit::get_route_geometry(gtfs_simple) # Get route alignment from GTFS SF
+  gtfs_stops <- gtfs_simple$stops # Get stop points for plotting from GTFS SF
+  num_routes <- length(unique(gtfs_simple$routes$route_id)) # Find number of routes to plot
+  short_route_ids <- gtfs_simple$routes$route_short_name[order(as.numeric(gtfs_simple$routes$route_short_name))]
+
+  # Pop-ups and labels
+  hover_tip <- paste("Route ", short_route_ids, sep = "")
+  stop_popup <- paste(gtfs_stops$stop_name, " (", gtfs_stops$stop_id, ")", sep = "")
+
+  # Colors
+  if (color_palette == "gtfs") {
+    # Get color codes and append #
+    route_colors <- gtfs$routes %>%
+      dplyr::select(route_id, route_color) %>%
+      dplyr::mutate(route_color = paste("#", route_color, sep = ""))
+
+    # Create palette
+    route_pal <- leaflet::colorFactor(route_colors$route_color, route_colors$route_id)
+  } else {
+    # Create palette
+    route_pal <- leaflet::colorFactor(color_palette, gtfs_geometries$route_id)
+  }
+
+  # Create map
+  interactive_map <- leaflet::leaflet() %>%
+    leaflet::addPolylines(data = gtfs_geometries, # Route alignment
+                          color = ~route_pal(route_id),
+                          opacity = 1,
+                          label = hover_tip) %>%
+    leaflet::addLegend(data = gtfs_geometries, # Legend
+                       position ="bottomright",
+                       pal = route_pal,
+                       values = ~route_id,
+                       title = "Route ID") %>%
+    leaflet::addCircleMarkers(data = gtfs_stops, # Stops
+                              fillColor = "white",
+                              fillOpacity = 1,
+                              color = "black",
+                              opacity = 1,
+                              weight = 1,
+                              radius = 3,
+                              popup = stop_popup) %>%
+    leaflet::addProviderTiles(background) # Basemap
+
+  return(interactive_map)
+}
+
+#' Save your animation at a desired quality.
+#'
+#' This function is a wrapper on gganimate's animate() and anim_save(), providing a simplified, though less feature-rich, version of these functions.
+#' Animations are saved as .gif's at the desired path.
+#' With this function, publication-quality (high-resolution and smooth) animations are possible, but take a long time to render.
+#'
+#' @param anim_object A gganimate object.
+#' @param path A string representing the desired path and name for the animation.
+#' @param duration Optional. A numeric, in seconds, representing the length of the animation. Default is 30.
+#' @param fps Optional. The frames per second of the saved animation. Must be a factor of 100. Default is 10.
+#' @param width Optional. The width of the exported image, in inches. Default is 7.5
+#' @param height Optional. The height of the exported image, in inches. Default is 5.5.
+#' @param dpi Optional. The resolution, in dots per inch, of the image. Default is 100.
+#' @export
+export_animation <- function(anim_object, path,
+                             duration = 30, fps = 10,
+                             width = 7.5, height = 5.5, dpi = 100) {
+
+  if (!grepl(".gif", path)) {
+    stop("Please provide path including .gif extension.")
+  }
+
+  n_frames = duration * fps
+
+  # Save animation
+  gganimate::anim_save(filename = path, animation = anim_object,
+                       duration = duration,
+                       nframes = n_frames,
+                       width = width,
+                       height = height,
+                       units = "in",
+                       res = dpi)
+  message(" -- Save Successful -- ")
+}
