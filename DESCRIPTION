@@ -29,4 +29,5 @@ Imports:
     rlang,
     sf,
     tidyr,
-    tidytransit
+    tidytransit,
+    viridis

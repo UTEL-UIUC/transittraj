@@ -548,17 +548,17 @@ plot.avltrajectory_single <- function(x, ...) {
                   to = attr(x, "max_time"),
                   by = 10)
   plot_df <- predict(object = x, new_times = plot_seq) %>%
-    rename(distance = interp)
+    dplyr::rename(distance = interp)
 
   # Creaet & return plot
-  traj_plot <- ggplot(data = plot_df) +
-    geom_line(aes(x = event_timestamp, y = distance),
-              linewidth = 1, color = "coral") +
-    theme_minimal() +
-    labs(x = "Epoch Time (s)",
-         y = "Distance (m)",
-         title = "Single AVL Trajectory",
-         subtitle = paste("Trip ", unclass(object), sep = ""))
+  traj_plot <- ggplot2::ggplot(data = plot_df) +
+    ggplot2::geom_line(ggplot2::aes(x = event_timestamp, y = distance),
+                       linewidth = 1, color = "coral") +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(x = "Epoch Time (s)",
+                  y = "Distance (m)",
+                  title = "Single AVL Trajectory",
+                  subtitle = paste("Trip ", unclass(object), sep = ""))
   traj_plot
 }
 
@@ -566,12 +566,13 @@ plot.avltrajectory_single <- function(x, ...) {
 #'
 #' This function generates a quick plot of a single or grouped trajectory
 #' object. Using the trajectory function, the entire trajectory will be plotted
-#' at a temporal resolution of 10 seconds. For more control over plotting and
+#' at a temporal resolution of 10 seconds. For grouped trajectories, a maximum
+#' of 50 trips will be plotted. For more control over plotting and
 #' formatting, see `plot_trajectory()`.
 #'
-#' @param x The single trajectory object.
+#' @param x A trajectory object.
 #' @param ... Other parameters (not used).
-#' @return A ggplot2 object with a single trajectory.
+#' @return A ggplot2 object.
 #' @export
 plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
@@ -588,24 +589,25 @@ plot.avltrajectory_group <- function(x, ...) {
                   to = max(attr(x, "max_time")),
                   by = 10)
   plot_df <- predict(object = x, new_times = plot_seq, trips = plot_trips) %>%
-    rename(distance = interp)
+    dplyr::rename(distance = interp)
 
   # Generate color palette
   # Will be Viridis inferno. In ggplot, sample() is used to randomize each trajectory
   col_vector <- viridis::inferno(n = length(plot_trips))
 
   # Create plot
-  traj_plot <- ggplot(data = plot_df) +
-    geom_line(aes(x = event_timestamp, y = distance, color = factor(trip_id_performed)),
-              linewidth = 0.6, alpha = 0.8) +
-    scale_color_manual(values = sample(col_vector, length(plot_trips)),
-                       guide = "none") +
-    theme_minimal() +
-    labs(x = "Epoch Time (sec)",
-         y = "Distance (m)",
-         title = "Many AVL Trajectories",
-         subtitle = paste("Trips ", plot_trips[1], " through ", plot_trips[length(plot_trips)],
-                          "\n(", length(plot_trips), " total)",
-                          sep = ""))
+  traj_plot <- ggplot2::ggplot(data = plot_df) +
+    ggplot2::geom_line(ggplot2::aes(x = event_timestamp, y = distance,
+                                    color = factor(trip_id_performed)),
+                       linewidth = 0.6, alpha = 0.8) +
+    ggplot2::scale_color_manual(values = sample(col_vector, length(plot_trips)),
+                                guide = "none") +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(x = "Epoch Time (sec)",
+                  y = "Distance",
+                  title = "Many AVL Trajectories",
+                  subtitle = paste("Trips ", plot_trips[1], " through ", plot_trips[length(plot_trips)],
+                                   "\n(", length(plot_trips), " total)",
+                                   sep = ""))
   traj_plot
 }
