@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{get_trajectory_fun}
 \alias{get_trajectory_fun}
-\title{Fits continuous interpolating curves for transit vehicle distance and time.}
+\title{Fits continuous trajectory interpolating curves from transit AVL data.}
 \usage{
 get_trajectory_fun(
   distance_df,

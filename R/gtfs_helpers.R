@@ -501,38 +501,12 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
   if (!("tidygtfs" %in% class(gtfs))) {
     stop("Provided GTFS not a tidygtfs object.")
   }
-
-  #  --- Check that required fields are present ---
-  # For each file, we will check if it is present & has required fields for matching
-  gtfs_val <- attr(gtfs, "validation_result")
-  # stops: contains stop_id, stop_lon, stop_lat
-  stops_present <- all(gtfs_val$file_provided_status[gtfs_val$file == "stops"])
-  stops_fields <- c(all(gtfs_val$field_provided_status[gtfs_val$field == "stop_id" &
-                                                         gtfs_val$file == "stops"]),
-                    all(gtfs_val$field_provided_status[gtfs_val$field == "stop_lat" &
-                                                         gtfs_val$file == "stops"]),
-                    all(gtfs_val$field_provided_status[gtfs_val$field == "stop_lon" &
-                                                         gtfs_val$file == "stops"]))
-  # trips: contains shape_id
-  trips_present <- all(gtfs_val$file_provided_status[gtfs_val$file == "trips"])
-  trips_fields <- c(all(gtfs_val$field_provided_status[gtfs_val$field == "shape_id" &
-                                                         gtfs_val$file == "routes"]))
-
-  if (!stops_present) {
-    stop("stops not present in provided GTFS")
-  }
-  if (!all(stops_fields)) {
-    stop(paste("stops missing the following required fields: ",
-               c("stop_id", "stops_lat", "stops_lon")[!shapes_fields],
-               sep = ""))
-  }
-  if (!trips_present) {
-    stop("trips not present in provided GTFS")
-  }
-  if (!all(trips_fields)) {
-    stop(paste("trips missing the following required fields: ",
-               c("shape_id")[!shapes_fields], sep = ""))
-  }
+  validate_gtfs_input(gtfs,
+                      table = "stops",
+                      needed_fields = c("stop_id", "stop_lon", "stop_lat"))
+  validate_gtfs_input(gtfs,
+                      table = "trips",
+                      needed_fields = c("shape_id"))
 
   # --- Spatial geometry ---
   # Route shape
@@ -613,4 +587,41 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
   }
 
   return(stop_dist_df)
+}
+
+#' Function to quickly validate whether input GTFS has required tables and
+#' fields within those tables.
+#'
+#' Not intended for external use.
+validate_gtfs_input <- function(gtfs, table, needed_fields) {
+
+  # Pull validation table
+  gtfs_val <- attr(gtfs, "validation_result")
+
+  # Check table presence
+  table_present <- all(gtfs_val %>%
+                         dplyr::filter(file == table) %>%
+                         dplyr::pull(file_provided_status))
+  if (!table_present) {
+    rlang::abort(message = paste("Table ", table, " missing from input GTFS",
+                                 sep = ""),
+                 class = "error_gtfsval_missing_table")
+  }
+
+  # Check field presence
+  fields_present <- gtfs_val %>%
+    dplyr::filter(file == table) %>%
+    dplyr::filter(field %in% needed_fields) %>%
+    dplyr::select(field, field_provided_status) %>%
+    dplyr::arrange(match(field, needed_fields))
+
+  if (!all(fields_present$field_provided_status)) {
+    missing_fields <- fields_present %>%
+      dplyr::filter(!field_provided_status) %>%
+      dplyr::pull(field)
+    rlang::abort(message = paste(c("The following fields are missing from",
+                                   table, ":", missing_fields),
+                                 collapse = " "),
+                 class = "error_gtfsval_missing_fields")
+  }
 }

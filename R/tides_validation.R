@@ -174,13 +174,17 @@ validate_input_to_tides <- function(needed_fields, avl_df) {
 
   # Check presence of fields
   if (!all(avl_val$field_present)) {
-    stop(paste("Missing required fields:",
-               avl_val$required_field[!avl_val$field_present]))
+    rlang::abort(paste(c("Missing required fields:",
+                         avl_val$required_field[!avl_val$field_present]),
+                       collapse = " "),
+                 class = "error_tidesval_missing_fields")
   }
 
   # Check data types of fields
   if (!all(avl_val$field_type_ok)) {
-    stop(paste("The following fields do not have the correct data type:",
-               avl_val$required_field[!avl_val$field_type_ok]))
+    rlang::abort(paste(c("The following fields do not have the correct data type:",
+                         avl_val$required_field[!avl_val$field_type_ok]),
+                       collapse = " "),
+                 class = "error_tidesval_field_datatype")
   }
 }

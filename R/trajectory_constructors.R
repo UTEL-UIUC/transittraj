@@ -53,7 +53,7 @@ new_avltrajectory_single <- function(trip_id_performed = character(),
                           class = "avltrajectory_single")
 }
 
-#' Fits continuous interpolating curves for transit vehicle distance and time.
+#' Fits continuous trajectory interpolating curves from transit AVL data.
 #'
 #' @description
 #' This function fits a continuous vehicle trajectory function to observed AVL
@@ -325,7 +325,7 @@ get_trajectory_fun <- function(distance_df,
   }
 }
 
-#' Fits continuous interpolating curves for transit vehicle distance and time.
+#' Fits continuous trajectory interpolating curves from GTFS schedule data.
 #'
 #' @description
 #' This function fits a continuous vehicle trajectory function to scheduled GTFS
@@ -488,6 +488,19 @@ get_gtfs_trajectory_fun <- function(gtfs,
   stop_dist_df <- get_stop_distances(gtfs = gtfs,
                                      shape_geometry = shape_geometry,
                                      project_crs = project_crs)
+
+  # Validate stop_times
+  # Can do this after get_stop_distances, bc that function will validate
+  # GTFS object, trips, and shapes
+  gtfs_val <- attr(gtfs, "validation_result")
+  # stop_times: contains trip_id, stop_id
+  stop_times_present <- all(gtfs_val$file_provided_status[gtfs_val$file == "stops"])
+  stop_times_fields <- c(all(gtfs_val$field_provided_status[gtfs_val$field == "stop_id" &
+                                                         gtfs_val$file == "stops"]),
+                    all(gtfs_val$field_provided_status[gtfs_val$field == "stop_lat" &
+                                                         gtfs_val$file == "stops"]),
+                    all(gtfs_val$field_provided_status[gtfs_val$field == "stop_lon" &
+                                                         gtfs_val$file == "stops"]))
 
   # Get time by desired schedule time
   if (use_stop_time == "departure") {

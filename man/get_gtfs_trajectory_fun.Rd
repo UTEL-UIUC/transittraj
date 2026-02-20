@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{get_gtfs_trajectory_fun}
 \alias{get_gtfs_trajectory_fun}
-\title{Fits continuous interpolating curves for transit vehicle distance and time.}
+\title{Fits continuous trajectory interpolating curves from GTFS schedule data.}
 \usage{
 get_gtfs_trajectory_fun(
   gtfs,
