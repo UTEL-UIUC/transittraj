@@ -21,21 +21,19 @@
 get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
                                  original_crs = 4326, project_crs = 4326) {
 
-  # --- Validate AVL ---
+  # --- Validate ---
+  # AVL
   needed_fields <- c("longitude", "latitude")
   validate_input_to_tides(needed_fields, avl_df)
+  # Shape geometry
+  validate_shape_geometry(shape_geometry = shape_geometry,
+                          max_length = 1,
+                          require_shape_id = FALSE,
+                          match_crs = project_crs)
 
   # --- Spatial ---
   # Get SFC -- needed for some spatial calculations
   shape_geometry_sfc <- sf::st_geometry(shape_geometry)
-  # Verify that geometry is only one shape
-  if (length(shape_geometry_sfc) > 1) {
-    stop("Multiple shapes provided. Input only one shape.")
-  }
-  if (sf::st_crs(shape_geometry_sfc)$epsg != project_crs) {
-    warning("Input shape CRS not identical to project_crs. Transforming shape to project_crs.")
-    shape_geometry_sfc <- sf::st_transform(shape_geometry_sfc, crs = project_crs)
-  }
 
   # Convert DF to SF
   avl_sf <- avl_df %>%
@@ -545,7 +543,8 @@ trim_trips <- function(distance_df, trim_type = "both",
       return(trim_df)
     }
   } else { # If unknown entry, throw error
-    stop("Unknown trim type. Please enter: \"beginning\", \"end\", or \"both\".")
+    rlang::abort(message = "Unknown trim type. Please enter: \"beginning\", \"end\", or \"both\".",
+                 class = "error_trimtips_type")
   }
 }
 
@@ -632,7 +631,8 @@ make_monotonic <- function(distance_df,
 
   # --- Validate input distance error ---
   if (!is.numeric(add_distance_error)) {
-    stop("Please input numeric add_distance_error.")
+    rlang::abort(message = "Please input numeric add_distance_error.",
+                 class = "error_mono_dist_error")
   }
 
   # --- Weak montonicity ---
