@@ -127,8 +127,8 @@
 #'
 #' @param shape_geometry An SF object representing the route alignment. See
 #' `get_shape_geometry()`.
-#' @param background The OSM background (basemap) for the animation. See
-#' `rosm::osm.image()`. Default is `"cartolight"`.
+#' @param background Optional. The OSM background (basemap) for the animation.
+#' See `rosm::osm.image()`. Default is `"cartolight"`.
 #' @param background_zoom Optional. The zoom, relative to the "correct" level,
 #' for the background basemap. Default is 0.
 #' @param bbox_expand Optional. The distance by which to expand the plotting
@@ -219,65 +219,16 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
                                label_field = NULL, label_size = 3,
                                label_alpha = 0.6, label_pos = "left") {
 
-  # --- Vehicle DF setup ---
-  # Check provided trajectories & distance DF, and filter as needed
-  if (!is.null(trajectory) & !is.null(distance_df)) {
-    stop("Please provide only one of trajectory and distance_df")
-  } else if (!is.null(trajectory)) {
-    # If trajectory is provided, generate the DF by predicting from functions
-
-    # Get times to interpolate over
-    from_time <- min(attr(trajectory, "min_time"))
-    to_time <- max(attr(trajectory, "max_time"))
-    time_seq <- seq(from = from_time, to = to_time,
-                    by = timestep)
-
-    # Depending on object type, get distances at times
-    if ("avltrajectory_single" %in% class(trajectory)) {
-      # If single trajectory, should not filter by trips
-      trips_df <- predict(trajectory, new_times = time_seq) %>%
-        dplyr::rename(distance = interp) %>%
-        dplyr::mutate(trip_id_performed = unclass(trajectory))
-    } else if ("avltrajectory_group" %in% class(trajectory)) {
-      # If grouped trajectory, handle trips
-      trips_df <- predict(trajectory, trips = plot_trips,
-                          new_times = time_seq) %>%
-        dplyr::rename(distance = interp)
-    } else {
-      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
-    }
-  } else {
-    # If distance_df is provided, filter to desired trips
-    # Get trips if not provided
-    if (is.null(plot_trips)) {
-      plot_trips <- unique(distance_df$trip_id_performed)
-    }
-
-    # Filter
-    trips_df <- distance_df %>%
-      dplyr::filter(trip_id_performed %in% plot_trips)
-  }
-
-  # Filter observations to distance limits
-  if (!is.null(distance_lim)) {
-    trips_df <- trips_df %>%
-      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-    # If features, filter these to be within distance range
-    if (!is.null(feature_distances)) {
-      feature_distances <- feature_distances %>%
-        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-    }
-  }
-
-  # Center trajectories to all begin at same point
-  if (center_vehicles) {
-    trips_df <- trips_df %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
-      dplyr::ungroup()
-  }
+  # --- Validation & Setup ---
+  # Validate input data & set up feature & vehicle location DFs to plot
+  val_data <- plot_anim_df_setup(trajectory = trajectory,
+                                 distance_df = distance_df,
+                                 plot_trips = plot_trips,
+                                 feature_distances = feature_distances,
+                                 distance_lim = distance_lim,
+                                 center_vehicles = center_vehicles)
+  trips_df <- val_data[[1]]
+  feature_distances <- val_data[[2]]
 
   # Add x-value at which to plot vehicles
   trips_df <- trips_df %>% dplyr::mutate(x = 0)
@@ -296,88 +247,51 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
                            x = c(0, 0))
   }
 
-
   # --- Formatting ---
   # Vehicle outline setup
-  if (is.character(veh_outline)) {
-    show_legend_vehcolor <- "none"
-    trips_df <- trips_df %>%
-      dplyr::mutate(temp_color = 1)
-    veh_outline_by <- "temp_color"
-    veh_outline_vals <- c(veh_outline)
-    names(veh_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
-  } else if ("outline" %in% names(veh_outline)) {
-    show_legend_vehcolor <- "legend"
-    veh_outline_names <- names(veh_outline)
-    veh_outline_by <- veh_outline_names[(veh_outline_names != "outline") & (veh_outline_names != "shape")]
-    veh_outline_vals <- as.character(veh_outline$outline)
-    names(veh_outline_vals) <- as.character(veh_outline[[veh_outline_by]])
-  } else {
-    stop("veh_outline dataframe: outline column not provided")
-  }
-
+  veh_outline_list <- plot_format_setup(plotting_df = trips_df,
+                                             attribute_input = veh_outline,
+                                             attribute_type = "outline",
+                                             attribute_name = "veh_outline")
+  trips_df <- veh_outline_list[[1]]
+  show_legend_vehcolor <- veh_outline_list[[2]]
+  veh_outline_by <- veh_outline_list[[3]]
+  veh_outline_vals <- veh_outline_list[[4]]
   # Vehicle shape setup
-  if (is.numeric(veh_shape)) {
-    show_legend_vehshape <- "none"
-    trips_df <- trips_df %>%
-      dplyr::mutate(temp_shape = 1)
-    veh_shape_by = "temp_shape"
-    veh_shape_vals <- c(veh_shape)
-    names(veh_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
-  } else if ("shape" %in% names(veh_shape)) {
-    show_legend_vehshape <- "legend"
-    veh_shape_names <- names(veh_shape)
-    veh_shape_by <- veh_shape_names[(veh_shape_names != "shape") & (veh_shape_names != "outline")]
-    veh_shape_vals <- veh_shape$shape
-    names(veh_shape_vals) <- as.character(veh_shape[[veh_shape_by]])
-  } else {
-    stop("veh_shape dataframe: shape column not provided")
-  }
-
+  veh_shape_list <- plot_format_setup(plotting_df = trips_df,
+                                             attribute_input = veh_shape,
+                                             attribute_type = "shape",
+                                             attribute_name = "veh_shape")
+  trips_df <- veh_shape_list[[1]]
+  show_legend_vehshape <- veh_shape_list[[2]]
+  veh_shape_by <- veh_shape_list[[3]]
+  veh_shape_vals <- veh_shape_list[[4]]
   if (!is.null(feature_distances)) {
     # Feature outline setup
-    if (is.character(feature_outline)) {
-      show_legend_featurecolor = "none"
-      feature_distances <- feature_distances %>%
-        dplyr::mutate(temp_outline = 1)
-      feature_outline_by = "temp_outline"
-      feature_outline_vals <- c(feature_outline)
-      names(feature_outline_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
-    } else if ("outline" %in% names(feature_outline)) {
-      show_legend_featurecolor = "legend"
-      feature_outline_names <- names(feature_outline)
-      feature_outline_by <- feature_outline_names[(feature_outline_names != "outline") & (feature_outline_names != "shape")]
-      feature_outline_vals <- as.character(feature_outline$outline)
-      names(feature_outline_vals) <- as.character(feature_outline[[feature_outline_by]])
-    } else {
-      stop("outline column not provided")
-    }
-
+    feature_outline_list <- plot_format_setup(plotting_df = feature_distances,
+                                                   attribute_input = feature_outline,
+                                                   attribute_type = "outline",
+                                                   attribute_name = "feature_outline")
+    feature_distances <- feature_outline_list[[1]]
+    show_legend_featurecolor <- feature_outline_list[[2]]
+    feature_outline_by <- feature_outline_list[[3]]
+    feature_outline_vals <- feature_outline_list[[4]]
     # Feature shape setup
-    if (is.numeric(feature_shape)) {
-      show_legend_featureshape = "none"
-      feature_distances <- feature_distances %>%
-        dplyr::mutate(temp_shape = 1)
-      feature_shape_by = "temp_shape"
-      feature_shape_vals <- c(feature_shape)
-      names(feature_shape_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all trips_df the same color
-    } else if ("shape" %in% names(feature_shape)) {
-      show_legend_featureshape = "legend"
-      feature_shape_names <- names(feature_shape)
-      feature_shape_by <- feature_shape_names[(feature_shape_names != "shape") & (feature_shape_names != "outline")]
-      feature_shape_vals <- feature_shape$shape
-      names(feature_shape_vals) <- as.character(feature_shape[[feature_shape_by]])
-    } else {
-      stop("shape column not provided")
-    }
-
+    feature_shape_list <- plot_format_setup(plotting_df = feature_distances,
+                                                 attribute_input = feature_shape,
+                                                 attribute_type = "shape",
+                                                 attribute_name = "feature_shape")
+    feature_distances <- feature_shape_list[[1]]
+    show_legend_featureshape <- feature_shape_list[[2]]
+    feature_shape_by <- feature_shape_list[[3]]
+    feature_shape_vals <- feature_shape_list[[4]]
     # Label setup
     if (!is.null(label_field)) {
       # Check that requested field is in feature DF
       if (!(label_field %in% names(feature_distances))) {
-        stop("feature_distances: label_field not found in field names")
+        rlang::abort(message = "feature_distances: label_field not found in field names",
+                     class = "error_trajanim_formatting")
       }
-
       # Label position setup
       if (label_pos == "left") {
         label_nudge = -0.05
@@ -388,7 +302,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
         label_just = "left"
         x_lims <- c(0, 1)
       } else {
-        stop("Unknown label position. Please enter \"left\" or \"right\".")
+        rlang::abort(message = "Unknown label position. Please enter \"left\" or \"right\".",
+                     class = "error_trajanim_formatting")
       }
     } else {
       x_lims <- c(-1, 1)
@@ -497,76 +412,16 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
                               label_field = NULL, label_size = 3,
                               label_alpha = 0.6, label_pos = "out") {
 
-  # --- Vehicle DF setup ---
-  # Check provided trajectories & distance DF, and filter as needed
-  if (!is.null(trajectory) & !is.null(distance_df)) {
-    stop("Please provide only one of trajectory and distance_df")
-  } else if (!is.null(trajectory)) {
-    # If trajectory is provided, generate the DF by predicting from functions
-
-    # Get times to interpolate over
-    from_time <- min(attr(trajectory, "min_time"))
-    to_time <- max(attr(trajectory, "max_time"))
-    time_seq <- seq(from = from_time, to = to_time,
-                    by = timestep)
-
-    # Depending on object type, get distances at times
-    if ("avltrajectory_single" %in% class(trajectory)) {
-      # If single trajectory, should not filter by trips
-      trips_df <- predict(trajectory, new_times = time_seq) %>%
-        dplyr::rename(distance = interp) %>%
-        dplyr::mutate(trip_id_performed = unclass(trajectory))
-    } else if ("avltrajectory_group" %in% class(trajectory)) {
-      # If grouped trajectory, handle trips
-      trips_df <- predict(trajectory, trips = plot_trips,
-                          new_times = time_seq) %>%
-        dplyr::rename(distance = interp)
-    } else {
-      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
-    }
-  } else {
-    # If distance_df is provided, filter to desired trips
-    # Get trips if not provided
-    if (is.null(plot_trips)) {
-      plot_trips <- unique(distance_df$trip_id_performed)
-    }
-
-    # Filter
-    trips_df <- distance_df %>%
-      dplyr::filter(trip_id_performed %in% plot_trips)
-  }
-
-  # Filter observations to distance limits
-  if (!is.null(distance_lim)) {
-    trips_df <- trips_df %>%
-      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-    # Check that observations remain after filtering.
-    if (dim(trips_df)[1] == 0) {
-      stop("No trip observations within distance limit.")
-    }
-
-    # If features, filter these to be within distance range
-    if (!is.null(feature_distances)) {
-      feature_distances <- feature_distances %>%
-        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-      # Check that feature values remain after filtering.
-      if (dim(feature_distances)[1] == 0) {
-        stop("No features within distance limit.")
-      }
-    }
-  }
-
-  # Center trajectories to all begin at same point
-  if (center_vehicles) {
-    trips_df <- trips_df %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
-      dplyr::ungroup()
-  }
-
+  # --- Validation & Setup ---
+  # Validate input data & set up feature & vehicle location DFs to plot
+  val_data <- plot_anim_df_setup(trajectory = trajectory,
+                                 distance_df = distance_df,
+                                 plot_trips = plot_trips,
+                                 feature_distances = feature_distances,
+                                 distance_lim = distance_lim,
+                                 center_vehicles = center_vehicles)
+  trips_df <- val_data[[1]]
+  feature_distances <- val_data[[2]]
 
   # --- Formatting ---
   # Vehicle outline setup
@@ -820,6 +675,163 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   }
 
   return(anim_map)
+}
+
+#' Set up dataframe & validate of point objects for vehicle animations
+#'
+#' Intended for internal use only
+#'
+#' @param trajectory Single or grouped trajectory object.
+#' @param distance_df AVL distance DF.
+#' @param plot_trips Vector of trip_id_performed to plot.
+#' @param distance_lim Vector of (minimum, maximum) distance to plot.
+#' @param feature_distances Linear distance to features.
+#' @return plotting dataframe (trips_df)
+plot_anim_df_setup <- function(trajectory, distance_df,
+                               plot_trips,
+                               distance_lim,
+                               feature_distances,
+                               center_vehicles) {
+
+  # --- Vehicle DF setup ---
+  # Check provided trajectories & distance DF, and filter as needed
+  if (!is.null(trajectory) & !is.null(distance_df)) {
+    stop("Please provide only one of trajectory and distance_df")
+  } else if (!is.null(trajectory)) {
+    # If trajectory is provided, generate the DF by predicting from functions
+
+    # Get times to interpolate over
+    from_time <- min(attr(trajectory, "min_time"))
+    to_time <- max(attr(trajectory, "max_time"))
+    time_seq <- seq(from = from_time, to = to_time,
+                    by = timestep)
+
+    # Depending on object type, get distances at times
+    if ("avltrajectory_single" %in% class(trajectory)) {
+      # If single trajectory, should not filter by trips
+      trips_df <- predict(trajectory, new_times = time_seq) %>%
+        dplyr::rename(distance = interp) %>%
+        dplyr::mutate(trip_id_performed = unclass(trajectory))
+    } else if ("avltrajectory_group" %in% class(trajectory)) {
+      # If grouped trajectory, handle trips
+      trips_df <- predict(trajectory, trips = plot_trips,
+                          new_times = time_seq) %>%
+        dplyr::rename(distance = interp)
+    } else {
+      stop("Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.")
+    }
+  } else {
+    # If distance_df provided, validate it
+    needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
+    validate_input_to_tides(needed_fields = needed_fields,
+                            avl_df = distance_df)
+
+    # Filter to desired trips
+    if (is.null(plot_trips)) {
+      plot_trips <- unique(distance_df$trip_id_performed)
+    }
+    trips_df <- distance_df %>%
+      dplyr::filter(trip_id_performed %in% plot_trips)
+  }
+
+  # Filter observations to distance limits
+  if (!is.null(distance_lim)) {
+    trips_df <- trips_df %>%
+      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+    # If features, filter these to be within distance range
+    if (!is.null(feature_distances)) {
+      feature_distances <- feature_distances %>%
+        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+    }
+  }
+
+  # Filter observations to distance limits
+  if (!is.null(distance_lim)) {
+    trips_df <- trips_df %>%
+      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+    # Check that observations remain after filtering.
+    if (dim(trips_df)[1] == 0) {
+      rlang::abort(message = "No trip observations within distance limit.",
+                   class = "error_trajanim_distlim")
+    }
+
+    # If features, filter these to be within distance range
+    if (!is.null(feature_distances)) {
+      feature_distances <- feature_distances %>%
+        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
+
+      # Check that feature values remain after filtering.
+      if (dim(feature_distances)[1] == 0) {
+        rlang::abort(message = "No features within distance limit.",
+                     class = "error_trajanim_distlim")
+      }
+    }
+  }
+
+  # Center trajectories to all begin at same point
+  if (center_vehicles) {
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+      dplyr::ungroup()
+  }
+  return(list(trips_df, feature_distances))
+}
+
+#' Function to set up plot formats.
+#'
+#' Intended for internal use only.
+#'
+#' @param plotting_df DF for plotting, either trips or features
+#' @param attribute_input The user input value for the attribute (e.g.,
+#' outline_input = veh_outline)
+#' @param attribute_type The type of attribute being constructed (e.g.,
+#' "outline")
+#' @param attribute_name The name of the attribute (e.g., "veh_outline")
+plot_format_setup <- function(plotting_df,
+                                   attribute_input,
+                                   attribute_type,
+                                   attribute_name) {
+
+  if (!is.data.frame(attribute_input)) {
+    temp_attr_name <- paste("temp_", attribute_name, sep = "")
+    show_legend <- "none"
+    plotting_df <- plotting_df %>%
+      dplyr::mutate(temp_attr_name = "1")
+    attribute_by <- temp_attr_name
+    attribute_vals <- c(attribute_input)
+    names(attribute_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all plotting_df the same color
+  } else if ("outline" %in% names(attribute_input)) {
+    show_legend <- "legend"
+    input_names <- names(attribute_input)
+
+    # Match outline to a vehicle location data type
+    attribute_by <- plotting_df[!is.na(match(names(plotting_df),
+                                             input_names))]
+    # Check attribute_by -- should be exaclty one matching column
+    if (length(attribute_by > 1)) {
+      rlang::abort(message = paste(attribute_name, ": multiple columns match input data. Only one column can match.",
+                                   sep = ""),
+                   class = "error_trajanim_format")
+    } else if (length(attribute_by == 0)) {
+      rlang::abort(message = paste(attribute_name, ": no columns match input data. One must column can match.",
+                                   sep = ""),
+                   class = "error_trajanim_format")
+    }
+    attribute_vals <- as.character(attribute_input[[attribute_type]])
+    names(attribute_vals) <- as.character(outline_input[[attribute_by]])
+  } else {
+    stop("veh_outline dataframe: outline column not provided")
+  }
+
+  return(list(plotting_df,
+              show_legend,
+              attribute_by,
+              attribute_vals
+              ))
 }
 
 #' Generates a plot of one or many trajectories.
