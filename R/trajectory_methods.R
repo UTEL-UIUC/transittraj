@@ -45,6 +45,7 @@ summary.avltrajectory_group <- function(object, ...) {
 }
 
 #' @rdname summary.avltrajectory_group
+#' @export
 summary.avltrajectory_single <- function(object, ...) {
   trip_id <- unclass(object)
   min_dist <- attr(object, "min_dist")
@@ -95,6 +96,7 @@ print.avltrajectory_group <- function(x, ...) {
 }
 
 #' @rdname print.avltrajectory_group
+#' @export
 print.avltrajectory_single <- function(x, ...) {
   print(paste("AVL single trajectory for trip ID ", unclass(x),
               sep = ""))
@@ -315,6 +317,7 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
 }
 
 #' @rdname predict.avltrajectory_group
+#' @export
 predict.avltrajectory_single <- function(object, new_times = NULL, new_distances = NULL,
                                          deriv = 0, ...) {
 
@@ -541,27 +544,6 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
   return(int_df)
 }
 
-#' @rdname plot.avltrajectory_group
-plot.avltrajectory_single <- function(x, ...) {
-  # Creat DF for plotting
-  plot_seq <- seq(from = attr(x, "min_time"),
-                  to = attr(x, "max_time"),
-                  by = 10)
-  plot_df <- predict(object = x, new_times = plot_seq) %>%
-    dplyr::rename(distance = interp)
-
-  # Create & return plot
-  traj_plot <- ggplot2::ggplot(data = plot_df) +
-    ggplot2::geom_line(ggplot2::aes(x = event_timestamp, y = distance),
-                       linewidth = 1, color = "coral") +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(x = "Epoch Time (s)",
-                  y = "Distance (m)",
-                  title = "Single AVL Trajectory",
-                  subtitle = paste("Trip ", unclass(x), sep = ""))
-  traj_plot
-}
-
 #' #' Quickly plots an AVL trajectory.
 #'
 #' This function generates a quick plot of a single or grouped trajectory
@@ -609,5 +591,27 @@ plot.avltrajectory_group <- function(x, ...) {
                   subtitle = paste("Trips ", plot_trips[1], " through ", plot_trips[length(plot_trips)],
                                    "\n(", length(plot_trips), " total)",
                                    sep = ""))
+  traj_plot
+}
+
+#' @rdname plot.avltrajectory_group
+#' @export
+plot.avltrajectory_single <- function(x, ...) {
+  # Creat DF for plotting
+  plot_seq <- seq(from = attr(x, "min_time"),
+                  to = attr(x, "max_time"),
+                  by = 10)
+  plot_df <- predict(object = x, new_times = plot_seq) %>%
+    dplyr::rename(distance = interp)
+
+  # Create & return plot
+  traj_plot <- ggplot2::ggplot(data = plot_df) +
+    ggplot2::geom_line(ggplot2::aes(x = event_timestamp, y = distance),
+                       linewidth = 1, color = "coral") +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(x = "Epoch Time (s)",
+                  y = "Distance (m)",
+                  title = "Single AVL Trajectory",
+                  subtitle = paste("Trip ", unclass(x), sep = ""))
   traj_plot
 }

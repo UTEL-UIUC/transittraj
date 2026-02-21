@@ -395,6 +395,7 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
 }
 
 #' @rdname plot_animated_line
+#' @export
 plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = NULL,
                               plot_trips = NULL, timestep = 5, distance_lim = NULL,
                               center_vehicles = FALSE, feature_distances = NULL,
