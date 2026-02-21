@@ -686,6 +686,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @param plot_trips Vector of trip_id_performed to plot.
 #' @param distance_lim Vector of (minimum, maximum) distance to plot.
 #' @param feature_distances Linear distance to features.
+#' @param center_vehicles Should vehicles be centered
 #' @return plotting dataframe (trips_df)
 plot_anim_df_setup <- function(trajectory, distance_df,
                                plot_trips,

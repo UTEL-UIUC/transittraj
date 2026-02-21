@@ -23,6 +23,8 @@ plot_anim_df_setup(
 \item{distance_lim}{Vector of (minimum, maximum) distance to plot.}
 
 \item{feature_distances}{Linear distance to features.}
+
+\item{center_vehicles}{Should vehicles be centered}
 }
 \value{
 plotting dataframe (trips_df)
