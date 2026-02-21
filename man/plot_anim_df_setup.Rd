@@ -8,6 +8,7 @@ plot_anim_df_setup(
   trajectory,
   distance_df,
   plot_trips,
+  timestep,
   distance_lim,
   feature_distances,
   center_vehicles
@@ -19,6 +20,8 @@ plot_anim_df_setup(
 \item{distance_df}{AVL distance DF.}
 
 \item{plot_trips}{Vector of trip_id_performed to plot.}
+
+\item{timestep}{Time in seconds for interpolation.}
 
 \item{distance_lim}{Vector of (minimum, maximum) distance to plot.}
 

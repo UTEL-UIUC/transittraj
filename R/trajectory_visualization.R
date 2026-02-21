@@ -687,6 +687,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @param trajectory Single or grouped trajectory object.
 #' @param distance_df AVL distance DF.
 #' @param plot_trips Vector of trip_id_performed to plot.
+#' @param timestep Time in seconds for interpolation.
 #' @param distance_lim Vector of (minimum, maximum) distance to plot.
 #' @param feature_distances Linear distance to features.
 #' @param center_vehicles Should vehicles be centered
