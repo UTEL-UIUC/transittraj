@@ -151,7 +151,7 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
                         needed_fields = c("route_id"))
   }
 
-  # --- Filtering ---
+  # --- Filtering Required ---
   # Routes
   new_routes <- gtfs$routes %>%
     dplyr::filter(route_id %in% route_ids)
@@ -162,6 +162,10 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
   new_agency_id <- new_routes %>%
     dplyr::pull(agency_id)
+
+  # agency
+  new_agency <- gtfs$agency %>%
+    dplyr::filter(agency_id %in% new_agency_id)
 
   # Trips
   new_trips <- gtfs$trips %>%
@@ -189,48 +193,52 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   new_stop_ids <- new_stop_times %>%
     dplyr::pull(stop_id)
 
+  # --- Create initial list ---
+  new_gtfs <- list(
+    agency = new_agency,
+    routes = new_routes,
+    trips = new_trips,
+    stop_times = new_stop_times)
+
+  # --- Filter not required ---
   # stops
   if (stops_present) {
     new_stops <- gtfs$stops %>%
       dplyr::filter(stop_id %in% new_stop_ids)
-  } else {
-    new_stops <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(stops = new_stops))
   }
 
   # shapes
   if (shapes_present) {
     new_shapes <- gtfs$shapes %>%
       dplyr::filter(shape_id %in% new_shape_ids)
-  } else {
-    new_shapes <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(shapes = new_shapes))
   }
-
-  # agency
-  new_agency <- gtfs$agency %>%
-    dplyr::filter(agency_id %in% new_agency_id)
 
   # calendar
   if (calendar_present) {
     new_calendar <- gtfs$calendar %>%
       dplyr::filter(service_id %in% new_service_ids)
-  } else {
-    new_calendar <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(calendar = new_calendar))
   }
 
   # calendar_dates
   if (calendar_dates_present) {
     new_calendar_dates <- gtfs$calendar_dates %>%
       dplyr::filter(service_id %in% new_service_ids)
-  } else {
-    new_calendar_dates <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(calendar_dates = new_calendar_dates))
   }
 
   # frequencies
   if (frequencies_present) {
     new_frequencies <- gtfs$frequencies %>%
       dplyr::filter(trip_id %in% new_trip_ids)
-  } else {
-    new_frequencies <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(frequencies = new_frequencies))
   }
 
   # transfers
@@ -238,37 +246,21 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
     new_transfers <- gtfs$transfers %>%
       dplyr::filter((trip_id %in% new_trip_ids) &
                       (stop_id %in% new_stop_ids))
-  } else {
-    new_transfers <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(transfers = new_transfers))
   }
 
   # fare_rules
   if (fare_rules_present) {
     new_fare_rules <- gtfs$fare_rules %>%
       dplyr::filter(route_id %in% route_ids)
-  } else {
-    new_fare_rules <- NULL
+    new_gtfs <- append(new_gtfs,
+                       list(fare_rules = new_fare_rules))
   }
 
   # --- Compile into final new GTFS ---
-  # Validator will give warnings over NULL files, if not present in
-  # input GTFS. This is OK.
-  new_gtfs <- suppressWarnings(tidytransit::as_tidygtfs(list(
-    agency = new_agency,
-    calendar = new_calendar,
-    routes = new_routes,
-    shapes = new_shapes,
-    stop_times = new_stop_times,
-    stops = new_stops,
-    trips = new_trips,
-    calendar_dates = new_calendar_dates,
-    frequencies = new_frequencies,
-    transfers = new_transfers,
-    fare_rules = new_fare_rules,
-    feed_info = gtfs$feed_info,
-    fare_attributes = gtfs$fare_attributes)))
-
-  return(new_gtfs)
+  new_tidygtfs <- tidytransit::as_tidygtfs(new_gtfs)
+  return(new_tidygtfs)
 }
 
 #' Get the geometry of a route shape.

@@ -11,7 +11,7 @@ plot_interactive_gtfs(
 )
 }
 \arguments{
-\item{gtfs}{A tidytransit GTFS object. As many routes as you like.}
+\item{gtfs}{A tidytransit GTFS object.}
 
 \item{background}{Optional. A string for the background of the transit map, from Leaflet's provider library. Default is Esri's light gray canvas (Esri.WorldGrayCanvas).}
 

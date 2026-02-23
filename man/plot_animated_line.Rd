@@ -209,7 +209,7 @@ point pairs for plotting, and draw linearly between them. This will look
 similar to a plot using \code{trajectory} when zoomed out. It is most useful
 if you want to map formatting to attributes other than \code{trip_id_performed},
 such as a vehicle or operator ID. If starting with a \code{trajectory},
-but the additional controll over formatting is desired, consider using
+but the additional control over formatting is desired, consider using
 \code{predict()} to generate distance and time points to plot, then joining
 the desired attributes to the \code{trip_id_performed} column.
 }
@@ -270,9 +270,9 @@ and another column sharing a name with a column in \code{distance_df} or
 shapes, and the values in the mapping column should match the values in
 feature or trip column.
 \item \code{veh_outline} and \code{feature_outline}: A dataframe with one column named
-\code{color}, and another column sharing a name with a column in \code{distance_df} or
-\code{feature_distances} (or, if using \code{trajectory}, a column named
-\code{trip_id_performed}). The values in \code{color} should be valid color string,
+\code{outline}, and another column sharing a name with a column in \code{distance_df}
+or \code{feature_distances} (or, if using \code{trajectory}, a column named
+\code{trip_id_performed}). The values in \code{outline} should be valid color strings,
 and the values in the mapping column should match the values in
 feature or trip column.
 }

@@ -30,7 +30,7 @@
 #' similar to a plot using `trajectory` when zoomed out. It is most useful
 #' if you want to map formatting to attributes other than `trip_id_performed`,
 #' such as a vehicle or operator ID. If starting with a `trajectory`,
-#' but the additional controll over formatting is desired, consider using
+#' but the additional control over formatting is desired, consider using
 #' `predict()` to generate distance and time points to plot, then joining
 #' the desired attributes to the `trip_id_performed` column.
 #'
@@ -91,9 +91,9 @@
 #' feature or trip column.
 #'
 #' - `veh_outline` and `feature_outline`: A dataframe with one column named
-#' `color`, and another column sharing a name with a column in `distance_df` or
-#' `feature_distances` (or, if using `trajectory`, a column named
-#' `trip_id_performed`). The values in `color` should be valid color string,
+#' `outline`, and another column sharing a name with a column in `distance_df`
+#' or `feature_distances` (or, if using `trajectory`, a column named
+#' `trip_id_performed`). The values in `outline` should be valid color strings,
 #' and the values in the mapping column should match the values in
 #' feature or trip column.
 #'
@@ -292,7 +292,7 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
       # Check that requested field is in feature DF
       if (!(label_field %in% names(feature_distances))) {
         rlang::abort(message = "feature_distances: label_field not found in field names.",
-                     class = "error_trajanim_labels")
+                     class = "error_plottraj_labels")
       }
       # Label position setup
       if (label_pos == "left") {
@@ -305,7 +305,7 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
         x_lims <- c(0, 1)
       } else {
         rlang::abort(message = "Unknown label_pos. Please enter \"left\" or \"right\".",
-                     class = "error_trajanim_labels")
+                     class = "error_plottraj_labels")
       }
     } else {
       x_lims <- c(-1, 1)
@@ -510,7 +510,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
     # Check that requested field is in feature DF
     if (!(label_field %in% names(feature_distances))) {
       rlang::abort(message = "feature_distances: label_field not found in field names.",
-                   class = "error_trajanim_formatting")
+                   class = "error_plottraj_formatting")
     }
 
     # Label position setup
@@ -566,7 +566,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
       label_vjust = "outward"
     } else {
       rlang::abort(message = "Unknown label position. Please enter \"N\", \"S\", \"E\", \"W\", \"NE\", \"NW\", \"SE\", \"SW\", \"in\", or \"out\".",
-                   class = "error_trajanim_labels")
+                   class = "error_plottraj_labels")
     }
   }
 
@@ -800,18 +800,18 @@ plot_format_setup <- function(plotting_df,
     if (length(attribute_by) > 1) {
       rlang::abort(message = paste(attribute_name, ": multiple columns match input data. Only one column can match.",
                                    sep = ""),
-                   class = "error_trajanim_format")
+                   class = "error_plottraj_format")
     } else if (length(attribute_by) == 0) {
       rlang::abort(message = paste(attribute_name, ": no columns match input data. One column must match.",
                                    sep = ""),
-                   class = "error_trajanim_format")
+                   class = "error_plottraj_format")
     }
     attribute_vals <- attribute_input[[attribute_type]]
     names(attribute_vals) <- as.character(attribute_input[[attribute_by]])
   } else {
     rlang::abort(message = paste(attribute_name, ": ", attribute_type, " column not provided.",
                                  sep = ""),
-                 class = "error_trajanim_format")
+                 class = "error_plottraj_format")
   }
 
   return(list(plotting_df,
@@ -821,36 +821,115 @@ plot_format_setup <- function(plotting_df,
               ))
 }
 
-#' Generates a plot of one or many trajectories.
+#' Plot vehicle trajectories or AVL data.
 #'
-#' This function generates a plot of vehicle trajectories, with time on the x-axis and space on the y-axis.
-#' If a trajectory object is provided, the interpolating function(s) will be plotted at the desired temporal resolution. If a distance_df is provided, the points will be plotted and connected linearly.
-#' Optionally, spatial "feature" can be added as horizontal lines on the plot. These may be stations, traffic signals, etc. Optionally, a label may be added to these features.
-#' The colors and linetypes of both trajectories and features can be mapped to their respective attributes.
-#' If using this mapping, provide a dataframe with at least the columns "color" or "linetype", plus one column matching a column in distance_df or feature_distances. If using a trajectory object, only "trip_id_performed" can be mapped to.
-#' Feature labels will automatically match the colors of features.
-#' A ggplot2 object is returned, which can be further modified and customized as desired.
+#' @description
+#' This function use the input trajectory object or TIDES AVL data to draw a
+#' trajectory plot (i.e., linear distance versus time) for each trip. This
+#' function allows for the plotting of spatial features and labels for these
+#' features. A `ggplot2` object is returned, which can be further modified
+#' and customized as desired.
 #'
-#' @param trajectory Optional. A trajectory object, either a single trajectory or grouped trajectory. If provided, distance_df must not be provided. Default is NULL.
-#' @param distance_df Optional. A dataframe of time and distance points. Must include at least "event_timestamp" and numeric "distance". If provided, trajectory must not be provided. Default is NULL.
-#' @param plot_trips Optional. A vector of trip IDs to plot. Default is NULL, which will plot all trips provided in the trajectory object or distance_df.
-#' @param timestep Optional. If a trajectory is provided, the time interval, in seconds, between interpolated observations to plot. Default is 5.
-#' @param distance_lim Optional. A vector with (minimum, maximum) distance values to plot.
-#' @param center_trajectories Optional. A boolean, should all trajectories be centered to start at the same time (0 seconds)? Default is FALSE.
-#' @param feature_distances Optional. A dataframe with at least numeric "distance" for features. Default is NULL.
-#' @param traj_color Optional. A color string, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a color. Must contain column "color". Default is "coral".
-#' @param traj_type Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a linetype. Must contain column "linetype". Default is "solid".
-#' @param traj_width Optional. A numeric, the width of the trajectory line. Default is 1.
-#' @param traj_alpha Optional. A numeric, the opacity of the trajectory line. Default is 1.
-#' @param feature_color Optional. A color string, or a dataframe mapping an attribute in feature_distances to a color. Must contain column "color". Default is "grey30".
-#' @param feature_type Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in feature_distances to a linetype Must contain column "linetype". Default is "dashed".
-#' @param feature_width Optional. A numeric, the width of the feature line. Default is 0.8.
-#' @param feature_alpha Optional. A numeric, the opacity of the feature line. Default is 0.8.
-#' @param label_field Optional. A string specifying the column in feature_distances with which to label the feature lines. Default is NULL, where no labels will be plotted.
-#' @param label_size Optional. The font size of the feature labels. Default is 3.
-#' @param label_alpha Optional. The opacity of the feature labels. Default is 0.6.
-#' @param label_pos Optional. A string specifying the label position on the graph. Must be either "left" or "right". Default is "left".
-#' @return A ggplot object.
+#' @details
+#'
+#' ## Input Trajectory Data
+#'
+#' There are two ways to provide data to these plotting functions:
+#'
+#' - A single or grouped trajectory object. This will use the direct
+#' trajectory function at a resolution controlled by `timestep`. This is
+#' simplest, and looks best when zooming in using `distance_lim`. The only
+#' attribute that can be mapped to if using a trajectory is `trip_id_performed`.
+#'
+#' - A `distance_df` of TIDES AVL data. This will use the distance and time
+#' point pairs for plotting, and draw linearly between them. This will look
+#' similar to a plot using `trajectory` when zoomed out. It is most useful
+#' if you want to map formatting to attributes other than `trip_id_performed`,
+#' such as a vehicle or operator ID. If starting with a `trajectory`,
+#' but the additional control over formatting is desired, consider using
+#' `predict()` to generate distance and time points to plot, then joining
+#' the desired attributes to the `trip_id_performed` column.
+#'
+#' Note that only one of `trajectory` and `distance_df` can be used. If both
+#' (or neither) are provided, an error will be thrown.
+#'
+#' ## Features and Labels
+#'
+#' Often it is useful to plot the features of a route, such as its
+#' stops/stations or the traffic signals it passes through. Use
+#' `feature_distances` to provide information about spatial features to plot.
+#' Each row in `feature_distances` should include at least a `distance` column.
+#' Each of these rows will be plotted as a horizontal line across the graph.
+#'
+#' These features can also be labeled. Set `label_name` to a character string
+#' corresponding to a field in `feature_distances` to generate labels with
+#' this field as their text. The color of the label will automatically match
+#' that of the feature they describe. The label placement is controlled by
+#' `label_pos`, which can be set to `"left"` or `"right"`.
+#'
+#' ## Formatting Options
+#'
+#' Once a layer is created on a `ggplot2` object, it is difficult to change its
+#' formatting. As such, this function attempts to provide as much flexibility
+#' in formatting its layers as possible. The resulting plot includes three
+#' layers:
+#'
+#' - Vehicle trajectories, controlled by `traj_color`, `traj_type`, and
+#'  `traj_width`, and `traj_alpha`.
+#'
+#' - Features, controlled by `feature_color`, `feature_type`, `feature_width`,
+#' and `feature_alpha`.
+#'
+#' - Labels, controlled by `label_size`, `label_alpha`, and `label_pos`.
+#'
+#' All of these formats can be controlled by inputting a single string or
+#' numeric. The following attributes can also be modified using a dataframe,
+#' mapping them to attributes of the layer:
+#'
+#' - `traj_type` and `feature_type`: A dataframe with one column named
+#' `linetype`, and another column sharing a name with a column in
+#' `distance_df` or `feature_distances` (or, if using `trajectory`, a column
+#' named `trip_id_performed`). The values in `linetype` should be valid
+#' `ggplot2` linetypes, and the values in the mapping column should match the
+#' values in feature or trip column.
+#'
+#' - `traj_color` and `feature_color`: A dataframe with one column named
+#' `color`, and another column sharing a name with a column in `distance_df` or
+#' `feature_distances` (or, if using `trajectory`, a column named
+#' `trip_id_performed`). The values in `color` should be valid color strings,
+#' and the values in the mapping column should match the values in
+#' feature or trip column.
+#'
+#' Note that if inputting `trajectory`, instead of `distance_df`, `veh_shape`
+#' and `traj_color` and `traj_type` can only be mapped to `trip_id_performed`.
+#' If using `distance_df`, they may be mapped to any column in `distance_df`
+#' (e.g., vehicle or operator IDs).
+#'
+#' @inheritParams plot_animated_line
+#' @param center_trajectories Optional. A boolean, should all trajectories be
+#' centered to start at the same time (0 seconds)? Default is `FALSE`.
+#' @param traj_color Optional. A color string, or a dataframe mapping an
+#' attribute in `distance_df` or `trip_id_performed` in `trajectory` to a color.
+#' Must contain column `color`. Default is `"coral"`.
+#' @param traj_type Optional. A string specifying the `ggplot2` linetype, or a
+#' dataframe mapping an attribute in `distance_df` or `trip_id_performed` in
+#' `trajectory` to a linetype. Must contain column `linetype`. Default is
+#' `"solid"`.
+#' @param traj_width Optional. A numeric, the width of the trajectory line.
+#' Default is 1.
+#' @param traj_alpha Optional. A numeric, the opacity of the trajectory line.
+#' Default is 1.
+#' @param feature_color Optional. A color string, or a dataframe mapping an
+#' attribute in `feature_distances` to a color. Must contain column `color`.
+#' Default is `grey30`.
+#' @param feature_type Optional. A string specifying the `ggplot2` linetype, or
+#' a dataframe mapping an attribute in `feature_distances` to a linetype. Must
+#' contain column `linetype`. Default is `"dashed"`.
+#' @param feature_width Optional. A numeric, the width of the feature line.
+#' Default is 0.8.
+#' @param label_pos Optional. A string specifying the label position on the
+#' graph. Must be either `"left"` or `"right"`. Default is `"left"`.
+#' @return A `ggplot2` object.
 #' @export
 plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
                             timestep = 5, distance_lim = NULL, center_trajectories = FALSE,
@@ -872,7 +951,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
                             plot_trips = plot_trips,
                             feature_distances = feature_distances,
                             distance_lim = distance_lim,
-                            center_vehicles = center_vehicles)
+                            center_vehicles = center_trajectories)
   trips_df <- val_data[[1]]
   feature_distances <- val_data[[2]]
 
@@ -930,7 +1009,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
         label_t = max(trips_df$event_timestamp)
       } else {
         rlang::abort(message = "Unknown label_pos. Please enter \"left\" or \"right\".",
-                     class = "error_trajanim_labels")
+                     class = "error_plottraj_labels")
       }
     }
   }
@@ -996,7 +1075,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
 #' This function generates a Leaflet-based interactive map viewer using a GTFS object
 #' from tidytransit.
 #'
-#' @param gtfs A tidytransit GTFS object. As many routes as you like.
+#' @param gtfs A tidytransit GTFS object.
 #' @param background Optional. A string for the background of the transit map, from Leaflet's provider library. Default is Esri's light gray canvas (Esri.WorldGrayCanvas).
 #' @param color_palette Optional. A string for the Leaflet color palette to color routes. If "gtfs", will use color codes in the GTFS routes.txt. Default is "Dark2".
 #' @return A Leaftlet map object.

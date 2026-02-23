@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_visualization.R
 \name{plot_trajectory}
 \alias{plot_trajectory}
-\title{Generates a plot of one or many trajectories.}
+\title{Plot vehicle trajectories or AVL data.}
 \usage{
 plot_trajectory(
   trajectory = NULL,
@@ -27,53 +27,155 @@ plot_trajectory(
 )
 }
 \arguments{
-\item{trajectory}{Optional. A trajectory object, either a single trajectory or grouped trajectory. If provided, distance_df must not be provided. Default is NULL.}
+\item{trajectory}{Optional. A trajectory object, either a single trajectory
+or grouped trajectory. If provided, \code{distance_df} must not be provided.
+Default is \code{NULL}.}
 
-\item{distance_df}{Optional. A dataframe of time and distance points. Must include at least "event_timestamp" and numeric "distance". If provided, trajectory must not be provided. Default is NULL.}
+\item{distance_df}{Optional. A dataframe of time and distance points. Must
+include at least \code{event_timestamp} and \code{distance}. If provided,
+\code{trajectory} must not be provided. Default is \code{NULL}.}
 
-\item{plot_trips}{Optional. A vector of trip IDs to plot. Default is NULL, which will plot all trips provided in the trajectory object or distance_df.}
+\item{plot_trips}{Optional. A vector of \code{trip_id_performed}s to plot. Default
+is \code{NULL}, which will plot all trips provided in the \code{trajectory} or
+\code{distance_df}.}
 
-\item{timestep}{Optional. If a trajectory is provided, the time interval, in seconds, between interpolated observations to plot. Default is 5.}
+\item{timestep}{Optional. If \code{trajectory} is provided, the time interval, in
+seconds, between interpolated observations to plot. Default is 5.}
 
-\item{distance_lim}{Optional. A vector with (minimum, maximum) distance values to plot.}
+\item{distance_lim}{Optional. A vector with \verb{(minimum, maximum)} distance
+values to plot.}
 
-\item{center_trajectories}{Optional. A boolean, should all trajectories be centered to start at the same time (0 seconds)? Default is FALSE.}
+\item{center_trajectories}{Optional. A boolean, should all trajectories be
+centered to start at the same time (0 seconds)? Default is \code{FALSE}.}
 
-\item{feature_distances}{Optional. A dataframe with at least numeric "distance" for features. Default is NULL.}
+\item{feature_distances}{Optional. A dataframe with at least numeric
+\code{distance} for features. Default is \code{NULL}.}
 
-\item{traj_color}{Optional. A color string, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a color. Must contain column "color". Default is "coral".}
+\item{traj_color}{Optional. A color string, or a dataframe mapping an
+attribute in \code{distance_df} or \code{trip_id_performed} in \code{trajectory} to a color.
+Must contain column \code{color}. Default is \code{"coral"}.}
 
-\item{traj_type}{Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in distance_df or trip_id_performed in trajectory to a linetype. Must contain column "linetype". Default is "solid".}
+\item{traj_type}{Optional. A string specifying the \code{ggplot2} linetype, or a
+dataframe mapping an attribute in \code{distance_df} or \code{trip_id_performed} in
+\code{trajectory} to a linetype. Must contain column \code{linetype}. Default is
+\code{"solid"}.}
 
-\item{traj_width}{Optional. A numeric, the width of the trajectory line. Default is 1.}
+\item{traj_width}{Optional. A numeric, the width of the trajectory line.
+Default is 1.}
 
-\item{traj_alpha}{Optional. A numeric, the opacity of the trajectory line. Default is 1.}
+\item{traj_alpha}{Optional. A numeric, the opacity of the trajectory line.
+Default is 1.}
 
-\item{feature_color}{Optional. A color string, or a dataframe mapping an attribute in feature_distances to a color. Must contain column "color". Default is "grey30".}
+\item{feature_color}{Optional. A color string, or a dataframe mapping an
+attribute in \code{feature_distances} to a color. Must contain column \code{color}.
+Default is \code{grey30}.}
 
-\item{feature_type}{Optional. A string specifying the ggplot2 linetype, or a dataframe mapping an attribute in feature_distances to a linetype Must contain column "linetype". Default is "dashed".}
+\item{feature_type}{Optional. A string specifying the \code{ggplot2} linetype, or
+a dataframe mapping an attribute in \code{feature_distances} to a linetype. Must
+contain column \code{linetype}. Default is \code{"dashed"}.}
 
-\item{feature_width}{Optional. A numeric, the width of the feature line. Default is 0.8.}
+\item{feature_width}{Optional. A numeric, the width of the feature line.
+Default is 0.8.}
 
-\item{feature_alpha}{Optional. A numeric, the opacity of the feature line. Default is 0.8.}
+\item{feature_alpha}{Optional. A numeric, the opacity of the feature point.
+Default is 1.}
 
-\item{label_field}{Optional. A string specifying the column in feature_distances with which to label the feature lines. Default is NULL, where no labels will be plotted.}
+\item{label_field}{Optional. A string specifying the column in
+\code{feature_distances} with which to label the feature lines. Default is \code{NULL},
+where no labels will be plotted.}
 
-\item{label_size}{Optional. The font size of the feature labels. Default is 3.}
+\item{label_size}{Optional. The font size of the feature labels. Default is
+3.}
 
-\item{label_alpha}{Optional. The opacity of the feature labels. Default is 0.6.}
+\item{label_alpha}{Optional. The opacity of the feature labels. Default is
+0.6.}
 
-\item{label_pos}{Optional. A string specifying the label position on the graph. Must be either "left" or "right". Default is "left".}
+\item{label_pos}{Optional. A string specifying the label position on the
+graph. Must be either \code{"left"} or \code{"right"}. Default is \code{"left"}.}
 }
 \value{
-A ggplot object.
+A \code{ggplot2} object.
 }
 \description{
-This function generates a plot of vehicle trajectories, with time on the x-axis and space on the y-axis.
-If a trajectory object is provided, the interpolating function(s) will be plotted at the desired temporal resolution. If a distance_df is provided, the points will be plotted and connected linearly.
-Optionally, spatial "feature" can be added as horizontal lines on the plot. These may be stations, traffic signals, etc. Optionally, a label may be added to these features.
-The colors and linetypes of both trajectories and features can be mapped to their respective attributes.
-If using this mapping, provide a dataframe with at least the columns "color" or "linetype", plus one column matching a column in distance_df or feature_distances. If using a trajectory object, only "trip_id_performed" can be mapped to.
-Feature labels will automatically match the colors of features.
-A ggplot2 object is returned, which can be further modified and customized as desired.
+This function use the input trajectory object or TIDES AVL data to draw a
+trajectory plot (i.e., linear distance versus time) for each trip. This
+function allows for the plotting of spatial features and labels for these
+features. A \code{ggplot2} object is returned, which can be further modified
+and customized as desired.
+}
+\details{
+\subsection{Input Trajectory Data}{
+
+There are two ways to provide data to these plotting functions:
+\itemize{
+\item A single or grouped trajectory object. This will use the direct
+trajectory function at a resolution controlled by \code{timestep}. This is
+simplest, and looks best when zooming in using \code{distance_lim}. The only
+attribute that can be mapped to if using a trajectory is \code{trip_id_performed}.
+\item A \code{distance_df} of TIDES AVL data. This will use the distance and time
+point pairs for plotting, and draw linearly between them. This will look
+similar to a plot using \code{trajectory} when zoomed out. It is most useful
+if you want to map formatting to attributes other than \code{trip_id_performed},
+such as a vehicle or operator ID. If starting with a \code{trajectory},
+but the additional control over formatting is desired, consider using
+\code{predict()} to generate distance and time points to plot, then joining
+the desired attributes to the \code{trip_id_performed} column.
+}
+
+Note that only one of \code{trajectory} and \code{distance_df} can be used. If both
+(or neither) are provided, an error will be thrown.
+}
+
+\subsection{Features and Labels}{
+
+Often it is useful to plot the features of a route, such as its
+stops/stations or the traffic signals it passes through. Use
+\code{feature_distances} to provide information about spatial features to plot.
+Each row in \code{feature_distances} should include at least a \code{distance} column.
+Each of these rows will be plotted as a horizontal line across the graph.
+
+These features can also be labeled. Set \code{label_name} to a character string
+corresponding to a field in \code{feature_distances} to generate labels with
+this field as their text. The color of the label will automatically match
+that of the feature they describe. The label placement is controlled by
+\code{label_pos}, which can be set to \code{"left"} or \code{"right"}.
+}
+
+\subsection{Formatting Options}{
+
+Once a layer is created on a \code{ggplot2} object, it is difficult to change its
+formatting. As such, this function attempts to provide as much flexibility
+in formatting its layers as possible. The resulting plot includes three
+layers:
+\itemize{
+\item Vehicle trajectories, controlled by \code{traj_color}, \code{traj_type}, and
+\code{traj_width}, and \code{traj_alpha}.
+\item Features, controlled by \code{feature_color}, \code{feature_type}, \code{feature_width},
+and \code{feature_alpha}.
+\item Labels, controlled by \code{label_size}, \code{label_alpha}, and \code{label_pos}.
+}
+
+All of these formats can be controlled by inputting a single string or
+numeric. The following attributes can also be modified using a dataframe,
+mapping them to attributes of the layer:
+\itemize{
+\item \code{traj_type} and \code{feature_type}: A dataframe with one column named
+\code{linetype}, and another column sharing a name with a column in
+\code{distance_df} or \code{feature_distances} (or, if using \code{trajectory}, a column
+named \code{trip_id_performed}). The values in \code{linetype} should be valid
+\code{ggplot2} linetypes, and the values in the mapping column should match the
+values in feature or trip column.
+\item \code{traj_color} and \code{feature_color}: A dataframe with one column named
+\code{color}, and another column sharing a name with a column in \code{distance_df} or
+\code{feature_distances} (or, if using \code{trajectory}, a column named
+\code{trip_id_performed}). The values in \code{color} should be valid color strings,
+and the values in the mapping column should match the values in
+feature or trip column.
+}
+
+Note that if inputting \code{trajectory}, instead of \code{distance_df}, \code{veh_shape}
+and \code{traj_color} and \code{traj_type} can only be mapped to \code{trip_id_performed}.
+If using \code{distance_df}, they may be mapped to any column in \code{distance_df}
+(e.g., vehicle or operator IDs).
+}
 }
