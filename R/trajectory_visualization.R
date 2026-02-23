@@ -138,8 +138,8 @@
 #' or grouped trajectory. If provided, `distance_df` must not be provided.
 #' Default is `NULL`.
 #' @param distance_df Optional. A dataframe of time and distance points. Must
-#' include at least `event_timestamp` and `distance`. If provided,
-#' `trajectory` must not be provided. Default is `NULL`.
+#' include at least `event_timestamp`, `distance`, and `trip_id_performed`.
+#' If provided, `trajectory` must not be provided. Default is `NULL`.
 #' @param plot_trips Optional. A vector of `trip_id_performed`s to plot. Default
 #' is `NULL`, which will plot all trips provided in the `trajectory` or
 #' `distance_df`.
@@ -1132,17 +1132,25 @@ plot_interactive_gtfs <- function(gtfs, background = "Esri.WorldGrayCanvas", col
 
 #' Save your animation at a desired quality.
 #'
-#' This function is a wrapper on gganimate's animate() and anim_save(), providing a simplified, though less feature-rich, version of these functions.
-#' Animations are saved as .gif's at the desired path.
-#' With this function, publication-quality (high-resolution and smooth) animations are possible, but take a long time to render.
+#' This function is a helepr for `gganimate`'s `anim_save()`, providing a
+#' simplified, though less feature-rich, version of these functions. Animations
+#' are saved as `.gif`s at the desired path. With this function,
+#' publication-quality (high-resolution and smooth) animations are possible,
+#' but take a long time to render.
 #'
-#' @param anim_object A gganimate object.
-#' @param path A string representing the desired path and name for the animation.
-#' @param duration Optional. A numeric, in seconds, representing the length of the animation. Default is 30.
-#' @param fps Optional. The frames per second of the saved animation. Must be a factor of 100. Default is 10.
-#' @param width Optional. The width of the exported image, in inches. Default is 7.5
-#' @param height Optional. The height of the exported image, in inches. Default is 5.5.
-#' @param dpi Optional. The resolution, in dots per inch, of the image. Default is 100.
+#' @param anim_object A `gganimate` object.
+#' @param path A string representing the desired path and name at which to save
+#' animation.
+#' @param duration Optional. A numeric, in seconds, representing the length of
+#' the animation. Default is 30.
+#' @param fps Optional. The frames per second of the saved animation. Default
+#' is 10.
+#' @param width Optional. The width of the exported image, in inches. Default
+#' is 7.5
+#' @param height Optional. The height of the exported image, in inches. Default
+#' is 5.5.
+#' @param dpi Optional. The resolution, in dots per inch, of the image. Default
+#' is 100.
 #' @export
 export_animation <- function(anim_object, path,
                              duration = 30, fps = 10,
