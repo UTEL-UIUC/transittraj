@@ -20,15 +20,20 @@ RoxygenNote: 7.3.3
 URL: https://github.com/obrien-ben/transittraj
 BugReports: https://github.com/obrien-ben/transittraj/issues
 Imports: 
+    data.table,
     dplyr,
     gganimate,
     ggnewscale,
     ggplot2,
+    ggspatial,
+    hms,
+    ivs,
     leaflet,
     magrittr,
     purrr,
     rlang,
     sf,
+    slider,
     tidyr,
     tidytransit,
     viridis
