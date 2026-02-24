@@ -1204,7 +1204,7 @@ plot_interactive_gtfs <- function(gtfs,
                        pal = route_pal,
                        values = ~route_id,
                        title = "Route ID") %>%
-    leaflet::addCircleMarkers(data = gtfs_stops, # Stops
+    leaflet::addCircleMarkers(data = stops_sf, # Stops
                               fillColor = "white",
                               fillOpacity = 1,
                               color = "black",
