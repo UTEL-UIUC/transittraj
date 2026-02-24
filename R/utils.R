@@ -44,3 +44,46 @@ get_inverse_traj <- function(f, lower, upper, inv_tol) {
             lower = lower, upper = upper, tol = inv_tol)$root
   })
 }
+
+#' Corrects speeds to Fristch-Carlson constraints, recursively.
+#'
+#' Internal function. Not intended for external use.
+#'
+#' @param m_0 A numeric vector of initial slopes (observed velocities)
+#' @param deltas A numeric vector of initial FC delta values
+#' @return A numeric vector of m_0 adjusted to FC constraints
+correct_speeds_fun <- function(m_0, deltas) {
+
+  # validate
+  if (length(m_0) < 2) {
+    rlang::abort(message = "Must have at least two observations to correct speeds.",
+                 class = "error_avlclean_fc")
+  }
+
+  # Algorithm is recursive -- loop through each of m_0
+  for (iter in 1:(length(m_0) - 1)) {
+    # Get initial values
+    m_i = m_0[iter]
+    m_i1 = m_0[iter + 1]
+    delta_i = deltas[iter]
+
+    # Calculate FC params
+    alpha_i = m_i / delta_i
+    beta_i = m_i1 / delta_i
+    ab_sq = (alpha_i^2) + (beta_i^2)
+
+    if (ab_sq > 9) {
+      # If FC constraint not satisfied
+      tau_i = 3 / sqrt(ab_sq)
+
+      new_m_i = tau_i * alpha_i * delta_i
+      new_m_i1 = tau_i * beta_i * delta_i
+
+      # Replace slope
+      m_0[iter] <- new_m_i
+      m_0[iter + 1] <- new_m_i1
+    }
+    # Otherwise, can leave slope as is
+  }
+  return(m_0)
+}

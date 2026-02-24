@@ -739,7 +739,8 @@ make_monotonic <- function(distance_df,
       trip_delta <- trip_df$fc_delta[-length(trip_df$fc_delta)]
 
       # Call internal stats C function to adjust speeds to meet FC constraints
-      monotonic_speeds <- .Call(stats:::C_monoFC_m, trip_m_0, trip_delta)
+      monotonic_speeds <- correct_speeds_fun(m_0 = trip_m_0,
+                                             deltas = trip_delta)
 
       # Replace speeds with corrected monotonic speeds, remove unneeded columns
       trip_df <- trip_df %>%
