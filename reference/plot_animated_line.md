@@ -26,6 +26,7 @@ plot_animated_line(
   center_vehicles = FALSE,
   feature_distances = NULL,
   transition_style = "linear",
+  convert_to_timezone = TRUE,
   route_color = "coral",
   route_width = 3,
   route_alpha = 1,
@@ -60,6 +61,7 @@ plot_animated_map(
   background_zoom = 0,
   bbox_expand = NULL,
   transition_style = "linear",
+  convert_to_timezone = TRUE,
   route_color = "coral",
   route_width = 3,
   route_alpha = 1,
@@ -127,6 +129,12 @@ plot_animated_map(
   animation transitions from point to point. See
   [`gganimate::ease_aes()`](https://gganimate.com/reference/ease_aes.html).
   Default is `"linear"`.
+
+- convert_to_timezone:
+
+  Optional. Should numeric epoch times be converted back to readable
+  hour-minute-second time values, using the agency timezone? Default is
+  `TRUE`.
 
 - route_color:
 

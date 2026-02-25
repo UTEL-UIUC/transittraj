@@ -17,6 +17,7 @@ plot_trajectory(
   distance_lim = NULL,
   center_trajectories = FALSE,
   feature_distances = NULL,
+  convert_to_timezone = TRUE,
   traj_color = "coral",
   traj_type = "solid",
   traj_width = 1,
@@ -70,6 +71,12 @@ plot_trajectory(
 
   Optional. A dataframe with at least numeric `distance` for features.
   Default is `NULL`.
+
+- convert_to_timezone:
+
+  Optional. Should numeric epoch times be converted back to readable
+  hour-minute-second time values, using the agency timezone? Default is
+  `TRUE`.
 
 - traj_color:
 

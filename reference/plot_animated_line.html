@@ -42,7 +42,7 @@ and customized as desired."></head><body>
     <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
     <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Trajectories</h6></li>
-    <li><a class="dropdown-item" href="../articles/trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-objects.html">Understanding Trajectory Objects</a></li>
     <li><a class="dropdown-item" href="../articles/plotting-trajectories.html">Plotting Trajectories</a></li>
   </ul></li>
@@ -84,6 +84,7 @@ and customized as desired.</p>
 <span>  center_vehicles <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  feature_distances <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  transition_style <span class="op">=</span> <span class="st">"linear"</span>,</span>
+<span>  convert_to_timezone <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  route_color <span class="op">=</span> <span class="st">"coral"</span>,</span>
 <span>  route_width <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  route_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -118,6 +119,7 @@ and customized as desired.</p>
 <span>  background_zoom <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  bbox_expand <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  transition_style <span class="op">=</span> <span class="st">"linear"</span>,</span>
+<span>  convert_to_timezone <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  route_color <span class="op">=</span> <span class="st">"coral"</span>,</span>
 <span>  route_width <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  route_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -186,6 +188,12 @@ centered to start at the same time (0 seconds)? Default is <code>FALSE</code>.</
 <dd><p>Optional. A <code>gganimate</code> <code>transition_style</code>,
 specifying how the animation transitions from point to point. See
 <code><a href="https://gganimate.com/reference/ease_aes.html" class="external-link">gganimate::ease_aes()</a></code>. Default is <code>"linear"</code>.</p></dd>
+
+
+<dt id="arg-convert-to-timezone">convert_to_timezone<a class="anchor" aria-label="anchor" href="#arg-convert-to-timezone"></a></dt>
+<dd><p>Optional. Should numeric epoch times be converted
+back to readable hour-minute-second time values, using the agency timezone?
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-route-color">route_color<a class="anchor" aria-label="anchor" href="#arg-route-color"></a></dt>

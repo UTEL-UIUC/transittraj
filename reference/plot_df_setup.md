@@ -12,7 +12,8 @@ plot_df_setup(
   timestep,
   distance_lim,
   feature_distances,
-  center_vehicles
+  center_vehicles,
+  convert_to_timezone
 )
 ```
 
@@ -45,6 +46,10 @@ plot_df_setup(
 - center_vehicles:
 
   Should vehicles be centered
+
+- convert_to_timezone:
+
+  Should times be converted to timezones
 
 ## Value
 

@@ -37,7 +37,7 @@
     <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
     <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Trajectories</h6></li>
-    <li><a class="dropdown-item" href="../articles/trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-objects.html">Understanding Trajectory Objects</a></li>
     <li><a class="dropdown-item" href="../articles/plotting-trajectories.html">Plotting Trajectories</a></li>
   </ul>
@@ -440,7 +440,6 @@ to see which observations were removed:</p>
 <code class="sourceCode R"><span><span class="va">c53_step4_removals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_jumps.html">clean_jumps</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Same settings as before</span></span>
 <span>  distance_df <span class="op">=</span> <span class="va">c53_cleaned_subtrips</span>,</span>
-<span>  neighborhood_width <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  max_median_deviation <span class="op">=</span> <span class="va">c53_max_jump</span>, min_median_deviation <span class="op">=</span> <span class="va">c53_min_jump</span>,</span>
 <span>  evaluate_implosions <span class="op">=</span> <span class="cn">FALSE</span>, evaluate_tails <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  t_cutoff <span class="op">=</span> <span class="cn">Inf</span>,</span>
@@ -495,8 +494,7 @@ We can plot the trip in this area to visualize the outliers:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"Outliers on C53"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"Trip 13478100"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Trip 13478100"</span><span class="op">)</span></span>
 <span><span class="va">jumps_plot</span></span></code></pre></div>
 <p><img src="data-workflow_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>This plot makes it pretty clear that some of these points are a bit

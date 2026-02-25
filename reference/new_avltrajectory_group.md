@@ -19,6 +19,7 @@ new_avltrajectory_group(
   inv_tol = NULL,
   max_deriv = 0,
   used_speeds = FALSE,
+  agency_tz,
   ...,
   class = character()
 )

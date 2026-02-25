@@ -19,7 +19,8 @@ new_avltrajectory_single(
   traj_type,
   inv_tol = NULL,
   max_deriv = 0,
-  used_speeds = FALSE
+  used_speeds = FALSE,
+  agency_tz
 )
 ```
 
