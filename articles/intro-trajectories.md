@@ -50,8 +50,6 @@ c53_traj <- get_trajectory_fun(distance_df = c53_mono,
 And that’s it! Once your data is cleaned, fitting the trajectory is
 quick and easy; we’ve already done most of the heavy lifting.
 
-## Exploring the Trajectory Object
-
 `transittraj` stores the fit curves in a special object class. This
 object stores a list of fit trajectories, one for each trip, as well as
 the time and distances ranges for each trip. We can use
@@ -339,6 +337,14 @@ line_anim
 
 Unable to execute JavaScript.
 
+You’ll notice that we’ve uploaded this animation to YouTube and embedded
+it in the vignette. We did this so we could produce a smooth,
+high-resolution video that doesn’t need to be re-rendered every time
+this vignette is built. By default, `transittraj`’s animation functions
+will return a `gif`. Check out
+[`gganimate::animate()`](https://gganimate.com/reference/animate.html)
+for options to render videos.
+
 ### Map Animations
 
 The final visualization we’ll make is an animated map. The concept is
@@ -367,3 +373,7 @@ map_anim <- plot_animated_map(
 )
 map_anim
 ```
+
+# An error occurred.
+
+Unable to execute JavaScript.

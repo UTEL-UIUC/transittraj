@@ -453,7 +453,7 @@ jumps_plot <- ggplot() +
   geom_point(data = plot_df,
              aes(x = event_timestamp, y = distance,
                  color = all_ok, shape = all_ok),
-             size = 1, stroke = 1) +
+             size = 3, stroke = 3) +
   # Format the points
   scale_color_manual(name = "Point OK?",
                      values = c("FALSE" = "firebrick",
@@ -579,17 +579,16 @@ gaps_plot <- ggplot() +
   # Plot the points
   geom_line(data = plot_df,
             aes(x = event_timestamp, y = distance),
-            linewidth = 0.8, color = "indianred") +
+            linewidth = 2, color = "indianred") +
   geom_point(data = plot_df,
              aes(x = event_timestamp, y = distance),
-             size = 0.8, color = "firebrick") +
+             size = 2, color = "firebrick") +
   # Format the plot
   theme_minimal() +
   labs(x = "Time",
        y = "Distance (m)",
        title = "Gap on C53",
-       subtitle = "Trip 21956100") +
-  theme(text = element_text(size = 5))
+       subtitle = "Trip 21956100")
 gaps_plot
 ```
 
@@ -682,7 +681,7 @@ trimmed_plot <- ggplot() +
   geom_point(data = plot_df,
              aes(x = event_timestamp, y = distance,
                  color = obs_ok, shape = obs_ok),
-             size = 1, stroke = 1) +
+             size = 3, stroke = 3) +
   # Format the points
   scale_color_manual(name = "Point OK?",
                      values = c("FALSE" = "firebrick",
@@ -695,8 +694,7 @@ trimmed_plot <- ggplot() +
   labs(x = "Time",
        y = "Distance (m)",
        title = "Trimmed Trips on C53",
-       subtitle = "Trip 35294100") +
-  theme(text = element_text(size = 5))
+       subtitle = "Trip 35294100")
 trimmed_plot
 ```
 
@@ -816,19 +814,19 @@ mono_plot <- ggplot() +
   geom_point(data = plot_df_before,
              aes(x = event_timestamp, y = distance,
                  color = "Uncorrected"),
-             size = 2, alpha = 0.6) +
+             size = 4, alpha = 0.6) +
   geom_point(data = plot_df_after,
              aes(x = event_timestamp, y = distance,
                  color = "Corrected"),
-             size = 1, alpha = 1) +
+             size = 3, alpha = 1) +
   geom_label(data = plot_df_before,
              aes(x = event_timestamp, y = distance,
                  color = "Uncorrected", label = speed_label),
-            nudge_y = -15, size = 1, show.legend = FALSE) +
+            nudge_y = -15, size = 2, show.legend = FALSE) +
   geom_label(data = plot_df_after,
              aes(x = event_timestamp, y = distance,
                  color = "Corrected", label = speed_label),
-            nudge_y = 15, size = 1, show.legend = FALSE) +
+            nudge_y = 15, size = 2, show.legend = FALSE) +
   scale_color_manual(name = "Correction",
                      values=  c("Uncorrected" = "indianred",
                                 "Corrected" = "darkgreen")) +
@@ -837,8 +835,7 @@ mono_plot <- ggplot() +
   labs(x = "Time",
        y = "Distance (m)",
        title = "Monotonic Correction on C53",
-       subtitle = paste("Trip ", plot_trip, sep = "")) +
-  theme(text = element_text(size = 5))
+       subtitle = paste("Trip ", plot_trip, sep = ""))
 mono_plot
 ```
 

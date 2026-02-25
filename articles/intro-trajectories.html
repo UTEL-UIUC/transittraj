@@ -113,10 +113,6 @@ our trajectory functions:</p>
 <span>                               find_inverse_fun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>And that’s it! Once your data is cleaned, fitting the trajectory is
 quick and easy; we’ve already done most of the heavy lifting.</p>
-</div>
-<div class="section level2">
-<h2 id="exploring-the-trajectory-object">Exploring the Trajectory Object<a class="anchor" aria-label="anchor" href="#exploring-the-trajectory-object"></a>
-</h2>
 <p><code>transittraj</code> stores the fit curves in a special object
 class. This object stores a list of fit trajectories, one for each trip,
 as well as the time and distances ranges for each trip. We can use
@@ -370,6 +366,12 @@ with the <code>stop_name</code> column in <code>c53_stops</code>:</p>
 <iframe src="https://www.youtube.com/embed/WP4F62O9gws" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
 </div>
 </div>
+<p>You’ll notice that we’ve uploaded this animation to YouTube and
+embedded it in the vignette. We did this so we could produce a smooth,
+high-resolution video that doesn’t need to be re-rendered every time
+this vignette is built. By default, <code>transittraj</code>’s animation
+functions will return a <code>gif</code>. Check out
+<code><a href="https://gganimate.com/reference/animate.html" class="external-link">gganimate::animate()</a></code> for options to render videos.</p>
 </div>
 <div class="section level3">
 <h3 id="map-animations">Map Animations<a class="anchor" aria-label="anchor" href="#map-animations"></a>
@@ -397,6 +399,11 @@ previous two visualization functions.</p>
 <span>  veh_size <span class="op">=</span> <span class="fl">6</span>, veh_stroke <span class="op">=</span> <span class="fl">3</span>, veh_alpha <span class="op">=</span> <span class="fl">0.9</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">map_anim</span></span></code></pre></div>
+<div class="vembedr" align="center">
+<div>
+<iframe src="https://www.youtube.com/embed/SKOE7F-oSnY" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+</div>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
