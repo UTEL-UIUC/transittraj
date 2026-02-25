@@ -23,7 +23,7 @@ observations, and more. In this vignette, we'll apply the cleaned data
 
 Let's begin by loading the library we'll be using:
 
-```{r setup}
+```{r setup, message = FALSE, warning = FALSE}
 library(transittraj)
 library(tidytransit)
 library(dplyr)
@@ -141,16 +141,6 @@ time at which each vehicle passed a point along its route. To do this,
 we'll use `predict()` with the `new_distances` parameter. We'll begin by
 finding the distance of each stop along the route using `get_stop_distances()`:
 
-``` {r, echo = FALSE}
-c53_gtfs <- filter_by_route(wmata_gtfs,
-                            route_ids = "C53", dir_id = 0)
-c53_NB_shape_id <- "C53:04"
-dc_CRS <- 32618
-c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
-                                shape = c53_NB_shape_id,
-                                project_crs = dc_CRS)
-```
-
 ``` {r}
 # First, use stop_times to find which stop_ids are timepoints
 c53_timepoints <- c53_gtfs$stop_times %>%
@@ -159,7 +149,10 @@ c53_timepoints <- c53_gtfs$stop_times %>%
 c53_stops <- get_stop_distances(gtfs = c53_gtfs,
                                 shape_geometry = c53_shape,
                                 project_crs = dc_CRS) %>%
-  left_join(y = c53_timepoints, by = "stop_id") %>%
+  left_join(y = c53_timepoints,
+            by = "stop_id") %>%
+  left_join(y = (c53_gtfs$stops %>% select(stop_id, stop_name)),
+            by = "stop_id") %>%
   select(-shape_id) %>%
   mutate(timepoint = if_else(condition = (timepoint == 1),
                              true = "Yes",
@@ -273,32 +266,88 @@ Use `plot_line_animation()` to animate vehicles, as points, moving along a
 straight line that represents the route.
 
 The formatting process works very similarly with `plot_line_animation()` as it
-does with `plot_trajector()`. The main difference is that vehicle trajectories
-and features are not points, instead of lines, so we must change their
-`shape` attribute, rather than `linetype`, and their `outline`, rather than
-`color`:
+does with `plot_trajector()`. For this plot, we'll also set some distance
+limits to zoom in to the Florida Ave-U St corridor of the route.
 
 ``` {r}
 stop_formatting <- data.frame(timepoint = c("Yes", "No"),
-                              outline = c("firebrick", "grey30"),
+                              outline = c("red1", "grey30"),
                               shape = c(22, 21))
+florida_U_lims <- c(9500, 15500)
 ```
 
-Now we can generate our line animation:
+Now we can generate our line animation. We'll use the field `label_field` to
+tell the function to label each stop point with the `stop_name` column in
+`c53_stops`:
 
 ``` {r, eval = FALSE}
 line_anim <- plot_animated_line(
-  trajectory = c53_traj,
-  feature_distances = c53_stops,
+  # Add trajectory & feature data
+  trajectory = c53_traj, feature_distances = c53_stops,
+  distance_lim = florida_U_lims,
+  # Format features
   feature_outline = stop_formatting,
   feature_shape = stop_formatting,
-  feature_size = 2.5, feature_stroke = 1.5,
-  distance_lim = c(3000, 8000)
+  feature_size = 2, feature_stroke = 1.25,
+  # Add labels
+  label_field = "stop_name",
+  label_pos = "right", label_size = 2,
+  # Format route & vehicles
+  route_color = "indianred2",
+  veh_alpha = 0.9, timestep = 1
 )
+line_anim
+```
+
+``` {r eval = FALSE, echo = FALSE}
+export_animation(anim_object = line_anim,
+                 path = "C:\\Users\\obrie\\Desktop\\c53_Florida_U_example.gif",
+                 duration = 45,
+                 dpi = 200,
+                 height = 6,
+                 width = 3.5)
+```
+
+``` {r, echo = FALSE}
+knitr::include_graphics("https://drive.google.com/uc?id=1qQPA2Qlwqe5qiO3F80wLKdzcNC_6Ve9f")
 ```
 
 Example coming soon.
 
 ## Map Animations
 
-Example coming soon.
+The final visualization we'll make is an animated map. The concept is similar
+to the animated line we saw above, but instead of simplifying the route,
+we'll draw it spatially and show the vehicles traveling through the city.
+
+This function has formatting and feature options very similar to the previous
+two visualization functions.
+
+``` {r, eval = FALSE}
+map_anim <- plot_animated_map(
+  # Add trajectory, shape, & feature data
+  trajectory = c53_traj,
+  shape_geometry = c53_shape, feature_distances = c53_stops,
+  # Format features
+  feature_outline = stop_formatting,
+  feature_shape = stop_formatting,
+  feature_size = 1.25, feature_stroke = 1,
+  # Format route
+  route_color = "indianred3", route_width = 2,
+  bbox_expand = 700
+)
+map_anim
+```
+
+``` {r, echo = FALSE, eval = FALSE}
+export_animation(anim_object = map_anim,
+                 path = "C:\\Users\\obrie\\Desktop\\c53_map_example.gif",
+                 duration = 45,
+                 dpi = 200,
+                 height = 6,
+                 width = 5.5)
+```
+
+``` {r, echo = FALSE}
+knitr::include_graphics("https://drive.google.com/uc?id=1hMztRPm9CanWyOMXwB8kGknn04fhB-fN")
+```
