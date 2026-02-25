@@ -27,6 +27,7 @@ Let's begin by loading the library we'll be using:
 library(transittraj)
 library(tidytransit)
 library(dplyr)
+library(ggplot2)
 ```
 
 # Fitting a Trajectory Curve
@@ -185,14 +186,24 @@ not allow for much customization. In the next section, we'll use
 
 To add features (such as stops) and customize formatting, we recommend using
 `plot_trajectory()`. This function starts of similar to `plot()`, taking a
-trajectory object,
+trajectory object. After that, you can add a dataframe of feature distances,
+such as the `c53_stops` we made ealier. Finally, formatting can be controlled
+using mapping dataframes. The colors and linetypes of both trajectories and
+features can be mapped to attributes using something similar to what is below:
 
-``` {r, out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
-# Set formatting DF for our stops
+``` {r}
 stop_formatting <- data.frame(timepoint = c("Yes", "No"),
                               color = c("firebrick", "grey50"),
                               linetype = c("longdash", "dashed"))
+```
 
+For mapping dataframes, at least one column must match the layer being mapped
+to (trajectories or features). The other columns must be `color` and/or
+`linetype`, telling `transittraj` which feature they describe.
+
+We can plug all that in to `plot_trajectory()` to generate our formatted plot:
+
+``` {r, out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
 traj_plot <- plot_trajectory(
   trajectory = c53_traj,
   feature_distances = c53_stops,
