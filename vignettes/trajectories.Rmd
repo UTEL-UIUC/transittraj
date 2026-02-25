@@ -1,5 +1,5 @@
 ---
-title: "trajectories"
+title: "Introduction to Trajectory Objects"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{trajectories}
@@ -27,7 +27,58 @@ Let's begin by loading the library we'll be using:
 library(transittraj)
 library(tidytransit)
 library(dplyr)
+library(sf)
 library(ggplot2)
+```
+
+``` {r, echo = FALSE}
+# --- Setup ---
+c53 <- "C53"
+c53_dir <- 0 # 0 is NB, 1 is SB
+c53_avl <- wmata_avl %>%
+  filter((route_id == c53) & (direction_id == c53_dir))
+c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
+                            route_ids = c53,
+                            dir_id = c53_dir)
+c53_NB_shape_id <- "C53:04"
+dc_CRS <- 32618
+c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
+                                shape = c53_NB_shape_id,
+                                project_crs = dc_CRS)
+
+# --- Workflow ---
+c53_buffer = 50 # meters
+c53_distances <- get_linear_distances(avl_df = c53_avl,
+                                      shape_geometry = c53_shape,
+                                      project_crs = dc_CRS,
+                                      clip_buffer = c53_buffer)
+c53_cleaned_subtrips <- clean_overlapping_subtrips(
+  distance_df = c53_distances,
+  check_operator = FALSE,
+  remove_single_observations = TRUE,
+  remove_non_overlapping = FALSE
+)
+c53_max_jump <- 20 # meters
+c53_min_jump <- -1 * c53_max_jump # meters
+c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
+                            max_median_deviation = c53_max_jump,
+                            min_median_deviation = c53_min_jump,
+                            t_cutoff = Inf)
+c53_min_dist <- 500 # meters
+c53_min_time <- 90 # seconds
+c53_max_gap <- 500 # meters
+c53_cleaned_incompletes <- clean_incomplete_trips(
+  distance_df = c53_no_jumps,
+  min_trip_distance = c53_min_dist,
+  min_trip_duration = c53_min_time,
+  max_distance_gap = c53_max_gap
+)
+c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
+                          trim_type = "both")
+c53_dist_error = 0.001
+c53_mono <- make_monotonic(distance_df = c53_trimmed,
+                           correct_speed = TRUE,
+                           add_distance_error = c53_dist_error)
 ```
 
 # Fitting a Trajectory Curve
@@ -171,11 +222,8 @@ starting from time values.
 Now its time for the *really* fun part -- plotting our trajectory curves. We
 can use `plot()` to generate a quick and easy plot of all trajectories:
 
-``` {r out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
-plot(c53_traj) +
-  # This part is optional -- we're doing it to make the
-  # figure more readable for this vignette
-  theme(text = element_text(size = 5))
+``` {r out.width = "80%", dpi = 600, fig.align = "center"}
+plot(c53_traj)
 ```
 
 `plot()` is intended for quick visualizations of trajectories, and as such does
@@ -203,7 +251,7 @@ to (trajectories or features). The other columns must be `color` and/or
 
 We can plug all that in to `plot_trajectory()` to generate our formatted plot:
 
-``` {r, out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
+``` {r, out.width = "80%", dpi = 600, fig.align = "center"}
 traj_plot <- plot_trajectory(
   trajectory = c53_traj,
   feature_distances = c53_stops,
@@ -212,14 +260,45 @@ traj_plot <- plot_trajectory(
   feature_width = 0.2, feature_alpha = 0.5,
   traj_width = 0.4, traj_alpha = 1
 )
-traj_plot +
-  # This part is optional -- we're doing it to make the
-  # figure more readable for this vignette
-  theme(text = element_text(size = 5))
+traj_plot
 ```
+
+Check out `help(plot_trajectory)` for a full discussion of the plotting features
+available.
 
 ## Line Animations
 
+Another fun way to visualize transit vehicle trajectories is to animate them.
+Use `plot_line_animation()` to animate vehicles, as points, moving along a
+straight line that represents the route.
+
+The formatting process works very similarly with `plot_line_animation()` as it
+does with `plot_trajector()`. The main difference is that vehicle trajectories
+and features are not points, instead of lines, so we must change their
+`shape` attribute, rather than `linetype`, and their `outline`, rather than
+`color`:
+
+``` {r}
+stop_formatting <- data.frame(timepoint = c("Yes", "No"),
+                              outline = c("firebrick", "grey30"),
+                              shape = c(22, 21))
+```
+
+Now we can generate our line animation:
+
+``` {r, eval = FALSE}
+line_anim <- plot_animated_line(
+  trajectory = c53_traj,
+  feature_distances = c53_stops,
+  feature_outline = stop_formatting,
+  feature_shape = stop_formatting,
+  feature_size = 2.5, feature_stroke = 1.5,
+  distance_lim = c(3000, 8000)
+)
+```
+
+Example coming soon.
+
 ## Map Animations
 
-
+Example coming soon.

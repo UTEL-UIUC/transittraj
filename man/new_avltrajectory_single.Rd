@@ -50,3 +50,4 @@ only one trip. Trajectory function is inteded to describe only one trip.
 Associated trip properties (ID & ranges) should describe only that trip. Not
 intended for external use.
 }
+\keyword{internal}

@@ -35,3 +35,4 @@ plotting dataframe (trips_df)
 \description{
 Intended for internal use only
 }
+\keyword{internal}

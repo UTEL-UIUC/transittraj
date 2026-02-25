@@ -420,6 +420,7 @@ predict.avltrajectory_single <- function(object, new_times = NULL, new_distances
 #' @param trajectory_function trajectory function list
 #' @param deriv derivative to use
 #' @return DF of interpolated values
+#' @keywords internal
 interpolate_distances_group <- function(trip_extremes, new_times, trajectory_function, deriv) {
 
   use_trips <- trip_extremes$trip_id_performed
@@ -462,6 +463,7 @@ interpolate_distances_group <- function(trip_extremes, new_times, trajectory_fun
 #' @param trajectory_function trajectory function
 #' @param deriv derivative to use
 #' @return DF of interpolated values
+#' @keywords internal
 interpolate_distances_single <- function(trip_extremes, new_times, trajectory_function, deriv) {
   # Filter to allowed range
   filt_df <- new_times %>%
@@ -496,6 +498,7 @@ interpolate_distances_single <- function(trip_extremes, new_times, trajectory_fu
 #' @param new_distances DF of new distance points
 #' @param inv_trajectory_function Inverse trajectory function list
 #' @return DF of interpolated values
+#' @keywords internal
 interpolate_times_group <- function(trip_extremes, new_distances, inv_trajectory_function) {
 
   use_trips <- unique(trip_extremes$trip_id_performed)
@@ -527,6 +530,7 @@ interpolate_times_group <- function(trip_extremes, new_distances, inv_trajectory
 #' @param new_distances DF of new distance points
 #' @param inv_trajectory_function Inverse trajectory function
 #' @return DF of interpolated values
+#' @keywords internal
 interpolate_times_single <- function(trip_extremes, new_distances, inv_trajectory_function) {
   # Filter to allowed range
   filt_df <- new_distances %>%

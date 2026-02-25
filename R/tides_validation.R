@@ -178,6 +178,7 @@ validate_monotonicity <- function(distance_df, check_speed = FALSE,
 #' @param needed_fields Vector of fields desired
 #' @param avl_df DF of TIDES AVL data
 #' @return boolean for each field
+#' @keywords internal
 validate_input_to_tides <- function(needed_fields, avl_df) {
 
   # Get validation -- filter & sort

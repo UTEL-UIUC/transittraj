@@ -36,3 +36,4 @@ Checks:
 \details{
 Not intended for external use.
 }
+\keyword{internal}

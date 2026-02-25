@@ -55,3 +55,4 @@ This superclass holds a single, combined trajectory function. Plus vectors of
 all trip IDs described by that function, and vectors of the time & distance
 ranges of those trips. Not intended for external use.
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ DF of interpolated values
 \description{
 Not intended for external use.
 }
+\keyword{internal}

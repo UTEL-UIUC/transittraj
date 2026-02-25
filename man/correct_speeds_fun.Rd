@@ -17,3 +17,4 @@ A numeric vector of m_0 adjusted to FC constraints
 \description{
 Internal function. Not intended for external use.
 }
+\keyword{internal}

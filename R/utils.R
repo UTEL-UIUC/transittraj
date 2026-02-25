@@ -20,6 +20,7 @@ NULL
 #' used, checks are performed to ensure they are present in the input data.
 #'
 #' @name set_globals
+#' @keywords internal
 utils::globalVariables(c(
   # GTFS
   "agency_id", "service_id", "route_id", "stop_id", "stop_lat", "stop_lon",
@@ -57,6 +58,7 @@ utils::globalVariables(c(
 #' @param upper upper distance range
 #' @param inv_tol tolerance for numeric inverse
 #' @return function for inverse trajectory
+#' @keywords internal
 get_inverse_traj <- function(f, lower, upper, inv_tol) {
   Vectorize(function(distance) {
     stats::uniroot(f = function(x) {f(x) - distance},
@@ -71,6 +73,7 @@ get_inverse_traj <- function(f, lower, upper, inv_tol) {
 #' @param m_0 A numeric vector of initial slopes (observed velocities)
 #' @param deltas A numeric vector of initial FC delta values
 #' @return A numeric vector of m_0 adjusted to FC constraints
+#' @keywords internal
 correct_speeds_fun <- function(m_0, deltas) {
 
   # validate

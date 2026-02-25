@@ -666,6 +666,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @param feature_distances Linear distance to features.
 #' @param center_vehicles Should vehicles be centered
 #' @return plotting dataframe (trips_df)
+#' @keywords internal
 plot_df_setup <- function(trajectory, distance_df,
                                plot_trips,
                                timestep,
@@ -776,6 +777,7 @@ plot_df_setup <- function(trajectory, distance_df,
 #' @param attribute_name The name of the attribute (e.g., "veh_outline")
 #' @return List with: 1) new plotting_df, 2) show_legend, 3) attribute_by,
 #' and 4) attribute_vals
+#' @keywords internal
 plot_format_setup <- function(plotting_df,
                               attribute_input,
                               attribute_type,

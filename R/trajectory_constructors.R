@@ -18,6 +18,7 @@
 #' @param ... Other inputs
 #' @param class Object class
 #' @return Grouped trajectory object
+#' @keywords internal
 new_avltrajectory_group <- function(trip_id_performed = character(),
                                     traj_fun, inv_traj_fun = NULL,
                                     min_dist, max_dist, min_time, max_time,
@@ -47,6 +48,7 @@ new_avltrajectory_group <- function(trip_id_performed = character(),
 #'
 #' @inheritParams new_avltrajectory_group
 #' @return Single trajectory object
+#' @keywords internal
 new_avltrajectory_single <- function(trip_id_performed = character(),
                                      traj_fun, inv_traj_fun = NULL,
                                      min_dist, max_dist, min_time, max_time,

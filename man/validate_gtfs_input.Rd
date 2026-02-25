@@ -20,3 +20,4 @@ Throws error if not satisfied
 \description{
 Not intended for external use.
 }
+\keyword{internal}

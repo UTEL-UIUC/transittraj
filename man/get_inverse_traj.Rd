@@ -21,3 +21,4 @@ function for inverse trajectory
 \description{
 Not intended for external use
 }
+\keyword{internal}

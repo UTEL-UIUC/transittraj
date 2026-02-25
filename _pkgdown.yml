@@ -2,3 +2,73 @@ url: https://obrien-ben.github.io/transittraj/
 template:
   bootstrap: 5
 
+reference:
+- title: GTFS Helpers
+  desc: >
+    Functions to manipulate tidygtfs objects.
+  contents:
+  - filter_by_route
+  - get_shape_geometry
+  - project_onto_route
+  - get_stop_distances
+  - plot_interactive_gtfs
+- title: AVL Cleaning
+  desc: >
+    Functions to clean AVL data.
+  contents:
+  - get_linear_distances
+  - clean_overlapping_subtrips
+  - clean_jumps
+  - clean_incomplete_trips
+  - trim_trips
+  - make_monotonic
+- title: Trajectory Construction
+  desc: >
+    Functions to build trajectory objections.
+  contents:
+  - get_trajectory_fun
+  - get_gtfs_trajectory_fun
+- title: Trajectory Plotting
+  desc: >
+    Functions to plot trajectories.
+  contents:
+  - plot.avltrajectory_single
+  - plot.avltrajectory_group
+  - plot_animated_line
+  - plot_animated_map
+  - plot_trajectory
+  - export_animation
+- title: Methods for Trajectories
+  desc: >
+    Functions for using trajectories.
+  contents:
+  - predict.avltrajectory_group
+  - predict.avltrajectory_single
+  - print.avltrajectory_group
+  - print.avltrajectory_single
+  - summary.avltrajectory_single
+  - summary.avltrajectory_group
+- title: Data Validation
+  desc: >
+    Functions for validating data.
+  contents:
+  - validate_tides
+  - validate_monotonicity
+- title: Supporting Datasets
+  desc: >
+    Datasets to test with.
+  contents:
+  - wmata_avl
+  - wmata_gtfs
+
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+        - text: Input Data
+          href: articles/input-data.html
+        - text: AVL Cleaning
+          href: article/data-workflow.html
+        - text: Intro to Trajectories
+          href: article/trajectories.html

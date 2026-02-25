@@ -7,6 +7,7 @@
 #' @param table The gtfs table to look for.
 #' @param needed_fields fields in that table to look for.
 #' @return Throws error if not satisfied
+#' @keywords internal
 validate_gtfs_input <- function(gtfs, table, needed_fields) {
 
   # Pull validation table
@@ -56,6 +57,7 @@ validate_gtfs_input <- function(gtfs, table, needed_fields) {
 #' @param require_shape_id should shape ID be required in SF?
 #' @param match_crs CRS that SF should have
 #' @return Throws error if not satisfied
+#' @keywords internal
 validate_shape_geometry <- function(shape_geometry,
                                     max_length = Inf,
                                     require_shape_id = TRUE,
