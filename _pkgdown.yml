@@ -73,7 +73,7 @@ navbar:
           href: articles/data-workflow.html
         - text: Trajectories
         - text: Intro to Trajectories
-          href: articles/trajectories.html
+          href: articles/intro-trajectories.html
         - text: Understanding Trajectory Objects
           href: articles/trajectory-objects.html
         - text: Plotting Trajectories

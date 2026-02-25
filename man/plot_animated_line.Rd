@@ -14,6 +14,7 @@ plot_animated_line(
   center_vehicles = FALSE,
   feature_distances = NULL,
   transition_style = "linear",
+  convert_to_timezone = TRUE,
   route_color = "coral",
   route_width = 3,
   route_alpha = 1,
@@ -48,6 +49,7 @@ plot_animated_map(
   background_zoom = 0,
   bbox_expand = NULL,
   transition_style = "linear",
+  convert_to_timezone = TRUE,
   route_color = "coral",
   route_width = 3,
   route_alpha = 1,
@@ -97,6 +99,10 @@ centered to start at the same time (0 seconds)? Default is \code{FALSE}.}
 \item{transition_style}{Optional. A \code{gganimate} \code{transition_style},
 specifying how the animation transitions from point to point. See
 \code{gganimate::ease_aes()}. Default is \code{"linear"}.}
+
+\item{convert_to_timezone}{Optional. Should numeric epoch times be converted
+back to readable hour-minute-second time values, using the agency timezone?
+Default is \code{TRUE}.}
 
 \item{route_color}{Optional. A color string for the color of the route
 alignment. Default is \code{"coral"}.}

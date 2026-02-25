@@ -12,6 +12,7 @@ plot_trajectory(
   distance_lim = NULL,
   center_trajectories = FALSE,
   feature_distances = NULL,
+  convert_to_timezone = TRUE,
   traj_color = "coral",
   traj_type = "solid",
   traj_width = 1,
@@ -50,6 +51,10 @@ centered to start at the same time (0 seconds)? Default is \code{FALSE}.}
 
 \item{feature_distances}{Optional. A dataframe with at least numeric
 \code{distance} for features. Default is \code{NULL}.}
+
+\item{convert_to_timezone}{Optional. Should numeric epoch times be converted
+back to readable hour-minute-second time values, using the agency timezone?
+Default is \code{TRUE}.}
 
 \item{traj_color}{Optional. A color string, or a dataframe mapping an
 attribute in \code{distance_df} or \code{trip_id_performed} in \code{trajectory} to a color.
