@@ -14,6 +14,197 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Introduction
+
+In the previous vignette, we saw how we can use `transittraj` to clean our
+AVL data. We took care of outliers, deadheading trips, noise and non-monotonic
+observations, and more. In this vignette, we'll apply the cleaned data
+(`c53_mono`) to fit a trajectory function.
+
+Let's begin by loading the library we'll be using:
+
 ```{r setup}
 library(transittraj)
+library(tidytransit)
+library(dplyr)
 ```
+
+# Fitting a Trajectory Curve
+
+Our ultimate goal is to fit an interpolating curve describing the position of
+a transit vehicle at any point in time. Ideally, we could fit an inverse curve,
+giving us the time the transit vehicle passes any point in space. We can do
+both using `get_trajectory_fun()`.
+
+`transittraj` supports many different methods for fitting these functions.
+The simplest is linear interpolation without an inverse. If this is all you
+need, you can probably skip many of the cleaning steps from the previous
+vignette. For more fine-grained analyses, though, we recommend fitting a
+*velocity-informed piecewise cubic interpolating polynomial*. This uses
+the speeds and distances, correct for monotonicity, to fit a cubic
+spline between each observation. By default, `get_trajectory_fun()` will fit
+this type of interpolating curve (`interp_method = "monoH.FC"` and
+`use_speeds = TRUE`).
+
+Using the data we cleaned in the previous vignette, let's finally fit our
+trajectory functions:
+
+``` {r}
+c53_traj <- get_trajectory_fun(distance_df = c53_mono,
+                               interp_method = "monoH.FC",
+                               use_speeds = TRUE,
+                               find_inverse_fun = TRUE)
+```
+
+And that's it! Once your data is cleaned, fitting the trajectory is quick
+and easy; we've already done most of the heavy lifting.
+
+# Exploring the Trajectory Object
+
+`transittraj` stores the fit curves in a special object class. This object
+stores a list of fit trajectories, one for each trip, as well as the time and
+distances ranges for each trip. We can use `summary()` to take a look inside
+the object:
+
+``` {r}
+summary(c53_traj)
+```
+
+You'll notice the summary also contains information about the parameters we
+used to fit the curve.
+
+# Interpolating
+
+How do you use the fit curve to actually interpolate at new points? We
+recommend using `predict()`, as this will ensure that the curves aren't used
+to extrapolate beyond the range of each trip. Using `predict()`, there are
+three main values we can interpolate for: time from distances (requires an
+inverse function), distances from times, and speeds from times (requires a
+spline).
+
+## Interpolating for Times
+
+One of the most common applications of the fit trajectory curve is to find the
+time at which each vehicle passed a point along its route. To do this,
+we'll use `predict()` with the `new_distances` parameter. We'll begin by
+finding the distance of each stop along the route using `get_stop_distances()`:
+
+``` {r, echo = FALSE}
+c53_gtfs <- filter_by_route(wmata_gtfs,
+                            route_ids = "C53", dir_id = 0)
+c53_NB_shape_id <- "C53:04"
+dc_CRS <- 32618
+c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
+                                shape = c53_NB_shape_id,
+                                project_crs = dc_CRS)
+```
+
+``` {r}
+# First, use stop_times to find which stop_ids are timepoints
+c53_timepoints <- c53_gtfs$stop_times %>%
+  distinct(stop_id, timepoint)
+# Now, find stop distances and join the timepoints column
+c53_stops <- get_stop_distances(gtfs = c53_gtfs,
+                                shape_geometry = c53_shape,
+                                project_crs = dc_CRS) %>%
+  left_join(y = c53_timepoints, by = "stop_id") %>%
+  select(-shape_id) %>%
+  mutate(timepoint = if_else(condition = (timepoint == 1),
+                             true = "Yes",
+                             false = "No"))
+head(c53_stops)
+```
+
+Now that we have some distances, let's interpolate using `predict()`:
+
+``` {r}
+c53_stop_crossings <- predict(
+  object = c53_traj,
+  new_distances = c53_stops
+)
+head(c53_stop_crossings)
+```
+
+And now we have the crossing time (labeled `interp`) at each stop, for each
+trip! The interpolated times are in seconds of epoch time.
+
+## Interpolating for Distances
+
+Let's say you want to know where every vehicle is at a certain point in time.
+We can do that by providing `new_times` to `predict()`. Let's see below:
+
+``` {r}
+c53_time_interp <- predict(
+  object = c53_traj,
+  new_times = c(1771265000, 1771275000)
+)
+print(c53_time_interp)
+```
+
+Here, `interp` will be the distance in meters from the route's beginning.
+You'll notice that, even though we have 24 trips, there were only four to five
+distance for each timepoint. This is because `predict()` will only interpolate a
+distance for trips that were actually running at that point in time.
+
+## Interpolating for Speeds
+
+The last thing we can interpolate for is the speed at any given point in time.
+We can control this by setting the `deriv` parameter in `predict()`:
+
+``` {r}
+c53_speed_interp <- predict(
+  object = c53_traj,
+  new_times = c(1771265000, 1771275000),
+  deriv = 1
+)
+print(c53_speed_interp)
+```
+
+Here, `interp` will be the speed in meters per second. Finding speeds requires
+starting from time values.
+
+# Visualizing Trajectories
+
+## Quick Plots
+
+Now its time for the *really* fun part -- plotting our trajectory curves. We
+can use `plot()` to generate a quick and easy plot of all trajectories:
+
+``` {r out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
+plot(c53_traj) +
+  # This part is optional -- we're doing it to make the
+  # figure more readable for this vignette
+  theme(text = element_text(size = 5))
+```
+
+`plot()` is intended for quick visualizations of trajectories, and as such does
+not allow for much customization. In the next section, we'll use
+`plot_trajectory()` to create more interesting plots.
+
+## Detailed Trajectories
+
+``` {r, out.width = "100%", fig.height = 2, dpi = 600, fig.align = "center"}
+# Set formatting DF for our stops
+stop_formatting <- data.frame(timepoint = c("Yes", "No"),
+                              color = c("firebrick", "grey50"),
+                              linetype = c("longdash", "dashed"))
+
+traj_plot <- plot_trajectory(
+  trajectory = c53_traj,
+  feature_distances = c53_stops,
+  feature_color = stop_formatting,
+  feature_type = stop_formatting,
+  feature_width = 0.2, feature_alpha = 0.5,
+  traj_width = 0.4, traj_alpha = 1
+)
+traj_plot +
+  # This part is optional -- we're doing it to make the
+  # figure more readable for this vignette
+  theme(text = element_text(size = 5))
+```
+
+## Line Animations
+
+## Map Animations
+
+
