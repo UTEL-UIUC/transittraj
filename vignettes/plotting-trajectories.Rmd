@@ -1,0 +1,24 @@
+---
+title: "plotting-trajectories"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{plotting-trajectories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This article will be a deep-dive into `transittraj`'s trajectory plotting
+and visualization features. **This is a work in progress**.
+
+```{r setup}
+library(transittraj)
+```

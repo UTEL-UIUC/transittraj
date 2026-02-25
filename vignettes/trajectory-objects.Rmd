@@ -1,0 +1,24 @@
+---
+title: "trajectory-objects"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{trajectory-objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This article will be a deep-dive into the structure of `transittraj`'s
+trajectory object class. **This is a work in progress**.
+
+```{r setup}
+library(transittraj)
+```

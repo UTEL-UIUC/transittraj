@@ -66,9 +66,15 @@ navbar:
     articles:
       text: Articles
       menu:
-        - text: Input Data
+        - text: Data
+        - text: Overview of Data
           href: articles/input-data.html
         - text: AVL Cleaning
-          href: article/data-workflow.html
+          href: articles/data-workflow.html
+        - text: Trajectories
         - text: Intro to Trajectories
-          href: article/trajectories.html
+          href: articles/trajectories.html
+        - text: Understanding Trajectory Objects
+          href: articles/trajectory-objects.html
+        - text: Plotting Trajectories
+          href: articles/plotting-trajectories.html
