@@ -329,13 +329,14 @@ traj_plot2
 ![](intro-trajectories_files/figure-html/unnamed-chunk-12-1.png)
 
 We can glean some insights from this. Almost every trip stops at Florida
-& Georgia, either to serve the stop or for the signal. One trip sits
-there for a particularly long time. A handful of others stop at the
+& Georgia, either to serve the stop or wait for the signal. One trip
+sits there for a particularly long time. A handful of others stop at the
 signal in between these two stops, and a couple more stop at U &
 Vermont. A few trips have intermittent slowdown between these stops and
 signals, potentially due to other congestion sources.
 
-There are many formatting features available through `plot_trajector()`.
+There are many formatting features available through
+[`plot_trajectory()`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md).
 Check out
 [`help(plot_trajectory)`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md)
 for a full discussion.
@@ -343,10 +344,13 @@ for a full discussion.
 ### Line Animations
 
 Another fun way to visualize transit vehicle trajectories is to animate
-them. Use `plot_line_animation()` to animate vehicles, as points, moving
-along a straight line that represents the route.
+them. Use
+[`plot_animated_line()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md)
+to animate vehicles, as points, moving along a straight line that
+represents the route.
 
-The formatting process works very similarly with `plot_line_animation()`
+The formatting process works very similarly with
+[`plot_animated_line()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md)
 as it does with
 [`plot_trajectory()`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md).
 For this plot, we’ll also set some distance limits to zoom in to the
@@ -390,7 +394,7 @@ line_anim
 
 Unable to execute JavaScript.
 
-The animation shows us that most trips stop mostly at their stops,
+The animation shows us that most trips stop primarily at their stops,
 either due to signals or to serve the stop. There are, though,
 occasional slow downs between these stops. You can even see that trip
 that sits at Florida & Georgia for a long time (at around 0:16 seconds).

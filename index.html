@@ -68,7 +68,7 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Today’s transit vehicles generate a large amount of automatic vehicle location (AVL) data. This data is vital in planning and performance studies, but turning sparse and noisy GPS pings into meaningful performance metrics is difficult. <code>transittraj</code> fills this gap, integrating with existing open data standards, including GTFS and TIDES, to provide tools for cleaning AVL data and fitting continuous, monotonic, invertible, and differentiable trajectory curves. By doing so, <code>transittraj</code> provides versatile and powerful tools to analyze transit system performance and support decision-making.</p>
-<p>You can install the development version of transittraj from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install the development version of <code>transittraj</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"UTEL-UIUC/transittraj"</span><span class="op">)</span></span></code></pre></div>
@@ -106,6 +106,17 @@ A <code>transittraj</code> trajectory meeting our four requirements
 <li><p><a href="https://utel-uiuc.github.io/transittraj/articles/input-data.html" class="external-link">Understanding Data Inputs</a></p></li>
 <li><p><a href="https://utel-uiuc.github.io/transittraj/articles/data-workflow.html" class="external-link">The AVL Cleaning Workflow</a></p></li>
 <li><p><a href="https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html" class="external-link">Using Trajectories</a></p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="works-in-progress">Works in Progress<a class="anchor" aria-label="anchor" href="#works-in-progress"></a>
+</h2>
+<p>This package is still in early development. In prepartion for an eventual submission to CRAN, we’re still working on the following:</p>
+<ul>
+<li><p>Examples in all function documentation</p></li>
+<li><p>Sample datasets to include with <code>transittraj</code></p></li>
+<li><p>Formal automated testing</p></li>
+<li><p>More vignettes</p></li>
 </ul>
 </div>
 <div class="section level2">

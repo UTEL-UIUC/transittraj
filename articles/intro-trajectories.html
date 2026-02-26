@@ -362,24 +362,23 @@ distribution of travel times along a corridor.</p>
 <span><span class="va">traj_plot2</span></span></code></pre></div>
 <p><img src="intro-trajectories_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>We can glean some insights from this. Almost every trip stops at
-Florida &amp; Georgia, either to serve the stop or for the signal. One
-trip sits there for a particularly long time. A handful of others stop
-at the signal in between these two stops, and a couple more stop at U
-&amp; Vermont. A few trips have intermittent slowdown between these
+Florida &amp; Georgia, either to serve the stop or wait for the signal.
+One trip sits there for a particularly long time. A handful of others
+stop at the signal in between these two stops, and a couple more stop at
+U &amp; Vermont. A few trips have intermittent slowdown between these
 stops and signals, potentially due to other congestion sources.</p>
 <p>There are many formatting features available through
-<code>plot_trajector()</code>. Check out
+<code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>. Check out
 <code><a href="../reference/plot_trajectory.html">help(plot_trajectory)</a></code> for a full discussion.</p>
 </div>
 <div class="section level3">
 <h3 id="line-animations">Line Animations<a class="anchor" aria-label="anchor" href="#line-animations"></a>
 </h3>
 <p>Another fun way to visualize transit vehicle trajectories is to
-animate them. Use <code>plot_line_animation()</code> to animate
-vehicles, as points, moving along a straight line that represents the
-route.</p>
+animate them. Use <code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code> to animate vehicles,
+as points, moving along a straight line that represents the route.</p>
 <p>The formatting process works very similarly with
-<code>plot_line_animation()</code> as it does with
+<code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code> as it does with
 <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>. For this plot, we’ll also set some
 distance limits to zoom in to the Florida Ave-U St corridor of the
 route.</p>
@@ -417,7 +416,7 @@ with the <code>stop_name</code> column in <code>c53_stops</code>:</p>
 <iframe src="https://www.youtube.com/embed/WP4F62O9gws" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
 </div>
 </div>
-<p>The animation shows us that most trips stop mostly at their stops,
+<p>The animation shows us that most trips stop primarily at their stops,
 either due to signals or to serve the stop. There are, though,
 occasional slow downs between these stops. You can even see that trip
 that sits at Florida &amp; Georgia for a long time (at around 0:16
