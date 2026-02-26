@@ -120,4 +120,11 @@ Check out the following vignettes to learn more about how to use `transittraj`:
 
 - [Using Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html)
 
+## Citation
 
+`transittraj` is free and open source, but if you find the package helpful,
+we'd appreciate a citation:
+
+``` {r}
+utils::citation("transittraj")
+```
