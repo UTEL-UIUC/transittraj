@@ -2,18 +2,18 @@
 
 ## Introduction
 
-This vignette introduces you to the datatypes used in `transittraj`. For
-most projects, there are two important data sources:
+This vignette introduces you to the input data used by `transittraj`.
+For most projects, there are two important data sources:
 
 - *Automatic vehicle location (AVL) data*: A set of GPS
   latitude-longitude points describing a transit vehicle’s location over
-  time. This package requires AVL data to follow the
+  time. This package requires that AVL data follow the
   [TIDES](https://tides-transit.org/main/) `vehicle-location` table
   schema.
 
-- *GTFS feed*: This describes the routes, trips, and schedules a transit
-  vehicle follows. The most important part is the `shapes` file, which
-  tells us the route alignment we expect our AVL data to follow.
+- *GTFS feed*: The routes, trips, and schedules a transit vehicle
+  follows. The most important part is the `shapes` file, which tells us
+  the route alignment we expect our AVL data to follow.
 
 We will introduce and discuss these data sources using the two public
 datasets included with `transittraj`: An archive of WMATA’s GTFS-rt
@@ -27,7 +27,9 @@ library(transittraj)
 library(tidytransit)
 ```
 
-## Automatic Vehicle Location Data
+## Exploring Input Data
+
+### Automatic Vehicle Location Data
 
 `transittraj` is designed to clean and process AVL data. Unfortunately,
 AVL data does not have a widely-adopted standardized format; each vendor
@@ -73,7 +75,7 @@ head(wmata_avl)
 ```
 
 To check whether an input dataframe meets our needs, we can run
-`validatde_tides()`. This will check whether the fields we need are
+`validatde_tides()`. This will check whether the needed fields are
 present, and whether they have the correct data type.
 
 ``` r
@@ -103,20 +105,20 @@ wmata_tides_val
 
 This dataset does not meet two requirements: first, it is missing an
 `operator_id` column. This is okay; `operator_id` is not required by any
-`transittraj` functions, though there are some that benefit from it if
-you have that data. Second, the dataset is missing `distance`. This is
-something we’ll calculate in the cleaning process.
+`transittraj` functions, though there are some that benefit from it.
+Second, the dataset is missing `distance`. This is something we’ll
+calculate in the cleaning process.
 
 Read more about `transittraj`’s data requirements using
 [`help(validate_tides)`](https://obrien-ben.github.io/transittraj/reference/validate_tides.md).
-Each `transittraj` functions will check that your input dataset has the
-fields and data types that function requires before running.
+Before running, each `transittraj` function will check that your input
+dataframe has the fields and data types that that function requires.
 
-## GTFS Feed
+### GTFS Feed
 
-A GTFS feed gives use information we need to effectively use our AVL
-data. `transittraj` is designed to use `tidygtfs` objects from
-`tidytransit`. Let’s look at the GTFS object `wmata_gtfs`, which
+A GTFS feed gives us information we need to effectively use our AVL
+data. `transittraj` is designed to use `tidygtfs` objects from the
+`tidytransit` package. Let’s look at the GTFS object `wmata_gtfs`, which
 complements the `wmata_avl` dataset we saw above:
 
 ``` r
@@ -133,9 +135,11 @@ summary(wmata_gtfs)
 #> # shapes       15
 ```
 
-We recommend checking out `tidytransit` for functions to read, write,
-and manipulate GTFS feeds. `transittraj` offers a handful of additional
-helper functions for working with GTFS, most notably
+We recommend checking out
+[`tidytransit`](https://r-transit.github.io/tidytransit/) for functions
+to read, write, and manipulate GTFS feeds. `transittraj` offers a
+handful of additional helper functions for working with GTFS, most
+notably
 [`filter_by_route()`](https://obrien-ben.github.io/transittraj/reference/filter_by_route.md)
 and `get_shape_geometr()`. Additionally, we can also create an
 interactive visualization of a GTFS feed:
@@ -148,3 +152,18 @@ plot_interactive_gtfs(gtfs = wmata_gtfs,
 Try clicking on routes or stops to see a pop-up with more information.
 This interactive map is very useful for deciding which `shape_id` and
 `direction_id` you want to work with.
+
+## Conclusion
+
+We now what data sources `transittraj` requires. Each function in the
+package will check whether the input data meets that function’s
+requirements, and if it does not, an error will be thrown describing
+what’s wrong. When in doubt, try using
+[`validate_tides()`](https://obrien-ben.github.io/transittraj/reference/validate_tides.md)
+or
+[`tidytransit::validate_gtfs()`](https://r-transit.github.io/tidytransit/reference/validate_gtfs.html)
+to check your data.
+
+In the next vignette
+([`vignette("data-workflow")`](https://obrien-ben.github.io/transittraj/articles/data-workflow.md)),
+we’ll explore the AVL cleaning process.

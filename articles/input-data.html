@@ -76,18 +76,18 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette introduces you to the datatypes used in
+<p>This vignette introduces you to the input data used by
 <code>transittraj</code>. For most projects, there are two important
 data sources:</p>
 <ul>
 <li><p><em>Automatic vehicle location (AVL) data</em>: A set of GPS
 latitude-longitude points describing a transit vehicle’s location over
-time. This package requires AVL data to follow the <a href="https://tides-transit.org/main/" class="external-link">TIDES</a>
+time. This package requires that AVL data follow the <a href="https://tides-transit.org/main/" class="external-link">TIDES</a>
 <code>vehicle-location</code> table schema.</p></li>
-<li><p><em>GTFS feed</em>: This describes the routes, trips, and
-schedules a transit vehicle follows. The most important part is the
-<code>shapes</code> file, which tells us the route alignment we expect
-our AVL data to follow.</p></li>
+<li><p><em>GTFS feed</em>: The routes, trips, and schedules a transit
+vehicle follows. The most important part is the <code>shapes</code>
+file, which tells us the route alignment we expect our AVL data to
+follow.</p></li>
 </ul>
 <p>We will introduce and discuss these data sources using the two public
 datasets included with <code>transittraj</code>: An archive of WMATA’s
@@ -99,8 +99,11 @@ GTFS feed, <code>wmata_gtfs</code>.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-transit/tidytransit" class="external-link">tidytransit</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="automatic-vehicle-location-data">Automatic Vehicle Location Data<a class="anchor" aria-label="anchor" href="#automatic-vehicle-location-data"></a>
+<h2 id="exploring-input-data">Exploring Input Data<a class="anchor" aria-label="anchor" href="#exploring-input-data"></a>
 </h2>
+<div class="section level3">
+<h3 id="automatic-vehicle-location-data">Automatic Vehicle Location Data<a class="anchor" aria-label="anchor" href="#automatic-vehicle-location-data"></a>
+</h3>
 <p><code>transittraj</code> is designed to clean and process AVL data.
 Unfortunately, AVL data does not have a widely-adopted standardized
 format; each vendor and data analytics platform outputs a different
@@ -140,8 +143,8 @@ GTFS-rt to meet TIDES’s needs. Below is a peak:</p>
 <span><span class="co">#&gt; 5 2026-02-16 10:58:27   13111</span></span>
 <span><span class="co">#&gt; 6 2026-02-16 10:58:14    6879</span></span></code></pre></div>
 <p>To check whether an input dataframe meets our needs, we can run
-<code>validatde_tides()</code>. This will check whether the fields we
-need are present, and whether they have the correct data type.</p>
+<code>validatde_tides()</code>. This will check whether the needed
+fields are present, and whether they have the correct data type.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wmata_tides_val</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_tides.html">validate_tides</a></span><span class="op">(</span>avl_df <span class="op">=</span> <span class="va">wmata_avl</span><span class="op">)</span></span>
 <span><span class="va">wmata_tides_val</span></span>
@@ -168,22 +171,22 @@ need are present, and whether they have the correct data type.</p>
 <p>This dataset does not meet two requirements: first, it is missing an
 <code>operator_id</code> column. This is okay; <code>operator_id</code>
 is not required by any <code>transittraj</code> functions, though there
-are some that benefit from it if you have that data. Second, the dataset
-is missing <code>distance</code>. This is something we’ll calculate in
-the cleaning process.</p>
+are some that benefit from it. Second, the dataset is missing
+<code>distance</code>. This is something we’ll calculate in the cleaning
+process.</p>
 <p>Read more about <code>transittraj</code>’s data requirements using
-<code><a href="../reference/validate_tides.html">help(validate_tides)</a></code>. Each <code>transittraj</code>
-functions will check that your input dataset has the fields and data
-types that function requires before running.</p>
+<code><a href="../reference/validate_tides.html">help(validate_tides)</a></code>. Before running, each
+<code>transittraj</code> function will check that your input dataframe
+has the fields and data types that that function requires.</p>
 </div>
-<div class="section level2">
-<h2 id="gtfs-feed">GTFS Feed<a class="anchor" aria-label="anchor" href="#gtfs-feed"></a>
-</h2>
-<p>A GTFS feed gives use information we need to effectively use our AVL
+<div class="section level3">
+<h3 id="gtfs-feed">GTFS Feed<a class="anchor" aria-label="anchor" href="#gtfs-feed"></a>
+</h3>
+<p>A GTFS feed gives us information we need to effectively use our AVL
 data. <code>transittraj</code> is designed to use <code>tidygtfs</code>
-objects from <code>tidytransit</code>. Let’s look at the GTFS object
-<code>wmata_gtfs</code>, which complements the <code>wmata_avl</code>
-dataset we saw above:</p>
+objects from the <code>tidytransit</code> package. Let’s look at the
+GTFS object <code>wmata_gtfs</code>, which complements the
+<code>wmata_avl</code> dataset we saw above:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">wmata_gtfs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tidygtfs object</span></span>
@@ -196,10 +199,10 @@ dataset we saw above:</p>
 <span><span class="co">#&gt; # stop_ids    347</span></span>
 <span><span class="co">#&gt; # stop_names  253</span></span>
 <span><span class="co">#&gt; # shapes       15</span></span></code></pre></div>
-<p>We recommend checking out <code>tidytransit</code> for functions to
-read, write, and manipulate GTFS feeds. <code>transittraj</code> offers
-a handful of additional helper functions for working with GTFS, most
-notably <code><a href="../reference/filter_by_route.html">filter_by_route()</a></code> and
+<p>We recommend checking out <a href="https://r-transit.github.io/tidytransit/" class="external-link"><code>tidytransit</code></a>
+for functions to read, write, and manipulate GTFS feeds.
+<code>transittraj</code> offers a handful of additional helper functions
+for working with GTFS, most notably <code><a href="../reference/filter_by_route.html">filter_by_route()</a></code> and
 <code>get_shape_geometr()</code>. Additionally, we can also create an
 interactive visualization of a GTFS feed:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -210,6 +213,19 @@ interactive visualization of a GTFS feed:</p>
 information. This interactive map is very useful for deciding which
 <code>shape_id</code> and <code>direction_id</code> you want to work
 with.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
+<p>We now what data sources <code>transittraj</code> requires. Each
+function in the package will check whether the input data meets that
+function’s requirements, and if it does not, an error will be thrown
+describing what’s wrong. When in doubt, try using
+<code><a href="../reference/validate_tides.html">validate_tides()</a></code> or
+<code><a href="https://r-transit.github.io/tidytransit/reference/validate_gtfs.html" class="external-link">tidytransit::validate_gtfs()</a></code> to check your data.</p>
+<p>In the next vignette (<code><a href="../articles/data-workflow.html">vignette("data-workflow")</a></code>), we’ll
+explore the AVL cleaning process.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

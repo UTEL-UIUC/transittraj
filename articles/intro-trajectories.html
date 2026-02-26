@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Introduction to Trajectory Objects • transittraj</title>
+<title>Introduction to Trajectories • transittraj</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to Trajectory Objects">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to Trajectories">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Introduction to Trajectory Objects</h1>
+      <h1>Introduction to Trajectories</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/vignettes/articles/intro-trajectories.Rmd" class="external-link"><code>vignettes/articles/intro-trajectories.Rmd</code></a></small>
@@ -73,12 +73,12 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>In the previous vignette, we saw how we can use
-<code>transittraj</code> to clean our AVL data. We took care of
-outliers, deadheading trips, noise and non-monotonic observations, and
-more. In this vignette, we’ll apply the cleaned data
+<p>In the previous vignette (<code><a href="../articles/data-workflow.html">vignette("data-workflow")</a></code>), we
+saw how we can use <code>transittraj</code> to clean our AVL data. We
+took care of outliers, deadheading trips, noise and non-monotonic
+observations, and more. In this vignette, we’ll apply the cleaned data
 (<code>c53_mono</code>) to fit a trajectory function.</p>
-<p>Let’s begin by loading the library we’ll be using:</p>
+<p>Let’s begin by loading the libraries we’ll be using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/UTEL-UIUC/transittraj" class="external-link">transittraj</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-transit/tidytransit" class="external-link">tidytransit</a></span><span class="op">)</span></span>
@@ -101,18 +101,21 @@ cleaning steps from the previous vignette. For more fine-grained
 analyses, though, we recommend fitting a <em>velocity-informed piecewise
 cubic interpolating polynomial</em>. This uses the speeds and distances,
 correct for monotonicity, to fit a cubic spline between each
-observation. By default, <code><a href="../reference/get_trajectory_fun.html">get_trajectory_fun()</a></code> will fit this
-type of interpolating curve (<code>interp_method = "monoH.FC"</code> and
+observation. This is the type of curve that
+<code><a href="../reference/get_trajectory_fun.html">get_trajectory_fun()</a></code> will fit by default
+(<code>interp_method = "monoH.FC"</code> and
 <code>use_speeds = TRUE</code>).</p>
 <p>Using the data we cleaned in the previous vignette, let’s finally fit
 our trajectory functions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_trajectory_fun.html">get_trajectory_fun</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Run function</span></span>
+<span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_trajectory_fun.html">get_trajectory_fun</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span>,</span>
 <span>                               interp_method <span class="op">=</span> <span class="st">"monoH.FC"</span>,</span>
 <span>                               use_speeds <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                               find_inverse_fun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>And that’s it! Once your data is cleaned, fitting the trajectory is
-quick and easy; we’ve already done most of the heavy lifting.</p>
+<p>Now we have a trajectory for each trip in <code>c53_mono</code>! Once
+your data is cleaned, fitting the trajectory is quick and easy; we’ve
+already done most of the heavy lifting.</p>
 <p><code>transittraj</code> stores the fit curves in a special object
 class. This object stores a list of fit trajectories, one for each trip,
 as well as the time and distances ranges for each trip. We can use
@@ -158,18 +161,23 @@ distance of each stop along the route using
 <code class="sourceCode R"><span><span class="co"># First, use stop_times to find which stop_ids are timepoints</span></span>
 <span><span class="va">c53_timepoints</span> <span class="op">&lt;-</span> <span class="va">c53_gtfs</span><span class="op">$</span><span class="va">stop_times</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">stop_id</span>, <span class="va">timepoint</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Now, find stop distances and join the timepoints column</span></span>
 <span><span class="va">c53_stops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_stop_distances.html">get_stop_distances</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">c53_gtfs</span>,</span>
 <span>                                shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span>
 <span>                                project_crs <span class="op">=</span> <span class="va">dc_CRS</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Join timepoint info &amp; stop name to each stop ID</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">c53_timepoints</span>,</span>
 <span>            by <span class="op">=</span> <span class="st">"stop_id"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">(</span><span class="va">c53_gtfs</span><span class="op">$</span><span class="va">stops</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">stop_id</span>, <span class="va">stop_name</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            by <span class="op">=</span> <span class="st">"stop_id"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Polish up the result</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">shape_id</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="op">(</span><span class="va">timepoint</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                             true <span class="op">=</span> <span class="st">"Yes"</span>,</span>
 <span>                             false <span class="op">=</span> <span class="st">"No"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print header</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_stops</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">#&gt;   stop_id distance timepoint stop_name                  </span></span>
@@ -183,10 +191,13 @@ distance of each stop along the route using
 <p>Now that we have some distances, let’s interpolate using
 <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">c53_stop_crossings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
+<span><span class="va">c53_stop_crossings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  new_distances <span class="op">=</span> <span class="va">c53_stops</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print header</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_stop_crossings</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;   stop_id distance timepoint stop_name              trip_id_performed     interp</span></span>
@@ -197,8 +208,8 @@ distance of each stop along the route using
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2584        677. No        Alabama Av SE+15 Pl SE 13437100              1.77<span style="color: #949494;">e</span>9</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2584        677. No        Alabama Av SE+15 Pl SE 13478100              1.77<span style="color: #949494;">e</span>9</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2584        677. No        Alabama Av SE+15 Pl SE 1699100               1.77<span style="color: #949494;">e</span>9</span></span></code></pre></div>
-<p>And now we have the crossing time (labeled <code>interp</code>) at
-each stop, for each trip! The interpolated times are in seconds of epoch
+<p>Now we have the crossing time, labeled <code>interp</code> at each
+stop for each trip. The interpolated times are in seconds of epoch
 time.</p>
 </div>
 <div class="section level3">
@@ -208,10 +219,13 @@ time.</p>
 in time. We can do that by providing <code>new_times</code> to
 <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>. Let’s see below:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">c53_time_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
+<span><span class="va">c53_time_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print full results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_time_interp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   event_timestamp trip_id_performed     interp</span></span>
 <span><span class="co">#&gt; 1      1771265000           1306100  8933.8531</span></span>
@@ -226,8 +240,8 @@ in time. We can do that by providing <code>new_times</code> to
 <p>Here, <code>interp</code> will be the distance in meters from the
 route’s beginning. You’ll notice that, even though we have 24 trips,
 there were only four to five distance for each timepoint. This is
-because <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will only interpolate a distance for
-trips that were actually running at that point in time.</p>
+because <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will only interpolate a distance value
+for trips that were actually running at that point in time.</p>
 </div>
 <div class="section level3">
 <h3 id="interpolating-for-speeds">Interpolating for Speeds<a class="anchor" aria-label="anchor" href="#interpolating-for-speeds"></a>
@@ -236,11 +250,14 @@ trips that were actually running at that point in time.</p>
 in time. We can control this by setting the <code>deriv</code> parameter
 in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">c53_speed_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
+<span><span class="va">c53_speed_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span>,</span>
 <span>  deriv <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_speed_interp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
 <span><span class="co">#&gt; 1      1771265000           1306100 1.675073e-01</span></span>
@@ -253,7 +270,8 @@ in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">pr
 <span><span class="co">#&gt; 8      1771275000          13478100 7.213864e-01</span></span>
 <span><span class="co">#&gt; 9      1771275000           3597100 9.079446e-01</span></span></code></pre></div>
 <p>Here, <code>interp</code> will be the speed in meters per second.
-Finding speeds requires starting from time values.</p>
+Finding speeds requires starting from time values; we cannot get speeds
+from distance values.</p>
 </div>
 </div>
 <div class="section level2">
@@ -285,7 +303,8 @@ controlled using mapping dataframes. The colors and linetypes of both
 trajectories and features can be mapped to attributes using something
 similar to what is below:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Set formatting options for C53 stops</span></span>
+<span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>                              color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"firebrick"</span>, <span class="st">"grey50"</span><span class="op">)</span>,</span>
 <span>                              linetype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"longdash"</span>, <span class="st">"dashed"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>For mapping dataframes, at least one column must match the layer
@@ -295,34 +314,62 @@ being mapped to (trajectories or features). The other columns must be
 <p>We can plug all that in to <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code> to generate
 our formatted plot:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Run plotting function</span></span>
+<span><span class="va">traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Provide input data</span></span>
 <span>  trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  feature_distances <span class="op">=</span> <span class="va">c53_stops</span>,</span>
+<span>  <span class="co"># Format features</span></span>
 <span>  feature_color <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
 <span>  feature_type <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
 <span>  feature_width <span class="op">=</span> <span class="fl">0.2</span>, feature_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="co"># Format trajectories</span></span>
 <span>  traj_width <span class="op">=</span> <span class="fl">0.4</span>, traj_alpha <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">traj_plot</span></span></code></pre></div>
 <p><img src="intro-trajectories_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>Check out <code><a href="../reference/plot_trajectory.html">help(plot_trajectory)</a></code> for a full discussion of
-the plotting features available.</p>
-<p>The benefits of the fitting</p>
+<p>That’s a lot of trajectories, and it’s hard to see what’s actually
+going on. The benefits of the cleaning we did, and of fitting a spline
+trajectory, become much more apparent when we zoom in. Below we use the
+<code>distance_lim</code> parameter to zoom into the intersection of
+Florida Ave &amp; U St. This is a large intersection with complex
+geometry and stops on either side. Additionally, we’ll center each
+trajectory to start at the same point in time using
+<code>center_trajectories</code>. This lets us visualize the
+distribution of travel times along a corridor.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">am_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13900</span>, <span class="fl">14600</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
+<span><span class="co">#am_lims &lt;- c(13900, 14600)</span></span>
+<span><span class="va">fl_U_intersection_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12000</span>, <span class="fl">12600</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run function</span></span>
 <span><span class="va">traj_plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Provide input data</span></span>
 <span>  trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  feature_distances <span class="op">=</span> <span class="va">c53_stops</span>,</span>
+<span>  center_trajectories <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  distance_lim <span class="op">=</span> <span class="va">fl_U_intersection_lims</span>,</span>
+<span>  timestep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="co"># Format fetures</span></span>
 <span>  feature_color <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
 <span>  feature_type <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
 <span>  feature_width <span class="op">=</span> <span class="fl">1</span>, feature_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  <span class="co"># Format trajectories</span></span>
 <span>  traj_width <span class="op">=</span> <span class="fl">0.6</span>, traj_alpha <span class="op">=</span> <span class="fl">0.6</span>,</span>
-<span>  traj_color <span class="op">=</span> <span class="st">"firebrick"</span>,</span>
-<span>  center_trajectories <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  distance_lim <span class="op">=</span> <span class="va">am_lims</span></span>
+<span>  <span class="co"># Add labels</span></span>
+<span>  label_field <span class="op">=</span> <span class="st">"stop_name"</span>, label_pos <span class="op">=</span> <span class="st">"right"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">traj_plot2</span></span></code></pre></div>
-<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>We can glean some insights from this. Almost every trip stops at
+Florida &amp; Georgia, either to serve the stop or for the signal. One
+trip sits there for a particularly long time. A handful of others stop
+at the signal in between these two stops, and a couple more stop at U
+&amp; Vermont. A few trips have intermittent slowdown between these
+stops and signals, potentially due to other congestion sources.</p>
+<p>There are many formatting features available through
+<code>plot_trajector()</code>. Check out
+<code><a href="../reference/plot_trajectory.html">help(plot_trajectory)</a></code> for a full discussion.</p>
 </div>
 <div class="section level3">
 <h3 id="line-animations">Line Animations<a class="anchor" aria-label="anchor" href="#line-animations"></a>
@@ -333,22 +380,26 @@ vehicles, as points, moving along a straight line that represents the
 route.</p>
 <p>The formatting process works very similarly with
 <code>plot_line_animation()</code> as it does with
-<code>plot_trajector()</code>. For this plot, we’ll also set some
+<code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>. For this plot, we’ll also set some
 distance limits to zoom in to the Florida Ave-U St corridor of the
 route.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
+<span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>                              outline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red1"</span>, <span class="st">"grey30"</span><span class="op">)</span>,</span>
 <span>                              shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">22</span>, <span class="fl">21</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">florida_U_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9500</span>, <span class="fl">15500</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fl_U_corridor_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9500</span>, <span class="fl">15500</span><span class="op">)</span></span></code></pre></div>
 <p>Now we can generate our line animation. We’ll use the field
 <code>label_field</code> to tell the function to label each stop point
 with the <code>stop_name</code> column in <code>c53_stops</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">line_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_line</a></span><span class="op">(</span></span>
-<span>  <span class="co"># Add trajectory &amp; feature data</span></span>
-<span>  trajectory <span class="op">=</span> <span class="va">c53_traj</span>, feature_distances <span class="op">=</span> <span class="va">c53_stops</span>,</span>
-<span>  distance_lim <span class="op">=</span> <span class="va">florida_U_lims</span>, timestep <span class="op">=</span> <span class="fl">1</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Run function</span></span>
+<span><span class="va">line_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_line</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Add input data</span></span>
+<span>  trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span>
+<span>  feature_distances <span class="op">=</span> <span class="va">c53_stops</span>,</span>
+<span>  distance_lim <span class="op">=</span> <span class="va">fl_U_corridor_lims</span>,</span>
+<span>  timestep <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="co"># Format features</span></span>
 <span>  feature_outline <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
 <span>  feature_shape <span class="op">=</span> <span class="va">stop_formatting</span>,</span>
@@ -366,7 +417,12 @@ with the <code>stop_name</code> column in <code>c53_stops</code>:</p>
 <iframe src="https://www.youtube.com/embed/WP4F62O9gws" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
 </div>
 </div>
-<p>You’ll notice that we’ve uploaded this animation to YouTube and
+<p>The animation shows us that most trips stop mostly at their stops,
+either due to signals or to serve the stop. There are, though,
+occasional slow downs between these stops. You can even see that trip
+that sits at Florida &amp; Georgia for a long time (at around 0:16
+seconds).</p>
+<p>You’ll also notice that we’ve uploaded this animation to YouTube and
 embedded it in the vignette. We did this so we could produce a smooth,
 high-resolution video that doesn’t need to be re-rendered every time
 this vignette is built. By default, <code>transittraj</code>’s animation
@@ -380,10 +436,13 @@ functions will return a <code>gif</code>. Check out
 similar to the animated line we saw above, but instead of simplifying
 the route, we’ll draw it spatially and show the vehicles traveling
 through the city.</p>
-<p>This function has formatting and feature options very similar to the
-previous two visualization functions.</p>
+<p>The function <code><a href="../reference/plot_animated_line.html">plot_animated_map()</a></code> has formatting and
+feature options very similar to the previous two visualization
+functions. We can reuse the formatting options from
+<code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code> here.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_map</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Run function</span></span>
+<span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_map</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Add trajectory, shape, &amp; feature data</span></span>
 <span>  trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span>
 <span>  shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span>
@@ -404,7 +463,23 @@ previous two visualization functions.</p>
 <iframe src="https://www.youtube.com/embed/SKOE7F-oSnY" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
 </div>
 </div>
+<p>This animation gives us a route-level that makes it easier to tell
+where we actually are (though you can zoom in to a specific distance
+range, like before). We can start to see, spatially where buses start to
+bunch together, such as the two vehicles entering Florida at around 0:34
+seconds, or the three vehicles near Florida at around 0:45 seconds.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
+<p>In this vignette we saw how we can easily fit an interpolating
+trajectory curve to our cleaned AVL data. We used this to interpolate
+for new time, distance, and speed points along the route. We also
+explored some ways we can plot and visualize the trajectories. In future
+vignettes (<em>still work in progress</em>), we’ll dive deeper into the
+structure behind the trajectory object, as well as the options available
+in <code>transittraj</code>’s plotting functions.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

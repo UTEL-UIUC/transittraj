@@ -116,3 +116,28 @@ Check out the following vignettes to learn more about how to use
 
 - [Using
   Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html)
+
+## Citation
+
+`transittraj` is free and open source, but if you find the package
+helpful, we’d appreciate a citation:
+
+``` r
+utils::citation("transittraj")
+#> To cite package 'transittraj' in publications use:
+#> 
+#>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
+#>   Transit Vehicle Trajectories_. R package version 0.0.0.9000,
+#>   https://utel-uiuc.github.io/transittraj/,
+#>   <https://github.com/UTEL-UIUC/transittraj>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
+#>     author = {Benjamin O'Brien and Lewis Lehe},
+#>     year = {2026},
+#>     note = {R package version 0.0.0.9000, https://utel-uiuc.github.io/transittraj/},
+#>     url = {https://github.com/UTEL-UIUC/transittraj},
+#>   }
+```

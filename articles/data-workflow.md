@@ -19,32 +19,36 @@ library(ggplot2)
 
 ## Step 0: Setup
 
-We’ll begin by setting up the data we’re working with. We’ll be using
-`wmata_avl` and `wmata_gtfs` for our TIDES AVL and static GTFS input,
-respectively.
+We’ll begin by setting up our data. We’ll be using `wmata_avl` and
+`wmata_gtfs` for our TIDES AVL and static GTFS input, respectively.
 
 ### AVL
 
-For this example, we’ll work with WMATA’s bus route C53 in the
+For this example, we’ll work with WMATA’s C53 bus route in the
 northbound direction. Let’s filter our AVL data to these specifications:
 
 ``` r
+# Set our filtering parameters
 c53 <- "C53"
 c53_dir <- 0 # 0 is NB, 1 is SB
 
+# Filter the entire AVL to just the NB C53
 c53_avl <- wmata_avl %>%
   filter((route_id == c53) & (direction_id == c53_dir))
 ```
 
 Now our dataset should include only northbound C53 trips. We can see
 below that this window has about 5,400 individual GPS pings across 33
-trips over 5 hours.
+trips and 5 hours.
 
 ``` r
+# Pull attributes about our filtered AVL
 total_obs <- dim(c53_avl)[1]
 num_trips <- length(unique(c53_avl$trip_id_performed))
 time_span <- round(max(c53_avl$event_timestamp) - min(c53_avl$event_timestamp),
                    2)
+
+# Print attributes
 cat("Total Observations: ", total_obs,
     "\nNumber of trips: ", num_trips,
     "\nTime span: ", time_span, " hr",
@@ -57,17 +61,19 @@ cat("Total Observations: ", total_obs,
 ### GTFS
 
 Next, we should grab the GTFS shape and feed information we want for
-this route and direction. `transittraj` provides two functions to help
-with this:
+this route and direction. `transittraj` provides a couple functions to
+help with this. We’ll start by filtering our GTFS to just the northbound
+C53:
 
 ``` r
+# Filter the entire GTFS down to NB C53
 c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
                             route_ids = c53,
                             dir_id = c53_dir)
 ```
 
-If we print a summary of this GTFS object, we’ll see that we have only
-one route:
+If we print a summary of this GTFS object, we’ll see that it only
+contains one route:
 
 ``` r
 summary(c53_gtfs)
@@ -84,33 +90,36 @@ summary(c53_gtfs)
 ```
 
 Now that we have the filtered GTFS, we must pull the shape we want as a
-simple features (SF) spatial object. You will need to know two things to
+simple feature (SF) spatial object. You will need to know two things to
 do this:
 
 - Your `shape_id`. As shown above, there are two `shape_id`s assigned to
   the northbound C53. Check out
   [`plot_interactive_gtfs()`](https://obrien-ben.github.io/transittraj/reference/plot_interactive_gtfs.md)
   to explore each shape individually and decide which one is correct for
-  you. Below we use `shape_id = "C53:04"`.
+  you. Here we use `shape_id = "C53:04"`.
 
 - A coordinate reference system. We recommend projecting all spatial
   data into an appropriate Euclidian coordinate system. Below we use the
   UTM zone for Washington, DC, Zone 18N (with an EPSG number of 32618).
 
-Below we use
+Now we can use
 [`get_shape_geometry()`](https://obrien-ben.github.io/transittraj/reference/get_shape_geometry.md)
-to grab the `shape_id` we want, turn it into a linestring, and project
-it to an appropriate coordinate system:
+to grab the `shape_id` we want, turn it into a spatial line, and project
+it to the appropriate coordinate system:
 
 ``` r
+# Set our parameters
 c53_NB_shape_id <- "C53:04"
 dc_CRS <- 32618
+
+# Pull the shape we want
 c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
                                 shape = c53_NB_shape_id,
                                 project_crs = dc_CRS)
 ```
 
-Now, if we print the object, we’ll see that it is one multilinestring
+If we print this new object, we’ll see that it is one multilinestring
 with `shape_id = "C53:04"` and the coordinate system UTM 18N.
 
 ``` r
@@ -129,11 +138,12 @@ print(c53_shape)
 ### Visualizing our Starting Data
 
 We now have all the data we need to proceed. But before we do, let’s
-visualize the AVL point and route geometry so we understand what we’re
+visualize the AVL points and route geometry so we understand what we’re
 working with:
 
 ``` r
 # Convert GPS points to spatial objects
+# You typically won't need to do this -- this is just for visualization
 c53_sf <- c53_avl %>%
   # As SF
   st_as_sf(coords = c("longitude", "latitude"),
@@ -168,12 +178,11 @@ is dispatched out of Shepherd, and most vehicles take I-295 to get
 between Shepherd and their starting/ending locations.
 
 Knowing this, these points most likely correspond to one (or more)
-deadheading vehicles that were logged into a trip but had not actually
-started their run. This is a pretty common phenomenon across AVL
-vendors. This demonstrates why you should always 1) visualize your data,
-and 2) know the system you’re working with. `transittraj` includes
-functions intended to identify and remove potential deadheads. We’ll
-begin exploring these in the following section.
+deadheading vehicles that were logged into a trip but were not actually
+in revenue service. This is a pretty common phenomenon across AVL
+vendors. `transittraj` includes functions intended to identify and
+remove potential deadheads. We’ll begin exploring these in the following
+section.
 
 ## Steps 1 & 2: Buffer & Linearize
 
@@ -188,7 +197,7 @@ The first two steps we recommend are:
 
 Both steps are bundled into one function,
 [`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md).
-There are two main decision variables in this function:
+There are two main decision variables for this function:
 
 - The projection CRS. This should be the same one you used to create
   your route shape.
@@ -197,10 +206,20 @@ There are two main decision variables in this function:
   projection. Here we’re using UTM, which is in meters. Thus, all
   distance measurements you see in the vignette will be in meters.
 
+For this example, we’ll continue using UTM Zone 18N, and we’ll only keep
+points within 50 meters of the route alignment. This should take care of
+those deadheading points we saw earlier.
+
 ### Running the Code
 
+We can now clip and linearize our AVL dataframe using
+[`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md):
+
 ``` r
+# Set parameters
 c53_buffer = 50 # meters
+
+# Run the cleaning function
 c53_distances <- get_linear_distances(avl_df = c53_avl,
                                       shape_geometry = c53_shape,
                                       project_crs = dc_CRS,
@@ -213,9 +232,11 @@ Now each observation is represented by a distance from the route’s
 beginning. Let’s first see how many observations were clipped out:
 
 ``` r
+# Pull dimensions of each
 step0_obs <- dim(c53_avl)[1]
 step1_obs <- dim(c53_distances)[1]
 
+# Print
 cat("Initial: ", step0_obs, " obs",
     "\nAfter buffer: ", step1_obs, " obs",
     "\nDifference: ", (step0_obs - step1_obs), " obs removed")
@@ -224,9 +245,8 @@ cat("Initial: ", step0_obs, " obs",
 #> Difference:  490  obs removed
 ```
 
-We had just under 500 observations clipped out of our dataset.
-
-We can also take a look at the new header of our dataset:
+We had just under 500 observations clipped out of our dataset. We can
+also take a look at the new header of our dataset:
 
 ``` r
 head(c53_distances)
@@ -254,49 +274,66 @@ head(c53_distances)
 ```
 
 Now, instead of `latitude` and `longitude` columns, we have a single
-numeric `distance` column.
+numeric `distance` column. We will only work with these one-dimensional
+distances for the rest of this vignette.
 
 ## Step 3: Cleaning Overlapping Subtrips
 
-Under some AVL vendors, multiple vehicles (or operators) can have
-multiple vehicle or operator IDs recorded for the same trip. Sometimes
-this is okay: for example, there may be an operator shift change
-mid-shift. Other times, however, these multiple vehicles/operators are
-logged in at the same time (“overlapping”). This creates problems, as it
-becomes impossible for `transittraj` to understand what the trip is
-*supposed* to be doing.
+In some AVL systems, multiple vehicle or operator IDs can be recorded
+for the same trip. Sometimes this is okay: there may, for example, be an
+operator shift change mid-trip. Other times, however, these multiple
+vehicles/operators are logged in at the same time (“overlapping”). This
+creates problems, as it becomes impossible for `transittraj` to
+understand what the trip is *supposed* to be doing.
 
-The function
+For **Step 3** of the cleaning workflow,
 [`clean_overlapping_subtrips()`](https://obrien-ben.github.io/transittraj/reference/clean_overlapping_subtrips.md)
-identifies and removes these trips. There are a few key decision
-variables:
+identifies and removes these trips. Each distinct “subtrip” (a unique
+combination of trip ID, vehicle ID, and operator ID) is identified, then
+we check whether the time ranges of these subtrips overlap. There are a
+few key decision variables:
 
-- Should operator IDs be checked? The WMATA dataset does not include
-  operator information, so we will not check this.
+- Should operator IDs be checked? This will look for overlapping
+  operator IDs in each trip.
 
-- If a subtrip has only one observation assigned to it (i.e., one
-  observation for a unique combination of trip, vehicle, and operator),
-  should it be removed?
+- If a subtrip has only one observation assigned to it, should it be
+  removed?
 
 - Should trips with multiple subtrips that do *not* overlap be removed?
-  For this dataset, it’s okay to leave these in.
+
+The WMATA dataset does not have include operator IDs, so we will not
+check for operators. We’ll say that it’s okay to leave in subtrips that
+aren’t overlapping.
 
 ### Running the Code
 
+Below we use `c53_cleaned_subtrips()` to identify and remove problematic
+trips:
+
 ``` r
+# Set parameters
+c53_check_op <- FALSE
+c53_remove_singles <- TRUE
+c53_remove_non_overlap <- FALSE
+
+# Run function
 c53_cleaned_subtrips <- clean_overlapping_subtrips(
   distance_df = c53_distances,
-  check_operator = FALSE,
-  remove_single_observations = TRUE,
-  remove_non_overlapping = FALSE
+  check_operator = c53_check_op,
+  remove_single_observations = c53_remove_singles,
+  remove_non_overlapping = c53_remove_non_overlap
 )
 ```
 
 ### Exploring the Results
 
+Let’s see how many trips or observations were removed:
+
 ``` r
+# Pull new dimensions
 step3_obs <- dim(c53_cleaned_subtrips)[1]
 
+# Print
 cat("Initial: ", step1_obs, " obs",
     "\nAfter: ", step3_obs, " obs",
     "\nDifference: ", (step1_obs - step3_obs), " obs removed")
@@ -308,20 +345,24 @@ cat("Initial: ", step1_obs, " obs",
 We can see that only one observation violated our requirements. To see
 what that observation is, we’ll introduce a new feature of
 `transittraj`: the `return_removals` parameter. Each cleaning function
-used in this vignette contains a parameter `return_removals` that, when
-set to `TRUE`, will return a dataframe of the point(s) removed through
-that step and a brief explanation of what it was removed. Let’s check it
-out:
+used in this vignette allows a parameter `return_removals` that, when
+set to `TRUE`, will return a dataframe of the points/trips removed
+through that step and a brief explanation of why they were removed.
+Let’s check it out:
 
 ``` r
+# Get removals from previous function
 c53_step3_removals <- clean_overlapping_subtrips(
   # Same settigns as before
-  distance_df = c53_distances, check_operator = FALSE,
-  remove_single_observations = TRUE, remove_non_overlapping = FALSE,
+  distance_df = c53_distances,
+  check_operator = c53_check_op,
+  remove_single_observations = c53_remove_singles,
+  remove_non_overlapping = c53_remove_non_overlap,
   # Return removals
   return_removals = TRUE
 )
 
+# Print removed point
 print(c53_step3_removals)
 #> # A tibble: 1 × 7
 #>   trip_id_performed subtrip   n_obs reason action time_range n_subtrips_in_range
@@ -334,6 +375,7 @@ removed, and that it was removed because it was a single observation.
 Let’s see what this trip looked like in the original dataset:
 
 ``` r
+# Filter & print to violating trip
 print(c53_distances %>%
         filter(trip_id_performed == "8428100"))
 #>   location_ping_id vehicle_id trip_id_performed service_date route_id
@@ -348,8 +390,8 @@ remove this – we can’t do much with a single observation.
 ## Step 4: Clean Outlier/Jumps
 
 GPS data, especially in urban areas, is noisy. Sometimes that noise
-manifests as a large instantaneous jump that does not match an
-observation’s surroundings. The function
+manifests as a large instantaneous jump that does not match an points’s
+surrounding observations. In **Step 4**, the function
 [`clean_jumps()`](https://obrien-ben.github.io/transittraj/reference/clean_jumps.md)
 detects and removes these using median filters. Read more about the
 theory behind these filters using
@@ -360,16 +402,18 @@ deviation from the median around each point. This has two main decision
 variables:
 
 - The neighborhood width, the total number of points to consider around
-  each observation. We’ll use the default, 7, here. This means each
-  window will consist of 3 points on either side of each observation.
+  each observation.
 
-- The maximum jump distance. We’ll use a maximum of 20 meters here. This
-  is quite conservative; the goal is simply to demonstrate the idea.
+- The maximum distance between a point and the median of the
+  neighborhood around it. This can be defined as an absolute distance
+  from the median, in distance units, or as a multiple of the window’s
+  median absolute deviation (MAD) (this is known as a *Hampel filter*).
 
-Note that for demonstration purposes, we’re using a very simple median
-filter methodology. More options robust options, such as a Hampel
-filter, are available through
-[`clean_jumps()`](https://obrien-ben.github.io/transittraj/reference/clean_jumps.md).
+For this example, we’ll use the default neighborhood width of 7 (3
+points on either side of each observation). We’ll keep our outlier
+criteria simple (though not very robust) and use a maximum deviation of
+20 meters. This means that if any given point is more than 20 meters
+away from the median of its surrounding points, it will be tossed.
 
 ### Running the Code
 
@@ -379,8 +423,11 @@ as discussed above. The only input we need to change from its default is
 the maximum distance deviation.
 
 ``` r
+# Set parameters
 c53_max_jump <- 20 # meters
 c53_min_jump <- -1 * c53_max_jump # meters
+
+# Run function
 c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
                             max_median_deviation = c53_max_jump,
                             min_median_deviation = c53_min_jump,
@@ -392,8 +439,10 @@ c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
 Let’s see how many points were removed as outliers from this filter:
 
 ``` r
+# Pull dimensions
 step4_obs <- dim(c53_no_jumps)[1]
 
+# Print
 cat("Initial: ", step3_obs, " obs",
     "\nAfter: ", step4_obs, " obs",
     "\nDifference: ", (step3_obs - step4_obs), " obs removed")
@@ -402,18 +451,22 @@ cat("Initial: ", step3_obs, " obs",
 #> Difference:  11  obs removed
 ```
 
-We can use `return_removals = TRUE`, just like in Step 3, to see which
-observations were removed:
+With these settings, 11 points were removed. We can use
+`return_removals = TRUE`, just like in Step 3, to take a closer look at
+these outlying points:
 
 ``` r
+# Get removals
 c53_step4_removals <- clean_jumps(
   # Same settings as before
   distance_df = c53_cleaned_subtrips,
-  max_median_deviation = c53_max_jump, min_median_deviation = c53_min_jump,
-  evaluate_implosions = FALSE, evaluate_tails = FALSE,
+  max_median_deviation = c53_max_jump,
+  min_median_deviation = c53_min_jump,
   t_cutoff = Inf,
   # Return removals
   return_removals = TRUE)
+
+# Print the removed points
 print(c53_step4_removals)
 #> # A tibble: 11 × 13
 #>    trip_id_performed event_timestamp       distance location_ping_id window_med
@@ -434,8 +487,8 @@ print(c53_step4_removals)
 #> #   all_ok <lgl>
 ```
 
-Let’s explore pings 16770 and 16798 from trip 1306100 as an example. We
-can plot the trip in this area to visualize the outliers:
+Let’s explore pings 16770 through 16910 from trip 1306100 as an example.
+We can plot the trip in this area to visualize the outliers:
 
 ``` r
 # Filter dataframe to our tirp & distances
@@ -475,18 +528,19 @@ jumps_plot
 This plot makes it pretty clear that some of these points are a bit out
 of line. The final one removed may not truly be an outlier; we recommend
 playing around with the function’s options to find settings that make
-sense for your data. Again, there are a lot of customization options and
-types of median filters available through this function. Read more at
+sense for your data. Again, there are a handful of customization options
+available through this function that we recommend exploring. Read more
+at
 [`help(clean_jumps)`](https://obrien-ben.github.io/transittraj/reference/clean_jumps.md).
 
 ## Step 5: Clean Incomplete Trips
 
 AVL or GTFS-rt data is rarely transmitted perfectly. Often, there may be
 large gaps of missing data in the middle of trips, or you may have only
-a few observations from each trip.
+a few observations from each trip. For **Step 5**, the function
 [`clean_incomplete_trips()`](https://obrien-ben.github.io/transittraj/reference/clean_incomplete_trips.md)
-is designed to filter out these scenarios. There are two main groups of
-decision variables for this function:
+filter out these trips There are two main groups of decision variables
+for this function:
 
 - Minimum and maximum trip distances and durations.
 
@@ -495,18 +549,24 @@ decision variables for this function:
 This function will remove the entirety of trips that violate your
 decision variables.
 
-### Running the Code
-
 For this example, we’ll use a minimum trip distance of 500 meters, and a
 minimum trip duration of 90 seconds. Anything will less data than this
 will be filtered out. Additionally, we’ll remove trips with a gap larger
 than 500 meters.
 
+### Running the Code
+
+Let’s run
+[`clean_incomplete_trips()`](https://obrien-ben.github.io/transittraj/reference/clean_incomplete_trips.md)
+as discussed above:
+
 ``` r
+# Set parameters
 c53_min_dist <- 500 # meters
 c53_min_time <- 90 # seconds
 c53_max_gap <- 500 # meters
 
+# Run function
 c53_cleaned_incompletes <- clean_incomplete_trips(
   distance_df = c53_no_jumps,
   min_trip_distance = c53_min_dist,
@@ -594,18 +654,18 @@ gaps_plot
 
 ![](data-workflow_files/figure-html/unnamed-chunk-23-1.png)
 
-We can see this trip’s large gap around 12,500 meters. The slope of this
-line is a bit steep, but is not unreasonable; it seems a few GTFS-rt
-pings just went missing here somehow. When we go to reconstruct a
-trajectory curve later, it may not be reasonable to interpolate between
-these points over such a large gap, so we’ll leave this trip out of our
+We can see this trip’s gap around 12,500 meters. The slope of this line
+is a bit steep, but is not unreasonable; it looks like a few GTFS-rt
+pings just went missing here. When we go to reconstruct a trajectory
+curve later, it may not be reasonable to interpolate between these
+points over such a large distance, so we’ll leave this trip out of our
 future analyses.
 
 ## Step 6: Trim Trip Tails
 
 Earlier in this vignette, we used a spatial buffer to clean what
 appeared to be deadheads. But what if a trip deadheads close to – or
-along – the route alignment? The function
+along – the route alignment? In **Step 6**, the function
 [`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md)
 is designed to handle these scenarios by trimming the tails off of
 trips.
@@ -613,15 +673,22 @@ trips.
 The function identifies the observations with the minimum and maximum
 distance values, and removes any observations which occur before/after
 these points. There is one main decision variable here: should beginning
-trail be trimmed, ending tails, or both?
+tails be trimmed, ending tails, or both? For this example, we’ll trim
+both ends of trips:
 
 ### Running the Code
 
-For this example, we’ll trim both ends of trips:
+Let’s run
+[`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md),
+trimming both the beginning and ends of each trip:
 
 ``` r
+# Set parameters
+c53_trim_type <- "both"
+
+# Run function
 c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
-                          trim_type = "both")
+                          trim_type = c53_trim_type)
 ```
 
 ### Exploring the Results
@@ -629,8 +696,10 @@ c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
 Let’s see what was removed:
 
 ``` r
+# Pull dimensions
 step6_obs <- dim(c53_trimmed)[1]
 
+# Print
 cat("Initial: ", step5_obs, " obs",
     "\nAfter: ", step6_obs, " obs",
     "\nDifference: ", (step5_obs - step6_obs), " obs removed")
@@ -639,7 +708,7 @@ cat("Initial: ", step5_obs, " obs",
 #> Difference:  3  obs removed
 ```
 
-For this dataset, it looks like there were no long deadheads along the
+For this example, it looks like there were no long deadheads along the
 route alignment. Whether this function will make a difference will
 largely depend on the dataset and routes you’re working with. Let’s take
 a look at a the points removed:
@@ -647,7 +716,8 @@ a look at a the points removed:
 ``` r
 c53_step6_removals <- trim_trips(
   # Same settings as before
-  distance_df = c53_cleaned_incompletes, trim_type = "both",
+  distance_df = c53_cleaned_incompletes,
+  trim_type = c53_trim_type,
   # Return removals
   return_removals = TRUE
 )
@@ -663,7 +733,7 @@ print(c53_step6_removals)
 #> #   obs_ok <lgl>, location_ping_id <chr>
 ```
 
-Plotting the points removed along trip 35294100:
+We’ll plot the points removed along trip 35294100:
 
 ``` r
 # Filter dataframe to our tirp & distances
@@ -713,9 +783,9 @@ While GPS noise can result in the large jumps we saw previously, it much
 more often causes small deviations in observed locations. This creates
 problems when fitting an interpolating trajectory curve, because if any
 points drift backwards, the curve will be neither monotonic nor
-invertible. The seventh (and final!) cleaning step is to “pull”
-backtracking points back upwards. Optionally, data can also be made
-*strictly* monotonic.
+invertible. In **Step 7** (the last one!), we will “pull” any
+backtracking points up to where they should be. Optionally, data can
+also be made *strictly* monotonic.
 
 The function
 [`make_monotonic()`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md)
@@ -723,31 +793,38 @@ has two decision variables:
 
 - Should speeds be corrected to satisfy monotonicity? AVL speed location
   can help fit an excellent interpolating curve, but the values of
-  observed speeds must meet certain coditions (known as [Fritsch-Carlson
+  observed speeds must meet certain conditions (known as
+  [Fritsch-Carlson
   constraints](https://epubs.siam.org/doi/10.1137/0717021)) to produce a
-  monotonic spline. If your AVL data has speeds information, and you
-  plan to use it when fitting a spline (the recommend interpolation
-  method), set `correct_speed = TRUE` to guarantee the fit is monotonic.
+  monotonic spline. If your AVL data has speed information, and you plan
+  to use it when fitting a spline (the recommend interpolation method),
+  set `correct_speed = TRUE` to guarantee the fit is monotonic.
 
 - Should the trajectory be made *strictly* monotonic? This will identify
   perfectly flat regions can give them a slight upward slope. To be
   invertible, a trajectory must be strictly increasing, and never
   constant.
 
-More information is available at
+Our AVL dataset does have speeds, and we do want an invertible and
+monotonic final trajectory. As such, we’ll correct the speeds to meet
+the Fritsch-Carlson constraints, and we will add a distance error of
+0.001 meters (1 mm). More information is available at
 [`help(make_monotonic)`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md).
 
 ### Running the Code
 
-Our AVL dataset does have speeds, and we do want an invertible and
-monotonic final trajectory. As such, we’ll correct the speeds to meet
-the Fritsch-Carlson constraints, and we will add a distance error of
-0.001 meters (or 1 mm).
+Let’s run
+[`make_monotonic()`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md)
+using the parameters discussed above:
 
 ``` r
-c53_dist_error = 0.001
+# Set parameters
+c53_dist_error <- 0.001
+c53_correct_speeds <- TRUE
+
+# Run function
 c53_mono <- make_monotonic(distance_df = c53_trimmed,
-                           correct_speed = TRUE,
+                           correct_speed = c53_correct_speeds,
                            add_distance_error = c53_dist_error)
 ```
 
@@ -757,8 +834,10 @@ This function modifies existing data, but does not remove any points.
 The total number of observations should stay the same:
 
 ``` r
+# Pull dimensions
 step7_obs <- dim(c53_mono)[1]
 
+# Print
 cat("Initial: ", step6_obs, " obs",
     "\nAfter: ", step7_obs, " obs",
     "\nDifference: ", (step6_obs - step7_obs), " obs removed")
@@ -789,14 +868,16 @@ print(step7_val)
 
 We can see the trimmed dataset did not satisfy weak, strict, or
 Fristch-Carlson speed conditions for monotonicity, but the corrected
-dataset did. Let’s visualize how these corrections affected our data by
-plotting an example trip:
+dataset did. We can also see exactly which points were adjusted, and by
+how much, using the parameter `return_changes`. This is analagous to the
+`return_removals` option we saw in previous steps.
+
+Let’s visualize how this affected our data. Below we plot an example
+trip, 21499100, around one stop it makes:
 
 ``` r
 # Set filter parameters
-#plot_trip <- "1306100"
 plot_trip <- "21499100"
-#plot_dists <- c(13500, 14000)
 plot_dists <- c(13700, 13950)
 # Get old DF
 plot_df_before <- c53_trimmed %>%
@@ -841,9 +922,9 @@ mono_plot
 
 ![](data-workflow_files/figure-html/unnamed-chunk-32-1.png)
 
-In this trip, the GPS pings backtrack slightly while the bus is supposed
-to be stopped. The speeds are also larger than is physically feasible
-for a monotonic trajectory as the bus enters and leaves this stop.
+In this trip, the GPS backtracks slightly while the bus is supposed to
+be stopped. The speeds are also larger than is physically feasible for a
+monotonic trajectory as the bus enters and leaves this stop.
 [`make_monotonic()`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md)
 identified and corrected both issues.
 
@@ -851,5 +932,6 @@ identified and corrected both issues.
 
 That was a lot of cleaning! But we now have a dataset free of outliers
 and deadheading trips, and that we know will produce a monotonic and
-invertible trajectory function. In the next vignette, we will fit and
-explore these interpolating curves.
+invertible trajectory function. In the [next
+vignette](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html),
+we will fit and explore these interpolating curves.
