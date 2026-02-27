@@ -27,7 +27,7 @@ transit system performance and support decision-making.
 
 <div class="figure" style="text-align: center">
 
-<img src="man/figures/README-example2.jpg" alt="`transittraj` converts noisy GPS data (left) to a trajectory (right) meeting the four requirements discussed below" width="100%" />
+<img src="man/figures/README-example2.png" alt="`transittraj` converts noisy GPS data (left) to a trajectory (right) meeting the four requirements discussed below" width="100%" />
 <p class="caption">
 
 `transittraj` converts noisy GPS data (left) to a trajectory (right)
@@ -35,6 +35,8 @@ meeting the four requirements discussed below
 </p>
 
 </div>
+
+Upgrading GTFS validator to ignore tables with zero observations
 
 ## Installation
 
@@ -91,7 +93,19 @@ formats, including [GTFS](https://gtfs.org/) and
 [TIDES](https://tides-transit.org/main/). In our cleaning and trajectory
 fitting, our functions are flexible but avoid techniques which require
 complex tuning. Finally, we provide tools to visualize and apply fit
-trajectory curves. Check out the vignettes below to get started.
+trajectory curves.
+
+<div class="figure" style="text-align: center">
+
+<img src="man/figures/README-arch.png" alt="Overview of `transittraj` workflow" width="90%" />
+<p class="caption">
+
+Overview of `transittraj` workflow
+</p>
+
+</div>
+
+Check out the vignettes below to get started.
 
 ## Getting Started with `transittraj`
 
