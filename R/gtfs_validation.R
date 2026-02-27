@@ -11,7 +11,7 @@
 validate_gtfs_input <- function(gtfs, table, needed_fields) {
 
   # Pull validation table
-  gtfs_val <- attr(gtfs, "validation_result")
+  gtfs_val <- tidytransit::validate_gtfs(gtfs)
 
   # Check table presence
   table_present <- all(gtfs_val %>%

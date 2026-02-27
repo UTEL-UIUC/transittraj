@@ -57,7 +57,7 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
     rlang::abort(message = "Provided GTFS not a tidygtfs object.",
                  class = "error_gtfsval_not_tidygtfs")
   }
-  gtfs_val <- attr(gtfs, "validation_result")
+  gtfs_val <- tidytransit::validate_gtfs(gtfs)
 
   # --- Validate fields ---
   # routes: route_id, agency_id
@@ -82,9 +82,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
                       needed_fields = c("stop_id", "trip_id"))
 
   # stops: stop_id (optional)
-  stops_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "stops") %>%
-                         dplyr::pull(file_provided_status))
+  stops_present <- ifelse(test = all(gtfs_val %>%
+                                       dplyr::filter(file == "stops") %>%
+                                       dplyr::pull(file_provided_status)),
+                          yes = (dim(gtfs$stops)[1] > 0),
+                          no = FALSE)
   if (stops_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "stops",
@@ -92,9 +94,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
 
   # shapes: shape_id (optional)
-  shapes_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "shapes") %>%
-                         dplyr::pull(file_provided_status))
+  shapes_present <- ifelse(test = all(gtfs_val %>%
+                                                dplyr::filter(file == "shapes") %>%
+                                                dplyr::pull(file_provided_status)),
+                                   yes = (dim(gtfs$shapes)[1] > 0),
+                                   no = FALSE)
   if (shapes_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "shapes",
@@ -102,9 +106,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
 
   # calendar: service_id (optional)
-  calendar_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "calendar") %>%
-                         dplyr::pull(file_provided_status))
+  calendar_present <- ifelse(test = all(gtfs_val %>%
+                                                dplyr::filter(file == "calendar") %>%
+                                                dplyr::pull(file_provided_status)),
+                                   yes = (dim(gtfs$calendar)[1] > 0),
+                                   no = FALSE)
   if (calendar_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "calendar",
@@ -112,9 +118,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
 
   # calendar_dates: service_id (optional)
-  calendar_dates_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "calendar_dates") %>%
-                         dplyr::pull(file_provided_status))
+  calendar_dates_present <- ifelse(test = all(gtfs_val %>%
+                                           dplyr::filter(file == "calendar_dates") %>%
+                                           dplyr::pull(file_provided_status)),
+                              yes = (dim(gtfs$calendar_dates)[1] > 0),
+                              no = FALSE)
   if (calendar_dates_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "calendar_dates",
@@ -122,19 +130,24 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
 
   # transfers: trip_id, stop_id (optional)
-  transfers_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "transfers") %>%
-                         dplyr::pull(file_provided_status))
+  transfers_present <- ifelse(test = all(gtfs_val %>%
+                                       dplyr::filter(file == "transfers") %>%
+                                       dplyr::pull(file_provided_status)),
+                          yes = (dim(gtfs$transfers)[1] > 0),
+                          no = FALSE)
   if (transfers_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "transfers",
-                        needed_fields = c("trip_id", "stop_id"))
+                        needed_fields = c("from_trip_id", "to_trip_id",
+                                          "from_stop_id", "to_stop_id"))
   }
 
   # frequencies: service_id (optional)
-  frequencies_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "frequencies") %>%
-                         dplyr::pull(file_provided_status))
+  frequencies_present <- ifelse(test = all(gtfs_val %>%
+                                           dplyr::filter(file == "frequencies") %>%
+                                           dplyr::pull(file_provided_status)),
+                              yes = (dim(gtfs$frequencies)[1] > 0),
+                              no = FALSE)
   if (frequencies_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "frequencies",
@@ -142,9 +155,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   }
 
   # fare_rules: route_id (optional)
-  fare_rules_present <- all(gtfs_val %>%
-                         dplyr::filter(file == "fare_rules") %>%
-                         dplyr::pull(file_provided_status))
+  fare_rules_present <- ifelse(test = all(gtfs_val %>%
+                                           dplyr::filter(file == "fare_rules") %>%
+                                           dplyr::pull(file_provided_status)),
+                              yes = (dim(gtfs$fare_rules)[1] > 0),
+                              no = FALSE)
   if (fare_rules_present) {
     validate_gtfs_input(gtfs = gtfs,
                         table = "fare_rules",
