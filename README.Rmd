@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 An R package for reconstructing and visualizing transit vehicle trajectories.
 
-This is an early development version of `transitraj`. Expect it to change
+This is an early development version of `transittraj`. Expect it to change
 without warning.
 
 ## Introduction
@@ -97,7 +97,7 @@ useful if one wants to know when a vehicle passed a certain point on its route.
 for the speed of the vehicle. This allows us to generate a continuous speed
 profile of each vehicle's trip.
 
-``` {r, echo = FALSE, out.width = "80%", fig.align = "center", fig.cap = "A `transittraj` trajectory meeting our four requirements"}
+``` {r, echo = FALSE, out.width = "100%", fig.align = "center", fig.cap = "A `transittraj` trajectory meeting our four requirements"}
 knitr::include_graphics("man/figures/README-example_traj.png")
 ```
 
