@@ -2,6 +2,7 @@
 
 ### All vignettes
 
+- [about](https://obrien-ben.github.io/transittraj/articles/about.md):
 - [The AVL Cleaning
   Workflow](https://obrien-ben.github.io/transittraj/articles/data-workflow.md):
 - [Understanding Data
