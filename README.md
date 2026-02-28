@@ -132,7 +132,7 @@ eventual submission to CRAN, we’re still working on the following:
 
 - Formal automated testing
 
-- More vignettes
+- Vignettes discussing methodology and inner-workings of `transittraj`
 
 ## Citation
 

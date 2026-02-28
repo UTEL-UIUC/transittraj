@@ -78,7 +78,7 @@ for the speed of the vehicle. This allows us to generate a continuous speed
 profile of each vehicle's trip.
 
 ``` {r, echo = FALSE, out.width = "100%", fig.align = "center", fig.cap = "`transittraj` converts noisy GPS data (left) to a trajectory (right) meeting our four requirements"}
-knitr::include_graphics("man/figures/README-example2.png")
+#knitr::include_graphics("man/figures/README-example2.png")
 ```
 
 `transittraj` aims to make these workflows as smooth and accessible as possible.
@@ -120,5 +120,5 @@ submission to CRAN, we're still working on the following:
 we'd appreciate a citation:
 
 ``` {r}
-utils::citation("transittraj")
+#utils::citation("transittraj")
 ```
