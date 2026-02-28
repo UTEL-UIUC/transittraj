@@ -18,14 +18,12 @@ monotonic, invertible, and differentiable trajectory curves. By doing
 so, `transittraj` provides versatile and powerful tools to analyze
 transit system performance and support decision-making.
 
-![\`transittraj\` converts noisy GPS data (left) to a trajectory (right)
+![\`transittraj\` turns noisy GPS data (left) into a trajectory (right)
 meeting the four requirements discussed
 below](reference/figures/README-example2.png)
 
-`transittraj` converts noisy GPS data (left) to a trajectory (right)
+`transittraj` turns noisy GPS data (left) into a trajectory (right)
 meeting the four requirements discussed below
-
-Upgrading GTFS validator to ignore tables with zero observations
 
 ## Installation
 
