@@ -238,13 +238,8 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
   }
 
   # Get required data for all methods
-  # Dist & time extremes
-  trip_extremes <- data.frame(trip_id_performed = all_trips,
-                              min_dist = attr(object, "min_dist"),
-                              max_dist = attr(object, "max_dist"),
-                              min_time = attr(object, "min_time"),
-                              max_time = attr(object, "max_time")) %>%
-    dplyr::filter(trip_id_performed %in% trips)
+  trip_extremes <- get_trip_extremes(trajectory = object,
+                                     filter_trips = trips)
 
   if (!is.null(new_times)) {
     # If interpolating for distance
@@ -573,7 +568,7 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
   return(int_df)
 }
 
-#' #' Quickly plots an AVL trajectory.
+#' Quickly plots an AVL trajectory.
 #'
 #' This function generates a quick plot of a single or grouped trajectory
 #' object. Using the trajectory function, the entire trajectory will be plotted
@@ -643,4 +638,33 @@ plot.avltrajectory_single <- function(x, ...) {
                   title = "Single AVL Trajectory",
                   subtitle = paste("Trip ", unclass(x), sep = ""))
   traj_plot
+}
+
+#' Pull dataframe of min/max distance/time values from trajectory object.
+#'
+#' Arranges data inside trajectory object as a dataframe. Meant for a grouped
+#' trajectory object.
+#' For internal use only.
+#'
+#' @param trajectory A trajectory object
+#' @param filter_trips A vectory of trip_id_performed to filter to
+#' @return A dataframe with: trip_id_performed, min_time/max_time,
+#' min_dist/max_dist
+#' @keywords internal
+get_trip_extremes <- function(trajectory, filter_trips = NULL) {
+
+  trip_extremes <- data.frame(trip_id_performed = unclass(trajectory),
+                              min_dist = attr(object, "min_dist"),
+                              max_dist = attr(object, "max_dist"),
+                              min_time = attr(object, "min_time"),
+                              max_time = attr(object, "max_time"))
+
+  if (!is.null(filter_trips)) {
+    trip_extremes_filt <- trip_extremes %>%
+      filter(trip_id_performed %in% filter_trips)
+
+    return(trip_extremes_filt)
+  } else {
+    return(trip_extremes)
+  }
 }
