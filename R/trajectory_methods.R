@@ -442,13 +442,14 @@ predict.avltrajectory_single <- function(object, new_times = NULL, new_distances
 #' @keywords internal
 interpolate_distances_group <- function(trip_extremes, new_times, trajectory_function, deriv) {
 
-  use_trips <- trip_extremes$trip_id_performed
-  new_times_trips <- new_times %>%
-    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-    tidyr::uncount(weights = length(use_trips)) %>%
-    dplyr::mutate(trip_id_performed = rep(use_trips, nrow(new_times))) %>%
-    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-    dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+  new_times_vec <- as.numeric(new_times$event_timestamp)
+  num_times <- length(new_times_vec)
+  num_trips <- dim(trip_extremes)[1]
+  new_times_trips <- trip_extremes %>%
+    tidyr::uncount(weights = num_times) %>%
+    dplyr::mutate(event_timestamp = rep(new_times_vec, num_trips)) %>%
+    dplyr::filter(((event_timestamp >= min_time) &
+                     (event_timestamp <= max_time))) %>%
     dplyr::select(-c(min_time, max_time, min_dist, max_dist))
 
   if (dim(new_times_trips)[1] == 0) {
@@ -522,13 +523,14 @@ interpolate_distances_single <- function(trip_extremes, new_times, trajectory_fu
 #' @keywords internal
 interpolate_times_group <- function(trip_extremes, new_distances, inv_trajectory_function) {
 
-  use_trips <- unique(trip_extremes$trip_id_performed)
-  num_trips <- length(use_trips)
-  new_dist_trips <- new_distances %>%
-    tidyr::uncount(weights = num_trips) %>%
-    dplyr::mutate(trip_id_performed = rep(use_trips, nrow(new_distances))) %>%
-    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-    dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
+  new_dist_vec <- new_distances$distance
+  num_dist <- length(new_dist_vec)
+  num_trips <- dim(trip_extremes)[1]
+  new_dist_trips <- trip_extremes %>%
+    tidyr::uncount(weights = num_dist) %>%
+    dplyr::mutate(distance = rep(new_dist_vec, num_trips)) %>%
+    dplyr::filter(((distance >= min_dist) &
+                     (distance <= max_dist))) %>%
     dplyr::select(-c(min_time, max_time, min_dist, max_dist))
 
   if (dim(new_dist_trips)[1] == 0) {

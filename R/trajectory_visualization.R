@@ -704,6 +704,7 @@ plot_df_setup <- function(trajectory, distance_df,
         dplyr::mutate(trip_id_performed = unclass(trajectory))
     } else if ("avltrajectory_group" %in% class(trajectory)) {
       # If grouped trajectory, handle trips
+
       trips_df <- predict.avltrajectory_group(trajectory, trips = plot_trips,
                           new_times = time_seq) %>%
         dplyr::rename(distance = interp)
@@ -718,7 +719,6 @@ plot_df_setup <- function(trajectory, distance_df,
         dplyr::mutate(event_timestamp = as.POSIXct(event_timestamp,
                                                    tz = agency_tz))
     }
-
   } else {
     # If distance_df provided, validate it
     needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
