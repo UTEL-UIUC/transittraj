@@ -654,14 +654,14 @@ plot.avltrajectory_single <- function(x, ...) {
 get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 
   trip_extremes <- data.frame(trip_id_performed = unclass(trajectory),
-                              min_dist = attr(object, "min_dist"),
-                              max_dist = attr(object, "max_dist"),
-                              min_time = attr(object, "min_time"),
-                              max_time = attr(object, "max_time"))
+                              min_dist = attr(trajectory, "min_dist"),
+                              max_dist = attr(trajectory, "max_dist"),
+                              min_time = attr(trajectory, "min_time"),
+                              max_time = attr(trajectory, "max_time"))
 
   if (!is.null(filter_trips)) {
     trip_extremes_filt <- trip_extremes %>%
-      filter(trip_id_performed %in% filter_trips)
+      dplyr::filter(trip_id_performed %in% filter_trips)
 
     return(trip_extremes_filt)
   } else {
