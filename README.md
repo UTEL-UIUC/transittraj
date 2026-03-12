@@ -64,14 +64,14 @@ trajectory fitting tools from parallel fields, they would likely
 encounter challenges: transit data adheres to unique formatting
 standards; very few open-source tools exist for handling transit vehicle
 location data; and, most importantly, common GPS processing techniques
-can oversmooth transit trajectories, as AVL pings occur with the same
-frequency (15-30 seconds) as stop dwells, signal delays, and other
-stop-and-go cyles.
+can oversmooth transit trajectories because AVL pings occur with the
+same frequency (15-30 seconds) as stop dwells, signal delays, and other
+stop-and-go cycles.
 
-`transittraj` fills this gap this gap by proposing a workflow with two
-main steps. The first is data cleaning, where we focus on correcting
-noise and errors in point observations. Second, we use cleaned position
-and speed measurements to fit an interpolating curve representing the
+`transittraj` fills this gap by proposing a workflow with two main
+steps. The first is data cleaning, where we focus on correcting noise
+and errors in point observations. Second, we use cleaned position and
+speed measurements to fit an interpolating curve representing the
 vehicle’s trajectory. This curve has four important attributes:
 
 - *Continuous*: There should be no gaps in the trajectory for each trip.
