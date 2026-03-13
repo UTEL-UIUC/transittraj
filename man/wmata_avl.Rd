@@ -39,7 +39,7 @@ to be used alongside the static GTFS feed provided in \code{wmata_gtfs}.
 The dataset contains three bus routes, with two directions for each:
 \itemize{
 \item D40: Georgia Ave
-\item C53 U St/Congress Heights
+\item C53: U St/Congress Heights
 \item D96: Mass Ave to Bethesda
 }
 }

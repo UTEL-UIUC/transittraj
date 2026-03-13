@@ -53,3 +53,13 @@ If so, they will be filtered; if not, they will be left \code{NULL} in the new
 GTFS. If any required file or field is missing, an error will be thrown
 describing what is missing.
 }
+\examples{
+# Set my parameters
+my_route <- "C53"
+my_dir <- 0
+
+# Filter WMATA GTFS
+filter_by_route(gtfs = wmata_gtfs,
+                route_ids = my_route,
+                dir_id = 0)
+}

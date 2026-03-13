@@ -30,3 +30,19 @@ provided, stops will be project onto all \code{shape_id}s that serve them. If a
 \code{shape_geometry} is provided, the function will look only for stops served
 by that shape.
 }
+\examples{
+# Set my parameters
+my_shape <- "C53:04"
+my_crs <- 32618
+my_route <- "C53"
+my_dir <- 0
+
+# Get needed GTFS data
+c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route, dir_id = 0)
+c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
+
+# Run stop distances function
+get_stop_distances(gtfs = c53_gtfs,
+                   shape_geometry = c53_shape,
+                   project_crs = my_crs)
+}

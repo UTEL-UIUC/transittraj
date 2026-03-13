@@ -48,8 +48,17 @@
 #' @param dir_id Optional. A numeric vector or single numeric containing the
 #' desired direction ID(s).
 #' @return A tidygtfs object containing only information relevant to the desired
-#'  route and direction.
+#' route and direction.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_route <- "C53"
+#' my_dir <- 0
+#'
+#' # Filter WMATA GTFS
+#' filter_by_route(gtfs = wmata_gtfs,
+#'                 route_ids = my_route,
+#'                 dir_id = 0)
 filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 
   # --- Check GTFS is tidygtfs object ---
@@ -308,6 +317,15 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 #' @return An SF multilinestring, with one multilinestring object per
 #' `shape_id`.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_shape <- "C53:04"
+#' my_crs = 32618
+#'
+#' # Get shape from WMATA GTFS
+#' get_shape_geometry(gtfs = wmata_gtfs,
+#'                    shape = my_shape,
+#'                    project_crs = my_crs)
 get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
   # --- Validate ---
@@ -367,6 +385,22 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #' numeric distances is returned. Units are those of the spatial projection
 #' used (e.g., meters if using UTM).
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_crs <- 32618
+#'
+#' # Get shape data
+#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#'
+#' # Set points of interest
+#' my_points <- data.frame(longitude = c(-76.990038, -77.036289),
+#'                         latitude = c(38.871335, 38.917054),
+#'                         poi_name = c("11th St Bridge", "16th & U"))
+#'
+#' # Run project_onto_route
+#' project_onto_route(shape_geometry = c53_shape,
+#'                    points = my_points,
+#'                    project_crs = my_crs)
 project_onto_route <- function(shape_geometry, points,
                                original_crs = 4326, project_crs = 4326) {
 
@@ -453,6 +487,21 @@ project_onto_route <- function(shape_geometry, points,
 #' onto, and `distance`, in units of the spatial projection (e.g., meters if
 #' using UTM).
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_shape <- "C53:04"
+#' my_crs <- 32618
+#' my_route <- "C53"
+#' my_dir <- 0
+#'
+#' # Get needed GTFS data
+#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route, dir_id = 0)
+#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
+#'
+#' # Run stop distances function
+#' get_stop_distances(gtfs = c53_gtfs,
+#'                    shape_geometry = c53_shape,
+#'                    project_crs = my_crs)
 get_stop_distances <- function(gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
 
@@ -547,4 +596,154 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
     stop_dist_df <- purrr::list_rbind(stop_dist_list)
   }
   return(stop_dist_df)
+}
+
+#' Generates a Leaflet viewer of GTFS routes and stops.
+#'
+#' @description
+#' This function generates a simple Leaflet-based interactive map viewer of a
+#' GTFS. This function is intended for quick and easy visualization of a GTFS
+#' feed. As such, formatting options are relatively limited.
+#'
+#' @details
+#'
+#' ## Route Shapes and Stops
+#'
+#' The primary goal of this function is to visualize and explore each GTFS
+#' shape, including its associated `route_id` and `direction_id`. This function
+#' will plot all shapes and stops present in the input `gtfs`. To plot only
+#' a specific route or direction, first the feed using `filter_by_route()`.
+#'
+#' Routes have both pop-ups and hover labels. The hover label shows the
+#' shapes's `route_id` (from the `trips` file). The pop-up will show the
+#' `route_id`, `direction_id`, and `shape_id`.
+#'
+#' Stops also have both pop-ups and hover labels. The hover label will show the
+#' point's `stop_id` (from the `stops` file). The pop-up will show the
+#' `stop_name` and `stop_id`.
+#'
+#' ## Formatting
+#'
+#' Two formatting options are available through this function: basemaps
+#' and route color palettes.
+#'
+#' The `background` parameter allows you to customize the background map below
+#' the plotted shapes and stops. Esri's light grey canvas is the default, as it
+#' is excellent for providing geographic context while still allowing the
+#' routes to stand out. To see the available options, type
+#' `leaflet::providers$` into your console.
+#'
+#' The route colors can be customized in two different ways:
+#'
+#' - Using the `gtfs`'s colors. Typically, the `routes` file in a GTFS feed
+#' will contain a field `route_color`; this is the color you see in most
+#' public-facing mapping/navigation applications (e.g., Google Maps, Transit,
+#' etc.). If this is present in the input `gtfs` feed, setting
+#' `color_palette = "gtfs"` will use this field to color each shape.
+#'
+#' - Using a named color palette. Without `gtfs` colors, this function
+#' assigns colors categorically (using `leaflet::colorFactor()`). To set
+#' the palette, input a string corresponding to a palette name from
+#' `RColorBrewer`, a palette name from `viridis`, a vector of color names (with
+#' the same length as the number of shapes), or some other color function. See
+#' Leaflet's
+#' [colors vignette](https://rstudio.github.io/leaflet/articles/colors.html)
+#' for more information.
+#'
+#' @param gtfs A tidytransit GTFS object.
+#' @param background Optional. A string for the background of the transit map,
+#' from Leaflet's provider library (see `leaflet::providers$`). Default is
+#' Esri's light gray canvas (`"Esri.WorldGrayCanvas"`).
+#' @param color_palette Optional. A string for the Leaflet color palette to
+#' color routes. If `"gtfs"`, will use color codes in the GTFS `routes` file.
+#' Default is `"Dark2"`.
+#' @return A Leaftlet object.
+#' @export
+#' @examples
+#' plot_interactive_gtfs(gtfs = wmata_gtfs,
+#'                       color_palette = "gtfs")
+plot_interactive_gtfs <- function(gtfs,
+                                  background = "Esri.WorldGrayCanvas",
+                                  color_palette = "Dark2") {
+
+  # --- Validate input GTFS ---
+  validate_gtfs_input(gtfs,
+                      table = "stops",
+                      needed_fields = c("stop_id", "stop_lon", "stop_lat",
+                                        "stop_name"))
+  validate_gtfs_input(gtfs,
+                      table = "trips",
+                      needed_fields = c("shape_id", "direction_id", "route_id"))
+  if (color_palette == "gtfs") {
+    validate_gtfs_input(gtfs,
+                        table = "routes",
+                        needed_fields = c("route_color"))
+  }
+
+  # --- Get GTFS geometries ---
+  # Routes
+  shape_geometry <- get_shape_geometry(gtfs = gtfs)
+
+  # Stops
+  stops_sf <- gtfs$stops %>%
+    dplyr::select(stop_name, stop_id, stop_lon, stop_lat) %>%
+    sf::st_as_sf(coords = c("stop_lon", "stop_lat"),
+                 crs = 4326)
+
+
+  # --- Formatting ---
+  # Should equal dimension of shape_geometry, assuming each shape_id has
+  # one direction & route
+  shapes_info <- gtfs$trips %>%
+    dplyr::distinct(shape_id, direction_id, route_id)
+  shape_geometry <- shape_geometry %>%
+    dplyr::left_join(y = shapes_info, by = "shape_id")
+
+  # Popups & labels
+  route_popup <- paste("Route: ", shape_geometry$route_id,
+                       "<br>Direction: ", shape_geometry$direction_id,
+                       "<br>Shape: ", shape_geometry$shape_id,
+                       sep = "")
+  route_hover <- as.character(shape_geometry$route_id)
+  stop_popup <- paste(stops_sf$stop_name, " (", stops_sf$stop_id, ")", sep = "")
+  stop_hover <- as.character(stops_sf$stop_id)
+
+  # Colors
+  if (color_palette == "gtfs") {
+    # Get color codes and append #
+    route_colors <- gtfs$routes %>%
+      dplyr::select(route_id, route_color) %>%
+      dplyr::mutate(route_color = paste("#", route_color, sep = ""))
+
+    # Create palette
+    route_pal <- leaflet::colorFactor(route_colors$route_color, route_colors$route_id)
+  } else {
+    # Create palette
+    route_pal <- leaflet::colorFactor(color_palette, shape_geometry$route_id)
+  }
+
+  # --- Create map ---
+  interactive_map <- leaflet::leaflet() %>%
+    leaflet::addPolylines(data = shape_geometry, # Route alignment
+                          color = ~route_pal(route_id),
+                          opacity = 1,
+                          label = route_hover,
+                          popup = route_popup) %>%
+    leaflet::addLegend(data = shape_geometry, # Legend
+                       position ="bottomright",
+                       pal = route_pal,
+                       values = ~route_id,
+                       title = "Route ID") %>%
+    leaflet::addCircleMarkers(data = stops_sf, # Stops
+                              fillColor = "white",
+                              fillOpacity = 1,
+                              color = "black",
+                              opacity = 1,
+                              weight = 1,
+                              radius = 3,
+                              label = stop_hover,
+                              popup = stop_popup) %>%
+    leaflet::addProviderTiles(background) # Basemap
+
+  return(interactive_map)
 }

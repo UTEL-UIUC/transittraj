@@ -61,6 +61,7 @@ reference:
   contents:
   - wmata_avl
   - wmata_gtfs
+  - new_transittraj_data
 
 navbar:
   components:
@@ -75,7 +76,3 @@ navbar:
         - text: Trajectories
         - text: Intro to Trajectories
           href: articles/intro-trajectories.html
-        - text: Understanding Trajectory Objects
-          href: articles/trajectory-objects.html
-        - text: Plotting Trajectories
-          href: articles/plotting-trajectories.html

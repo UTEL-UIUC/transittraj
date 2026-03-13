@@ -109,3 +109,131 @@ correct_speeds_fun <- function(m_0, deltas) {
   }
   return(m_0)
 }
+
+#' Returns an object from a particular step of `transittraj`'s workflow.
+#'
+#' This function runs `transittraj`'s AVL cleaning and trajectory reconstruction
+#' workflow up until a certain point (as defined by `func_output`), then returns
+#' the object at that point. A subset of the `wmata_avl` dataset is used.
+#'
+#' This is primarily intended for use in testing and examples. The workflow
+#' applied here is the same as what is in `vignette("data-workflow")`.
+#'
+#' @param func_output The `transittraj` function to return an output for. Should
+#' be a string corresponding to the function name. Default is `NULL`, where a
+#' vector of allowed inputs will be returned.
+#' @return The object returned by the specified function.
+#' @export
+#' @examples
+#' # Get AVL data after projection onto route
+#' new_transittraj_data("get_linear_distances")
+new_transittraj_data <- function(func_output = NULL) {
+
+  # Define allowed steps
+  allowed_steps <- c("filter_by_route",
+                     "get_shape_geometry",
+                     "get_linear_distances",
+                     "clean_overlapping_subtrips",
+                     "clean_jumps",
+                     "clean_incomplete_trips",
+                     "trim_trips",
+                     "make_monotonic",
+                     "get_trajectory_fun")
+  if (is.null(func_output)) {
+    return(allowed_steps)
+  } else if (!(func_output %in% allowed_steps)) {
+    rlang::abort(message = "Unknown step. Run new_transittraj_data() for list of allowed inputs.",
+                 class = "error_datahelper_input")
+  }
+
+  # - filter_by_route -
+  c53 <- "C53"
+  c53_dir <- 0 # 0 is NB, 1 is SB
+  c53_avl <- transittraj::wmata_avl %>%
+    dplyr::filter((route_id == c53) & (direction_id == c53_dir)) %>%
+    dplyr::filter(trip_id_performed %in% c("13300100", "13437100"))
+  c53_gtfs <- filter_by_route(gtfs = transittraj::wmata_gtfs,
+                              route_ids = c53,
+                              dir_id = c53_dir)
+  if (func_output == "filter_by_route") {
+    return(c53_gtfs)
+  }
+
+  # - get_shape_geometry -
+  c53_NB_shape_id <- "C53:04"
+  dc_CRS <- 32618
+  c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
+                                  shape = c53_NB_shape_id,
+                                  project_crs = dc_CRS)
+  if (func_output == "get_shape_geometry") {
+    return(c53_shape)
+  }
+
+  # - get_linear_distances -
+  c53_buffer = 50 # meters
+  c53_distances <- get_linear_distances(avl_df = c53_avl,
+                                        shape_geometry = c53_shape,
+                                        project_crs = dc_CRS,
+                                        clip_buffer = c53_buffer)
+  if (func_output == "get_linear_distances") {
+    return(c53_shape)
+  }
+
+  # - clean_overlapping_subtrips -
+  c53_cleaned_subtrips <- clean_overlapping_subtrips(
+    distance_df = c53_distances,
+    check_operator = FALSE,
+    remove_single_observations = TRUE,
+    remove_non_overlapping = FALSE
+  )
+  if (func_output == "clean_overlapping_subtrips") {
+    return(c53_shape)
+  }
+
+  # - clean_jumps -
+  c53_max_jump <- 20 # meters
+  c53_min_jump <- -1 * c53_max_jump # meters
+  c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
+                              max_median_deviation = c53_max_jump,
+                              min_median_deviation = c53_min_jump,
+                              t_cutoff = Inf)
+  if (func_output == "clean_jumps") {
+    return(c53_shape)
+  }
+
+  # - clean_incomplete_trips -
+  c53_min_dist <- 500 # meters
+  c53_min_time <- 90 # seconds
+  c53_max_gap <- 500 # meters
+  c53_cleaned_incompletes <- clean_incomplete_trips(
+    distance_df = c53_no_jumps,
+    min_trip_distance = c53_min_dist,
+    min_trip_duration = c53_min_time,
+    max_distance_gap = c53_max_gap
+  )
+  if (func_output == "clean_incomplete_trips") {
+    return(c53_shape)
+  }
+
+  # - trim_trips -
+  c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
+                            trim_type = "both")
+  if (func_output == "trim_trips") {
+    return(c53_shape)
+  }
+
+  # - make_monotonic -
+  c53_dist_error = 0.001
+  c53_mono <- make_monotonic(distance_df = c53_trimmed,
+                             correct_speed = TRUE,
+                             add_distance_error = c53_dist_error)
+  if (func_output == "make_monotonic") {
+    return(c53_shape)
+  }
+
+  # - get_trajectory_fun -
+  c53_traj <- get_trajectory_fun(distance_df = c53_mono)
+  if (func_output == "get_trajectory_fun") {
+    return(c53_shape)
+  }
+}

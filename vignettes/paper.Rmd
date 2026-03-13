@@ -1,7 +1,18 @@
 ---
-title: "about"
-output: html_document
+title: "paper"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{paper}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 ## Introduction
 
@@ -120,5 +131,5 @@ submission to CRAN, we're still working on the following:
 we'd appreciate a citation:
 
 ``` {r}
-#utils::citation("transittraj")
+citation("transittraj")
 ```

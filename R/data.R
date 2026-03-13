@@ -10,7 +10,7 @@
 #' The dataset contains three bus routes, with two directions for each:
 #'
 #' - D40: Georgia Ave
-#' - C53 U St/Congress Heights
+#' - C53: U St/Congress Heights
 #' - D96: Mass Ave to Bethesda
 #'
 #'
@@ -44,7 +44,7 @@
 #' This dataset has been filtered to three routes, with two directions for each:
 #'
 #' - D40: Georgia Ave
-#' - C53 U St/Congress Heights
+#' - C53: U St/Congress Heights
 #' - D96: Mass Ave toBethesda
 #'
 #' @format ## `wmata_gtfs`

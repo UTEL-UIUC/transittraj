@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
 
 An R package for reconstructing and visualizing transit vehicle trajectories.
 
-This is an early development version of `transittraj`. Expect it to change
-without warning.
+This is a development version of `transittraj`. Expect it to change without
+warning.
 
 ## Introduction
 
