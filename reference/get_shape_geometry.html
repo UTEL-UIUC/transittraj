@@ -13,7 +13,7 @@ requirements on the input GTFS."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,8 +29,6 @@ requirements on the input GTFS."></head><body>
     <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Trajectories</h6></li>
     <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
-    <li><a class="dropdown-item" href="../articles/trajectory-objects.html">Understanding Trajectory Objects</a></li>
-    <li><a class="dropdown-item" href="../articles/plotting-trajectories.html">Plotting Trajectories</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -45,7 +43,7 @@ requirements on the input GTFS."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get the geometry of a route shape.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v0.1.1/R/gtfs_helpers.R" class="external-link"><code>R/gtfs_helpers.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/R/gtfs_helpers.R" class="external-link"><code>R/gtfs_helpers.R</code></a></small>
       <div class="d-none name"><code>get_shape_geometry.Rd</code></div>
     </div>
 
@@ -95,6 +93,27 @@ at least the following fields:</p><ul><li><p><code>shape_id</code></p></li>
 <li><p><code>shape_pt_sequence</code></p></li>
 </ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
+<span class="r-in"><span><span class="va">my_shape</span> <span class="op">&lt;-</span> <span class="st">"C53:04"</span></span></span>
+<span class="r-in"><span><span class="va">my_crs</span> <span class="op">=</span> <span class="fl">32618</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get shape from WMATA GTFS</span></span></span>
+<span class="r-in"><span><span class="fu">get_shape_geometry</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
+<span class="r-in"><span>                   shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
+<span class="r-in"><span>                   project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 1 feature and 1 field</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTILINESTRING</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Projected CRS: WGS 84 / UTM zone 18N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape_id                                                              geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                    <span style="color: #949494; font-style: italic;">&lt;MULTILINESTRING [m]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -1,13 +1,11 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://obrien-ben.github.io/transittraj/404.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/LICENSE.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/about.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/data-workflow.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/index.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/input-data.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/intro-trajectories.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/plotting-trajectories.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/trajectory-objects.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/articles/paper.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/authors.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/index.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/news/index.html</loc></url>
@@ -33,6 +31,7 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/make_monotonic.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/new_avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/new_avltrajectory_single.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/new_transittraj_data.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/pipe.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot.avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_animated_line.html</loc></url>

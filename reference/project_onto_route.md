@@ -45,3 +45,26 @@ The `points` input (either dataframe or SF) with an appended column for
 the linear distance along the route. If `points` is an SFC, a vector of
 numeric distances is returned. Units are those of the spatial projection
 used (e.g., meters if using UTM).
+
+## Examples
+
+``` r
+# Set my parameters
+my_crs <- 32618
+
+# Get shape data
+c53_shape <- new_transittraj_data("get_shape_geometry")
+
+# Set points of interest
+my_points <- data.frame(longitude = c(-76.990038, -77.036289),
+                        latitude = c(38.871335, 38.917054),
+                        poi_name = c("11th St Bridge", "16th & U"))
+
+# Run project_onto_route
+project_onto_route(shape_geometry = c53_shape,
+                   points = my_points,
+                   project_crs = my_crs)
+#>   longitude latitude       poi_name  distance
+#> 1 -76.99004 38.87134 11th St Bridge  5422.615
+#> 2 -77.03629 38.91705       16th & U 13402.281
+```

@@ -45,3 +45,25 @@ contain at least the following fields:
 - `shape_pt_lon`
 
 - `shape_pt_sequence`
+
+## Examples
+
+``` r
+# Set my parameters
+my_shape <- "C53:04"
+my_crs = 32618
+
+# Get shape from WMATA GTFS
+get_shape_geometry(gtfs = wmata_gtfs,
+                   shape = my_shape,
+                   project_crs = my_crs)
+#> Simple feature collection with 1 feature and 1 field
+#> Geometry type: MULTILINESTRING
+#> Dimension:     XY
+#> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353
+#> Projected CRS: WGS 84 / UTM zone 18N
+#> # A tibble: 1 × 2
+#>   shape_id                                                              geometry
+#>   <chr>                                                    <MULTILINESTRING [m]>
+#> 1 C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…
+```

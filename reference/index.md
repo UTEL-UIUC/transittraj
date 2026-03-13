@@ -94,5 +94,11 @@ Datasets to test with.
 
 - [`wmata_avl`](https://obrien-ben.github.io/transittraj/reference/wmata_avl.md)
   : WMATA Bus Automatic Vehicle Location Data
+
 - [`wmata_gtfs`](https://obrien-ben.github.io/transittraj/reference/wmata_gtfs.md)
   : WMATA Bus GTFS
+
+- [`new_transittraj_data()`](https://obrien-ben.github.io/transittraj/reference/new_transittraj_data.md)
+  :
+
+  Returns an object from a particular step of `transittraj`'s workflow.

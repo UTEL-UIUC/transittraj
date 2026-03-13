@@ -3,8 +3,8 @@
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
 
-This is an early development version of `transittraj`. Expect it to
-change without warning.
+This is a development version of `transittraj`. Expect it to change
+without warning.
 
 ## Introduction
 
@@ -125,7 +125,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.1,
+#>   Transit Vehicle Trajectories_. R package version 0.1.1.9000,
 #>   https://utel-uiuc.github.io/transittraj/,
 #>   <https://github.com/UTEL-UIUC/transittraj>.
 #> 
@@ -135,7 +135,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.1, https://utel-uiuc.github.io/transittraj/},
+#>     note = {R package version 0.1.1.9000, https://utel-uiuc.github.io/transittraj/},
 #>     url = {https://github.com/UTEL-UIUC/transittraj},
 #>   }
 ```
@@ -236,21 +236,23 @@ Datasets to test with.
 
 - [`wmata_avl`](https://obrien-ben.github.io/transittraj/reference/wmata_avl.md)
   : WMATA Bus Automatic Vehicle Location Data
+
 - [`wmata_gtfs`](https://obrien-ben.github.io/transittraj/reference/wmata_gtfs.md)
   : WMATA Bus GTFS
+
+- [`new_transittraj_data()`](https://obrien-ben.github.io/transittraj/reference/new_transittraj_data.md)
+  :
+
+  Returns an object from a particular step of `transittraj`'s workflow.
 
 # Articles
 
 ### All vignettes
 
-- [about](https://obrien-ben.github.io/transittraj/articles/about.md):
 - [The AVL Cleaning
   Workflow](https://obrien-ben.github.io/transittraj/articles/data-workflow.md):
 - [Understanding Data
   Inputs](https://obrien-ben.github.io/transittraj/articles/input-data.md):
 - [Introduction to
   Trajectories](https://obrien-ben.github.io/transittraj/articles/intro-trajectories.md):
-- [Plotting and Visualization Trajectory
-  Data](https://obrien-ben.github.io/transittraj/articles/plotting-trajectories.md):
-- [Understanding Trajectory
-  Objects](https://obrien-ben.github.io/transittraj/articles/trajectory-objects.md):
+- [paper](https://obrien-ben.github.io/transittraj/articles/paper.md):

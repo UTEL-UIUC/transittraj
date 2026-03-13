@@ -2,12 +2,11 @@
 
 ## Introduction
 
-In the previous vignette
-([`vignette("data-workflow")`](https://obrien-ben.github.io/transittraj/articles/data-workflow.md)),
-we saw how we can use `transittraj` to clean our AVL data. We took care
-of outliers, deadheading trips, noise, and non-monotonic observations.
-In this vignette, we’ll apply the cleaned data (`c53_mono`) to fit a
-trajectory function.
+In the previous vignette (`vignette("data-workflow")`), we saw how we
+can use `transittraj` to clean our AVL data. We took care of outliers,
+deadheading trips, noise, and non-monotonic observations. In this
+vignette, we’ll apply the cleaned data (`c53_mono`) to fit a trajectory
+function.
 
 Let’s begin by loading the libraries we’ll be using:
 
