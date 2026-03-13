@@ -6,8 +6,9 @@ Not intended for external use.
 
 ``` r
 interpolate_distances_group(
-  trip_extremes,
-  new_times,
+  trip_extremes = NULL,
+  new_times = NULL,
+  new_times_trips = NULL,
   trajectory_function,
   deriv
 )
@@ -21,7 +22,11 @@ interpolate_distances_group(
 
 - new_times:
 
-  DF of new time points
+  DF of new time points, not paired with trips
+
+- new_times_trips:
+
+  DF of already-paired trip IDs & timepoints
 
 - trajectory_function:
 

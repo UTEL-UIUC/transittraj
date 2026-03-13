@@ -5,7 +5,12 @@ Not intended for external use.
 ## Usage
 
 ``` r
-interpolate_times_group(trip_extremes, new_distances, inv_trajectory_function)
+interpolate_times_group(
+  trip_extremes = NULL,
+  new_distances = NULL,
+  new_dist_trips = NULL,
+  inv_trajectory_function
+)
 ```
 
 ## Arguments
@@ -17,6 +22,10 @@ interpolate_times_group(trip_extremes, new_distances, inv_trajectory_function)
 - new_distances:
 
   DF of new distance points
+
+- new_dist_trips:
+
+  DF of new trip & distance pairs
 
 - inv_trajectory_function:
 

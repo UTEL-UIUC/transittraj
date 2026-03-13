@@ -10,6 +10,7 @@
 <url><loc>https://obrien-ben.github.io/transittraj/articles/trajectory-objects.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/authors.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/index.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/news/index.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/clean_incomplete_trips.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/clean_jumps.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/clean_overlapping_subtrips.html</loc></url>
@@ -22,7 +23,9 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/get_shape_geometry.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/get_stop_distances.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/get_trajectory_fun.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/get_trip_extremes.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/index.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/interp_df_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/interpolate_distances_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/interpolate_distances_single.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/interpolate_times_group.html</loc></url>
@@ -33,11 +36,13 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/pipe.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot.avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_animated_line.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/reference/plot_df_setup.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/plot_feature_df_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_format_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_interactive_gtfs.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_trajectory.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/plot_trips_df_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/predict.avltrajectory_group.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/predict_traj_input_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/project_onto_route.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/set_globals.html</loc></url>

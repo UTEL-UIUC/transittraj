@@ -1,4 +1,4 @@
-# \#' Quickly plots an AVL trajectory.
+# Quickly plots an AVL trajectory.
 
 This function generates a quick plot of a single or grouped trajectory
 object. Using the trajectory function, the entire trajectory will be

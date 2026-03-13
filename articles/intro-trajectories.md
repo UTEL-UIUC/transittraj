@@ -296,7 +296,7 @@ lines using the specified field from `c53_stops`.
 fl_U_intersection_lims <- c(12000, 12600)
 
 # Run function
-traj_plot2 <- plot_trajectory(
+fl_U_plot <- plot_trajectory(
   # Provide input data
   trajectory = c53_traj,
   feature_distances = c53_stops,
@@ -313,7 +313,7 @@ traj_plot2 <- plot_trajectory(
   label_field = "stop_name", label_pos = "right",
   label_alpha = 0.8
 )
-traj_plot2
+fl_U_plot
 ```
 
 ![](intro-trajectories_files/figure-html/unnamed-chunk-12-1.png)
