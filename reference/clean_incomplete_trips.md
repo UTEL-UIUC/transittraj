@@ -71,19 +71,30 @@ The input distance_df, with violating trips removed. If
 ``` r
 # Set my parameters
 my_min_dist <- 500
-my_max_gap <- 200
+my_max_gap <- 500
 
 # Get input data
 c53_no_jumps <- new_transittraj_data("clean_jumps")
+dim(c53_no_jumps)
+#> [1] 629  11
 
 # Run function
 c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
                                           min_trip_distance = my_min_dist,
                                           max_distance_gap = my_max_gap)
+dim(c53_clean_trips)
+#> [1] 627  11
 head(c53_clean_trips)
-#> # A tibble: 0 × 11
-#> # ℹ 11 variables: location_ping_id <chr>, vehicle_id <chr>,
-#> #   trip_id_performed <chr>, service_date <date>, route_id <chr>,
-#> #   direction_id <dbl>, speed <dbl>, trip_stop_sequence <dbl>,
-#> #   event_timestamp <dttm>, stop_id <int>, distance <dbl>
+#> # A tibble: 6 × 11
+#>   location_ping_id vehicle_id trip_id_performed service_date route_id
+#>   <chr>            <chr>      <chr>             <date>       <chr>   
+#> 1 12620            2836       1306100           2026-02-16   C53     
+#> 2 12647            2836       1306100           2026-02-16   C53     
+#> 3 12728            2836       1306100           2026-02-16   C53     
+#> 4 12809            2836       1306100           2026-02-16   C53     
+#> 5 12890            2836       1306100           2026-02-16   C53     
+#> 6 12971            2836       1306100           2026-02-16   C53     
+#> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
+#> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
+#> #   distance <dbl>
 ```

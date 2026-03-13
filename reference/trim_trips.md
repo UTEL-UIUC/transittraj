@@ -42,19 +42,23 @@ The input `distance_df` with violating points removed. If
 ``` r
 # Get input data
 c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+dim(c53_clean_trips)
+#> [1] 627  11
 
 # Run function
 c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
+dim(c53_trimmed)
+#> [1] 625  11
 head(c53_trimmed)
 #> # A tibble: 6 × 11
 #>   location_ping_id vehicle_id trip_id_performed service_date route_id
 #>   <chr>            <chr>      <chr>             <date>       <chr>   
-#> 1 25               5539       13300100          2026-02-16   C53     
-#> 2 52               5539       13300100          2026-02-16   C53     
-#> 3 106              5539       13300100          2026-02-16   C53     
-#> 4 187              5539       13300100          2026-02-16   C53     
-#> 5 268              5539       13300100          2026-02-16   C53     
-#> 6 349              5539       13300100          2026-02-16   C53     
+#> 1 12620            2836       1306100           2026-02-16   C53     
+#> 2 12647            2836       1306100           2026-02-16   C53     
+#> 3 12728            2836       1306100           2026-02-16   C53     
+#> 4 12809            2836       1306100           2026-02-16   C53     
+#> 5 12890            2836       1306100           2026-02-16   C53     
+#> 6 12971            2836       1306100           2026-02-16   C53     
 #> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
 #> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
 #> #   distance <dbl>
