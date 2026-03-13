@@ -143,3 +143,61 @@ However, if the raw function itself is desired, it can be accessed using
 For a group trajectory object, these will return lists of individual
 trip functions indexed by `trip_id_performed`; for single trajectory
 objects, these will return the single function for that trip.
+
+## Examples
+
+``` r
+# Set my parameters
+my_times = seq(from = 1771260000,
+               to = 1771264000,
+               by = 180)
+my_distances = seq(from = 0,
+                   to = 15000,
+                   by = 1000)
+
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Run function: get distances from times
+interp_dists <- predict(object = c53_traj,
+                        new_times = my_times)
+dim(interp_dists)
+#> [1] 55  3
+head(interp_dists)
+#>   trip_id_performed event_timestamp       interp
+#> 1           1306100      1771262340 4.423886e-02
+#> 2           1306100      1771262520 5.064560e-02
+#> 3           1306100      1771262700 1.357333e+02
+#> 4           1306100      1771262880 9.451952e+02
+#> 5           1306100      1771263060 1.830156e+03
+#> 6           1306100      1771263240 2.747535e+03
+
+# Run function: get speeds from times
+interp_speeds <- predict(object = c53_traj,
+                         new_times = my_times,
+                         deriv = 1)
+dim(interp_speeds)
+#> [1] 55  3
+head(interp_speeds)
+#>   trip_id_performed event_timestamp       interp
+#> 1           1306100      1771262340 3.333333e-05
+#> 2           1306100      1771262520 3.350820e-05
+#> 3           1306100      1771262700 4.080718e-01
+#> 4           1306100      1771262880 2.353253e+00
+#> 5           1306100      1771263060 8.419968e+00
+#> 6           1306100      1771263240 1.012566e+01
+
+# Run function: get times from distances
+interp_times <- predict(object = c53_traj,
+                        new_distances = my_distances)
+dim(interp_times)
+#> [1] 46  3
+head(interp_times)
+#>   trip_id_performed distance     interp
+#> 1           1306100     1000 1771262889
+#> 2           1306100     2000 1771263094
+#> 3           1306100     3000 1771263350
+#> 4           1306100     4000 1771263586
+#> 5           1306100     5000 1771263919
+#> 6           1306100     6000 1771264087
+```

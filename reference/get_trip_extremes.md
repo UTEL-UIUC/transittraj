@@ -27,3 +27,18 @@ get_trip_extremes(trajectory, filter_trips = NULL)
 
 A dataframe with the columns `trip_id_performed`, `min_time`,
 `max_time`, `min_dist`, and `max_dist`.
+
+## Examples
+
+``` r
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Run function
+c53_extremes <- get_trip_extremes(c53_traj)
+print(c53_extremes)
+#>   trip_id_performed   min_dist max_dist   min_time   max_time
+#> 1           1306100 0.04191312 15356.17 1771262290 1771267268
+#> 2          13437100 0.00000000 15365.46 1771258111 1771263913
+#> 3          35294100 0.04191312 15363.48 1771259264 1771264338
+```
