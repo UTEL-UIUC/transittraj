@@ -65,3 +65,25 @@ clean_incomplete_trips(
 
 The input distance_df, with violating trips removed. If
 `return_removals = TRUE`, a dataframe of trips removed and why.
+
+## Examples
+
+``` r
+# Set my parameters
+my_min_dist <- 500
+my_max_gap <- 200
+
+# Get input data
+c53_no_jumps <- new_transittraj_data("clean_jumps")
+
+# Run function
+c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
+                                          min_trip_distance = my_min_dist,
+                                          max_distance_gap = my_max_gap)
+head(c53_clean_trips)
+#> # A tibble: 0 × 11
+#> # ℹ 11 variables: location_ping_id <chr>, vehicle_id <chr>,
+#> #   trip_id_performed <chr>, service_date <date>, route_id <chr>,
+#> #   direction_id <dbl>, speed <dbl>, trip_stop_sequence <dbl>,
+#> #   event_timestamp <dttm>, stop_id <int>, distance <dbl>
+```

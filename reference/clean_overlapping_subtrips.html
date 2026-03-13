@@ -108,6 +108,30 @@ return_removals = TRUE, a dataframe with trip IDs and the reason why it was
 identified for removal.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
+<span class="r-in"><span><span class="va">c53_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_linear_distances"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run function</span></span></span>
+<span class="r-in"><span><span class="va">c53_no_overlaps</span> <span class="op">&lt;-</span> <span class="fu">clean_overlapping_subtrips</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_dists</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_no_overlaps</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id vehicle_id trip_id_performed service_date route_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               25       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               52       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3              106       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4              187       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5              268       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              349       5539          13300100   2026-02-16      C53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   direction_id  speed trip_stop_sequence     event_timestamp stop_id distance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            0 7.9248                 19 2026-02-16 10:58:25    3679 4159.641</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2            0 6.4008                 20 2026-02-16 10:58:36   17578 4249.421</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3            0 3.9624                 20 2026-02-16 10:59:06   17578 4292.869</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4            0 3.9624                 20 2026-02-16 10:59:31   17578 4318.141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5            0 1.2192                 22 2026-02-16 11:00:01   17417 4495.498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6            0 2.4384                 22 2026-02-16 11:00:31   17417 4507.870</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

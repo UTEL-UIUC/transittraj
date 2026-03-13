@@ -120,3 +120,32 @@ treatments, controlled by `replace_outliers`:
 - Removal of the point. This is a less common approach, but may be a
   more sensible for this application, given that interpolating curves
   will be fit later in the cleaning process.
+
+## Examples
+
+``` r
+# Set my parameters
+my_cutoff = 2.5
+my_neighborhood = 9
+
+# Get input data
+c53_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
+
+# Run function
+c53_no_jumps <- clean_jumps(distance_df = c53_no_overlaps,
+                            neighborhood_width = my_neighborhood,
+                            t_cutoff = my_cutoff)
+head(c53_no_jumps)
+#> # A tibble: 6 × 11
+#>   location_ping_id vehicle_id trip_id_performed service_date route_id
+#>   <chr>            <chr>      <chr>             <date>       <chr>   
+#> 1 25               5539       13300100          2026-02-16   C53     
+#> 2 52               5539       13300100          2026-02-16   C53     
+#> 3 106              5539       13300100          2026-02-16   C53     
+#> 4 187              5539       13300100          2026-02-16   C53     
+#> 5 268              5539       13300100          2026-02-16   C53     
+#> 6 349              5539       13300100          2026-02-16   C53     
+#> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
+#> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
+#> #   distance <dbl>
+```
