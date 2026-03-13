@@ -56,9 +56,10 @@
 #' my_dir <- 0
 #'
 #' # Filter WMATA GTFS
-#' filter_by_route(gtfs = wmata_gtfs,
-#'                 route_ids = my_route,
-#'                 dir_id = 0)
+#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
+#'                             route_ids = my_route,
+#'                             dir_id = 0)
+#' summary(c53_gtfs)
 filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 
   # --- Check GTFS is tidygtfs object ---
@@ -323,9 +324,10 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 #' my_crs = 32618
 #'
 #' # Get shape from WMATA GTFS
-#' get_shape_geometry(gtfs = wmata_gtfs,
-#'                    shape = my_shape,
-#'                    project_crs = my_crs)
+#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
+#'                                 shape = my_shape,
+#'                                 project_crs = my_crs)
+#' print(c53_shape)
 get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
   # --- Validate ---
@@ -398,9 +400,10 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #'                         poi_name = c("11th St Bridge", "16th & U"))
 #'
 #' # Run project_onto_route
-#' project_onto_route(shape_geometry = c53_shape,
-#'                    points = my_points,
-#'                    project_crs = my_crs)
+#' my_points_proj <- project_onto_route(shape_geometry = c53_shape,
+#'                                      points = my_points,
+#'                                      project_crs = my_crs)
+#' head(my_points_proj)
 project_onto_route <- function(shape_geometry, points,
                                original_crs = 4326, project_crs = 4326) {
 
@@ -499,9 +502,10 @@ project_onto_route <- function(shape_geometry, points,
 #' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
 #'
 #' # Run stop distances function
-#' get_stop_distances(gtfs = c53_gtfs,
-#'                    shape_geometry = c53_shape,
-#'                    project_crs = my_crs)
+#' c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
+#'                                      shape_geometry = c53_shape,
+#'                                      project_crs = my_crs)
+#' head(c53_stop_dists)
 get_stop_distances <- function(gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
 
