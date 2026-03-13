@@ -141,3 +141,28 @@ list of trajectory objects indexed by their `trip_id_performed`.
 
 More information about the trajectory object classes and how to use them
 is available at (xyz).
+
+## Examples
+
+``` r
+# Get input data
+c53_mono <- new_transittraj_data("make_monotonic")
+
+# Run function
+c53_traj <- get_trajectory_fun(distance_df = c53_mono)
+summary(c53_traj)
+#> ------
+#> AVL Group Trajectory Object
+#> ------
+#> Number of trips: 3
+#> Total distance range: 0 to 15365.46
+#> Total time range: 1771258111 to 1771267268
+#> ------
+#> Trajectory function present: TRUE
+#>    --> Trajectory interpolation method: monoH.FC
+#>    --> Maximum derivative: 3
+#>    --> Fit with speeds: TRUE
+#> Inverse function present: TRUE
+#>    --> Inverse function tolerance: 0.01
+#> ------
+```

@@ -146,6 +146,16 @@ to be used alongside the static GTFS feed provided in <code>wmata_gtfs</code>.</
 <span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
 <span class="r-in"><span>                                shape <span class="op">=</span> <span class="st">"C53:04"</span>,</span></span>
 <span class="r-in"><span>                                project_crs <span class="op">=</span> <span class="fl">32618</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_shape</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 1 feature and 1 field</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTILINESTRING</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Projected CRS: WGS 84 / UTM zone 18N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape_id                                                              geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                    <span style="color: #949494; font-style: italic;">&lt;MULTILINESTRING [m]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use in the AVL cleaning workflow</span></span></span>
 <span class="r-in"><span><span class="va">c53_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_linear_distances.html">get_linear_distances</a></span><span class="op">(</span>avl_df <span class="op">=</span> <span class="va">c53_avl</span>,</span></span>

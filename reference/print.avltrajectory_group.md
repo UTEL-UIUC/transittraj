@@ -27,3 +27,14 @@ print(x, ...)
 ## Value
 
 A printing character string.
+
+## Examples
+
+``` r
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Print
+print(c53_traj)
+#> [1] "AVL group trajectory with 3 trips."
+```

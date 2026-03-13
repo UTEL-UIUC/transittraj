@@ -125,6 +125,17 @@ feed provided in <code>wmata_avl</code>.</p>
 <span class="r-in"><span><span class="va">d96_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
 <span class="r-in"><span>                            route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
 <span class="r-in"><span>                            dir_id <span class="op">=</span> <span class="va">my_dir</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d96_gtfs</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> tidygtfs object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> agency       WMATA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> service      from 2025-12-14 to 2026-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> uses         stop_times (no frequencies)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # routes       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # trips      320</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_ids    71</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_names  70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # shapes       2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract route alignments</span></span></span>
 <span class="r-in"><span><span class="va">d96_shapes</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">d96_gtfs</span><span class="op">)</span></span></span>

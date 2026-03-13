@@ -30,3 +30,13 @@ plot(x, ...)
 ## Value
 
 A ggplot2 object.
+
+## Examples
+
+``` r
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Plot
+plot(c53_traj)
+```

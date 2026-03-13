@@ -86,6 +86,17 @@ my_dir <- 0
 d96_gtfs <- filter_by_route(gtfs = wmata_gtfs,
                             route_ids = my_route,
                             dir_id = my_dir)
+summary(d96_gtfs)
+#> tidygtfs object
+#> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops
+#> agency       WMATA
+#> service      from 2025-12-14 to 2026-06-13
+#> uses         stop_times (no frequencies)
+#> # routes       1
+#> # trips      320
+#> # stop_ids    71
+#> # stop_names  70
+#> # shapes       2
 
 # Extract route alignments
 d96_shapes <- get_shape_geometry(gtfs = d96_gtfs)

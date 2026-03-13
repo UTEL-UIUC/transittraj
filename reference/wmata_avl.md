@@ -109,6 +109,16 @@ c53_avl <- wmata_avl %>%
 c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
                                 shape = "C53:04",
                                 project_crs = 32618)
+print(c53_shape)
+#> Simple feature collection with 1 feature and 1 field
+#> Geometry type: MULTILINESTRING
+#> Dimension:     XY
+#> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353
+#> Projected CRS: WGS 84 / UTM zone 18N
+#> # A tibble: 1 × 2
+#>   shape_id                                                              geometry
+#>   <chr>                                                    <MULTILINESTRING [m]>
+#> 1 C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…
 
 # Use in the AVL cleaning workflow
 c53_dists <- get_linear_distances(avl_df = c53_avl,

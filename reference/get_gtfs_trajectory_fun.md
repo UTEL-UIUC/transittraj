@@ -226,3 +226,24 @@ will return a list of trajectory objects indexed by their
 
 More information about the trajectory object classes and how to use them
 is available at (xyz).
+
+## Examples
+
+``` r
+# Set my parameters
+my_crs <- 32618
+my_start_date <- as.Date("2025-01-01")
+my_end_date <- as.Date("2025-01-02")
+
+# Get input data
+c53_gtfs <- new_transittraj_data("filter_by_route")
+c53_shape <- new_transittraj_data("get_shape_geometry")
+
+# Run function
+#c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
+#                                              shape_geometry = c53_shape,
+#                                              project_crs = my_crs,
+#                                              date_min = my_start_date,
+#                                              date_max = my_end_date)
+#summary(c53_scheduled_traj)
+```
