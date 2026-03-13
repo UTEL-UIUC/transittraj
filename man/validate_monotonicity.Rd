@@ -36,11 +36,11 @@ See \code{make_monotonic()} for more information.
 \examples{
 # Get & test non-monotonic dataset
 c53_dists <- new_transittraj_data("get_linear_distances")
-c53_dists_val <- validate_monotonicity(c53_dists)
+c53_dists_val <- validate_monotonicity(c53_dists, check_speed = TRUE)
 print(c53_dists_val)
 
 # Get & test monotonic dataset
 c53_mono <- new_transittraj_data("make_monotonic")
-c53_mono_val <- validate_monotonicity(c53_mono)
+c53_mono_val <- validate_monotonicity(c53_mono, check_speed = TRUE)
 print(c53_mono_val)
 }

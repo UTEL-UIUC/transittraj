@@ -18,6 +18,21 @@
 #' by a `distance` column, in the units of the spatial projection used (e.g.,
 #' meters if using UTM).
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_buffer <- 50 # meters
+#' my_crs <- 32618
+#'
+#' # Get input data
+#' c53_avl <- new_transittraj_data("c53_avl")
+#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#'
+#' # Run function
+#' c53_dists <- get_linear_distances(avl_df = c53_avl,
+#'                                   shape_geometry = c53_shape,
+#'                                   clip_buffer = my_buffer,
+#'                                   project_crs = my_crs)
+#' head(c53_dists)
 get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
                                  original_crs = 4326, project_crs = 4326) {
 
@@ -102,6 +117,13 @@ get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
 #' return_removals = TRUE, a dataframe with trip IDs and the reason why it was
 #' identified for removal.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_dists <- new_transittraj_data("get_linear_distances")
+#'
+#' # Run function
+#' c53_no_overlaps <- clean_overlapping_subtrips(distance_df = c53_dists)
+#' head(c53_no_overlaps)
 clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
                                        remove_single_observations = TRUE,
                                        remove_non_overlapping = FALSE,
@@ -308,6 +330,19 @@ clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
 #' @return The input `distance_df` with violating points removed. If
 #' `return_removals = TRUE`, a dataframe with observations removed and why.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_cutoff = 2.5
+#' my_neighborhood = 9
+#'
+#' # Get input data
+#' c53_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
+#'
+#' # Run function
+#' c53_no_jumps <- clean_jumps(distance_df = c53_no_overlaps,
+#'                             neighborhood_width = my_neighborhood,
+#'                             t_cutoff = my_cutoff)
+#' head(c53_no_jumps)
 clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
                         min_median_deviation = -Inf, max_median_deviation = Inf,
                         evaluate_tails = FALSE, evaluate_implosions = FALSE,
@@ -393,6 +428,19 @@ clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
 #' @return The input distance_df, with violating trips removed.
 #' If `return_removals = TRUE`, a dataframe of trips removed and why.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_min_dist <- 500
+#' my_max_gap <- 200
+#'
+#' # Get input data
+#' c53_no_jumps <- new_transittraj_data("clean_jumps")
+#'
+#' # Run function
+#' c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
+#'                                           min_trip_distance = my_min_dist,
+#'                                           max_distance_gap = my_max_gap)
+#' head(c53_clean_trips)
 clean_incomplete_trips <- function(distance_df,
                                    max_trip_distance = Inf,
                                    min_trip_distance = -Inf,
@@ -468,6 +516,13 @@ clean_incomplete_trips <- function(distance_df,
 #' @return The input `distance_df` with violating points removed. If
 #' `return_removals = TRUE`, a dataframe with observations removed and why.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+#'
+#' # Run function
+#' c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
+#' head(c53_trimmed)
 trim_trips <- function(distance_df, trim_type = "both",
                        return_removals = FALSE) {
 
@@ -623,6 +678,18 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' @return The input `distance_df` with distances and speeds adjusted. If
 #' `return_changes = TRUE`, a dataframe with observations changed.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_dist_err = 0.001
+#'
+#' # Get input data
+#' c53_trimmed <- new_transittraj_data("trim_trips")
+#'
+#' # Run function
+#' c53_mono <- make_monotonic(distance_df = c53_trimmed,
+#'                            add_distance_error = my_dist_err,
+#'                            correct_speed = TRUE)
+#' head(c53_mono)
 make_monotonic <- function(distance_df,
                            correct_speed = FALSE, add_distance_error = 0,
                            return_changes = FALSE) {

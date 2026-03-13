@@ -132,6 +132,7 @@ new_transittraj_data <- function(func_output = NULL) {
 
   # Define allowed steps
   allowed_steps <- c("filter_by_route",
+                     "c53_avl",
                      "get_shape_geometry",
                      "get_linear_distances",
                      "clean_overlapping_subtrips",
@@ -158,6 +159,9 @@ new_transittraj_data <- function(func_output = NULL) {
                               dir_id = c53_dir)
   if (func_output == "filter_by_route") {
     return(c53_gtfs)
+  }
+  if (func_output == "c53_avl") {
+    return(c53_avl)
   }
 
   # - get_shape_geometry -

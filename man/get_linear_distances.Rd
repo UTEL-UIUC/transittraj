@@ -43,3 +43,19 @@ This functions projects raw AVL data, as GPS latitude-longitude points, onto
 a provided route geometry, returning the distance of that point along the
 shape from the beginning terminal.
 }
+\examples{
+# Set my parameters
+my_buffer <- 50 # meters
+my_crs <- 32618
+
+# Get input data
+c53_avl <- new_transittraj_data("c53_avl")
+c53_shape <- new_transittraj_data("get_shape_geometry")
+
+# Run function
+c53_dists <- get_linear_distances(avl_df = c53_avl,
+                                  shape_geometry = c53_shape,
+                                  clip_buffer = my_buffer,
+                                  project_crs = my_crs)
+head(c53_dists)
+}

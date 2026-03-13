@@ -49,3 +49,17 @@ This function identifies trips that do not meet some acceptable duration and
 distance traveled ranges, or that have large time or distance gaps in the
 middle. Violating trips will be removed.
 }
+\examples{
+# Set my parameters
+my_min_dist <- 500
+my_max_gap <- 200
+
+# Get input data
+c53_no_jumps <- new_transittraj_data("clean_jumps")
+
+# Run function
+c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
+                                          min_trip_distance = my_min_dist,
+                                          max_distance_gap = my_max_gap)
+head(c53_clean_trips)
+}

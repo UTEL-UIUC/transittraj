@@ -43,3 +43,11 @@ these distinct (trip, vehicle, operator) truples running simulataneously.
 This function identifies both scenarios, and gives the option to remove one
 or both.
 }
+\examples{
+# Get input data
+c53_dists <- new_transittraj_data("get_linear_distances")
+
+# Run function
+c53_no_overlaps <- clean_overlapping_subtrips(distance_df = c53_dists)
+head(c53_no_overlaps)
+}

@@ -85,3 +85,16 @@ After using this function to perform corrections, use
 \code{validate_montonicity()} to check if weak, strict, and Fritsch-Carlson speed
 conditions are met.
 }
+\examples{
+# Set my parameters
+my_dist_err = 0.001
+
+# Get input data
+c53_trimmed <- new_transittraj_data("trim_trips")
+
+# Run function
+c53_mono <- make_monotonic(distance_df = c53_trimmed,
+                           add_distance_error = my_dist_err,
+                           correct_speed = TRUE)
+head(c53_mono)
+}

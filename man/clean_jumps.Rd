@@ -102,3 +102,17 @@ sensible for this application, given that interpolating curves will be fit
 later in the cleaning process.
 }
 }
+\examples{
+# Set my parameters
+my_cutoff = 2.5
+my_neighborhood = 9
+
+# Get input data
+c53_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
+
+# Run function
+c53_no_jumps <- clean_jumps(distance_df = c53_no_overlaps,
+                            neighborhood_width = my_neighborhood,
+                            t_cutoff = my_cutoff)
+head(c53_no_jumps)
+}

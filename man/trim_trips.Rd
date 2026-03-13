@@ -31,3 +31,11 @@ attempts to remove these observations by identifying each trip's minimum
 observations after and before these points. For both ends, the first
 occurrence of the beginning/maximum value is used.
 }
+\examples{
+# Get input data
+c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+
+# Run function
+c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
+head(c53_trimmed)
+}
