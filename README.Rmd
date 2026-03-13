@@ -117,6 +117,9 @@ submission to CRAN, we're still working on the following:
 
 - Vignettes discussing methodology and inner-workings of `transittraj`
 
+Check out the latest updates at our
+[changelog](https://utel-uiuc.github.io/transittraj/news/index.html).
+
 ## Citation
 
 `transittraj` is free and open source, but if you find the package helpful,
