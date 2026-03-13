@@ -11,6 +11,12 @@
 #' @param ... Other parameters (not used).
 #' @return A summary character string.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Summarize
+#' summary(c53_traj)
 summary.avltrajectory_group <- function(object, ...) {
   num_trips <- length(object)
   min_dist <- min(attr(object, "min_dist"))
@@ -90,6 +96,12 @@ summary.avltrajectory_single <- function(object, ...) {
 #' @param ... Other parameters (not used).
 #' @return A printing character string.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Print
+#' print(c53_traj)
 print.avltrajectory_group <- function(x, ...) {
   print(paste("AVL group trajectory with ", length(x), " trips.",
               sep = ""))
@@ -114,6 +126,12 @@ print.avltrajectory_single <- function(x, ...) {
 #' @param ... Other parameters (not used).
 #' @return A ggplot2 object.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Plot
+#' plot(c53_traj)
 plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.

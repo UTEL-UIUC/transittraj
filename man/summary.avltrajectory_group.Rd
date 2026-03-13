@@ -24,3 +24,10 @@ will be printed. If the input is a grouped trajectory, the number of trips
 and the distance & time range across all trips will be printed. For both,
 the interpolating curve methods will be printed.
 }
+\examples{
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Summarize
+summary(c53_traj)
+}

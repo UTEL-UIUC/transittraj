@@ -24,3 +24,10 @@ at a temporal resolution of 10 seconds. For grouped trajectories, a maximum
 of 50 trips will be plotted. For more control over plotting and
 formatting, see \code{plot_trajectory()}.
 }
+\examples{
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Plot
+plot(c53_traj)
+}

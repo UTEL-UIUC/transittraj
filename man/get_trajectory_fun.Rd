@@ -121,3 +121,11 @@ More information about the trajectory object classes and how to use them is
 available at (xyz).
 }
 }
+\examples{
+# Get input data
+c53_mono <- new_transittraj_data("make_monotonic")
+
+# Run function
+c53_traj <- get_trajectory_fun(distance_df = c53_mono)
+summary(c53_traj)
+}

@@ -22,3 +22,10 @@ This function prints a one-line report for grouped or single trajectory
 objects. For a single trajectory, the trip ID will be printed. For grouped
 trajectories, the number of trips will be printed.
 }
+\examples{
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Print
+print(c53_traj)
+}

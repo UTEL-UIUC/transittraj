@@ -49,6 +49,7 @@ my_dir <- 0
 d96_gtfs <- filter_by_route(gtfs = wmata_gtfs,
                             route_ids = my_route,
                             dir_id = my_dir)
+summary(d96_gtfs)
 
 # Extract route alignments
 d96_shapes <- get_shape_geometry(gtfs = d96_gtfs)

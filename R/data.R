@@ -39,6 +39,7 @@
 #' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
 #'                                 shape = "C53:04",
 #'                                 project_crs = 32618)
+#' print(c53_shape)
 #'
 #' # Use in the AVL cleaning workflow
 #' c53_dists <- get_linear_distances(avl_df = c53_avl,
@@ -85,6 +86,7 @@
 #' d96_gtfs <- filter_by_route(gtfs = wmata_gtfs,
 #'                             route_ids = my_route,
 #'                             dir_id = my_dir)
+#' summary(d96_gtfs)
 #'
 #' # Extract route alignments
 #' d96_shapes <- get_shape_geometry(gtfs = d96_gtfs)

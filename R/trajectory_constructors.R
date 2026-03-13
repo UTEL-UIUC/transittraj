@@ -178,6 +178,13 @@ new_avltrajectory_single <- function(trip_id_performed = character(),
 #' `FALSE`, a list of single trajectory objects, index by their
 #' `trip_id_performed`.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_mono <- new_transittraj_data("make_monotonic")
+#'
+#' # Run function
+#' c53_traj <- get_trajectory_fun(distance_df = c53_mono)
+#' summary(c53_traj)
 get_trajectory_fun <- function(distance_df,
                                interp_method = "monoH.FC", use_speeds = TRUE,
                                find_inverse_function = TRUE, inv_tol = 0.01,
@@ -488,6 +495,24 @@ get_trajectory_fun <- function(distance_df,
 #' @return If `return_group_function = TRUE`, a grouped trajectory object. If
 #' `FALSE`, a list of single trajectory objects, index by their
 #' `trip_id_performed`.
+#' @export
+#' @examples
+#' # Set my parameters
+#' my_crs <- 32618
+#' my_start_date <- as.Date("2025-01-01")
+#' my_end_date <- as.Date("2025-01-02")
+#'
+#' # Get input data
+#' c53_gtfs <- new_transittraj_data("filter_by_route")
+#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#'
+#' # Run function
+#' #c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
+#' #                                              shape_geometry = c53_shape,
+#' #                                              project_crs = my_crs,
+#' #                                              date_min = my_start_date,
+#' #                                              date_max = my_end_date)
+#' #summary(c53_scheduled_traj)
 get_gtfs_trajectory_fun <- function(gtfs,
                                     shape_geometry = NULL, project_crs = 4326,
                                     date_min = NULL, date_max = NULL,
@@ -632,7 +657,8 @@ get_gtfs_trajectory_fun <- function(gtfs,
   trip_distances <- trip_joins %>%
     # Filter to desired date range
     dplyr::filter((date >= date_min) & (date <= date_max)) %>%
-    dplyr::mutate(hour_num = as.numeric(substr(stp_time, start = 1, stop = 2)),
+    dplyr::mutate(stp_time = as.character(stp_time),
+                  hour_num = as.numeric(substr(stp_time, start = 1, stop = 2)),
                   # If past midnight, increment date
                   date = dplyr::if_else(condition = (hour_num >= 24),
                                         true = (date + 1),
