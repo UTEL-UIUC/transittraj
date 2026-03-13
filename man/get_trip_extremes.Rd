@@ -23,3 +23,11 @@ This function extracts the time and distance ranges stored in a trajectory
 object and formats them into a dataframe for each use. The dataframe can
 be filtered to a desired set of \code{trip_id_performed}s.
 }
+\examples{
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Run function
+c53_extremes <- get_trip_extremes(c53_traj)
+print(c53_extremes)
+}

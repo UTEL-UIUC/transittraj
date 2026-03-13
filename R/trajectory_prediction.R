@@ -85,6 +85,13 @@ predict_traj_input_setup <- function(new_times, new_distances) {
 #' @return A dataframe with the columns `trip_id_performed`, `min_time`,
 #' `max_time`, `min_dist`, and `max_dist`.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Run function
+#' c53_extremes <- get_trip_extremes(c53_traj)
+#' print(c53_extremes)
 get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 
   if (!("avltrajectory_group" %in% class(trajectory))) {
@@ -372,6 +379,36 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' interpolated values requested, and an additional `"trip_id_performed"`
 #' column will all trips for which that point is within range.
 #' @export
+#' @examples
+#' # Set my parameters
+#' my_times = seq(from = 1771260000,
+#'                to = 1771264000,
+#'                by = 180)
+#' my_distances = seq(from = 0,
+#'                    to = 15000,
+#'                    by = 1000)
+#'
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Run function: get distances from times
+#' interp_dists <- predict(object = c53_traj,
+#'                         new_times = my_times)
+#' dim(interp_dists)
+#' head(interp_dists)
+#'
+#' # Run function: get speeds from times
+#' interp_speeds <- predict(object = c53_traj,
+#'                          new_times = my_times,
+#'                          deriv = 1)
+#' dim(interp_speeds)
+#' head(interp_speeds)
+#'
+#' # Run function: get times from distances
+#' interp_times <- predict(object = c53_traj,
+#'                         new_distances = my_distances)
+#' dim(interp_times)
+#' head(interp_times)
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
                                         deriv = 0, trips = NULL, ...) {
 

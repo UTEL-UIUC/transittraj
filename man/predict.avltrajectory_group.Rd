@@ -130,3 +130,34 @@ will return lists of individual trip functions indexed by
 single function for that trip.
 }
 }
+\examples{
+# Set my parameters
+my_times = seq(from = 1771260000,
+               to = 1771264000,
+               by = 180)
+my_distances = seq(from = 0,
+                   to = 15000,
+                   by = 1000)
+
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Run function: get distances from times
+interp_dists <- predict(object = c53_traj,
+                        new_times = my_times)
+dim(interp_dists)
+head(interp_dists)
+
+# Run function: get speeds from times
+interp_speeds <- predict(object = c53_traj,
+                         new_times = my_times,
+                         deriv = 1)
+dim(interp_speeds)
+head(interp_speeds)
+
+# Run function: get times from distances
+interp_times <- predict(object = c53_traj,
+                        new_distances = my_distances)
+dim(interp_times)
+head(interp_times)
+}
