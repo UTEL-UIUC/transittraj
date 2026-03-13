@@ -57,3 +57,30 @@ following columns and data types are checked by this validator:
 Each AVL processing function in `transittraj` uses specific fields. Each
 function verifies that the required fields and data types are present
 before proceeding.
+
+## Examples
+
+``` r
+wmata_tides_val <- validate_tides(avl_df = wmata_avl)
+print(wmata_tides_val)
+#>      required_field required_field_type field_present actual_field_type
+#> 1  location_ping_id           character          TRUE         character
+#> 2 trip_id_performed           character          TRUE         character
+#> 3   event_timestamp             POSIXct          TRUE           POSIXct
+#> 4        vehicle_id           character          TRUE         character
+#> 5       operator_id           character         FALSE              <NA>
+#> 6         longitude             numeric          TRUE           numeric
+#> 7          latitude             numeric          TRUE           numeric
+#> 8          distance             numeric         FALSE              <NA>
+#> 9             speed             numeric          TRUE           numeric
+#>   field_type_ok field_ok
+#> 1          TRUE     TRUE
+#> 2          TRUE     TRUE
+#> 3          TRUE     TRUE
+#> 4          TRUE     TRUE
+#> 5            NA    FALSE
+#> 6          TRUE     TRUE
+#> 7          TRUE     TRUE
+#> 8            NA    FALSE
+#> 9          TRUE     TRUE
+```

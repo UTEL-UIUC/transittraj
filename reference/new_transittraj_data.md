@@ -32,14 +32,20 @@ applied here is the same as what is in `vignette("data-workflow")`.
 
 ``` r
 # Get AVL data after projection onto route
-new_transittraj_data("get_linear_distances")
-#> Simple feature collection with 1 feature and 1 field
-#> Geometry type: MULTILINESTRING
-#> Dimension:     XY
-#> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353
-#> Projected CRS: WGS 84 / UTM zone 18N
-#> # A tibble: 1 × 2
-#>   shape_id                                                              geometry
-#>   <chr>                                                    <MULTILINESTRING [m]>
-#> 1 C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…
+c53_dists <- new_transittraj_data("get_linear_distances")
+head(c53_dists)
+#>   location_ping_id vehicle_id trip_id_performed service_date route_id
+#> 1               25       5539          13300100   2026-02-16      C53
+#> 2               52       5539          13300100   2026-02-16      C53
+#> 3              106       5539          13300100   2026-02-16      C53
+#> 4              187       5539          13300100   2026-02-16      C53
+#> 5              268       5539          13300100   2026-02-16      C53
+#> 6              349       5539          13300100   2026-02-16      C53
+#>   direction_id  speed trip_stop_sequence     event_timestamp stop_id distance
+#> 1            0 7.9248                 19 2026-02-16 10:58:25    3679 4159.641
+#> 2            0 6.4008                 20 2026-02-16 10:58:36   17578 4249.421
+#> 3            0 3.9624                 20 2026-02-16 10:59:06   17578 4292.869
+#> 4            0 3.9624                 20 2026-02-16 10:59:31   17578 4318.141
+#> 5            0 1.2192                 22 2026-02-16 11:00:01   17417 4495.498
+#> 6            0 2.4384                 22 2026-02-16 11:00:31   17417 4507.870
 ```

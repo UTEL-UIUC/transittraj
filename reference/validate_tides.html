@@ -100,6 +100,32 @@ function verifies that the required fields and data types are present before
 proceeding.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">wmata_tides_val</span> <span class="op">&lt;-</span> <span class="fu">validate_tides</span><span class="op">(</span>avl_df <span class="op">=</span> <span class="va">wmata_avl</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">wmata_tides_val</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      required_field required_field_type field_present actual_field_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  location_ping_id           character          TRUE         character</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 trip_id_performed           character          TRUE         character</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   event_timestamp             POSIXct          TRUE           POSIXct</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        vehicle_id           character          TRUE         character</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       operator_id           character         FALSE              &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         longitude             numeric          TRUE           numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          latitude             numeric          TRUE           numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          distance             numeric         FALSE              &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9             speed             numeric          TRUE           numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   field_type_ok field_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5            NA    FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          TRUE     TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8            NA    FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9          TRUE     TRUE</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

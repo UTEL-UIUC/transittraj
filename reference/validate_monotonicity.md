@@ -41,3 +41,21 @@ validate_monotonicity(distance_df, check_speed = FALSE, return_full = FALSE)
 
 A named vector of booleans indicating whether each of the three
 conditions are satisfied.
+
+## Examples
+
+``` r
+# Get & test non-monotonic dataset
+c53_dists <- new_transittraj_data("get_linear_distances")
+c53_dists_val <- validate_monotonicity(c53_dists)
+print(c53_dists_val)
+#>   weak strict  speed 
+#>  FALSE  FALSE     NA 
+
+# Get & test monotonic dataset
+c53_mono <- new_transittraj_data("make_monotonic")
+c53_mono_val <- validate_monotonicity(c53_mono)
+print(c53_mono_val)
+#>   weak strict  speed 
+#>   TRUE   TRUE     NA 
+```

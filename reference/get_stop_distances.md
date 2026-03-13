@@ -52,21 +52,17 @@ c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route, dir_id = 0)
 c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
 
 # Run stop distances function
-get_stop_distances(gtfs = c53_gtfs,
-                   shape_geometry = c53_shape,
-                   project_crs = my_crs)
-#> # A tibble: 56 × 3
-#>    stop_id shape_id distance
-#>    <chr>   <chr>       <dbl>
-#>  1 2584    C53:04       677.
-#>  2 2609    C53:04       880.
-#>  3 2683    C53:04      1155.
-#>  4 2793    C53:04      1605.
-#>  5 2811    C53:04      1807.
-#>  6 2867    C53:04      2037.
-#>  7 3314    C53:04      2880.
-#>  8 3421    C53:04      3129.
-#>  9 3524    C53:04      3454.
-#> 10 3577    C53:04      3712.
-#> # ℹ 46 more rows
+c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
+                                     shape_geometry = c53_shape,
+                                     project_crs = my_crs)
+head(c53_stop_dists)
+#> # A tibble: 6 × 3
+#>   stop_id shape_id distance
+#>   <chr>   <chr>       <dbl>
+#> 1 2584    C53:04       677.
+#> 2 2609    C53:04       880.
+#> 3 2683    C53:04      1155.
+#> 4 2793    C53:04      1605.
+#> 5 2811    C53:04      1807.
+#> 6 2867    C53:04      2037.
 ```
