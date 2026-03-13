@@ -46,8 +46,10 @@ or both.
 \examples{
 # Get input data
 c53_dists <- new_transittraj_data("get_linear_distances")
+dim(c53_dists)
 
 # Run function
 c53_no_overlaps <- clean_overlapping_subtrips(distance_df = c53_dists)
+dim(c53_no_overlaps)
 head(c53_no_overlaps)
 }

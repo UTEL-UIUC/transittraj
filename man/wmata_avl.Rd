@@ -43,4 +43,22 @@ The dataset contains three bus routes, with two directions for each:
 \item D96: Mass Ave to Bethesda
 }
 }
+\examples{
+# Print the header
+head(wmata_avl)
+
+# Filter the data
+c53_avl <- wmata_avl \%>\%
+    dplyr::filter((route_id == "C53") & (direction_id == 0))
+c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
+                                shape = "C53:04",
+                                project_crs = 32618)
+
+# Use in the AVL cleaning workflow
+c53_dists <- get_linear_distances(avl_df = c53_avl,
+                                  shape_geometry = c53_shape,
+                                  clip_buffer = 50,
+                                  project_crs = 32618)
+head(c53_dists)
+}
 \keyword{datasets}

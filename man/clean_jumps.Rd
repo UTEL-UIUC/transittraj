@@ -109,10 +109,12 @@ my_neighborhood = 9
 
 # Get input data
 c53_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
+dim(c53_no_overlaps)
 
 # Run function
 c53_no_jumps <- clean_jumps(distance_df = c53_no_overlaps,
                             neighborhood_width = my_neighborhood,
                             t_cutoff = my_cutoff)
+dim(c53_no_jumps)
 head(c53_no_jumps)
 }

@@ -39,4 +39,23 @@ This dataset has been filtered to three routes, with two directions for each:
 \item D96: Mass Ave toBethesda
 }
 }
+\examples{
+# Print the tidytransit summary
+summary(wmata_gtfs)
+
+# Filter by route & direction
+my_route <- "D96"
+my_dir <- 0
+d96_gtfs <- filter_by_route(gtfs = wmata_gtfs,
+                            route_ids = my_route,
+                            dir_id = my_dir)
+
+# Extract route alignments
+d96_shapes <- get_shape_geometry(gtfs = d96_gtfs)
+print(d96_shapes)
+
+# Plot interactive Leaflet view
+plot_interactive_gtfs(gtfs = wmata_gtfs,
+                      color = "gtfs")
+}
 \keyword{datasets}

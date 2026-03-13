@@ -153,7 +153,7 @@ new_transittraj_data <- function(func_output = NULL) {
   c53_dir <- 0 # 0 is NB, 1 is SB
   c53_avl <- transittraj::wmata_avl %>%
     dplyr::filter((route_id == c53) & (direction_id == c53_dir)) %>%
-    dplyr::filter(trip_id_performed %in% c("13300100", "13437100"))
+    dplyr::filter(trip_id_performed %in% c("35294100", "13437100", "1306100", "13927100"))
   c53_gtfs <- filter_by_route(gtfs = transittraj::wmata_gtfs,
                               route_ids = c53,
                               dir_id = c53_dir)

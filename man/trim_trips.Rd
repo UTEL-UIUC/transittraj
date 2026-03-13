@@ -34,8 +34,10 @@ occurrence of the beginning/maximum value is used.
 \examples{
 # Get input data
 c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+dim(c53_clean_trips)
 
 # Run function
 c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
+dim(c53_trimmed)
 head(c53_trimmed)
 }
