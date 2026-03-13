@@ -1,6 +1,6 @@
 Package: transittraj
 Title: Reconstruct and Visualize Transit Vehicle Trajectories
-Version: 0.1.0
+Version: 0.1.1
 Date: 2026-02-25
 Authors@R: c(
     person("Benjamin", "O'Brien",
@@ -31,7 +31,6 @@ Imports:
     ivs,
     leaflet,
     magrittr,
-    prettymapr,
     purrr,
     rlang,
     sf,
@@ -44,6 +43,7 @@ Depends:
 LazyData: true
 Suggests: 
     knitr,
+    prettymapr,
     rmarkdown
 VignetteBuilder: knitr
 Config/Needs/website:

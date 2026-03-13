@@ -225,21 +225,18 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
 
   # --- Validation & Setup ---
   # Validate input data & set up feature & vehicle location DFs to plot
-  val_data <- plot_df_setup(trajectory = trajectory,
-                                 distance_df = distance_df,
-                                 timestep = timestep,
-                                 plot_trips = plot_trips,
-                                 feature_distances = feature_distances,
-                                 distance_lim = distance_lim,
-                                 center_vehicles = center_vehicles,
-                            convert_to_timezone = convert_to_timezone)
-  trips_df <- val_data[[1]]
-  feature_distances <- val_data[[2]]
-
-  # Add x-value at which to plot vehicles
-  trips_df <- trips_df %>% dplyr::mutate(x = 0)
+  trips_df <- plot_trips_df_setup(trajectory = trajectory,
+                                  distance_df = distance_df,
+                                  timestep = timestep,
+                                  plot_trips = plot_trips,
+                                  distance_lim = distance_lim,
+                                  center_vehicles = center_vehicles,
+                                  convert_to_timezone = convert_to_timezone) %>%
+    dplyr::mutate(x = 0)
   if (!is.null(feature_distances)) {
-    feature_distances <- feature_distances %>% dplyr::mutate(x = 0)
+    feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
+                                               distance_lim = distance_lim) %>%
+      dplyr::mutate(x = 0)
   }
 
   # --- Route DF setup ---
@@ -422,16 +419,17 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 
   # --- Validation & Setup ---
   # Validate input data & set up feature & vehicle location DFs to plot
-  val_data <- plot_df_setup(trajectory = trajectory,
-                                 distance_df = distance_df,
-                                 timestep = timestep,
-                                 plot_trips = plot_trips,
-                                 feature_distances = feature_distances,
-                                 distance_lim = distance_lim,
-                                 center_vehicles = center_vehicles,
-                            convert_to_timezone = convert_to_timezone)
-  trips_df <- val_data[[1]]
-  feature_distances <- val_data[[2]]
+  trips_df <- plot_trips_df_setup(trajectory = trajectory,
+                                  distance_df = distance_df,
+                                  timestep = timestep,
+                                  plot_trips = plot_trips,
+                                  distance_lim = distance_lim,
+                                  center_vehicles = center_vehicles,
+                                  convert_to_timezone = convert_to_timezone)
+  if (!is.null(feature_distances)) {
+    feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
+                                               distance_lim = distance_lim)
+  }
   # Validate shape geometry
   validate_shape_geometry(shape_geometry = shape_geometry,
                           max_length = 1,
@@ -660,186 +658,6 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   return(anim_map)
 }
 
-#' Set up dataframe & validate of point objects for vehicle animations
-#'
-#' Intended for internal use only
-#'
-#' @param trajectory Single or grouped trajectory object.
-#' @param distance_df AVL distance DF.
-#' @param plot_trips Vector of trip_id_performed to plot.
-#' @param timestep Time in seconds for interpolation.
-#' @param distance_lim Vector of (minimum, maximum) distance to plot.
-#' @param feature_distances Linear distance to features.
-#' @param center_vehicles Should vehicles be centered
-#' @param convert_to_timezone Should times be converted to timezones
-#' @return plotting dataframe (trips_df)
-#' @keywords internal
-plot_df_setup <- function(trajectory, distance_df,
-                               plot_trips,
-                               timestep,
-                               distance_lim,
-                               feature_distances,
-                               center_vehicles,
-                          convert_to_timezone) {
-
-  # --- Vehicle DF setup ---
-  # Check provided trajectories & distance DF, and filter as needed
-  if (!is.null(trajectory) & !is.null(distance_df)) {
-    rlang::abort(message = "Please provide only one of trajectory and distance_df.",
-                 class = "error_plottraj_inputdata")
-  } else if (!is.null(trajectory)) {
-    # If trajectory is provided, generate the DF by predicting from functions
-
-    # Get times to interpolate over
-    from_time <- min(attr(trajectory, "min_time"))
-    to_time <- max(attr(trajectory, "max_time"))
-    time_seq <- seq(from = from_time, to = to_time,
-                    by = timestep)
-
-    # Depending on object type, get distances at times
-    if ("avltrajectory_single" %in% class(trajectory)) {
-      # If single trajectory, should not filter by trips
-      trips_df <- predict.avltrajectory_single(trajectory, new_times = time_seq) %>%
-        dplyr::rename(distance = interp) %>%
-        dplyr::mutate(trip_id_performed = unclass(trajectory))
-    } else if ("avltrajectory_group" %in% class(trajectory)) {
-      # If grouped trajectory, handle trips
-
-      trips_df <- predict.avltrajectory_group(trajectory, trips = plot_trips,
-                          new_times = time_seq) %>%
-        dplyr::rename(distance = interp)
-    } else {
-      rlang::abort(message = "Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.",
-                   class = "error_plottraj_inputdata")
-    }
-
-    if (convert_to_timezone) {
-      agency_tz <- attr(trajectory, "agency_tz")
-      trips_df <- trips_df %>%
-        dplyr::mutate(event_timestamp = as.POSIXct(event_timestamp,
-                                                   tz = agency_tz))
-    }
-  } else {
-    # If distance_df provided, validate it
-    needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
-    validate_input_to_tides(needed_fields = needed_fields,
-                            avl_df = distance_df)
-
-    # Filter to desired trips
-    if (is.null(plot_trips)) {
-      plot_trips <- unique(distance_df$trip_id_performed)
-    }
-    trips_df <- distance_df %>%
-      dplyr::filter(trip_id_performed %in% plot_trips)
-  }
-
-  # Filter observations to distance limits
-  if (!is.null(distance_lim)) {
-    trips_df <- trips_df %>%
-      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-    # If features, filter these to be within distance range
-    if (!is.null(feature_distances)) {
-      feature_distances <- feature_distances %>%
-        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-    }
-  }
-
-  # Filter observations to distance limits
-  if (!is.null(distance_lim)) {
-    trips_df <- trips_df %>%
-      dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-    # Check that observations remain after filtering.
-    if (dim(trips_df)[1] == 0) {
-      rlang::abort(message = "No trip observations within distance limit.",
-                   class = "error_plottraj_distlim")
-    }
-
-    # If features, filter these to be within distance range
-    if (!is.null(feature_distances)) {
-      feature_distances <- feature_distances %>%
-        dplyr::filter((distance >= distance_lim[1]) & (distance <= distance_lim[2]))
-
-      # Check that feature values remain after filtering.
-      if (dim(feature_distances)[1] == 0) {
-        rlang::abort(message = "No features within distance limit.",
-                     class = "error_plottraj_distlim")
-      }
-    }
-  }
-
-  # Center trajectories to all begin at same point
-  if (center_vehicles) {
-    trips_df <- trips_df %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
-      dplyr::ungroup()
-  }
-  return(list(trips_df, feature_distances))
-}
-
-#' Function to set up plot formats.
-#'
-#' Intended for internal use only.
-#'
-#' @importFrom rlang :=
-#' @param plotting_df DF for plotting, either trips or features
-#' @param attribute_input The user input value for the attribute (e.g.,
-#' outline_input = veh_outline)
-#' @param attribute_type The type of attribute being constructed (e.g.,
-#' "outline")
-#' @param attribute_name The name of the attribute (e.g., "veh_outline")
-#' @return List with: 1) new plotting_df, 2) show_legend, 3) attribute_by,
-#' and 4) attribute_vals
-#' @keywords internal
-plot_format_setup <- function(plotting_df,
-                              attribute_input,
-                              attribute_type,
-                              attribute_name) {
-
-  if (!is.data.frame(attribute_input)) {
-    temp_attr_name <- paste("temp_", attribute_name, sep = "")
-    show_legend <- "none"
-    plotting_df <- plotting_df %>%
-      dplyr::mutate(!!rlang::sym(temp_attr_name) := "1")
-    attribute_by <- temp_attr_name
-    attribute_vals <- c(attribute_input)
-    names(attribute_vals) <- "1" # Temp = 1 is a dummy grouping factor to code all plotting_df the same color
-  } else if (attribute_type %in% names(attribute_input)) {
-    show_legend <- "legend"
-    attr_df_names <- names(attribute_input)
-    plotting_names <- names(plotting_df)
-
-    # Match outline to a vehicle location data type
-    attribute_by <- plotting_names[!is.na(match(plotting_names,
-                                                attr_df_names))]
-    # Check attribute_by -- should be exaclty one matching column
-    if (length(attribute_by) > 1) {
-      rlang::abort(message = paste(attribute_name, ": multiple columns match input data. Only one column can match.",
-                                   sep = ""),
-                   class = "error_plottraj_format")
-    } else if (length(attribute_by) == 0) {
-      rlang::abort(message = paste(attribute_name, ": no columns match input data. One column must match.",
-                                   sep = ""),
-                   class = "error_plottraj_format")
-    }
-    attribute_vals <- attribute_input[[attribute_type]]
-    names(attribute_vals) <- as.character(attribute_input[[attribute_by]])
-  } else {
-    rlang::abort(message = paste(attribute_name, ": ", attribute_type, " column not provided.",
-                                 sep = ""),
-                 class = "error_plottraj_format")
-  }
-
-  return(list(plotting_df,
-              show_legend,
-              attribute_by,
-              attribute_vals
-              ))
-}
-
 #' Plot vehicle trajectories or AVL data.
 #'
 #' @description
@@ -963,17 +781,18 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
                             label_field = NULL, label_size = 3,
                             label_alpha = 0.6, label_pos = "left") {
 
-  # --- Plotting DF setup ---
-  val_data <- plot_df_setup(trajectory = trajectory,
-                            distance_df = distance_df,
-                            timestep = timestep,
-                            plot_trips = plot_trips,
-                            feature_distances = feature_distances,
-                            distance_lim = distance_lim,
-                            center_vehicles = center_trajectories,
-                            convert_to_timezone = convert_to_timezone)
-  trips_df <- val_data[[1]]
-  feature_distances <- val_data[[2]]
+  # --- Plotting trips & feature DF setup ---
+  trips_df <- plot_trips_df_setup(trajectory = trajectory,
+                                  distance_df = distance_df,
+                                  timestep = timestep,
+                                  plot_trips = plot_trips,
+                                  distance_lim = distance_lim,
+                                  center_vehicles = center_trajectories,
+                                  convert_to_timezone = convert_to_timezone)
+  if (!is.null(feature_distances)) {
+    feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
+                                               distance_lim = distance_lim)
+  }
 
   # --- Formatting setup ---
   # Trajectory color

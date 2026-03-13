@@ -46,7 +46,7 @@ utils::globalVariables(c(
   "obs_ok", "field", "field_provided_status", "is_weak", "is_strict",
   "required_field", "fc_alpha", "fc_beta", "sum_sq", "is_fc_speed",
   "field_type_ok", "field_present", "x_spatial", "y_spatial", "stp_time",
-  "point_geom"
+  "point_geom", "distance_lims"
   ))
 
 #' Calculates numerical inverse of a trajectory function

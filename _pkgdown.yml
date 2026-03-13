@@ -48,6 +48,7 @@ reference:
   - print.avltrajectory_single
   - summary.avltrajectory_single
   - summary.avltrajectory_group
+  - get_trip_extremes
 - title: Data Validation
   desc: >
     Functions for validating data.
