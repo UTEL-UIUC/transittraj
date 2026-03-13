@@ -126,7 +126,8 @@ correct_speeds_fun <- function(m_0, deltas) {
 #' @export
 #' @examples
 #' # Get AVL data after projection onto route
-#' new_transittraj_data("get_linear_distances")
+#' c53_dists <- new_transittraj_data("get_linear_distances")
+#' head(c53_dists)
 new_transittraj_data <- function(func_output = NULL) {
 
   # Define allowed steps
@@ -176,7 +177,7 @@ new_transittraj_data <- function(func_output = NULL) {
                                         project_crs = dc_CRS,
                                         clip_buffer = c53_buffer)
   if (func_output == "get_linear_distances") {
-    return(c53_shape)
+    return(c53_distances)
   }
 
   # - clean_overlapping_subtrips -
@@ -187,7 +188,7 @@ new_transittraj_data <- function(func_output = NULL) {
     remove_non_overlapping = FALSE
   )
   if (func_output == "clean_overlapping_subtrips") {
-    return(c53_shape)
+    return(c53_cleaned_subtrips)
   }
 
   # - clean_jumps -
@@ -198,7 +199,7 @@ new_transittraj_data <- function(func_output = NULL) {
                               min_median_deviation = c53_min_jump,
                               t_cutoff = Inf)
   if (func_output == "clean_jumps") {
-    return(c53_shape)
+    return(c53_no_jumps)
   }
 
   # - clean_incomplete_trips -
@@ -212,14 +213,14 @@ new_transittraj_data <- function(func_output = NULL) {
     max_distance_gap = c53_max_gap
   )
   if (func_output == "clean_incomplete_trips") {
-    return(c53_shape)
+    return(c53_cleaned_incompletes)
   }
 
   # - trim_trips -
   c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
                             trim_type = "both")
   if (func_output == "trim_trips") {
-    return(c53_shape)
+    return(c53_trimmed)
   }
 
   # - make_monotonic -
@@ -228,12 +229,12 @@ new_transittraj_data <- function(func_output = NULL) {
                              correct_speed = TRUE,
                              add_distance_error = c53_dist_error)
   if (func_output == "make_monotonic") {
-    return(c53_shape)
+    return(c53_mono)
   }
 
   # - get_trajectory_fun -
   c53_traj <- get_trajectory_fun(distance_df = c53_mono)
   if (func_output == "get_trajectory_fun") {
-    return(c53_shape)
+    return(c53_traj)
   }
 }

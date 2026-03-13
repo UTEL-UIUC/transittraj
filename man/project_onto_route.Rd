@@ -50,7 +50,8 @@ my_points <- data.frame(longitude = c(-76.990038, -77.036289),
                         poi_name = c("11th St Bridge", "16th & U"))
 
 # Run project_onto_route
-project_onto_route(shape_geometry = c53_shape,
-                   points = my_points,
-                   project_crs = my_crs)
+my_points_proj <- project_onto_route(shape_geometry = c53_shape,
+                                     points = my_points,
+                                     project_crs = my_crs)
+head(my_points_proj)
 }

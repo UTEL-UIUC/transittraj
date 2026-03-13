@@ -47,3 +47,7 @@ Each AVL processing function in \code{transittraj} uses specific fields. Each
 function verifies that the required fields and data types are present before
 proceeding.
 }
+\examples{
+wmata_tides_val <- validate_tides(avl_df = wmata_avl)
+print(wmata_tides_val)
+}

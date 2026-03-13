@@ -42,7 +42,8 @@ c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route, dir_id = 0)
 c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
 
 # Run stop distances function
-get_stop_distances(gtfs = c53_gtfs,
-                   shape_geometry = c53_shape,
-                   project_crs = my_crs)
+c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
+                                     shape_geometry = c53_shape,
+                                     project_crs = my_crs)
+head(c53_stop_dists)
 }

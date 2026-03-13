@@ -44,6 +44,9 @@
 #' @return A dataframe of each required field, required data type, whether
 #' the field is present, and whether the data type matches expectations.
 #' @export
+#' @examples
+#' wmata_tides_val <- validate_tides(avl_df = wmata_avl)
+#' print(wmata_tides_val)
 validate_tides <- function(avl_df) {
   # Set required columns & datatypes
   required_columns <- c("location_ping_id",
@@ -112,6 +115,16 @@ validate_tides <- function(avl_df) {
 #' @return A named vector of booleans indicating whether each of the three
 #' conditions are satisfied.
 #' @export
+#' @examples
+#' # Get & test non-monotonic dataset
+#' c53_dists <- new_transittraj_data("get_linear_distances")
+#' c53_dists_val <- validate_monotonicity(c53_dists)
+#' print(c53_dists_val)
+#'
+#' # Get & test monotonic dataset
+#' c53_mono <- new_transittraj_data("make_monotonic")
+#' c53_mono_val <- validate_monotonicity(c53_mono)
+#' print(c53_mono_val)
 validate_monotonicity <- function(distance_df, check_speed = FALSE,
                                   return_full = FALSE) {
 

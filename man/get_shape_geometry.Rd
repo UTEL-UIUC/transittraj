@@ -43,7 +43,8 @@ my_shape <- "C53:04"
 my_crs = 32618
 
 # Get shape from WMATA GTFS
-get_shape_geometry(gtfs = wmata_gtfs,
-                   shape = my_shape,
-                   project_crs = my_crs)
+c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
+                                shape = my_shape,
+                                project_crs = my_crs)
+print(c53_shape)
 }

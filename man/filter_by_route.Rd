@@ -59,7 +59,8 @@ my_route <- "C53"
 my_dir <- 0
 
 # Filter WMATA GTFS
-filter_by_route(gtfs = wmata_gtfs,
-                route_ids = my_route,
-                dir_id = 0)
+c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
+                            route_ids = my_route,
+                            dir_id = 0)
+summary(c53_gtfs)
 }

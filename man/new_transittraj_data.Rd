@@ -25,5 +25,6 @@ applied here is the same as what is in \code{vignette("data-workflow")}.
 }
 \examples{
 # Get AVL data after projection onto route
-new_transittraj_data("get_linear_distances")
+c53_dists <- new_transittraj_data("get_linear_distances")
+head(c53_dists)
 }
