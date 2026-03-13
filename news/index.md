@@ -1,6 +1,10 @@
 # Changelog
 
-## transittraj (development version)
+## transittraj 0.1.1.9000 (development version)
+
+*Latest commit: 3/13/2026*
+
+- Adding examples to function documentation
 
 ## transittraj 0.1.1
 
