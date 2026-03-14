@@ -429,11 +429,7 @@ projection (e.g., meters if using a UTM projection).</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
-<span class="r-in"><span><span class="co"># -- Note: animations will only run in an interactive session due to</span></span></span>
-<span class="r-in"><span><span class="co">#          long processing times. Use example() to see outputs.</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Get input data</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
 <span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_shape_geometry"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -443,27 +439,33 @@ projection (e.g., meters if using a UTM projection).</p>
 <span class="r-in"><span><span class="va">my_dist_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13300</span>, <span class="fl">13500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: Line animation</span></span></span>
-<span class="r-in"><span><span class="fu">plot_animated_line</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
-<span class="r-in"><span>                   feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
-<span class="r-in"><span>                   route_color <span class="op">=</span> <span class="st">"firebrick4"</span>,</span></span>
-<span class="r-in"><span>                   label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
-<span class="r-in"><span>                   label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>                   label_pos <span class="op">=</span> <span class="st">"right"</span>,</span></span>
-<span class="r-in"><span>                   distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
-<span class="r-in"><span>                   center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>                   timestep <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">anim_line</span> <span class="op">&lt;-</span> <span class="fu">plot_animated_line</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
+<span class="r-in"><span>                                feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
+<span class="r-in"><span>                                route_color <span class="op">=</span> <span class="st">"firebrick4"</span>,</span></span>
+<span class="r-in"><span>                                label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
+<span class="r-in"><span>                                label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>                                label_pos <span class="op">=</span> <span class="st">"right"</span>,</span></span>
+<span class="r-in"><span>                                distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
+<span class="r-in"><span>                                center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                                timestep <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: Map animation</span></span></span>
-<span class="r-in"><span><span class="fu">plot_animated_map</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
-<span class="r-in"><span>                  shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span></span>
-<span class="r-in"><span>                  feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
-<span class="r-in"><span>                  route_color <span class="op">=</span> <span class="st">"firebrick4"</span>,</span></span>
-<span class="r-in"><span>                  label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
-<span class="r-in"><span>                  label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>                  distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
-<span class="r-in"><span>                  center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>                  timestep <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                  bbox_expand <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">anim_map</span> <span class="op">&lt;-</span> <span class="fu">plot_animated_map</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
+<span class="r-in"><span>                              shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span></span>
+<span class="r-in"><span>                              feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
+<span class="r-in"><span>                              route_color <span class="op">=</span> <span class="st">"firebrick4"</span>,</span></span>
+<span class="r-in"><span>                              label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
+<span class="r-in"><span>                              label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>                              distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
+<span class="r-in"><span>                              center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                              timestep <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                              bbox_expand <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Note: Due to long processing times, animations will only be rendered &amp;</span></span></span>
+<span class="r-in"><span>  <span class="co">#       displayed if run during an interactive session. See `example()`.</span></span></span>
+<span class="r-in"><span>  <span class="va">anim_line</span></span></span>
+<span class="r-in"><span>  <span class="va">anim_map</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

@@ -109,6 +109,42 @@ is 100.</p></dd>
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
+<span class="r-in"><span><span class="va">my_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"16th &amp; U Stop"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                          distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13402.281</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_dist_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13300</span>, <span class="fl">13500</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Create `gganimate` object</span></span></span>
+<span class="r-in"><span><span class="va">anim_line</span> <span class="op">&lt;-</span> <span class="fu"><a href="plot_animated_line.html">plot_animated_line</a></span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
+<span class="r-in"><span>                                feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
+<span class="r-in"><span>                                route_color <span class="op">=</span> <span class="st">"firebrick4"</span>,</span></span>
+<span class="r-in"><span>                                label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
+<span class="r-in"><span>                                label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>                                label_pos <span class="op">=</span> <span class="st">"right"</span>,</span></span>
+<span class="r-in"><span>                                distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
+<span class="r-in"><span>                                center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                                timestep <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Create a place to store your file</span></span></span>
+<span class="r-in"><span><span class="va">my_file_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"my_animation"</span>, fileext <span class="op">=</span> <span class="st">".gif"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_file_name</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpvVaYQN/my_animation2029cd66006.gif"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run function: save animation locally</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Note: Due to long processing times, animations will only be rendered &amp;</span></span></span>
+<span class="r-in"><span>  <span class="co">#       displayed if run during an interactive session. See `example()`.</span></span></span>
+<span class="r-in"><span>  <span class="fu">export_animation</span><span class="op">(</span>anim_object <span class="op">=</span> <span class="va">anim_line</span>,</span></span>
+<span class="r-in"><span>                   path <span class="op">=</span> <span class="va">my_file_name</span>,</span></span>
+<span class="r-in"><span>                   width <span class="op">=</span> <span class="fl">4</span>, height <span class="op">=</span> <span class="fl">8</span>, dpi <span class="op">=</span> <span class="fl">150</span>,</span></span>
+<span class="r-in"><span>                   fps <span class="op">=</span> <span class="fl">10</span>, duration <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
