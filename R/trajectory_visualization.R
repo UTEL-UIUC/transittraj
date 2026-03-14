@@ -205,6 +205,41 @@
 #' `"N"`, `"SW"`, etc.), or `"in"`/`"out"`. Default is `"out"`.
 #' @returns A `gganimate` object.
 #' @export
+#' @examplesIf interactive()
+#' # -- Note: animations will only run in an interactive session due to
+#' #          long processing times. Use example() to see outputs.
+#'
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#'
+#' # Set my parameters
+#' my_features <- data.frame(name = c("16th & U Stop"),
+#'                           distance = c(13402.281))
+#' my_dist_range <- c(13300, 13500)
+#'
+#' # Run function: Line animation
+#' plot_animated_line(trajectory = c53_traj,
+#'                    feature_distances = my_features,
+#'                    route_color = "firebrick4",
+#'                    label_field = "name",
+#'                    label_alpha = 0.8,
+#'                    label_pos = "right",
+#'                    distance_lim = my_dist_range,
+#'                    center_vehicles = TRUE,
+#'                    timestep = 1)
+#'
+#' # Run function: Map animation
+#' plot_animated_map(trajectory = c53_traj,
+#'                   shape_geometry = c53_shape,
+#'                   feature_distances = my_features,
+#'                   route_color = "firebrick4",
+#'                   label_field = "name",
+#'                   label_alpha = 0.8,
+#'                   distance_lim = my_dist_range,
+#'                   center_vehicles = TRUE,
+#'                   timestep = 1,
+#'                   bbox_expand = 50)
 plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
                                timestep = 5, distance_lim = NULL, center_vehicles = FALSE,
                                feature_distances = NULL, transition_style = "linear",
@@ -768,6 +803,24 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' graph. Must be either `"left"` or `"right"`. Default is `"left"`.
 #' @return A `ggplot2` object.
 #' @export
+#' @examples
+#' # Get input data
+#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' # Set my parameters
+#' my_features <- data.frame(name = c("16th & U Stop"),
+#'                           distance = c(13402.281))
+#' my_dist_range <- c(13300, 13500)
+#'
+#' # Run function
+#' plot_trajectory(trajectory = c53_traj,
+#'                 feature_distances = my_features,
+#'                 label_field = "name",
+#'                 label_alpha = 0.8,
+#'                 distance_lim = my_dist_range,
+#'                 traj_color = "indianred3",
+#'                 center_trajectories = TRUE,
+#'                 timestep = 1)
 plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
                             timestep = 5, distance_lim = NULL, center_trajectories = FALSE,
                             feature_distances = NULL, convert_to_timezone = TRUE,

@@ -184,3 +184,22 @@ If using \code{distance_df}, they may be mapped to any column in \code{distance_
 (e.g., vehicle or operator IDs).
 }
 }
+\examples{
+# Get input data
+c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+# Set my parameters
+my_features <- data.frame(name = c("16th & U Stop"),
+                          distance = c(13402.281))
+my_dist_range <- c(13300, 13500)
+
+# Run function
+plot_trajectory(trajectory = c53_traj,
+                feature_distances = my_features,
+                label_field = "name",
+                label_alpha = 0.8,
+                distance_lim = my_dist_range,
+                traj_color = "indianred3",
+                center_trajectories = TRUE,
+                timestep = 1)
+}
