@@ -26,8 +26,12 @@ the interpolating curve methods will be printed.
 }
 \examples{
 # Get input data
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
-# Summarize
-summary(c53_traj)
+# Summarize: Grouped trajectory object
+summary(c53_traj_grouped)
+
+# Grouped: Single trajectory object
+summary(c53_traj_singles[[2]])
 }

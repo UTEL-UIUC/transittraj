@@ -13,10 +13,14 @@
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
-#' # Summarize
-#' summary(c53_traj)
+#' # Summarize: Grouped trajectory object
+#' summary(c53_traj_grouped)
+#'
+#' # Grouped: Single trajectory object
+#' summary(c53_traj_singles[[2]])
 summary.avltrajectory_group <- function(object, ...) {
   num_trips <- length(object)
   min_dist <- min(attr(object, "min_dist"))
@@ -98,10 +102,14 @@ summary.avltrajectory_single <- function(object, ...) {
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
-#' # Print
-#' print(c53_traj)
+#' # Print: Grouped trajectory object
+#' print(c53_traj_grouped)
+#'
+#' # Print: Single trajectory object
+#' print(c53_traj_singles[[2]])
 print.avltrajectory_group <- function(x, ...) {
   print(paste("AVL group trajectory with ", length(x), " trips.",
               sep = ""))
@@ -128,10 +136,14 @@ print.avltrajectory_single <- function(x, ...) {
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
-#' # Plot
-#' plot(c53_traj)
+#' # Plot: Grouped trajectory object
+#' plot(c53_traj_grouped)
+#'
+#' # Plot: Single trajectory object
+#' plot(c53_traj_singles[[2]])
 plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.

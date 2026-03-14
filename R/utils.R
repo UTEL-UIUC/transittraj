@@ -140,7 +140,8 @@ new_transittraj_data <- function(func_output = NULL) {
                      "clean_incomplete_trips",
                      "trim_trips",
                      "make_monotonic",
-                     "get_trajectory_fun")
+                     "get_trajectory_fun",
+                     "get_trajectory_fun_single")
   if (is.null(func_output)) {
     return(allowed_steps)
   } else if (!(func_output %in% allowed_steps)) {
@@ -236,9 +237,16 @@ new_transittraj_data <- function(func_output = NULL) {
     return(c53_mono)
   }
 
-  # - get_trajectory_fun -
+  # - get_trajectory_fun - grouped
   c53_traj <- get_trajectory_fun(distance_df = c53_mono)
   if (func_output == "get_trajectory_fun") {
     return(c53_traj)
+  }
+
+  # - get_trajectory_fun - single
+  c53_traj_s <- get_trajectory_fun(distance_df = c53_mono,
+                                   return_group_function = FALSE)
+  if (func_output == "get_trajectory_fun_single") {
+    return(c53_traj_s)
   }
 }

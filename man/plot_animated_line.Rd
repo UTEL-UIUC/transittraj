@@ -314,10 +314,6 @@ For examples and a more in-depth discussion, see (xyz).
 }
 }
 \examples{
-\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-# -- Note: animations will only run in an interactive session due to
-#          long processing times. Use example() to see outputs.
-
 # Get input data
 c53_traj <- new_transittraj_data("get_trajectory_fun")
 c53_shape <- new_transittraj_data("get_shape_geometry")
@@ -328,26 +324,32 @@ my_features <- data.frame(name = c("16th & U Stop"),
 my_dist_range <- c(13300, 13500)
 
 # Run function: Line animation
-plot_animated_line(trajectory = c53_traj,
-                   feature_distances = my_features,
-                   route_color = "firebrick4",
-                   label_field = "name",
-                   label_alpha = 0.8,
-                   label_pos = "right",
-                   distance_lim = my_dist_range,
-                   center_vehicles = TRUE,
-                   timestep = 1)
+anim_line <- plot_animated_line(trajectory = c53_traj,
+                                feature_distances = my_features,
+                                route_color = "firebrick4",
+                                label_field = "name",
+                                label_alpha = 0.8,
+                                label_pos = "right",
+                                distance_lim = my_dist_range,
+                                center_vehicles = TRUE,
+                                timestep = 1)
 
 # Run function: Map animation
-plot_animated_map(trajectory = c53_traj,
-                  shape_geometry = c53_shape,
-                  feature_distances = my_features,
-                  route_color = "firebrick4",
-                  label_field = "name",
-                  label_alpha = 0.8,
-                  distance_lim = my_dist_range,
-                  center_vehicles = TRUE,
-                  timestep = 1,
-                  bbox_expand = 50)
-\dontshow{\}) # examplesIf}
+anim_map <- plot_animated_map(trajectory = c53_traj,
+                              shape_geometry = c53_shape,
+                              feature_distances = my_features,
+                              route_color = "firebrick4",
+                              label_field = "name",
+                              label_alpha = 0.8,
+                              distance_lim = my_dist_range,
+                              center_vehicles = TRUE,
+                              timestep = 1,
+                              bbox_expand = 40)
+
+if (interactive()) {
+  # Note: Due to long processing times, animations will only be rendered &
+  #       displayed if run during an interactive session. See `example()`.
+  anim_line
+  anim_map
+}
 }
