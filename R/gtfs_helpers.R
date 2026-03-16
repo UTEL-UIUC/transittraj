@@ -820,11 +820,11 @@ get_gtfs_service_dates <- function(gtfs,
                  class = "error_gtfsdates_inputdata")
   }
   # date_min & date_max
-  if (!("Date" %in% class(date_min))) {
+  if (!("Date" %in% class(date_min) | is.null(date_min))) {
     rlang::abort(message = "Unrecognized date_min data type. Please input Date class (see as.Date()).",
                  class = "error_gtfsdate_inputdata")
   }
-  if (!("Date" %in% class(date_max))) {
+  if (!("Date" %in% class(date_max) | is.null(date_max))) {
     rlang::abort(message = "Unrecognized date_max data type. Please input Date class (see as.Date()).",
                  class = "error_gtfsdate_inputdata")
   }
