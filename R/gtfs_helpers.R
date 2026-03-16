@@ -887,7 +887,7 @@ get_gtfs_service_dates <- function(gtfs,
       dplyr::left_join(y = service_ids_by_wkday, by = "wkday",
                        relationship = "many-to-one") %>%
       dplyr::left_join(y = service_exceptions, by = "date") %>%
-      dplyr::mutate(service_id = if_else(condition = is.na(excep_id),
+      dplyr::mutate(service_id = dplyr::if_else(condition = is.na(excep_id),
                                          true = sched_id,
                                          false = excep_id)) %>%
       dplyr::select(-c(sched_id, excep_id, wkday))

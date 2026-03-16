@@ -26,7 +26,7 @@ utils::globalVariables(c(
   "agency_id", "service_id", "route_id", "stop_id", "stop_lat", "stop_lon",
   "stop_sequence", "trip_id", "shape_pt_lat", "shape_pt_lon",
   "departure_time", "arrival_time", "direction_id", "shape_id", "stop_name",
-  "shape_pt_sequence",
+  "shape_pt_sequence", "exception_type",
   # TIDES
   "trip_id_performed", "event_timestamp", "vehicle_id", "location_ping_id",
   "operator_id", "speed", "latitude", "longitude", "distance",
@@ -46,7 +46,7 @@ utils::globalVariables(c(
   "obs_ok", "field", "field_provided_status", "is_weak", "is_strict",
   "required_field", "fc_alpha", "fc_beta", "sum_sq", "is_fc_speed",
   "field_type_ok", "field_present", "x_spatial", "y_spatial", "stp_time",
-  "point_geom", "distance_lims"
+  "point_geom", "distance_lims", "excep_id", "sched_id", "wkday"
   ))
 
 #' Calculates numerical inverse of a trajectory function
