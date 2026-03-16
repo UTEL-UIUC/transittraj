@@ -248,7 +248,6 @@ c53_shape <- new_transittraj_data("get_shape_geometry")
 
 # Run function: build trajectory
 c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-                                              shape_geometry = c53_shape,
                                               project_crs = my_crs,
                                               date_min = my_start_date,
                                               date_max = my_end_date)
@@ -259,7 +258,7 @@ summary(c53_scheduled_traj)
 #> AVL Group Trajectory Object
 #> ------
 #> Number of trips: 108
-#> Total distance range: NA to NA
+#> Total distance range: 2.073578 to 15463.51
 #> Total time range: 1771221600 to 1771310100
 #> ------
 #> Trajectory function present: TRUE
@@ -271,5 +270,5 @@ summary(c53_scheduled_traj)
 #> ------
 plot_trajectory(trajectory = c53_scheduled_traj,
                 plot_trips = unclass(c53_scheduled_traj)[8:10],
-                traj_color = "firebrick4")
+                traj_color = "indianred3")
 ```
