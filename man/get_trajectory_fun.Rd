@@ -125,7 +125,13 @@ available at (xyz).
 # Get input data
 c53_mono <- new_transittraj_data("make_monotonic")
 
-# Run function
-c53_traj <- get_trajectory_fun(distance_df = c53_mono)
-summary(c53_traj)
+# Run function: grouped trajectory object
+c53_traj_grouped <- get_trajectory_fun(distance_df = c53_mono)
+summary(c53_traj_grouped)
+
+# Run function: list of single trajectory objects
+c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
+                                       return_group_function = FALSE)
+length(c53_traj_singles)
+summary(c53_traj_singles[[2]])
 }

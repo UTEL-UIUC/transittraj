@@ -16,10 +16,10 @@
 #' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
 #' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
-#' # Summarize: Grouped trajectory object
+#' # Run function: grouped trajectory object
 #' summary(c53_traj_grouped)
 #'
-#' # Grouped: Single trajectory object
+#' # Run function: single trajectory object
 #' summary(c53_traj_singles[[2]])
 summary.avltrajectory_group <- function(object, ...) {
   num_trips <- length(object)
@@ -197,8 +197,8 @@ plot.avltrajectory_single <- function(x, ...) {
     ggplot2::geom_line(ggplot2::aes(x = event_timestamp, y = distance),
                        linewidth = 1, color = "coral") +
     ggplot2::theme_minimal() +
-    ggplot2::labs(x = "Epoch Time (s)",
-                  y = "Distance (m)",
+    ggplot2::labs(x = "Epoch Time (sec)",
+                  y = "Distance",
                   title = "Single AVL Trajectory",
                   subtitle = paste("Trip ", unclass(x), sep = ""))
   traj_plot

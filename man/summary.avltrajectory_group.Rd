@@ -29,9 +29,9 @@ the interpolating curve methods will be printed.
 c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
 c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
-# Summarize: Grouped trajectory object
+# Run function: grouped trajectory object
 summary(c53_traj_grouped)
 
-# Grouped: Single trajectory object
+# Run function: single trajectory object
 summary(c53_traj_singles[[2]])
 }
