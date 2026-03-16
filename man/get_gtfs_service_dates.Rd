@@ -67,5 +67,5 @@ trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
                                           date_min = trb_start,
                                           date_max = trb_end,
                                           use_table = "calendar")
-head(trb_service_ids)
+print(trb_service_ids)
 }

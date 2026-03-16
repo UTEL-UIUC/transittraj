@@ -803,7 +803,7 @@ plot_interactive_gtfs <- function(gtfs,
 #'                                           date_min = trb_start,
 #'                                           date_max = trb_end,
 #'                                           use_table = "calendar")
-#' head(trb_service_ids)
+#' print(trb_service_ids)
 get_gtfs_service_dates <- function(gtfs,
                                    date_min = NULL, date_max = NULL,
                                    use_table = "calendar") {
@@ -820,12 +820,12 @@ get_gtfs_service_dates <- function(gtfs,
                  class = "error_gtfsdates_inputdata")
   }
   # date_min & date_max
-  if (!("Date" %in% date_min)) {
-    rlang::abort(message = "Unrecognized min_date data type. Please input Date class (see as.Date()).",
+  if (!("Date" %in% class(date_min))) {
+    rlang::abort(message = "Unrecognized date_min data type. Please input Date class (see as.Date()).",
                  class = "error_gtfsdate_inputdata")
   }
-  if (!("Date" %in% date_max)) {
-    rlang::abort(message = "Unrecognized max_date data type. Please input Date class (see as.Date()).",
+  if (!("Date" %in% class(date_max))) {
+    rlang::abort(message = "Unrecognized date_max data type. Please input Date class (see as.Date()).",
                  class = "error_gtfsdate_inputdata")
   }
 
