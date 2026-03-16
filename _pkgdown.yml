@@ -11,6 +11,7 @@ reference:
   - get_shape_geometry
   - project_onto_route
   - get_stop_distances
+  - get_gtfs_service_dates
   - plot_interactive_gtfs
 - title: AVL Cleaning
   desc: >

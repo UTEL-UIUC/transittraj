@@ -751,3 +751,169 @@ plot_interactive_gtfs <- function(gtfs,
 
   return(interactive_map)
 }
+
+#' Get a dataframe of all service dates and their service IDs from a GTFS.
+#'
+#' This function returns a dataframe of each date covered by a GTFS and the
+#' `service_id` run on this date. This data is extracted from the `calendar.txt`
+#' and `calendar_dates.txt` files, depending on how the GTFS is structured. See
+#' `Details` for a discussion.
+#'
+#' @details
+#' The GTFS standard allows for two different structurings of `calendar.txt`
+#' and `calendar_dates.txt`:
+#'
+#' - Standard service in `calendar.txt`, with exceptions in
+#' `calendar_dates.txt`. Here, `calendar.txt` will list the standard service ID
+#' by weekday (e.g., Monday, Tuesday, etc.), and `calendar_dates.txt` lists
+#' specific dates which are exceptions to this. In this scenario,
+#' `get_gtfs_service_dates()` will get enumerate all weekdays and dates
+#' in `calendar.txt`, and assign the correct `service_id` to it, depending on
+#' if the date is listed as an exception in `calendar_dates.txt`.
+#'
+#' - All dates of service are enumerated in `calendar_dates.txt`, and
+#' `calendar.txt` is not used. In this scenario, `get_gtfs_service_dates()`
+#' will simply filter, clean, and return this table.
+#'
+#' Use the input parameter `use_table` to control which method to use. If
+#' `use_table = "calendar"`, the former method will be used; if
+#' `use_table = "calendar_dates"`, the latter will be used. To restrict the
+#' date enumeration to only a specific window, set `date_min` and `date_max`.
+#'
+#' @param gtfs A tidygtfs object.
+#' @param date_min Optional. The starting (earliest possible) date for the
+#' returned dataframe. Default is NULL, where the earliest date in the GTFS will
+#' be used.
+#' @param date_max Optional. The starting (latest possible) date for the
+#' returned dataframe. Default is NULL, where the latest date in the GTFS will
+#' be used.
+#' @param use_table Optional. Should the GTFS's `calendar.txt` or
+#' `calendar_dates.txt` be used for the feasible date range? Must be
+#' `"calendar"` or `"calendar_dates"`. Default is `"calendar"`.
+#' @return A dataframe with Date column `date`, and numeric column
+#' `service_id`.
+#' @export
+#' @examples
+#' # Set parameters
+#' trb_start <- as.Date("2026-01-11")
+#' trb_end <- as.Date("2026-01-15")
+#'
+#' # Run function: get service ID by day in date range
+#' trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
+#'                                           date_min = trb_start,
+#'                                           date_max = trb_end,
+#'                                           use_table = "calendar")
+#' head(trb_service_ids)
+get_gtfs_service_dates <- function(gtfs,
+                                   date_min = NULL, date_max = NULL,
+                                   use_table = "calendar") {
+
+  # --- Initial validation ---
+  # GTFS
+  if (!("tidygtfs" %in% class(gtfs))) {
+    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
+                 class = "error_gtfsval_not_tidygtfs")
+  }
+  # use_table
+  if (!use_table %in% c("calendar", "calendar_dates")) {
+    rlang::abort(message = "Unrecognized use_table type. Please input either \"calendar\" or \"calendar_dates\".",
+                 class = "error_gtfsdates_inputdata")
+  }
+  # date_min & date_max
+  if (!("Date" %in% date_min)) {
+    rlang::abort(message = "Unrecognized min_date data type. Please input Date class (see as.Date()).",
+                 class = "error_gtfsdate_inputdata")
+  }
+  if (!("Date" %in% date_max)) {
+    rlang::abort(message = "Unrecognized max_date data type. Please input Date class (see as.Date()).",
+                 class = "error_gtfsdate_inputdata")
+  }
+
+  if (use_table == "calendar") {
+    # --- Using calendar.txt ---
+
+    # - Validate GTFS -
+    # calendar_dates: service_id, date
+    validate_gtfs_input(gtfs,
+                        table = "calendar_dates",
+                        needed_fields = c("date", "service_id",
+                                          "exception_type"))
+    gtfs$calendar_dates$date <- as.Date(gtfs$calendar_dates$date)
+    # calendar:
+    validate_gtfs_input(gtfs,
+                        table = "calendar",
+                        needed_fields = c("date", "service_id",
+                                          "monday",
+                                          "tuesday",
+                                          "wednesday",
+                                          "thursday",
+                                          "friday",
+                                          "saturday",
+                                          "sunday"))
+    gtfs$calendar$start_date <- as.Date(gtfs$calendar$start_date)
+    gtfs$calendar$end_date <- as.Date(gtfs$calendar$end_date)
+
+    # - Get dates -
+    if (is.null(date_min)) {
+      date_min <- min(as.Date(gtfs$calendar$start_date))
+    }
+    if (is.null(date_max)) {
+      date_max <- max(as.Date(gtfs$calendar$end_date))
+    }
+
+    # Get scheduled & exception service_ids for each date
+    service_ids_by_wkday <- data.frame(wkday = c("monday",
+                                                 "tuesday",
+                                                 "wednesday",
+                                                 "thursday",
+                                                 "friday",
+                                                 "saturday",
+                                                 "sunday"),
+                                       sched_id = c(gtfs$calendar$service_id[gtfs$calendar$monday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$tuesday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$wednesday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$thursday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$friday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$saturday == 1],
+                                                    gtfs$calendar$service_id[gtfs$calendar$sunday == 1]))
+    service_exceptions <- gtfs$calendar_dates %>%
+      dplyr::filter(exception_type == 1) %>%
+      dplyr::rename(excep_id = service_id) %>%
+      dplyr::select(-exception_type)
+
+    # Get DF of all dates and their correct ID (scheduled service_id or exception service_id)
+    all_dates <- data.frame(date = seq(from = date_min, to = date_max, by = 1)) %>%
+      dplyr::mutate(wkday = tolower(weekdays(date))) %>%
+      dplyr::left_join(y = service_ids_by_wkday, by = "wkday",
+                       relationship = "many-to-one") %>%
+      dplyr::left_join(y = service_exceptions, by = "date") %>%
+      dplyr::mutate(service_id = if_else(condition = is.na(excep_id),
+                                         true = sched_id,
+                                         false = excep_id)) %>%
+      dplyr::select(-c(sched_id, excep_id, wkday))
+
+  } else {
+    # --- Using calendar_dates.txt ---
+
+    # - Validate GTFS -
+    # calendar_dates: service_id, date
+    validate_gtfs_input(gtfs,
+                        table = "calendar_dates",
+                        needed_fields = c("date", "service_id"))
+    gtfs$calendar_dates$date <- as.Date(gtfs$calendar_dates$date)
+
+    # - Get dates -
+    if (is.null(date_min)) {
+      date_min <- min(as.Date(gtfs$calendar_dates$date))
+    }
+    if (is.null(date_max)) {
+      date_max <- max(as.Date(gtfs$calendar_dates$date))
+    }
+
+    all_dates <- gtfs$calendar_dates %>%
+      dplyr::filter((date >= date_min) & (date <= date_max)) %>%
+      dplyr::select(service_id, date)
+  }
+
+  return(all_dates)
+}
