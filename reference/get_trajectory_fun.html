@@ -188,15 +188,36 @@ available at (xyz).</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
 <span class="r-in"><span><span class="va">c53_mono</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"make_monotonic"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu">get_trajectory_fun</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_traj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Run function: grouped trajectory object</span></span></span>
+<span class="r-in"><span><span class="va">c53_traj_grouped</span> <span class="op">&lt;-</span> <span class="fu">get_trajectory_fun</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_traj_grouped</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> AVL Group Trajectory Object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of trips: 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Total distance range: 0 to 15365.46</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Total time range: 1771258111 to 1771267268</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Trajectory function present: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Trajectory interpolation method: monoH.FC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Maximum derivative: 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Fit with speeds: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inverse function present: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Inverse function tolerance: 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run function: list of single trajectory objects</span></span></span>
+<span class="r-in"><span><span class="va">c53_traj_singles</span> <span class="op">&lt;-</span> <span class="fu">get_trajectory_fun</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span>,</span></span>
+<span class="r-in"><span>                                       return_group_function <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">c53_traj_singles</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_traj_singles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AVL Single Trajectory Object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Trip ID: 13437100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Trip distance range: 0 to 15365.46</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Trip time range: 1771258111 to 1771263913</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Trajectory function present: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Trajectory interpolation method: monoH.FC</span>
