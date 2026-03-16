@@ -820,7 +820,7 @@ get_gtfs_service_dates <- function(gtfs,
   # use_calendar_table
   if (!use_calendar_table %in% c("calendar", "calendar_dates")) {
     rlang::abort(message = "Unrecognized use_calendar_table type. Please input either \"calendar\" or \"calendar_dates\".",
-                 class = "error_gtfsdates_inputdata")
+                 class = "error_gtfsdate_inputdata")
   }
   # date_min & date_max
   if (!("Date" %in% class(date_min) | is.null(date_min))) {
@@ -831,6 +831,14 @@ get_gtfs_service_dates <- function(gtfs,
     rlang::abort(message = "Unrecognized date_max data type. Please input Date class (see as.Date()).",
                  class = "error_gtfsdate_inputdata")
   }
+  if ((!is.null(date_min)) & (!is.null(date_max))) {
+    # If both date_min & date_max are provided, check that min occurs before max
+    if (date_min > date_max) {
+      rlang::abort(message = "Input date_min occurs after input date_max.",
+                   class = "error_gtfsdate_inputdata")
+    }
+  }
+
 
   if (use_calendar_table == "calendar") {
     # --- Using calendar.txt ---
@@ -856,12 +864,24 @@ get_gtfs_service_dates <- function(gtfs,
     gtfs$calendar$start_date <- as.Date(gtfs$calendar$start_date)
     gtfs$calendar$end_date <- as.Date(gtfs$calendar$end_date)
 
-    # - Get dates -
-    if (is.null(date_min)) {
-      date_min <- min(as.Date(gtfs$calendar$start_date))
+    # - Check dates -
+    gtfs_date_min <- min(as.Date(gtfs$calendar$start_date))
+    gtfs_date_max <- max(as.Date(gtfs$calendar$end_date))
+    if (!is.null(date_min)) {
+      if ((date_min > gtfs_date_max) | (date_min < gtfs_date_min)) {
+        rlang::abort(message = "Input date_min occurs after GTFS date range.",
+                     class = "error_gtfsdate_inputdata")
+      }
+    } else {
+      date_min <- gtfs_date_min
     }
-    if (is.null(date_max)) {
-      date_max <- max(as.Date(gtfs$calendar$end_date))
+    if (!is.null(date_max)) {
+      if ((date_max < gtfs_date_min) | (date_max > gtfs_date_max)) {
+        rlang::abort(message = "Input date_max occurs before GTFS date range.",
+                     class = "error_gtfsdate_inputdata")
+      }
+    } else {
+      date_max <- gtfs_date_max
     }
 
     # Get scheduled & exception service_ids for each date
@@ -905,12 +925,24 @@ get_gtfs_service_dates <- function(gtfs,
                         needed_fields = c("date", "service_id"))
     gtfs$calendar_dates$date <- as.Date(gtfs$calendar_dates$date)
 
-    # - Get dates -
-    if (is.null(date_min)) {
-      date_min <- min(as.Date(gtfs$calendar_dates$date))
+    # - Check dates -
+    gtfs_date_min <- min(as.Date(gtfs$calendar_dates$date))
+    gtfs_date_max <- max(as.Date(gtfs$calendar_dates$date))
+    if (!is.null(date_min)) {
+      if (date_min > gtfs_date_max) {
+        rlang::abort(message = "Input date_min occurs after GTFS date range.",
+                     class = "error_gtfsdate_inputdata")
+      }
+    } else {
+      date_min <- gtfs_date_min
     }
-    if (is.null(date_max)) {
-      date_max <- max(as.Date(gtfs$calendar_dates$date))
+    if (!is.null(date_max)) {
+      if (date_max < gtfs_date_min) {
+        rlang::abort(message = "Input date_max occurs before GTFS date range.",
+                     class = "error_gtfsdate_inputdata")
+      }
+    } else {
+      date_max <- gtfs_date_max
     }
 
     all_dates <- gtfs$calendar_dates %>%
