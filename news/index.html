@@ -42,8 +42,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1.9000" id="transittraj-0119000-development-version">transittraj 0.1.1.9000 (development version)<a class="anchor" aria-label="anchor" href="#transittraj-0119000-development-version"></a></h2>
-<p><em>Latest commit: 3/13/2026</em></p>
-<ul><li>Adding examples to function documentation</li>
+<p><em>Latest commit: 3/16/2026</em></p>
+<ul><li><p>Adding examples to function documentation</p></li>
+<li><p>New function <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>: Returns a dataframe of dates and their <code>service_id</code>s, build from a GTFS feed’s <code>calendar.txt</code> and/or <code>calendar_dates.txt</code> file, depending on how the agency has structured these files.</p></li>
+<li><p><code><a href="../reference/get_gtfs_trajectory_fun.html">get_gtfs_trajectory_fun()</a></code> now works for both methods of constructing <code>calendar.txt</code> and <code>calendar_dates.txt</code> (<a href="https://github.com/UTEL-UIUC/transittraj/issues/2" class="external-link">#2</a>), with refactoring through the new <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>. Read more at <code><a href="../reference/get_gtfs_service_dates.html">help(get_gtfs_service_dates)</a></code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="transittraj-011">transittraj 0.1.1<a class="anchor" aria-label="anchor" href="#transittraj-011"></a></h2>

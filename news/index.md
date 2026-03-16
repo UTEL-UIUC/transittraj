@@ -2,9 +2,24 @@
 
 ## transittraj 0.1.1.9000 (development version)
 
-*Latest commit: 3/13/2026*
+*Latest commit: 3/16/2026*
 
 - Adding examples to function documentation
+
+- New function
+  [`get_gtfs_service_dates()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md):
+  Returns a dataframe of dates and their `service_id`s, build from a
+  GTFS feed’s `calendar.txt` and/or `calendar_dates.txt` file, depending
+  on how the agency has structured these files.
+
+- [`get_gtfs_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_trajectory_fun.md)
+  now works for both methods of constructing `calendar.txt` and
+  `calendar_dates.txt`
+  ([\#2](https://github.com/UTEL-UIUC/transittraj/issues/2)), with
+  refactoring through the new
+  [`get_gtfs_service_dates()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md).
+  Read more at
+  [`help(get_gtfs_service_dates)`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md).
 
 ## transittraj 0.1.1
 
