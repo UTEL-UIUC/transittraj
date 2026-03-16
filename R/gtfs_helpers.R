@@ -498,8 +498,10 @@ project_onto_route <- function(shape_geometry, points,
 #' my_dir <- 0
 #'
 #' # Get needed GTFS data
-#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route, dir_id = 0)
-#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape, project_crs = my_crs)
+#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route,
+#'                             dir_id = 0)
+#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape,
+#'                                 project_crs = my_crs)
 #'
 #' # Run stop distances function
 #' c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
@@ -775,10 +777,11 @@ plot_interactive_gtfs <- function(gtfs,
 #' `calendar.txt` is not used. In this scenario, `get_gtfs_service_dates()`
 #' will simply filter, clean, and return this table.
 #'
-#' Use the input parameter `use_table` to control which method to use. If
-#' `use_table = "calendar"`, the former method will be used; if
-#' `use_table = "calendar_dates"`, the latter will be used. To restrict the
-#' date enumeration to only a specific window, set `date_min` and `date_max`.
+#' Use the input parameter `use_calendar_table` to control which method to use.
+#' If `use_calendar_table = "calendar"`, the former method will be used; if
+#' `use_calendar_table = "calendar_dates"`, the latter will be used. To
+#' restrict the date enumeration to only a specific window, set `date_min`
+#' and `date_max`.
 #'
 #' @param gtfs A tidygtfs object.
 #' @param date_min Optional. The starting (earliest possible) date for the
@@ -787,7 +790,7 @@ plot_interactive_gtfs <- function(gtfs,
 #' @param date_max Optional. The starting (latest possible) date for the
 #' returned dataframe. Default is NULL, where the latest date in the GTFS will
 #' be used.
-#' @param use_table Optional. Should the GTFS's `calendar.txt` or
+#' @param use_calendar_table Optional. Should the GTFS's `calendar.txt` or
 #' `calendar_dates.txt` be used for the feasible date range? Must be
 #' `"calendar"` or `"calendar_dates"`. Default is `"calendar"`.
 #' @return A dataframe with Date column `date`, and numeric column
@@ -802,11 +805,11 @@ plot_interactive_gtfs <- function(gtfs,
 #' trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
 #'                                           date_min = trb_start,
 #'                                           date_max = trb_end,
-#'                                           use_table = "calendar")
+#'                                           use_calendar_table = "calendar")
 #' print(trb_service_ids)
 get_gtfs_service_dates <- function(gtfs,
                                    date_min = NULL, date_max = NULL,
-                                   use_table = "calendar") {
+                                   use_calendar_table = "calendar") {
 
   # --- Initial validation ---
   # GTFS
@@ -814,9 +817,9 @@ get_gtfs_service_dates <- function(gtfs,
     rlang::abort(message = "Provided GTFS not a tidygtfs object.",
                  class = "error_gtfsval_not_tidygtfs")
   }
-  # use_table
-  if (!use_table %in% c("calendar", "calendar_dates")) {
-    rlang::abort(message = "Unrecognized use_table type. Please input either \"calendar\" or \"calendar_dates\".",
+  # use_calendar_table
+  if (!use_calendar_table %in% c("calendar", "calendar_dates")) {
+    rlang::abort(message = "Unrecognized use_calendar_table type. Please input either \"calendar\" or \"calendar_dates\".",
                  class = "error_gtfsdates_inputdata")
   }
   # date_min & date_max
@@ -829,7 +832,7 @@ get_gtfs_service_dates <- function(gtfs,
                  class = "error_gtfsdate_inputdata")
   }
 
-  if (use_table == "calendar") {
+  if (use_calendar_table == "calendar") {
     # --- Using calendar.txt ---
 
     # - Validate GTFS -

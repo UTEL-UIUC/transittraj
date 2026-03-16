@@ -477,12 +477,7 @@ get_trajectory_fun <- function(distance_df,
 #' @inheritParams get_stop_distances
 #' @inheritParams get_trajectory_fun
 #' @inheritParams make_monotonic
-#' @param date_min Optional. A date object. The earliest date in
-#' `calendar_dates.txt` to create a trip trajectory for. Default is `NULL`, where the
-#' first date in `calendar_dates.txt` will be used.
-#' @param date_max Optional. A date object. The latest date in
-#' `calendar_dates.txt` to create a trip trajectory for. Default is `NULL`, where the
-#' last date in `calendar_dates.txt` will be used.
+#' @inheritParams get_gtfs_service_dates
 #' @param agency_timezone Optional. A timezone string (see `OlsonNames()`)
 #' indicating he appropriate timezone for the stop times. Default is `NULL`,
 #' where the timezone in `agency.txt` will be used.
@@ -505,23 +500,29 @@ get_trajectory_fun <- function(distance_df,
 #' @examples
 #' # Set my parameters
 #' my_crs <- 32618
-#' my_start_date <- as.Date("2025-01-01")
-#' my_end_date <- as.Date("2025-01-02")
+#' my_start_date <- as.Date("2026-02-16")
+#' my_end_date <- as.Date("2026-02-16")
 #'
 #' # Get input data
 #' c53_gtfs <- new_transittraj_data("filter_by_route")
 #' c53_shape <- new_transittraj_data("get_shape_geometry")
 #'
-#' # Run function
-#' #c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-#' #                                              shape_geometry = c53_shape,
-#' #                                              project_crs = my_crs,
-#' #                                              date_min = my_start_date,
-#' #                                              date_max = my_end_date)
-#' #summary(c53_scheduled_traj)
+#' # Run function: build trajectory
+#' c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
+#'                                               shape_geometry = c53_shape,
+#'                                               project_crs = my_crs,
+#'                                               date_min = my_start_date,
+#'                                               date_max = my_end_date)
+#'
+#' # Show trajectory: summary & plot
+#' summary(c53_scheduled_traj)
+#' plot_trajectory(trajectory = c53_scheduled_traj,
+#'                 plot_trips = unclass(c53_scheduled_traj)[8:10],
+#'                 traj_color = "firebrick4")
 get_gtfs_trajectory_fun <- function(gtfs,
                                     shape_geometry = NULL, project_crs = 4326,
                                     date_min = NULL, date_max = NULL,
+                                    use_calendar_table = "calendar",
                                     agency_timezone = NULL,
                                     use_stop_time = "departure",
                                     add_stop_dwell = 0, add_distance_error = 0,
@@ -537,10 +538,6 @@ get_gtfs_trajectory_fun <- function(gtfs,
     rlang::abort(message = "Provided GTFS not a tidygtfs object.",
                  class = "error_gtfsval_not_tidygtfs")
   }
-  # calendar_dates: service_id, date
-  validate_gtfs_input(gtfs,
-                      table = "calendar_dates",
-                      needed_fields = c("date", "service_id"))
   # stop_times: trip_id, stop_id, stop_sequence; others depend on timepoint used
   if (use_stop_time == "departure") {
     stop_times_fields <- c("trip_id", "stop_id", "stop_sequence",
@@ -562,21 +559,13 @@ get_gtfs_trajectory_fun <- function(gtfs,
   # trips: service_id (shape_id, trip_id will be validated by get_stop_distances())
   validate_gtfs_input(gtfs,
                       table = "trips",
-                      needed_fields = c("service_id"))
-
-  # Get bounds for min & max date
-  # Set to bounds of input data if not provided
-  if (is.null(date_min)) {
-    date_min <- min(as.Date(gtfs$calendar_dates$date))
-  }
-  if (is.null(date_max)) {
-    date_max <- max(as.Date(gtfs$calendar_dates$date))
-  }
+                      needed_fields = c("service_id", "trip_id"))
   # If TZ not povided, pull from input GTFS
   if(is.null(agency_timezone)) {
     agency_timezone <- gtfs$agency$agency_timezone[1]
   }
 
+  # --- Build trip timepoints ---
   # Get stop distances
   stop_dist_df <- get_stop_distances(gtfs = gtfs,
                                      shape_geometry = shape_geometry,
@@ -612,7 +601,8 @@ get_gtfs_trajectory_fun <- function(gtfs,
       # If there are zero-second dwell times
       if(is.null(add_stop_dwell)) {
         # Stop dwell not provided
-        stop("Zero-second stop dwells detected, but no stop dwell addition provided. Please either: change stop time method, or provide stop dwell time to add.")
+        rlang::abort(message = "Zero-second stop dwells detected, but no stop dwell addition provided. Please either: change stop time method, or provide stop dwell time to add.",
+                     class = "error_gtfstraj_inputdata")
       } else {
         # Use provided dwell time to adjust forward departure times
         trip_dwells_adj <- trip_dwells %>%
@@ -639,32 +629,34 @@ get_gtfs_trajectory_fun <- function(gtfs,
   # Join previous info
   if (!is.null(shape_geometry)) {
     # If shape geometry provided, do not need to join by shape_id
-    trip_joins <- trip_timepoints %>%
+    trip_dists <- trip_timepoints %>%
       dplyr::left_join(y = (gtfs$trips %>% dplyr::select(trip_id, service_id)),
                        by = "trip_id", relationship = "many-to-many") %>%
-      dplyr::left_join(y = stop_dist_df, by = "stop_id") %>%
-      dplyr::left_join(y = (gtfs$calendar_dates %>% dplyr::select(service_id, date)),
-                       by = "service_id", relationship = "many-to-many") %>%
-      dplyr::mutate(trip_id = paste(date, trip_id, sep = "-"),
-                    date = as.Date(date))
+      dplyr::left_join(y = stop_dist_df, by = "stop_id")
   } else {
     # If shape geometry not provided, need to join by shape_id
-    trip_joins <- trip_timepoints %>%
+    trip_dists <- trip_timepoints %>%
       dplyr::left_join(y = (gtfs$trips %>% dplyr::select(trip_id, shape_id, service_id)),
                        by = "trip_id", relationship = "many-to-many") %>%
-      dplyr::left_join(y = stop_dist_df, by = c("stop_id", "shape_id")) %>%
-      dplyr::left_join(y = (gtfs$calendar_dates %>% dplyr::select(service_id, date)),
-                       by = "service_id", relationship = "many-to-many") %>%
-      dplyr::mutate(trip_id = paste(date, trip_id, sep = "-"),
-                    date = as.Date(date))
+      dplyr::left_join(y = stop_dist_df, by = c("stop_id", "shape_id"))
   }
 
+  service_dates <- get_gtfs_service_dates(gtfs = gtfs,
+                                          date_min = date_min,
+                                          date_max = date_max,
+                                          use_calendar_table = use_calendar_table)
+
+  # Enumerate trips over all service dates
+  trip_dates <- trip_dists %>%
+    dplyr::filter(service_id %in% service_dates$service_id) %>%
+    dplyr::left_join(y = service_dates,
+                     by = "service_id", relationship = "many-to-many") %>%
+    dplyr::mutate(trip_id = paste(date, trip_id, sep = "-"))
+
+
   # Get timetable, time-distance pairs
-  trip_distances <- trip_joins %>%
-    # Filter to desired date range
-    dplyr::filter((date >= date_min) & (date <= date_max)) %>%
-    dplyr::mutate(stp_time = as.character(stp_time),
-                  hour_num = as.numeric(substr(stp_time, start = 1, stop = 2)),
+  trip_TIDES <- trip_dates %>%
+    dplyr::mutate(hour_num = as.numeric(substr(stp_time, start = 1, stop = 2)),
                   # If past midnight, increment date
                   date = dplyr::if_else(condition = (hour_num >= 24),
                                         true = (date + 1),
@@ -675,7 +667,7 @@ get_gtfs_trajectory_fun <- function(gtfs,
                                             false = hour_num),
                   # Format stp_time string
                   stp_time = paste(sprintf("%02d", hour_num), substr(stp_time, start = 3, stop = 8),
-                               sep = ""),
+                                   sep = ""),
                   # Convert time string to date type
                   event_timestamp = as.POSIXct(paste(date, stp_time, sep = " "),
                                                format = "%Y-%m-%d %H:%M:%S",
@@ -686,17 +678,16 @@ get_gtfs_trajectory_fun <- function(gtfs,
 
   # Correct for monotonicity
   if (add_distance_error > 0) {
-    trip_distances <- make_monotonic(distance_df = trip_distances,
+    trip_distances <- make_monotonic(distance_df = trip_TIDES,
                                      correct_speed = FALSE,
                                      add_distance_error = add_distance_error)
   }
 
-  # Get trajectory function object
-  traj_funs <- get_trajectory_fun(distance_df = trip_distances,
+  # --- Get trajectory function ---
+  traj_funs <- get_trajectory_fun(distance_df = trip_TIDES,
                                   interp_method = interp_method,
                                   find_inverse_function = find_inverse_function,
                                   return_group_function = return_group_function,
                                   inv_tol = inv_tol,
                                   use_speeds = FALSE)
-  return(traj_funs)
 }

@@ -10,6 +10,7 @@ get_gtfs_trajectory_fun(
   project_crs = 4326,
   date_min = NULL,
   date_max = NULL,
+  use_calendar_table = "calendar",
   agency_timezone = NULL,
   use_stop_time = "departure",
   add_stop_dwell = 0,
@@ -32,13 +33,17 @@ coordinate system to use for spatial calculations. Consider setting to a
 Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 84 ellipsoid).}
 
-\item{date_min}{Optional. A date object. The earliest date in
-\code{calendar_dates.txt} to create a trip trajectory for. Default is \code{NULL}, where the
-first date in \code{calendar_dates.txt} will be used.}
+\item{date_min}{Optional. The starting (earliest possible) date for the
+returned dataframe. Default is NULL, where the earliest date in the GTFS will
+be used.}
 
-\item{date_max}{Optional. A date object. The latest date in
-\code{calendar_dates.txt} to create a trip trajectory for. Default is \code{NULL}, where the
-last date in \code{calendar_dates.txt} will be used.}
+\item{date_max}{Optional. The starting (latest possible) date for the
+returned dataframe. Default is NULL, where the latest date in the GTFS will
+be used.}
+
+\item{use_calendar_table}{Optional. Should the GTFS's \code{calendar.txt} or
+\code{calendar_dates.txt} be used for the feasible date range? Must be
+\code{"calendar"} or \code{"calendar_dates"}. Default is \code{"calendar"}.}
 
 \item{agency_timezone}{Optional. A timezone string (see \code{OlsonNames()})
 indicating he appropriate timezone for the stop times. Default is \code{NULL},
@@ -189,18 +194,23 @@ available at (xyz).
 \examples{
 # Set my parameters
 my_crs <- 32618
-my_start_date <- as.Date("2025-01-01")
-my_end_date <- as.Date("2025-01-02")
+my_start_date <- as.Date("2026-02-16")
+my_end_date <- as.Date("2026-02-16")
 
 # Get input data
 c53_gtfs <- new_transittraj_data("filter_by_route")
 c53_shape <- new_transittraj_data("get_shape_geometry")
 
-# Run function
-#c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-#                                              shape_geometry = c53_shape,
-#                                              project_crs = my_crs,
-#                                              date_min = my_start_date,
-#                                              date_max = my_end_date)
-#summary(c53_scheduled_traj)
+# Run function: build trajectory
+c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
+                                              shape_geometry = c53_shape,
+                                              project_crs = my_crs,
+                                              date_min = my_start_date,
+                                              date_max = my_end_date)
+
+# Show trajectory: summary & plot
+summary(c53_scheduled_traj)
+plot_trajectory(trajectory = c53_scheduled_traj,
+                plot_trips = unclass(c53_scheduled_traj)[8:10],
+                traj_color = "firebrick4")
 }

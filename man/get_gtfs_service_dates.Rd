@@ -8,7 +8,7 @@ get_gtfs_service_dates(
   gtfs,
   date_min = NULL,
   date_max = NULL,
-  use_table = "calendar"
+  use_calendar_table = "calendar"
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ be used.}
 returned dataframe. Default is NULL, where the latest date in the GTFS will
 be used.}
 
-\item{use_table}{Optional. Should the GTFS's \code{calendar.txt} or
+\item{use_calendar_table}{Optional. Should the GTFS's \code{calendar.txt} or
 \code{calendar_dates.txt} be used for the feasible date range? Must be
 \code{"calendar"} or \code{"calendar_dates"}. Default is \code{"calendar"}.}
 }
@@ -52,10 +52,11 @@ if the date is listed as an exception in \code{calendar_dates.txt}.
 will simply filter, clean, and return this table.
 }
 
-Use the input parameter \code{use_table} to control which method to use. If
-\code{use_table = "calendar"}, the former method will be used; if
-\code{use_table = "calendar_dates"}, the latter will be used. To restrict the
-date enumeration to only a specific window, set \code{date_min} and \code{date_max}.
+Use the input parameter \code{use_calendar_table} to control which method to use.
+If \code{use_calendar_table = "calendar"}, the former method will be used; if
+\code{use_calendar_table = "calendar_dates"}, the latter will be used. To
+restrict the date enumeration to only a specific window, set \code{date_min}
+and \code{date_max}.
 }
 \examples{
 # Set parameters
@@ -66,6 +67,6 @@ trb_end <- as.Date("2026-01-15")
 trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
                                           date_min = trb_start,
                                           date_max = trb_end,
-                                          use_table = "calendar")
+                                          use_calendar_table = "calendar")
 print(trb_service_ids)
 }
