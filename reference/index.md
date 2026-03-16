@@ -12,6 +12,9 @@ Functions to manipulate tidygtfs objects.
   : Projects points to linear distances along a route shape.
 - [`get_stop_distances()`](https://obrien-ben.github.io/transittraj/reference/get_stop_distances.md)
   : Get the distances of stops along routes.
+- [`get_gtfs_service_dates()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md)
+  : Get a dataframe of all service dates and their service IDs from a
+  GTFS.
 - [`plot_interactive_gtfs()`](https://obrien-ben.github.io/transittraj/reference/plot_interactive_gtfs.md)
   : Generates a Leaflet viewer of GTFS routes and stops.
 
