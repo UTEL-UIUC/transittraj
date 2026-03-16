@@ -125,8 +125,11 @@ date enumeration to only a specific window, set <code>date_min</code> and <code>
 <span class="r-in"><span>                                          date_min <span class="op">=</span> <span class="va">trb_start</span>,</span></span>
 <span class="r-in"><span>                                          date_max <span class="op">=</span> <span class="va">trb_end</span>,</span></span>
 <span class="r-in"><span>                                          use_table <span class="op">=</span> <span class="st">"calendar"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_gtfs_service_dates(gtfs = wmata_gtfs, date_min = trb_start,     date_max = trb_end, use_table = "calendar"):</span> Unrecognized min_date data type. Please input Date class (see as.Date()).</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trb_service_ids</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::mutate(., service_id = if_else(condition = is.na(excep_id),     true = sched_id, false = excep_id)):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `service_id = if_else(condition = is.na(excep_id), true =</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span>   sched_id, false = excep_id)`.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `if_else()`:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> could not find function "if_else"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">trb_service_ids</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'trb_service_ids' not found</span>
 </code></pre></div>
     </div>

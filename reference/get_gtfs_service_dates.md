@@ -81,7 +81,10 @@ trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
                                           date_min = trb_start,
                                           date_max = trb_end,
                                           use_table = "calendar")
-#> Error in get_gtfs_service_dates(gtfs = wmata_gtfs, date_min = trb_start,     date_max = trb_end, use_table = "calendar"): Unrecognized min_date data type. Please input Date class (see as.Date()).
-head(trb_service_ids)
+#> Error in dplyr::mutate(., service_id = if_else(condition = is.na(excep_id),     true = sched_id, false = excep_id)): ℹ In argument: `service_id = if_else(condition = is.na(excep_id), true =
+#>   sched_id, false = excep_id)`.
+#> Caused by error in `if_else()`:
+#> ! could not find function "if_else"
+print(trb_service_ids)
 #> Error: object 'trb_service_ids' not found
 ```
