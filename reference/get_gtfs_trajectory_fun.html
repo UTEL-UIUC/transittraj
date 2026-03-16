@@ -62,6 +62,7 @@ linearly (<code>interp_method = "linear"</code>), or via any method supported by
 <span>  project_crs <span class="op">=</span> <span class="fl">4326</span>,</span>
 <span>  date_min <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_calendar_table <span class="op">=</span> <span class="st">"calendar"</span>,</span>
 <span>  agency_timezone <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  use_stop_time <span class="op">=</span> <span class="st">"departure"</span>,</span>
 <span>  add_stop_dwell <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -95,15 +96,21 @@ Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 
 
 <dt id="arg-date-min">date_min<a class="anchor" aria-label="anchor" href="#arg-date-min"></a></dt>
-<dd><p>Optional. A date object. The earliest date in
-<code>calendar_dates.txt</code> to create a trip trajectory for. Default is <code>NULL</code>, where the
-first date in <code>calendar_dates.txt</code> will be used.</p></dd>
+<dd><p>Optional. The starting (earliest possible) date for the
+returned dataframe. Default is NULL, where the earliest date in the GTFS will
+be used.</p></dd>
 
 
 <dt id="arg-date-max">date_max<a class="anchor" aria-label="anchor" href="#arg-date-max"></a></dt>
-<dd><p>Optional. A date object. The latest date in
-<code>calendar_dates.txt</code> to create a trip trajectory for. Default is <code>NULL</code>, where the
-last date in <code>calendar_dates.txt</code> will be used.</p></dd>
+<dd><p>Optional. The starting (latest possible) date for the
+returned dataframe. Default is NULL, where the latest date in the GTFS will
+be used.</p></dd>
+
+
+<dt id="arg-use-calendar-table">use_calendar_table<a class="anchor" aria-label="anchor" href="#arg-use-calendar-table"></a></dt>
+<dd><p>Optional. Should the GTFS's <code>calendar.txt</code> or
+<code>calendar_dates.txt</code> be used for the feasible date range? Must be
+<code>"calendar"</code> or <code>"calendar_dates"</code>. Default is <code>"calendar"</code>.</p></dd>
 
 
 <dt id="arg-agency-timezone">agency_timezone<a class="anchor" aria-label="anchor" href="#arg-agency-timezone"></a></dt>
@@ -266,20 +273,40 @@ available at (xyz).</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
 <span class="r-in"><span><span class="va">my_crs</span> <span class="op">&lt;-</span> <span class="fl">32618</span></span></span>
-<span class="r-in"><span><span class="va">my_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-01-01"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">my_end_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-01-02"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2026-02-16"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_end_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2026-02-16"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get input data</span></span></span>
 <span class="r-in"><span><span class="va">c53_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"filter_by_route"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_shape_geometry"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="co">#c53_scheduled_traj &lt;- get_gtfs_trajectory_fun(gtfs = c53_gtfs,</span></span></span>
-<span class="r-in"><span><span class="co">#                                              shape_geometry = c53_shape,</span></span></span>
-<span class="r-in"><span><span class="co">#                                              project_crs = my_crs,</span></span></span>
-<span class="r-in"><span><span class="co">#                                              date_min = my_start_date,</span></span></span>
-<span class="r-in"><span><span class="co">#                                              date_max = my_end_date)</span></span></span>
-<span class="r-in"><span><span class="co">#summary(c53_scheduled_traj)</span></span></span>
+<span class="r-in"><span><span class="co"># Run function: build trajectory</span></span></span>
+<span class="r-in"><span><span class="va">c53_scheduled_traj</span> <span class="op">&lt;-</span> <span class="fu">get_gtfs_trajectory_fun</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">c53_gtfs</span>,</span></span>
+<span class="r-in"><span>                                              shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span></span>
+<span class="r-in"><span>                                              project_crs <span class="op">=</span> <span class="va">my_crs</span>,</span></span>
+<span class="r-in"><span>                                              date_min <span class="op">=</span> <span class="va">my_start_date</span>,</span></span>
+<span class="r-in"><span>                                              date_max <span class="op">=</span> <span class="va">my_end_date</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Show trajectory: summary &amp; plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_scheduled_traj</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AVL Group Trajectory Object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trips: 108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Total distance range: NA to NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Total time range: 1771221600 to 1771310100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Trajectory function present: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Trajectory interpolation method: linear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Maximum derivative: 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Fit with speeds: FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inverse function present: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Inverse function tolerance: 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-in"><span><span class="fu"><a href="plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_scheduled_traj</span>,</span></span>
+<span class="r-in"><span>                plot_trips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">c53_scheduled_traj</span><span class="op">)</span><span class="op">[</span><span class="fl">8</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>                traj_color <span class="op">=</span> <span class="st">"firebrick4"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="get_gtfs_trajectory_fun-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

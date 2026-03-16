@@ -99,8 +99,10 @@ using UTM).</p>
 <span class="r-in"><span><span class="va">my_dir</span> <span class="op">&lt;-</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get needed GTFS data</span></span></span>
-<span class="r-in"><span><span class="va">c53_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, route_ids <span class="op">=</span> <span class="va">my_route</span>, dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, shape <span class="op">=</span> <span class="va">my_shape</span>, project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">c53_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
+<span class="r-in"><span>                            dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
+<span class="r-in"><span>                                project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run stop distances function</span></span></span>
 <span class="r-in"><span><span class="va">c53_stop_dists</span> <span class="op">&lt;-</span> <span class="fu">get_stop_distances</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">c53_gtfs</span>,</span></span>

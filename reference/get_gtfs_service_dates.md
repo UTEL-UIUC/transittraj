@@ -12,7 +12,7 @@ get_gtfs_service_dates(
   gtfs,
   date_min = NULL,
   date_max = NULL,
-  use_table = "calendar"
+  use_calendar_table = "calendar"
 )
 ```
 
@@ -34,7 +34,7 @@ get_gtfs_service_dates(
   dataframe. Default is NULL, where the latest date in the GTFS will be
   used.
 
-- use_table:
+- use_calendar_table:
 
   Optional. Should the GTFS's `calendar.txt` or `calendar_dates.txt` be
   used for the feasible date range? Must be `"calendar"` or
@@ -63,11 +63,11 @@ The GTFS standard allows for two different structurings of
   `get_gtfs_service_dates()` will simply filter, clean, and return this
   table.
 
-Use the input parameter `use_table` to control which method to use. If
-`use_table = "calendar"`, the former method will be used; if
-`use_table = "calendar_dates"`, the latter will be used. To restrict the
-date enumeration to only a specific window, set `date_min` and
-`date_max`.
+Use the input parameter `use_calendar_table` to control which method to
+use. If `use_calendar_table = "calendar"`, the former method will be
+used; if `use_calendar_table = "calendar_dates"`, the latter will be
+used. To restrict the date enumeration to only a specific window, set
+`date_min` and `date_max`.
 
 ## Examples
 
@@ -80,7 +80,7 @@ trb_end <- as.Date("2026-01-15")
 trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
                                           date_min = trb_start,
                                           date_max = trb_end,
-                                          use_table = "calendar")
+                                          use_calendar_table = "calendar")
 print(trb_service_ids)
 #>         date service_id
 #> 1 2026-01-11          2
