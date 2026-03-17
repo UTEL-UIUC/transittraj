@@ -21,6 +21,8 @@
   Read more at
   [`help(get_gtfs_service_dates)`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md).
 
+- plotting legend override
+
 ## transittraj 0.1.1
 
 *Release: 3/13/2026*

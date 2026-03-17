@@ -4,6 +4,8 @@
 
 - [The AVL Cleaning
   Workflow](https://obrien-ben.github.io/transittraj/articles/data-workflow.md):
+- [Applying \`transittraj\`: Signal Delays in Indianapolis,
+  Indiana](https://obrien-ben.github.io/transittraj/articles/eg-indygo-signals-rendered.md):
 - [Understanding Data
   Inputs](https://obrien-ben.github.io/transittraj/articles/input-data.md):
 - [Introduction to

@@ -36,8 +36,9 @@
 <li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
     <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
     <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Trajectories</h6></li>
     <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
+    <li><a class="dropdown-item" href="../articles/eg-indygo-signals-rendered.html">Signal Delays in Indianapolis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -192,13 +193,15 @@ distance of each stop along the route using
 <span></span>
 <span><span class="co"># Print header</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_stop_crossings</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   trip_id_performed  distance     interp</span></span>
-<span><span class="co">#&gt; 1          10185100  677.4185 1771274452</span></span>
-<span><span class="co">#&gt; 2          10185100  880.0519 1771274487</span></span>
-<span><span class="co">#&gt; 3          10185100 1154.5690 1771274567</span></span>
-<span><span class="co">#&gt; 4          10185100 1604.6732 1771274637</span></span>
-<span><span class="co">#&gt; 5          10185100 1806.5221 1771274704</span></span>
-<span><span class="co">#&gt; 6          10185100 2036.5933 1771274746</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   stop_id distance timepoint stop_name              trip_id_performed     interp</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2584        677. No        Alabama Av SE+15 Pl SE 10185100              1.77<span style="color: #949494;">e</span>9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2584        677. No        Alabama Av SE+15 Pl SE 10249100              1.77<span style="color: #949494;">e</span>9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2584        677. No        Alabama Av SE+15 Pl SE 1306100               1.77<span style="color: #949494;">e</span>9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2584        677. No        Alabama Av SE+15 Pl SE 13437100              1.77<span style="color: #949494;">e</span>9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2584        677. No        Alabama Av SE+15 Pl SE 13478100              1.77<span style="color: #949494;">e</span>9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2584        677. No        Alabama Av SE+15 Pl SE 1699100               1.77<span style="color: #949494;">e</span>9</span></span></code></pre></div>
 <p>Now we have the crossing time, labeled <code>interp</code> at each
 stop for each trip. The interpolated times are in seconds of epoch
 time.</p>
@@ -218,16 +221,16 @@ in time. We can do that by providing <code>new_times</code> to
 <span></span>
 <span><span class="co"># Print full results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_time_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   trip_id_performed event_timestamp     interp</span></span>
-<span><span class="co">#&gt; 1          10185100      1771275000  2883.3087</span></span>
-<span><span class="co">#&gt; 2          10249100      1771275000  7986.3226</span></span>
-<span><span class="co">#&gt; 3           1306100      1771265000  8933.8531</span></span>
-<span><span class="co">#&gt; 4          13478100      1771275000   140.0436</span></span>
-<span><span class="co">#&gt; 5          18298100      1771265000 10899.0966</span></span>
-<span><span class="co">#&gt; 6          21499100      1771265000  4006.3031</span></span>
-<span><span class="co">#&gt; 7          21555100      1771265000 13912.1101</span></span>
-<span><span class="co">#&gt; 8          22663100      1771265000  6944.8919</span></span>
-<span><span class="co">#&gt; 9           3597100      1771275000  6792.4405</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed     interp</span></span>
+<span><span class="co">#&gt; 1      1771265000           1306100  8933.8531</span></span>
+<span><span class="co">#&gt; 2      1771265000          18298100 10899.0966</span></span>
+<span><span class="co">#&gt; 3      1771265000          21499100  4006.3031</span></span>
+<span><span class="co">#&gt; 4      1771265000          21555100 13912.1101</span></span>
+<span><span class="co">#&gt; 5      1771265000          22663100  6944.8919</span></span>
+<span><span class="co">#&gt; 6      1771275000          10185100  2883.3087</span></span>
+<span><span class="co">#&gt; 7      1771275000          10249100  7986.3226</span></span>
+<span><span class="co">#&gt; 8      1771275000          13478100   140.0436</span></span>
+<span><span class="co">#&gt; 9      1771275000           3597100  6792.4405</span></span></code></pre></div>
 <p>Here, <code>interp</code> will be the distance in meters from the
 route’s beginning. You’ll notice that, even though we have 24 trips,
 there were only four to five distance for each timepoint. This is
@@ -250,16 +253,16 @@ in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">pr
 <span></span>
 <span><span class="co"># Print results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_speed_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   trip_id_performed event_timestamp       interp</span></span>
-<span><span class="co">#&gt; 1          10185100      1771275000 4.473051e-01</span></span>
-<span><span class="co">#&gt; 2          10249100      1771275000 4.354498e-05</span></span>
-<span><span class="co">#&gt; 3           1306100      1771265000 1.675073e-01</span></span>
-<span><span class="co">#&gt; 4          13478100      1771275000 7.213864e-01</span></span>
-<span><span class="co">#&gt; 5          18298100      1771265000 1.464849e+00</span></span>
-<span><span class="co">#&gt; 6          21499100      1771265000 1.372977e+01</span></span>
-<span><span class="co">#&gt; 7          21555100      1771265000 6.424041e-01</span></span>
-<span><span class="co">#&gt; 8          22663100      1771265000 1.508816e+00</span></span>
-<span><span class="co">#&gt; 9           3597100      1771275000 9.079446e-01</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
+<span><span class="co">#&gt; 1      1771265000           1306100 1.675073e-01</span></span>
+<span><span class="co">#&gt; 2      1771265000          18298100 1.464849e+00</span></span>
+<span><span class="co">#&gt; 3      1771265000          21499100 1.372977e+01</span></span>
+<span><span class="co">#&gt; 4      1771265000          21555100 6.424041e-01</span></span>
+<span><span class="co">#&gt; 5      1771265000          22663100 1.508816e+00</span></span>
+<span><span class="co">#&gt; 6      1771275000          10185100 4.473051e-01</span></span>
+<span><span class="co">#&gt; 7      1771275000          10249100 4.354498e-05</span></span>
+<span><span class="co">#&gt; 8      1771275000          13478100 7.213864e-01</span></span>
+<span><span class="co">#&gt; 9      1771275000           3597100 9.079446e-01</span></span></code></pre></div>
 <p>Here, <code>interp</code> will be the speed in meters per second.
 Finding speeds requires starting from time values; we cannot get speeds
 from distance values.</p>
