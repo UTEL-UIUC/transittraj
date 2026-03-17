@@ -1,4 +1,4 @@
-# Applying \`transittraj\`: Signal Delays in Indianapolis, Indiana
+# Applying Trajectories: Signal Delays in Indianapolis, Indiana
 
 ## Introduction
 
@@ -29,30 +29,20 @@ library(tidyverse)
 IndyGo operates two BRT rotues in Indianapolis, Indiana, the Red and
 Purple Lines. The Red Line runs primarily north-south through the city,
 passing through downtown. The Purple Line interlines with the Red Line
-through downtown, before running east-west along 38th St. Check out the
-route alignments below:
-
-``` r
-plot_interactive_gtfs(gtfs = indy_brt_gtfs,
-                      color_palette = "gtfs")
-```
-
-    ## Error in `loadNamespace()`:
-    ## ! there is no package called 'webshot'
-
-The bus priority infrastructure varies across these routes. Large
-portions of these alignments have bus lanes, and many of these lanes are
+through downtown, before running east-west along 38th St. The bus
+priority infrastructure varies across these routes. Large portions of
+these alignments have bus lanes, and many of these lanes are
 center-running.
 
-The main focus of this study, however, was on the transit signal
-priority (TSP) system. Since its launch, the Red Line has had two
-generations of TSP. At launch in September 2019, all Red Line signals
-had a traditional call-based TSP system, where requests were granted
-conditional on the schedule adherence of the bus. When the Purple Line
-launched in October 2024, it was served by an upgraded cloud-based TSP
-system with unconditional grants and a high class of priority. Around
-this time, a handful of old Red Line signals were upgraded to the new
-TSP system; all others remained on the previous generation system.
+The main focus of this study, however, is on the transit signal priority
+(TSP) system. Since its launch, the Red Line has had two generations of
+TSP. At launch in September 2019, all Red Line signals had a traditional
+call-based TSP system, where requests were granted conditional on the
+schedule adherence of the bus. When the Purple Line launched in October
+2024, it was served by an upgraded cloud-based TSP system with
+unconditional grants and a high class of priority. Around this time, a
+handful of old Red Line signals were upgraded to the new TSP system; all
+others remained on the previous generation system.
 
 Our research goal was to use this natural experiment to understand how
 the TSP upgrade affected signal delays along the Red Line. For this
@@ -207,9 +197,9 @@ plot_trajectory(
        subtitle = "IndyGo Red Line NB")
 ```
 
-![plot of chunk unnamed-chunk-159](figures/ex-indygo-trajs.png)
+![plot of chunk unnamed-chunk-10](figures/ex-indygo-trajs.png)
 
-plot of chunk unnamed-chunk-159
+plot of chunk unnamed-chunk-10
 
 ## Methods
 
@@ -218,9 +208,9 @@ for each trip. For traffic engineers, delay is defined as the difference
 between the free-flow travel time and observed travel time through an
 intersection.
 
-![plot of chunk unnamed-chunk-160](figures/ex-sig-delay.png)
+![plot of chunk unnamed-chunk-11](figures/ex-sig-delay.png)
 
-plot of chunk unnamed-chunk-160
+plot of chunk unnamed-chunk-11
 
 ### Travel Times
 
@@ -504,9 +494,9 @@ traj_plot <- ggplot(data = interp_speeds_df) +
 traj_plot
 ```
 
-![plot of chunk unnamed-chunk-170](figures/ex-indygo-sigtraj.png)
+![plot of chunk unnamed-chunk-21](figures/ex-indygo-sigtraj.png)
 
-plot of chunk unnamed-chunk-170
+plot of chunk unnamed-chunk-21
 
 This almost perfectly matches the simple, theoretical diagram we
 presented above. The free-flow trajectory (the 5th percentile of all
@@ -571,7 +561,7 @@ tsp_df <- data.frame(week_num = c(37, 41),
 delay_plot <- ggplot(data = plot_df) +
   # Add mean, 25th, and 75th lines
   geom_line(aes(x = week_num, y = delay_mean,
-                linetype = "Mean", color = "Mean"), 
+                linetype = "Mean", color = "Mean"),
             linewidth = 1.4, alpha = 1) +
   geom_line(aes(x = week_num, y = delay_25th,
                 linetype = "1st-3rd Quart", color = "1st-3rd Quart"),
@@ -601,9 +591,9 @@ delay_plot <- ggplot(data = plot_df) +
 delay_plot
 ```
 
-![plot of chunk unnamed-chunk-174](figures/ex-indygo-delay.png)
+![plot of chunk unnamed-chunk-25](figures/ex-indygo-delay.png)
 
-plot of chunk unnamed-chunk-174
+plot of chunk unnamed-chunk-25
 
 We can see a pretty cool trend: as the signal transitioned into the new
 TSP system, the average signal delay fell dramatically. The 75th
@@ -640,9 +630,9 @@ delay_violins <- ggplot(data = violin_df) +
 delay_violins
 ```
 
-![plot of chunk unnamed-chunk-177](figures/ex-indygo-violins.png)
+![plot of chunk unnamed-chunk-28](figures/ex-indygo-violins.png)
 
-plot of chunk unnamed-chunk-177
+plot of chunk unnamed-chunk-28
 
 We see a similar trend. The violin plot is much shorter and wider at
 week 45 than it is at week 35, suggesting that signal delays get much
