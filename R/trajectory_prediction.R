@@ -136,14 +136,15 @@ interpolate_distances_group <- function(trip_extremes = NULL, new_times = NULL,
 
   # If new_times_trips not provided, create it -- only not true for plot_trips_df_setup
   if (is.null(new_times_trips)) {
-    new_times_vec <- as.numeric(new_times$event_timestamp)
-    num_times <- length(new_times_vec)
+    trips <- trip_extremes$trip_id_performed
+    num_times <- dim(new_times)[1]
     num_trips <- dim(trip_extremes)[1]
-    new_times_trips <- trip_extremes %>%
-      tidyr::uncount(weights = num_times) %>%
-      dplyr::mutate(event_timestamp = rep(new_times_vec, num_trips)) %>%
-      dplyr::filter(((event_timestamp >= min_time) &
-                       (event_timestamp <= max_time))) %>%
+    new_times_trips <- new_times %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      tidyr::uncount(weights = num_trips) %>%
+      dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
       dplyr::select(-c(min_time, max_time, min_dist, max_dist))
   }
 
@@ -223,14 +224,14 @@ interpolate_times_group <- function(trip_extremes = NULL, new_distances = NULL,
 
   # If new_dist_trips not provided, create it -- only not true for plot_trips_df_setup
   if (is.null(new_dist_trips)) {
-    new_dist_vec <- new_distances$distance
-    num_dist <- length(new_dist_vec)
+    trips <- trip_extremes$trip_id_performed
+    num_dist <- dim(new_distances)[1]
     num_trips <- dim(trip_extremes)[1]
-    new_dist_trips <- trip_extremes %>%
-      tidyr::uncount(weights = num_dist) %>%
-      dplyr::mutate(distance = rep(new_dist_vec, num_trips)) %>%
-      dplyr::filter(((distance >= min_dist) &
-                       (distance <= max_dist))) %>%
+    new_dist_trips <- new_distances %>%
+      tidyr::uncount(weights = num_trips) %>%
+      dplyr::mutate(trip_id_performed = rep(trips, num_dist)) %>%
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
       dplyr::select(-c(min_time, max_time, min_dist, max_dist))
   }
 

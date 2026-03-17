@@ -177,6 +177,9 @@
 #' outline. Default is 1.25.
 #' @param feature_alpha Optional. A numeric, the opacity of the feature point.
 #' Default is 1.
+#' @param feature_legend Optional. A boolean, should a legend be shown for
+#' feature formatting? Default is NULL, where a legend will only appear if
+#' the shape or outline format is mapped to.
 #' @param veh_shape Optional. A numeric specifying the `ggplot2` point shape, or
 #' a dataframe mapping an attribute in `distance_df` or `trajectory` to
 #' a shape. Must contain column `shape`. Default is 23 (diamond).
@@ -191,6 +194,9 @@
 #' outline. Default is 2.
 #' @param veh_alpha Optional. A numeric, the opacity of the vehicle point.
 #' Default is 0.8.
+#' @param veh_legend Optional. A boolean, should a legend be shown for
+#' vehicle formatting? Default is NULL, where a legend will only appear if
+#' the shape or outline format is mapped to.
 #' @param label_field Optional. A string specifying the column in
 #' `feature_distances` with which to label the feature lines. Default is `NULL`,
 #' where no labels will be plotted.
@@ -254,10 +260,12 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
                                feature_shape = 21, feature_outline = "black",
                                feature_fill = "white", feature_size = 2,
                                feature_stroke = 1.25, feature_alpha = 1,
+                               feature_legend = NULL,
                                # Format vehicles
                                veh_shape = 23, veh_outline = "grey30",
                                veh_fill = "white", veh_size = 3, veh_stroke = 2,
                                veh_alpha = 0.8,
+                               veh_legend = NULL,
                                # Format labels
                                label_field = NULL, label_size = 3,
                                label_alpha = 0.6, label_pos = "left") {
@@ -294,7 +302,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
   veh_outline_list <- plot_format_setup(plotting_df = trips_df,
                                              attribute_input = veh_outline,
                                              attribute_type = "outline",
-                                             attribute_name = "veh_outline")
+                                             attribute_name = "veh_outline",
+                                        user_show_legend = veh_legend)
   trips_df <- veh_outline_list[[1]]
   show_legend_vehcolor <- veh_outline_list[[2]]
   veh_outline_by <- veh_outline_list[[3]]
@@ -303,7 +312,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
   veh_shape_list <- plot_format_setup(plotting_df = trips_df,
                                              attribute_input = veh_shape,
                                              attribute_type = "shape",
-                                             attribute_name = "veh_shape")
+                                             attribute_name = "veh_shape",
+                                      user_show_legend = veh_legend)
   trips_df <- veh_shape_list[[1]]
   show_legend_vehshape <- veh_shape_list[[2]]
   veh_shape_by <- veh_shape_list[[3]]
@@ -313,7 +323,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
     feature_outline_list <- plot_format_setup(plotting_df = feature_distances,
                                                    attribute_input = feature_outline,
                                                    attribute_type = "outline",
-                                                   attribute_name = "feature_outline")
+                                                   attribute_name = "feature_outline",
+                                              user_show_legend = feature_legend)
     feature_distances <- feature_outline_list[[1]]
     show_legend_featurecolor <- feature_outline_list[[2]]
     feature_outline_by <- feature_outline_list[[3]]
@@ -322,7 +333,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
     feature_shape_list <- plot_format_setup(plotting_df = feature_distances,
                                                  attribute_input = feature_shape,
                                                  attribute_type = "shape",
-                                                 attribute_name = "feature_shape")
+                                                 attribute_name = "feature_shape",
+                                            user_show_legend = feature_legend)
     feature_distances <- feature_shape_list[[1]]
     show_legend_featureshape <- feature_shape_list[[2]]
     feature_shape_by <- feature_shape_list[[3]]
@@ -448,10 +460,12 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
                               feature_shape = 21, feature_outline = "black",
                               feature_fill = "white", feature_size = 2,
                               feature_stroke = 1.25, feature_alpha = 1,
+                              feature_legend = NULL,
                               # Format vehicles
                               veh_shape = 23, veh_outline = "grey30",
                               veh_fill = "white", veh_size = 3, veh_stroke = 2,
                               veh_alpha = 0.8,
+                              veh_legend = NULL,
                               # Format labels
                               label_field = NULL, label_size = 3,
                               label_alpha = 0.6, label_pos = "out") {
@@ -479,7 +493,8 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   veh_outline_list <- plot_format_setup(plotting_df = trips_df,
                                         attribute_input = veh_outline,
                                         attribute_type = "outline",
-                                        attribute_name = "veh_outline")
+                                        attribute_name = "veh_outline",
+                                        user_show_legend = veh_legend)
   trips_df <- veh_outline_list[[1]]
   show_legend_vehcolor <- veh_outline_list[[2]]
   veh_outline_by <- veh_outline_list[[3]]
@@ -488,7 +503,8 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   veh_shape_list <- plot_format_setup(plotting_df = trips_df,
                                       attribute_input = veh_shape,
                                       attribute_type = "shape",
-                                      attribute_name = "veh_shape")
+                                      attribute_name = "veh_shape",
+                                      user_show_legend = veh_legend)
   trips_df <- veh_shape_list[[1]]
   show_legend_vehshape <- veh_shape_list[[2]]
   veh_shape_by <- veh_shape_list[[3]]
@@ -498,7 +514,8 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
     feature_outline_list <- plot_format_setup(plotting_df = feature_distances,
                                               attribute_input = feature_outline,
                                               attribute_type = "outline",
-                                              attribute_name = "feature_outline")
+                                              attribute_name = "feature_outline",
+                                              user_show_legend = feature_legend)
     feature_distances <- feature_outline_list[[1]]
     show_legend_featurecolor <- feature_outline_list[[2]]
     feature_outline_by <- feature_outline_list[[3]]
@@ -507,7 +524,8 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
     feature_shape_list <- plot_format_setup(plotting_df = feature_distances,
                                             attribute_input = feature_shape,
                                             attribute_type = "shape",
-                                            attribute_name = "feature_shape")
+                                            attribute_name = "feature_shape",
+                                            user_show_legend = feature_legend)
     feature_distances <- feature_shape_list[[1]]
     show_legend_featureshape <- feature_shape_list[[2]]
     feature_shape_by <- feature_shape_list[[3]]
@@ -795,6 +813,9 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' Default is 1.
 #' @param traj_alpha Optional. A numeric, the opacity of the trajectory line.
 #' Default is 1.
+#' @param traj_legend Optional. A boolean, should a legend be shown for
+#' trajectory formatting? Default is NULL, where a legend will only appear if
+#' the linetype or color format is mapped to.
 #' @param feature_color Optional. A color string, or a dataframe mapping an
 #' attribute in `feature_distances` to a color. Must contain column `color`.
 #' Default is `grey30`.
@@ -803,6 +824,9 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' contain column `linetype`. Default is `"dashed"`.
 #' @param feature_width Optional. A numeric, the width of the feature line.
 #' Default is 0.8.
+#' @param feature_legend Optional. A boolean, should a legend be shown for
+#' feature formatting? Default is NULL, where a legend will only appear if
+#' the linetype or color format is mapped to.
 #' @param label_pos Optional. A string specifying the label position on the
 #' graph. Must be either `"left"` or `"right"`. Default is `"left"`.
 #' @return A `ggplot2` object.
@@ -831,9 +855,11 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
                             # Trajectory line customization
                             traj_color = "coral", traj_type = "solid",
                             traj_width = 1, traj_alpha = 1,
+                            traj_legend = NULL,
                             # Feature line customization
                             feature_color = "grey30", feature_type = "dashed",
                             feature_width = 0.8, feature_alpha = 0.8,
+                            feature_legend = NULL,
                             # Feature label customization
                             label_field = NULL, label_size = 3,
                             label_alpha = 0.6, label_pos = "left") {
@@ -856,7 +882,8 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
   traj_color_list <- plot_format_setup(plotting_df = trips_df,
                                        attribute_input = traj_color,
                                        attribute_type = "color",
-                                       attribute_name = "traj_color")
+                                       attribute_name = "traj_color",
+                                       user_show_legend = traj_legend)
   trips_df <- traj_color_list[[1]]
   show_legend_trajcolor <- traj_color_list[[2]]
   color_by <- traj_color_list[[3]]
@@ -865,7 +892,8 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
   traj_type_list <- plot_format_setup(plotting_df = trips_df,
                                        attribute_input = traj_type,
                                        attribute_type = "linetype",
-                                       attribute_name = "traj_type")
+                                       attribute_name = "traj_type",
+                                      user_show_legend = traj_legend)
   trips_df <- traj_type_list[[1]]
   show_legend_trajtype <- traj_type_list[[2]]
   traj_type_by <- traj_type_list[[3]]
@@ -876,7 +904,8 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
     feature_color_list <- plot_format_setup(plotting_df = feature_distances,
                                               attribute_input = feature_color,
                                               attribute_type = "color",
-                                              attribute_name = "feature_color")
+                                              attribute_name = "feature_color",
+                                            user_show_legend = feature_legend)
     feature_distances <- feature_color_list[[1]]
     show_legend_featurecolor <- feature_color_list[[2]]
     feature_color_by <- feature_color_list[[3]]
@@ -885,7 +914,8 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
     feature_type_list <- plot_format_setup(plotting_df = feature_distances,
                                             attribute_input = feature_type,
                                             attribute_type = "linetype",
-                                            attribute_name = "feature_type")
+                                            attribute_name = "feature_type",
+                                           user_show_legend = feature_legend)
     feature_distances <- feature_type_list[[1]]
     show_legend_featuretype <- feature_type_list[[2]]
     feature_type_by <- feature_type_list[[3]]

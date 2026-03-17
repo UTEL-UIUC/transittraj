@@ -13,6 +13,8 @@ files.
 `calendar.txt` and `calendar_dates.txt` (#2), with refactoring through the new
 `get_gtfs_service_dates()`. Read more at `help(get_gtfs_service_dates)`.
 
+* plotting legend override
+
 # transittraj 0.1.1
 
 *Release: 3/13/2026*

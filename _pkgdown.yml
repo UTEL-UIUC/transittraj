@@ -74,6 +74,8 @@ navbar:
           href: articles/input-data.html
         - text: AVL Cleaning
           href: articles/data-workflow.html
-        - text: Trajectories
         - text: Intro to Trajectories
           href: articles/intro-trajectories.html
+        - text: Applications
+        - text: Signal Delays in Indianapolis
+          href: articles/eg-indygo-signals-rendered.html

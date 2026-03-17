@@ -305,13 +305,16 @@ plot_feature_df_setup <- function(feature_distances,
 #' @param attribute_type The type of attribute being constructed (e.g.,
 #' "outline")
 #' @param attribute_name The name of the attribute (e.g., "veh_outline")
+#' @param user_show_legend Boolean, user input for if legend should be
+#' shown.
 #' @return List with: 1) new plotting_df, 2) show_legend, 3) attribute_by,
 #' and 4) attribute_vals
 #' @keywords internal
 plot_format_setup <- function(plotting_df,
                               attribute_input,
                               attribute_type,
-                              attribute_name) {
+                              attribute_name,
+                              user_show_legend) {
 
   if (!is.data.frame(attribute_input)) {
     temp_attr_name <- paste("temp_", attribute_name, sep = "")
@@ -347,8 +350,19 @@ plot_format_setup <- function(plotting_df,
                  class = "error_plottraj_format")
   }
 
+  # Change legend decision if user overrides
+  if (is.null(user_show_legend)) {
+    final_show_legend <- show_legend
+  } else {
+    if (user_show_legend) {
+      final_show_legend <- "legend"
+    } else {
+      final_show_legend <- "none"
+    }
+  }
+
   return(list(plotting_df,
-              show_legend,
+              final_show_legend,
               attribute_by,
               attribute_vals
   ))
