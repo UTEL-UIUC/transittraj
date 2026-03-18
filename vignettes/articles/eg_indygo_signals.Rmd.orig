@@ -7,10 +7,10 @@ output:
 # Introduction
 
 In previous vignettes, we saw how `transittraj` can help clean AVL data and
-fit interpolating trajectories. But how can these curves actually be used? 
+fit interpolating trajectories. But how can these curves actually be used?
 
 This vignette will demonstrate how we've used `transittraj` to understand
-delays at traffic signals along IndyGo's bus rapid transit routes. We'll 
+delays at traffic signals along IndyGo's bus rapid transit routes. We'll
 skip over the data cleaning process, and instead focus on the applications
 of finalized trajectories. Check out `vignette("articles/input-data")` to
 learn more about how to get started with your own data.
@@ -60,7 +60,7 @@ stops <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\
 IndyGo operates two BRT rotues in Indianapolis, Indiana, the Red and Purple
 Lines. These routes have a variety of types of bus priority infrastructure,
 including bus lanes and station-style stops, but the focus of this study is
-on the transit signal priority (TSP) system. Since its launch, the Red Line 
+on the transit signal priority (TSP) system. Since its launch, the Red Line
 has had two generations of TSP: a traditional call-based and conditional
 system, launched in September 2019; and a new cloud-based and
 unconditional system, launched when the Purple Line opened in October 2024.
@@ -94,7 +94,7 @@ htmlwidgets::saveWidget(widget = indy_map,
 ``` {r, echo = FALSE}
 htmltools::tags$iframe(sec = "figures/ex-indygo-map.html",
                        width = "100%",
-                       height = "400px",
+                       height = "600px",
                        frameborder = "0")
 ```
 
@@ -212,7 +212,7 @@ knitr::include_graphics("figures/ex-sig-delay.png")
 We'll start by calculating the signal travel times of each trip. To accomplish
 this, we'll use the `transittraj` `predict()` methods. This function allows
 uses the interpolating function stored inside a trajectory object to
-find the times each vehicle entered and exited each signal. To accomplish 
+find the times each vehicle entered and exited each signal. To accomplish
 this, we'll put our signal entrance/exit distances into `predict()` using
 the `new_distances` parameter. This will tell `predict()` to use the
 inverse trajectory function:
