@@ -48,11 +48,16 @@ with IndyGo’s BRT system, explore it using the interactive GTFS viewer
 below:
 
 ``` r
-plot_interactive_gtfs(gtfs = indy_brt_gtfs,
-                      color = "gtfs")
+indy_map <- plot_interactive_gtfs(gtfs = indy_brt_gtfs,
+                                  color = "gtfs")
+indy_map
 ```
 
-![](figure/unnamed-chunk-3-1.png)
+\<!DOCTYPE html\>
+
+leaflet
+
+Your browser does not support iframes
 
 To find signal delays, we will need to the location of each signal’s
 “entrance” and “exit”. The latitude/longitude locations of each stopbar
