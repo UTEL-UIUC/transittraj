@@ -92,13 +92,10 @@ htmlwidgets::saveWidget(widget = indy_map,
 ```
 
 ``` {r, echo = FALSE}
-htmltools::tags$iframe(sec = "figures/ex-indygo-map.html",
+htmltools::tags$iframe(src = "figures/ex-indygo-map.html",
                        width = "100%",
-                       height = "600px",
-                       frameborder = "0")
+                       height = "500px")
 ```
-
-
 
 To find signal delays, we will need to the location of each signal's
 "entrance" and "exit". The latitude/longitude locations of each stopbar
