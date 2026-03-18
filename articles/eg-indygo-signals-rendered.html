@@ -73,19 +73,15 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>We’ve seen how AVL data can be cleaned and processed, but how can
-<code>transittraj</code> actually help with real-world projects? In this
-vignette, we will demonstrate one performance study our research team
-has used <code>transittraj</code> for: understanding signal delays along
-IndyGo’s bus rapid transit routes.</p>
-<p>In this vignette, we’ll skip over the data cleaning and exploration
+<p>In previous vignettes, we saw how <code>transittraj</code> can help
+clean AVL data and fit interpolating trajectories. But how can these
+curves actually be used?</p>
+<p>This vignette will demonstrate how we’ve used
+<code>transittraj</code> to understand delays at traffic signals along
+IndyGo’s bus rapid transit routes. We’ll skip over the data cleaning
 process, and instead focus on the applications of finalized
-<code>transittraj</code> trajectories. Because IndyGo has shared their
-AVL data with us privately, we can’t make it (or the trajectories)
-available to you. We hope, however, that this vignette will still help
-you realize what <code>transittraj</code> can do. Check out
-<code>vignette("input-data")</code> to learn more about how to get
-started with your own data.</p>
+trajectories. Check out <code><a href="../articles/input-data.html">vignette("articles/input-data")</a></code> to
+learn more about how to get started with your own data.</p>
 <p>Let’s load some libraries to get started:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/UTEL-UIUC/transittraj" class="external-link">transittraj</a></span><span class="op">)</span></span>
@@ -96,58 +92,39 @@ started with your own data.</p>
 <h2 id="problem-context">Problem Context<a class="anchor" aria-label="anchor" href="#problem-context"></a>
 </h2>
 <p>IndyGo operates two BRT rotues in Indianapolis, Indiana, the Red and
-Purple Lines. The Red Line runs primarily north-south through the city,
-passing through downtown. The Purple Line interlines with the Red Line
-through downtown, before running east-west along 38th St. The bus
-priority infrastructure varies across these routes. Large portions of
-these alignments have bus lanes, and many of these lanes are
-center-running.</p>
-<p>The main focus of this study, however, is on the transit signal
-priority (TSP) system. Since its launch, the Red Line has had two
-generations of TSP. At launch in September 2019, all Red Line signals
-had a traditional call-based TSP system, where requests were granted
-conditional on the schedule adherence of the bus. When the Purple Line
-launched in October 2024, it was served by an upgraded cloud-based TSP
-system with unconditional grants and a high class of priority. Around
-this time, a handful of old Red Line signals were upgraded to the new
-TSP system; all others remained on the previous generation system.</p>
+Purple Lines. These routes have a variety of types of bus priority
+infrastructure, including bus lanes and station-style stops, but the
+focus of this study is on the transit signal priority (TSP) system.
+Since its launch, the Red Line has had two generations of TSP: a
+traditional call-based and conditional system, launched in September
+2019; and a new cloud-based and unconditional system, launched when the
+Purple Line opened in October 2024.</p>
 <p>Our research goal was to use this natural experiment to understand
 how the TSP upgrade affected signal delays along the Red Line. For this
-project, we were concerned with both the central tendency (i.e., mean or
-median), affecting the <em>speed</em> of bus travel, and the variation
-of delays, representing the <em>reliability</em> of bus travel. Our
-study window ran from July 1, 2024 to December 31, 2024. This allowed us
-to capture the TSP upgrade in mid October 2024 with plenty of data
-before and after the change.</p>
+project, we were concerned with both the central tendency and the
+variation of signal delays. Our study window ran from July 1, 2024 to
+December 31, 2024. This allowed us to capture the TSP upgrade in October
+2024 with plenty of data before and after the change.</p>
 </div>
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
 <div class="section level3">
-<h3 id="avl-data">AVL Data<a class="anchor" aria-label="anchor" href="#avl-data"></a>
-</h3>
-<p>We accessed IndyGo’s AVL data from their Swiftly endpoint, after
-which it was reformatted to meet the TIDES standards required by
-<code>transittraj</code>. IndyGo’s buses had AVL polling frequencies
-ranging from 5 to 15 seconds. With buses every 10 to 15 minutes and a
-6-month study window, we started with nearly 5.2 million GPS pings and
-just over 10,000 individual trips on weekdays in each direction.</p>
-<p>After implementing the full <code>transittraj</code> cleaning
-workflow to remove deadheads, outlying pings, insufficient trips, and
-other issues, the dataset had roughly 4.1 million pings across 9,300
-trips per direction. For the rest of this vignette, we’ll focus on the
-northbound direction for simplicity.</p>
-</div>
-<div class="section level3">
 <h3 id="spatial-data">Spatial Data<a class="anchor" aria-label="anchor" href="#spatial-data"></a>
 </h3>
-<p>To use find signal delays (discussed more thoroughly below), we will
-need to know where the “entrance” and “exit” of each signal is along the
-route. The latitude and longitude locations of each stopbar at each of
-the Red Line’s 62 signals were found using OpenStreetMaps and satellite
-imagery, then linearized along the route (see
-<code><a href="../reference/project_onto_route.html">help(project_onto_route)</a></code>).</p>
+<p>Spatial data typically starts as a GTFS object. If you’re unfamiliar
+with IndyGo’s BRT system, explore it using the interactive GTFS viewer
+below:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_interactive_gtfs.html">plot_interactive_gtfs</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">indy_brt_gtfs</span>,</span>
+<span>                      color <span class="op">=</span> <span class="st">"gtfs"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/unnamed-chunk-3-1.png"></p>
+<p>To find signal delays, we will need to the location of each signal’s
+“entrance” and “exit”. The latitude/longitude locations of each stopbar
+at each of the Red Line’s 62 signals were found using OpenStreetMaps and
+satellite imagery, then projected onto the Red Line’s alignment (see
+<code><a href="../reference/project_onto_route.html">help(project_onto_route)</a></code>).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stopbars</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   routes              name    distance</span></span>
 <span><span class="co">## 1    90N   Shelby &amp; Wesley    9.759449</span></span>
@@ -156,17 +133,14 @@ imagery, then linearized along the route (see
 <span><span class="co">## 4    90N  Shelby &amp; Cameron 1698.392048</span></span>
 <span><span class="co">## 5    90N Shelby &amp; Southern 2260.275318</span></span>
 <span><span class="co">## 6    90N  Shelby &amp; Raymond 3046.512562</span></span></code></pre>
-<p>For each direction, the signal “entrance” was taken to be 80 meters
-upstream of that direction’s stopbar; the exit was at the position of
-the opposing direction’s stopbar. These were adjusted for each signal as
-necessary to ensure this window captured the entire acceleration and
-decelaration curves of the buses, without capturing interference of
-nearby intersections, driveways, or stops.</p>
-<p>Here’s a snippet of the resulting signal locations:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">signal_boundings</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 124   3</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>Each signal’s “entrance” was taken to be 80 meters upstream of that
+signal’s stopbar; the exit was at the position of the opposing
+direction’s stopbar. These windows were adjusted on a case-by-case basis
+to ensure they captured the entire acceleration and decelaration curves
+of the buses without capturing interference from nearby intersections,
+driveways, or stops. Here’s a snippet of the resulting signal
+locations:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">signal_boundings</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               name inout  distance</span></span>
 <span><span class="co">## 1  Shelby &amp; Sumner enter  522.2540</span></span>
@@ -180,10 +154,7 @@ nearby intersections, driveways, or stops.</p>
 station-style stops in each direction. From conversations with IndyGo,
 we also identified the four stops which the agency used as control
 timepoints.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">stops</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 28  6</span></span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stops</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## # A tibble: 6 × 6</span></span>
 <span><span class="co">##   stop_id stop_name                  distance route Timepoint label_name           </span></span>
@@ -196,11 +167,26 @@ timepoints.</p>
 <span><span class="co">## 6 70043   Fountain Square Station NB    4846. 90N   No        &lt;NA&gt;</span></span></code></pre>
 </div>
 <div class="section level3">
+<h3 id="avl-data">AVL Data<a class="anchor" aria-label="anchor" href="#avl-data"></a>
+</h3>
+<p>We accessed IndyGo’s AVL data from their Swiftly endpoint, after
+which it was reformatted to meet the TIDES standards required by
+<code>transittraj</code>. IndyGo’s buses had AVL polling frequencies
+ranging from 5 to 15 seconds. With trips every 10 to 15 minutes and a
+6-month study window, we started with nearly 5.2 million GPS pings and
+just over 10,000 individual trips on weekdays in each direction.</p>
+<p>After implementing the full <code>transittraj</code> cleaning
+workflow to remove deadheads, outlying pings, insufficient trips, and
+other issues, the dataset had roughly 4.1 million pings across 9,300
+trips per direction. For the rest of this vignette, we’ll focus on the
+northbound direction.</p>
+</div>
+<div class="section level3">
 <h3 id="processed-trajectories">Processed Trajectories<a class="anchor" aria-label="anchor" href="#processed-trajectories"></a>
 </h3>
 <p>After fitting interpolating trajectory curves to these cleaned and
 monotonic data points, we can take a look at our trajectory object:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">indygo_traj</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## ------</span></span>
 <span><span class="co">## AVL Group Trajectory Object</span></span>
@@ -216,8 +202,10 @@ monotonic data points, we can take a look at our trajectory object:</p>
 <span><span class="co">## Inverse function present: TRUE</span></span>
 <span><span class="co">##    --&gt; Inverse function tolerance: 0.01</span></span>
 <span><span class="co">## ------</span></span></code></pre>
-<p>We can also visualize the first day of these trajectories:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p>We can also visualize a handful of these trajectories to get a feel
+for the route. We’ll use <code>transittraj</code>’s
+<code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code> function:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set formatting parameters</span></span>
 <span><span class="va">plot_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">indygo_traj</span><span class="op">)</span><span class="op">[</span><span class="fl">20</span><span class="op">:</span><span class="fl">30</span><span class="op">]</span></span>
 <span><span class="va">traj_format</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>trip_id_performed <span class="op">=</span> <span class="va">plot_trips</span>,</span>
@@ -226,7 +214,7 @@ monotonic data points, we can take a look at our trajectory object:</p>
 <span>                             color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"indianred3"</span>, <span class="st">"grey40"</span><span class="op">)</span>,</span>
 <span>                             linetype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"longdash"</span>, <span class="st">"dotted"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
+<span><span class="va">traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Input trajectory data</span></span>
 <span>  trajectory <span class="op">=</span> <span class="va">indygo_traj</span>, plot_trips <span class="op">=</span> <span class="va">plot_trips</span>,</span>
 <span>  <span class="co"># Format trajectories</span></span>
@@ -240,12 +228,9 @@ monotonic data points, we can take a look at our trajectory object:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time (AM of July 1, 2024)"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"Sample Trajectories and Stops"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"IndyGo Red Line NB"</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="figures/ex-indygo-trajs.png" alt="plot of chunk unnamed-chunk-10" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-10
-</p>
-</div>
+<span>       subtitle <span class="op">=</span> <span class="st">"IndyGo Red Line NB"</span><span class="op">)</span></span>
+<span><span class="va">traj_plot</span></span></code></pre></div>
+<p><img src="figures/ex-indygo-trajs.png" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -255,34 +240,22 @@ plot of chunk unnamed-chunk-10
 signal for each trip. For traffic engineers, delay is defined as the
 difference between the free-flow travel time and observed travel time
 through an intersection.</p>
-<div class="figure">
-<img src="figures/ex-sig-delay.png" alt="plot of chunk unnamed-chunk-11" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-11
-</p>
-</div>
+<p><img src="figures/ex-sig-delay.png" alt="" width="100%"></p>
 <div class="section level3">
 <h3 id="travel-times">Travel Times<a class="anchor" aria-label="anchor" href="#travel-times"></a>
 </h3>
-<p>We’ll start with calculating the travel times
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">t_{s,i}</annotation></semantics></math>
-for trip
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-at signal
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
-above) of each trip. To accomplish this, we’ll use the
-<code>transittraj</code> <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> methods. This function
-allows us to use the interpolating function stored inside the trajectory
-object (<code>indygo_traj</code>, in this case) to find the interpolated
-times the vehicle entered and exited each signal.</p>
-<p>We’re starting with distances, and we’ll want to retrieve
-<code>event_timestamp</code> values. To accomplish this, we’ll put our
-signal entrace/exit distances into <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> using the
-<code>new_distances</code> input. This will tell <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>
-to use the inverse trajectory function:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>We’ll start by calculating the signal travel times of each trip. To
+accomplish this, we’ll use the <code>transittraj</code>
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> methods. This function allows uses the
+interpolating function stored inside a trajectory object to find the
+times each vehicle entered and exited each signal. To accomplish this,
+we’ll put our signal entrance/exit distances into <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>
+using the <code>new_distances</code> parameter. This will tell
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> to use the inverse trajectory function:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform interpolation</span></span>
 <span><span class="va">crossing_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">indygo_traj</span>,</span>
-<span>                     new_distances <span class="op">=</span> <span class="va">signal_boundings</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>                          new_distances <span class="op">=</span> <span class="va">signal_boundings</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>time_interp <span class="op">=</span> <span class="va">interp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Print example</span></span>
@@ -294,13 +267,12 @@ to use the inverse trajectory function:</p>
 <span><span class="co">## 4 Shelby &amp; Sumner enter  522.254 2024-07-01-t268-b232B-sl3-N  1719829327</span></span>
 <span><span class="co">## 5 Shelby &amp; Sumner enter  522.254 2024-07-01-t277-b232F-sl3-N  1719830102</span></span>
 <span><span class="co">## 6 Shelby &amp; Sumner enter  522.254 2024-07-01-t286-b232E-sl3-N  1719831156</span></span></code></pre>
-<p>The hard part’s done! Now, we can find the difference between each
-crossing time. We’ll begin by pivoting the table such that each row
-represents a traversal of one trip through one signal, with columns
+<p>Now we can use these “crossing times” to find the signal travel
+times. We’ll begin by pivoting the table such that each row represents a
+traversal of one trip through one signal, with columns
 <code>enter</code> and <code>exit</code> representing the entrance/exit
-times of that traversal. Then, we can find the difference between these
-columns.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+times. Then, we can find the difference between these columns.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform calculation</span></span>
 <span><span class="va">travel_times_df</span> <span class="op">&lt;-</span> <span class="va">crossing_times</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">pivot_wider</span><span class="op">(</span>values_from <span class="op">=</span> <span class="va">time_interp</span>, names_from <span class="op">=</span> <span class="va">inout</span>,</span>
@@ -311,7 +283,7 @@ columns.</p>
 <span><span class="co"># Print example</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">travel_times_df</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 543807      5</span></span></code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">travel_times_df</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## # A tibble: 6 × 5</span></span>
 <span><span class="co">##   name            trip_id_performed                 enter        exit travel_time</span></span>
@@ -328,7 +300,7 @@ size of our dataset
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>9259</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> trips</mtext></mrow><mo>×</mo><mn>62</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> signals</mtext></mrow></mrow><annotation encoding="application/x-tex">9259 \text{ trips} \times 62 \text{ signals}</annotation></semantics></math>).
 Not every trip will traverse the entirety of every signal; if a trip’s
 distance range does pass through both a signal’s entrance and exit, it’s
-travel time cannot be calculated. This explains the discrepancy.</p>
+travel time cannot be calculated.</p>
 </div>
 <div class="section level3">
 <h3 id="delay">Delay<a class="anchor" aria-label="anchor" href="#delay"></a>
@@ -337,8 +309,8 @@ travel time cannot be calculated. This explains the discrepancy.</p>
 travel time at each intersection. For this project, we defined
 “free-flow” as the 5th percentile of all travel times observed through
 each signal – so not the absolute fastest, but pretty close. We can find
-that easily by summarizing the travel time dataset:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+that by summarizing the travel time dataset:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform calculation</span></span>
 <span><span class="va">signal_ff</span> <span class="op">&lt;-</span> <span class="va">travel_times_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># Group by signal name</span></span>
@@ -358,8 +330,8 @@ that easily by summarizing the travel time dataset:</p>
 <span><span class="co">## 5 38th &amp; Washington        5.64</span></span>
 <span><span class="co">## 6 Capitol &amp; 10th           6.64</span></span></code></pre>
 <p>Finally, to find delay, we’ll join these free-flow times back and
-subtract them from the actual travel time:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+subtract them from the total travel time:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform calculation</span></span>
 <span><span class="va">delays_df</span> <span class="op">&lt;-</span> <span class="va">travel_times_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># Join free-flow times by signal name</span></span>
@@ -390,7 +362,7 @@ another trip near the 75th percentile delay at a signal.</p>
 <p>For the rest of this vignette, we’ll zoom into the signal at Virginia
 &amp; South/East, just south of downtown Indianapolis. Let’s begin by
 getting the spatial data we need for our new plot:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set plotting limits</span></span>
 <span><span class="va">plot_signal</span> <span class="op">&lt;-</span> <span class="st">"Virginia &amp; South/East"</span></span>
 <span><span class="va">dist_offset</span> <span class="op">&lt;-</span> <span class="fl">80</span> <span class="co"># meters</span></span>
@@ -400,8 +372,8 @@ getting the spatial data we need for our new plot:</p>
 <span><span class="va">sig_stopbar</span> <span class="op">&lt;-</span> <span class="va">stopbars</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_signal</span><span class="op">)</span></span>
 <span><span class="va">sig_bounding</span> <span class="op">&lt;-</span> <span class="va">signal_boundings</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_signal</span><span class="op">)</span></span></code></pre></div>
 <p>Next, we’ll want create data representing the trajectory. We’ll build
-this plot manually (rather than use <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>) so
-that we can have finer control over how we center the trajectories.</p>
+this plot manually (rather than use <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>) to
+give us finer control.</p>
 <p>Below we first define the trips we’re looking at, then build a
 sequence of distances over our intersection of interest. Then, two
 <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> functions are run: the first extracts time values
@@ -409,7 +381,7 @@ from the distance sequence; the second extracts speed values from the
 interpolated times (<code>deriv = 1</code>). After creating the latter
 dataframe, we’ll center both trajectories by subtracting the time they
 enter the signal.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set desired trips</span></span>
 <span><span class="va">plot_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2024-11-18-t3A7-b232C-sl3-N"</span>,</span>
 <span>                <span class="st">"2024-11-18-t7E5-b233E-sl3-N"</span><span class="op">)</span></span>
@@ -432,7 +404,7 @@ enter the signal.</p>
 <span><span class="co">## 4  5770.14 2024-11-18-t7E5-b233E-sl3-N      1731980120</span></span>
 <span><span class="co">## 5  5770.64 2024-11-18-t3A7-b232C-sl3-N      1731941379</span></span>
 <span><span class="co">## 6  5770.64 2024-11-18-t7E5-b233E-sl3-N      1731980120</span></span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get speeds from times</span></span>
 <span><span class="va">interp_speeds_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">indygo_traj</span>,</span>
 <span>                            trips <span class="op">=</span> <span class="va">plot_trips</span>,</span>
@@ -455,10 +427,10 @@ enter the signal.</p>
 <span><span class="co">## 4    5770. 2024-11-18-t7E5-b233E-sl3-N     1731980120.  15.7 1731980129.         -8.55</span></span>
 <span><span class="co">## 5    5771. 2024-11-18-t3A7-b232C-sl3-N     1731941379.  29.1 1731941385.         -5.89</span></span>
 <span><span class="co">## 6    5771. 2024-11-18-t7E5-b233E-sl3-N     1731980120.  15.8 1731980129.         -8.48</span></span></code></pre>
-<p>The last data preparation we need is for some labels. First, we’ll
-the travel time and delay values relevant to these trips at this signal.
-Second, we’ll create a new dataframe to house our labels.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<p>The last data preparation we need is for some labels. Below we pull
+the travel time and delay information relevant to these trips, then we
+store it in a dataframe:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Pull desired signal travel time data</span></span>
 <span><span class="va">sig_ff</span> <span class="op">&lt;-</span> <span class="va">signal_ff</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_signal</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">free_flow</span><span class="op">)</span></span>
 <span><span class="va">plot_travel_times</span> <span class="op">&lt;-</span> <span class="va">travel_times_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -474,12 +446,10 @@ Second, we’ll create a new dataframe to house our labels.</p>
 <span>                                         sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
 <span>                             lab_x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">41</span><span class="op">)</span>,</span>
 <span>                             lab_y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6075</span>, <span class="fl">6075</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>And finally, we can create our plot! We’ll first add the
-trajectories, colored by speed, then the labels, and finally the signal
-features on top.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<p>Now we can create our plot:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create plot</span></span>
-<span><span class="va">traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">interp_speeds_df</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">signal_traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">interp_speeds_df</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="co"># Add &amp; format trajectory lines</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_centered</span>, y <span class="op">=</span> <span class="va">distance</span>,</span>
 <span>                color <span class="op">=</span> <span class="va">speed</span>, group <span class="op">=</span> <span class="va">trip_id_performed</span><span class="op">)</span>,</span>
@@ -510,20 +480,15 @@ features on top.</p>
 <span>       subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Free-Flow: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sig_ff</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">" s, Travel Time: "</span>,</span>
 <span>                        <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">plot_travel_times</span><span class="op">$</span><span class="va">travel_time</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">" s, Delay: "</span>,</span>
 <span>                        <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">plot_delays</span><span class="op">$</span><span class="va">delay</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">" s"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">traj_plot</span></span></code></pre></div>
-<div class="figure">
-<img src="figures/ex-indygo-sigtraj.png" alt="plot of chunk unnamed-chunk-21" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-21
-</p>
-</div>
-<p>This almost perfectly matches the simple, theoretical diagram we
-presented above. The free-flow trajectory (the 5th percentile of all
-travel times at this signal) is a perfectly straight line traveling near
-the speed limit. The high-delay trajectory (the 75th percentile of all
-travel times at this signal) comes to a stop just ahead of the stopbar
-before proceeding. Between the stopped period and necessary
-acceleration/deceleration, this vehicle experienced roughly 26 seconds
-of delay.</p>
+<span><span class="va">signal_traj_plot</span></span></code></pre></div>
+<p><img src="figures/ex-indygo-sigtraj.png" alt="" width="100%"></p>
+<p>This almost perfectly matches the theoretical diagram we presented
+above. The free-flow trajectory (the 5th percentile of all travel times
+at this signal) is a straight line traveling near the speed limit. The
+high-delay trajectory (the 75th percentile of all travel times at this
+signal) comes to a stop just ahead of the stopbar before proceeding.
+Between the stopped period and necessary acceleration/deceleration, this
+vehicle experienced roughly 26 seconds of delay.</p>
 </div>
 </div>
 <div class="section level2">
@@ -532,7 +497,7 @@ of delay.</p>
 <p>To understand how signal delay changed over time, we’ll take some
 week-by-week summary statistics at each signal. For this example, we’ll
 use the mean and inner-quartile range:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_by_week</span> <span class="op">&lt;-</span> <span class="va">delays_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># Extract date &amp; week number from trip ID</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>service_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">trip_id_performed</span>,</span>
@@ -558,10 +523,10 @@ use the mean and inner-quartile range:</p>
 <span><span class="co">## 4 18th &amp; Illinois       29       18.6       2.08       32.1</span></span>
 <span><span class="co">## 5 18th &amp; Illinois       30       18.2       1.85       31.1</span></span>
 <span><span class="co">## 6 18th &amp; Illinois       31       16.8       1.25       29.7</span></span></code></pre>
-<p>Let’s visualize how this changed. Below we the mean and
-inner-quartile range of signal delay at Virginia &amp; South/East, the
-same signal we saw trajectories for above.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<p>Let’s visualize how delays have changed over time. Below we plot the
+mean and inner-quartile range of signal delay at Virginia &amp;
+South/East:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter to desired delay data</span></span>
 <span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">delay_by_week</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_signal</span><span class="op">)</span></span>
@@ -604,11 +569,7 @@ same signal we saw trajectories for above.</p>
 <span>       x <span class="op">=</span> <span class="st">"Week Number (2024)"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Delay (s)"</span><span class="op">)</span></span>
 <span><span class="va">delay_plot</span></span></code></pre></div>
-<div class="figure">
-<img src="figures/ex-indygo-delay.png" alt="plot of chunk unnamed-chunk-25" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-25
-</p>
-</div>
+<p><img src="figures/ex-indygo-delay.png" alt="" width="100%"></p>
 <p>We can see a pretty cool trend: as the signal transitioned into the
 new TSP system, the average signal delay fell dramatically. The 75th
 percentile – representing a “slow” trip – saw an even larger
@@ -617,7 +578,7 @@ improvement.</p>
 we’ll go back to our point observations (not grouped by week) and make
 violin plots for two representative weeks: week 35, with the old system,
 and week 45, with the new system.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter to desired delay data</span></span>
 <span><span class="va">plot_weeks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"35"</span>, <span class="st">"45"</span><span class="op">)</span></span>
 <span><span class="va">violin_df</span> <span class="op">&lt;-</span> <span class="va">delays_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -640,11 +601,7 @@ and week 45, with the new system.</p>
 <span>       x <span class="op">=</span> <span class="st">"Week Number (2024)"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Delay (s)"</span><span class="op">)</span></span>
 <span><span class="va">delay_violins</span></span></code></pre></div>
-<div class="figure">
-<img src="figures/ex-indygo-violins.png" alt="plot of chunk unnamed-chunk-28" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-28
-</p>
-</div>
+<p><img src="figures/ex-indygo-violins.png" alt="" width="100%"></p>
 <p>We see a similar trend. The violin plot is much shorter and wider at
 week 45 than it is at week 35, suggesting that signal delays get much
 shorter and much more consistent.</p>
