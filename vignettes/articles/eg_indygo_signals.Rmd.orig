@@ -79,10 +79,24 @@ and after the change.
 Spatial data typically starts as a GTFS object. If you're unfamiliar with
 IndyGo's BRT system, explore it using the interactive GTFS viewer below:
 
-``` {r, fig.cap = ""}
-plot_interactive_gtfs(gtfs = indy_brt_gtfs,
-                      color = "gtfs")
+``` {r, eval = FALSE}
+indy_map <- plot_interactive_gtfs(gtfs = indy_brt_gtfs,
+                                  color = "gtfs")
+indy_map
 ```
+
+``` {r, eval = FALSE, echo = FALSE}
+htmlwidgets::saveWidget(widget = indy_map,
+                        file = "figures/ex-indygo-map.html",
+                        selfcontained = TRUE)
+```
+
+``` {r, child = "figures/ex-indygo-map.html"}
+```
+
+<iframe src="figures/ex-indygo-map.html" width="100%" height="400px">
+  <p>Your browser does not support iframes</p>
+</iframe>
 
 To find signal delays, we will need to the location of each signal's
 "entrance" and "exit". The latitude/longitude locations of each stopbar
