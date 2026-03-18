@@ -53,12 +53,6 @@ indy_map <- plot_interactive_gtfs(gtfs = indy_brt_gtfs,
 indy_map
 ```
 
-\<!DOCTYPE html\>
-
-leaflet
-
-Your browser does not support iframes
-
 To find signal delays, we will need to the location of each signal’s
 “entrance” and “exit”. The latitude/longitude locations of each stopbar
 at each of the Red Line’s 62 signals were found using OpenStreetMaps and
