@@ -4,7 +4,13 @@
 \alias{plot_format_setup}
 \title{Function to set up plot formats.}
 \usage{
-plot_format_setup(plotting_df, attribute_input, attribute_type, attribute_name)
+plot_format_setup(
+  plotting_df,
+  attribute_input,
+  attribute_type,
+  attribute_name,
+  user_show_legend
+)
 }
 \arguments{
 \item{plotting_df}{DF for plotting, either trips or features}
@@ -16,6 +22,9 @@ outline_input = veh_outline)}
 "outline")}
 
 \item{attribute_name}{The name of the attribute (e.g., "veh_outline")}
+
+\item{user_show_legend}{Boolean, user input for if legend should be
+shown.}
 }
 \value{
 List with: 1) new plotting_df, 2) show_legend, 3) attribute_by,

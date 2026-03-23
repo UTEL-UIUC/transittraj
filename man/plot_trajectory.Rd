@@ -17,10 +17,12 @@ plot_trajectory(
   traj_type = "solid",
   traj_width = 1,
   traj_alpha = 1,
+  traj_legend = NULL,
   feature_color = "grey30",
   feature_type = "dashed",
   feature_width = 0.8,
   feature_alpha = 0.8,
+  feature_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -71,6 +73,10 @@ Default is 1.}
 \item{traj_alpha}{Optional. A numeric, the opacity of the trajectory line.
 Default is 1.}
 
+\item{traj_legend}{Optional. A boolean, should a legend be shown for
+trajectory formatting? Default is NULL, where a legend will only appear if
+the linetype or color format is mapped to.}
+
 \item{feature_color}{Optional. A color string, or a dataframe mapping an
 attribute in \code{feature_distances} to a color. Must contain column \code{color}.
 Default is \code{grey30}.}
@@ -84,6 +90,10 @@ Default is 0.8.}
 
 \item{feature_alpha}{Optional. A numeric, the opacity of the feature point.
 Default is 1.}
+
+\item{feature_legend}{Optional. A boolean, should a legend be shown for
+feature formatting? Default is NULL, where a legend will only appear if
+the linetype or color format is mapped to.}
 
 \item{label_field}{Optional. A string specifying the column in
 \code{feature_distances} with which to label the feature lines. Default is \code{NULL},

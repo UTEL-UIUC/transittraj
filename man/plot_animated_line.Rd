@@ -24,12 +24,14 @@ plot_animated_line(
   feature_size = 2,
   feature_stroke = 1.25,
   feature_alpha = 1,
+  feature_legend = NULL,
   veh_shape = 23,
   veh_outline = "grey30",
   veh_fill = "white",
   veh_size = 3,
   veh_stroke = 2,
   veh_alpha = 0.8,
+  veh_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -59,12 +61,14 @@ plot_animated_map(
   feature_size = 2,
   feature_stroke = 1.25,
   feature_alpha = 1,
+  feature_legend = NULL,
   veh_shape = 23,
   veh_outline = "grey30",
   veh_fill = "white",
   veh_size = 3,
   veh_stroke = 2,
   veh_alpha = 0.8,
+  veh_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -133,6 +137,10 @@ outline. Default is 1.25.}
 \item{feature_alpha}{Optional. A numeric, the opacity of the feature point.
 Default is 1.}
 
+\item{feature_legend}{Optional. A boolean, should a legend be shown for
+feature formatting? Default is NULL, where a legend will only appear if
+the shape or outline format is mapped to.}
+
 \item{veh_shape}{Optional. A numeric specifying the \code{ggplot2} point shape, or
 a dataframe mapping an attribute in \code{distance_df} or \code{trajectory} to
 a shape. Must contain column \code{shape}. Default is 23 (diamond).}
@@ -152,6 +160,10 @@ outline. Default is 2.}
 
 \item{veh_alpha}{Optional. A numeric, the opacity of the vehicle point.
 Default is 0.8.}
+
+\item{veh_legend}{Optional. A boolean, should a legend be shown for
+vehicle formatting? Default is NULL, where a legend will only appear if
+the shape or outline format is mapped to.}
 
 \item{label_field}{Optional. A string specifying the column in
 \code{feature_distances} with which to label the feature lines. Default is \code{NULL},
