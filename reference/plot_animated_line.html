@@ -94,12 +94,14 @@ and customized as desired.</p>
 <span>  feature_size <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  feature_stroke <span class="op">=</span> <span class="fl">1.25</span>,</span>
 <span>  feature_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  feature_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  veh_shape <span class="op">=</span> <span class="fl">23</span>,</span>
 <span>  veh_outline <span class="op">=</span> <span class="st">"grey30"</span>,</span>
 <span>  veh_fill <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  veh_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  veh_stroke <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  veh_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  veh_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  label_alpha <span class="op">=</span> <span class="fl">0.6</span>,</span>
@@ -129,12 +131,14 @@ and customized as desired.</p>
 <span>  feature_size <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  feature_stroke <span class="op">=</span> <span class="fl">1.25</span>,</span>
 <span>  feature_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  feature_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  veh_shape <span class="op">=</span> <span class="fl">23</span>,</span>
 <span>  veh_outline <span class="op">=</span> <span class="st">"grey30"</span>,</span>
 <span>  veh_fill <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  veh_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  veh_stroke <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  veh_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  veh_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  label_alpha <span class="op">=</span> <span class="fl">0.6</span>,</span>
@@ -243,6 +247,12 @@ outline. Default is 1.25.</p></dd>
 Default is 1.</p></dd>
 
 
+<dt id="arg-feature-legend">feature_legend<a class="anchor" aria-label="anchor" href="#arg-feature-legend"></a></dt>
+<dd><p>Optional. A boolean, should a legend be shown for
+feature formatting? Default is NULL, where a legend will only appear if
+the shape or outline format is mapped to.</p></dd>
+
+
 <dt id="arg-veh-shape">veh_shape<a class="anchor" aria-label="anchor" href="#arg-veh-shape"></a></dt>
 <dd><p>Optional. A numeric specifying the <code>ggplot2</code> point shape, or
 a dataframe mapping an attribute in <code>distance_df</code> or <code>trajectory</code> to
@@ -273,6 +283,12 @@ outline. Default is 2.</p></dd>
 <dt id="arg-veh-alpha">veh_alpha<a class="anchor" aria-label="anchor" href="#arg-veh-alpha"></a></dt>
 <dd><p>Optional. A numeric, the opacity of the vehicle point.
 Default is 0.8.</p></dd>
+
+
+<dt id="arg-veh-legend">veh_legend<a class="anchor" aria-label="anchor" href="#arg-veh-legend"></a></dt>
+<dd><p>Optional. A boolean, should a legend be shown for
+vehicle formatting? Default is NULL, where a legend will only appear if
+the shape or outline format is mapped to.</p></dd>
 
 
 <dt id="arg-label-field">label_field<a class="anchor" aria-label="anchor" href="#arg-label-field"></a></dt>

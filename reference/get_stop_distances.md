@@ -58,13 +58,13 @@ c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
                                      shape_geometry = c53_shape,
                                      project_crs = my_crs)
 head(c53_stop_dists)
-#> # A tibble: 6 × 3
-#>   stop_id shape_id distance
-#>   <chr>   <chr>       <dbl>
-#> 1 2584    C53:04       677.
-#> 2 2609    C53:04       880.
-#> 3 2683    C53:04      1155.
-#> 4 2793    C53:04      1605.
-#> 5 2811    C53:04      1807.
-#> 6 2867    C53:04      2037.
+#> # A tibble: 6 × 8
+#>   stop_id stop_code stop_name       stop_desc zone_id stop_url shape_id distance
+#>   <chr>   <chr>     <chr>           <chr>     <chr>   <chr>    <chr>       <dbl>
+#> 1 2584    1000181   Alabama Av SE+… NA        NA      NA       C53:04       677.
+#> 2 2609    1000188   Alabama Av SE+… NA        NA      NA       C53:04       880.
+#> 3 2683    1000203   Alabama Av SE+… NA        NA      NA       C53:04      1155.
+#> 4 2793    1000219   Alabama Av SE+… NA        NA      NA       C53:04      1605.
+#> 5 2811    1000225   Alabama Av SE+… NA        NA      NA       C53:04      1807.
+#> 6 2867    1000238   Alabama Av SE+… NA        NA      NA       C53:04      2037.
 ```

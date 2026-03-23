@@ -22,10 +22,12 @@ plot_trajectory(
   traj_type = "solid",
   traj_width = 1,
   traj_alpha = 1,
+  traj_legend = NULL,
   feature_color = "grey30",
   feature_type = "dashed",
   feature_width = 0.8,
   feature_alpha = 0.8,
+  feature_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -99,6 +101,12 @@ plot_trajectory(
 
   Optional. A numeric, the opacity of the trajectory line. Default is 1.
 
+- traj_legend:
+
+  Optional. A boolean, should a legend be shown for trajectory
+  formatting? Default is NULL, where a legend will only appear if the
+  linetype or color format is mapped to.
+
 - feature_color:
 
   Optional. A color string, or a dataframe mapping an attribute in
@@ -118,6 +126,12 @@ plot_trajectory(
 - feature_alpha:
 
   Optional. A numeric, the opacity of the feature point. Default is 1.
+
+- feature_legend:
+
+  Optional. A boolean, should a legend be shown for feature formatting?
+  Default is NULL, where a legend will only appear if the linetype or
+  color format is mapped to.
 
 - label_field:
 

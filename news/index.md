@@ -2,7 +2,7 @@
 
 ## transittraj 0.1.1.9000 (development version)
 
-*Latest commit: 3/16/2026*
+*Latest commit: 3/23/2026*
 
 - Adding examples to function documentation
 
@@ -22,6 +22,10 @@
   [`help(get_gtfs_service_dates)`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md).
 
 - plotting legend override
+
+- [`get_stop_distances()`](https://obrien-ben.github.io/transittraj/reference/get_stop_distances.md)
+  will now return all columns in `stops.txt`
+  ([\#4](https://github.com/UTEL-UIUC/transittraj/issues/4))
 
 ## transittraj 0.1.1
 

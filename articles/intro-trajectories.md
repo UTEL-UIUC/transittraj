@@ -2,11 +2,12 @@
 
 ## Introduction
 
-In the previous vignette (`vignette("data-workflow")`), we saw how we
-can use `transittraj` to clean our AVL data. We took care of outliers,
-deadheading trips, noise, and non-monotonic observations. In this
-vignette, we’ll apply the cleaned data (`c53_mono`) to fit a trajectory
-function.
+In the previous vignette
+([`vignette("articles/data-workflow")`](https://obrien-ben.github.io/transittraj/articles/data-workflow.md)),
+we saw how we can use `transittraj` to clean our AVL data. We took care
+of outliers, deadheading trips, noise, and non-monotonic observations.
+In this vignette, we’ll apply the cleaned data (`c53_mono`) to fit a
+trajectory function.
 
 Let’s begin by loading the libraries we’ll be using:
 
@@ -26,12 +27,12 @@ fit an inverse curve, giving us the time the transit vehicle passes any
 point in space. We can do both using
 [`get_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_trajectory_fun.md).
 
-`transittraj` supports many different methods for fitting these
-functions. The simplest is linear interpolation without an inverse. For
-more fine-grained analyses, though, we recommend fitting a
-*velocity-informed piecewise cubic interpolating polynomial*. This uses
-the speeds and distances, correct for monotonicity, to fit a cubic
-spline between each observation. This is the type of curve that
+`transittraj` supports a handful of methods for fitting these functions.
+The simplest is linear interpolation without an inverse. For more
+fine-grained analyses, though, we recommend fitting a *velocity-informed
+piecewise cubic interpolating polynomial*. This uses the speeds and
+distances, corrected for monotonicity, to fit a cubic spline between
+each observation. This is the type of curve that
 [`get_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_trajectory_fun.md)
 will fit by default (`interp_method = "monoH.FC"` and
 `use_speeds = TRUE`).
@@ -47,10 +48,9 @@ c53_traj <- get_trajectory_fun(distance_df = c53_mono,
                                find_inverse_fun = TRUE)
 ```
 
-Now we have a trajectory for each trip in `c53_mono`. `transittraj`
-stores the fit curves in a special object class. This object stores a
-list of fit trajectories, one for each trip, as well as the time and
-distances ranges for each trip. We can use
+`transittraj` stores the fit curves in a special object class. This
+object stores a list of fit trajectories, one for each trip, as well as
+the time and distances ranges for each trip. We can use
 [`summary()`](https://rdrr.io/r/base/summary.html) to take a look inside
 the object:
 
@@ -101,13 +101,12 @@ c53_timepoints <- c53_gtfs$stop_times %>%
 c53_stops <- get_stop_distances(gtfs = c53_gtfs,
                                 shape_geometry = c53_shape,
                                 project_crs = dc_CRS) %>%
-  # Join timepoint info & stop name to each stop ID
+  # Join timepoint info to each stop ID
   left_join(y = c53_timepoints,
             by = "stop_id") %>%
-  left_join(y = (c53_gtfs$stops %>% select(stop_id, stop_name)),
-            by = "stop_id") %>%
   # Polish up the result
-  select(-shape_id) %>%
+  select(-c(shape_id, stop_code, stop_desc,
+            zone_id, stop_url)) %>%
   mutate(timepoint = if_else(condition = (timepoint == 1),
                              true = "Yes",
                              false = "No"))
@@ -115,14 +114,14 @@ c53_stops <- get_stop_distances(gtfs = c53_gtfs,
 # Print header
 head(c53_stops)
 #> # A tibble: 6 × 4
-#>   stop_id distance timepoint stop_name                  
-#>   <chr>      <dbl> <chr>     <chr>                      
-#> 1 2584        677. No        Alabama Av SE+15 Pl SE     
-#> 2 2609        880. No        Alabama Av SE+Stanton Rd SE
-#> 3 2683       1155. No        Alabama Av SE+18 Pl SE     
-#> 4 2793       1605. No        Alabama Av SE+22 St SE     
-#> 5 2811       1807. No        Alabama Av SE+24 St SE     
-#> 6 2867       2037. No        Alabama Av SE+Jasper St SE
+#>   stop_id stop_name                   distance timepoint
+#>   <chr>   <chr>                          <dbl> <chr>    
+#> 1 2584    Alabama Av SE+15 Pl SE          677. No       
+#> 2 2609    Alabama Av SE+Stanton Rd SE     880. No       
+#> 3 2683    Alabama Av SE+18 Pl SE         1155. No       
+#> 4 2793    Alabama Av SE+22 St SE         1605. No       
+#> 5 2811    Alabama Av SE+24 St SE         1807. No       
+#> 6 2867    Alabama Av SE+Jasper St SE     2037. No
 ```
 
 Now that we have some distances, let’s interpolate using
@@ -138,14 +137,14 @@ c53_stop_crossings <- predict(
 # Print header
 head(c53_stop_crossings)
 #> # A tibble: 6 × 6
-#>   stop_id distance timepoint stop_name              trip_id_performed     interp
-#>   <chr>      <dbl> <chr>     <chr>                  <chr>                  <dbl>
-#> 1 2584        677. No        Alabama Av SE+15 Pl SE 10185100              1.77e9
-#> 2 2584        677. No        Alabama Av SE+15 Pl SE 10249100              1.77e9
-#> 3 2584        677. No        Alabama Av SE+15 Pl SE 1306100               1.77e9
-#> 4 2584        677. No        Alabama Av SE+15 Pl SE 13437100              1.77e9
-#> 5 2584        677. No        Alabama Av SE+15 Pl SE 13478100              1.77e9
-#> 6 2584        677. No        Alabama Av SE+15 Pl SE 1699100               1.77e9
+#>   stop_id stop_name              distance timepoint trip_id_performed     interp
+#>   <chr>   <chr>                     <dbl> <chr>     <chr>                  <dbl>
+#> 1 2584    Alabama Av SE+15 Pl SE     677. No        10185100              1.77e9
+#> 2 2584    Alabama Av SE+15 Pl SE     677. No        10249100              1.77e9
+#> 3 2584    Alabama Av SE+15 Pl SE     677. No        1306100               1.77e9
+#> 4 2584    Alabama Av SE+15 Pl SE     677. No        13437100              1.77e9
+#> 5 2584    Alabama Av SE+15 Pl SE     677. No        13478100              1.77e9
+#> 6 2584    Alabama Av SE+15 Pl SE     677. No        1699100               1.77e9
 ```
 
 Now we have the crossing time, labeled `interp` at each stop for each
@@ -239,14 +238,13 @@ to create more interesting plots.
 
 ### Detailed Trajectories
 
-To add features (such as stops) and customize formatting, we recommend
-using
+For more customization, we recommend using
 [`plot_trajectory()`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md).
-This function starts with atrajectory object; after that, you can add a
-dataframe of feature distances, such as the `c53_stops` dataframe we
-made ealier. Finally, formatting can be controlled using mapping
-dataframes. The colors and linetypes of both trajectories and features
-can be mapped to attributes using something similar to what is below:
+In addition to a trajectory object, you can add a dataframe of feature
+distances, such as the `c53_stops` dataframe we made earlier. Most layer
+aesthetics can be controlled using input parameters. For features and
+trajectories, the linetypes and colors can also be mapped to attributes
+of that specific layer using a dataframe:
 
 ``` r
 # Set formatting options for C53 stops
@@ -255,9 +253,9 @@ stop_formatting <- data.frame(timepoint = c("Yes", "No"),
                               linetype = c("longdash", "dashed"))
 ```
 
-For mapping dataframes, at least one column must match the layer being
-mapped to (trajectories or features). The other columns must be `color`
-and/or `linetype`, telling `transittraj` which feature they describe.
+For mapping dataframes, at least one column must match a column in the
+layer being mapped to. The other columns must be `color` and/or
+`linetype`, telling `transittraj` which feature they describe.
 
 We can plug all that in to
 [`plot_trajectory()`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md)

@@ -36,12 +36,14 @@ plot_animated_line(
   feature_size = 2,
   feature_stroke = 1.25,
   feature_alpha = 1,
+  feature_legend = NULL,
   veh_shape = 23,
   veh_outline = "grey30",
   veh_fill = "white",
   veh_size = 3,
   veh_stroke = 2,
   veh_alpha = 0.8,
+  veh_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -71,12 +73,14 @@ plot_animated_map(
   feature_size = 2,
   feature_stroke = 1.25,
   feature_alpha = 1,
+  feature_legend = NULL,
   veh_shape = 23,
   veh_outline = "grey30",
   veh_fill = "white",
   veh_size = 3,
   veh_stroke = 2,
   veh_alpha = 0.8,
+  veh_legend = NULL,
   label_field = NULL,
   label_size = 3,
   label_alpha = 0.6,
@@ -180,6 +184,12 @@ plot_animated_map(
 
   Optional. A numeric, the opacity of the feature point. Default is 1.
 
+- feature_legend:
+
+  Optional. A boolean, should a legend be shown for feature formatting?
+  Default is NULL, where a legend will only appear if the shape or
+  outline format is mapped to.
+
 - veh_shape:
 
   Optional. A numeric specifying the `ggplot2` point shape, or a
@@ -209,6 +219,12 @@ plot_animated_map(
 - veh_alpha:
 
   Optional. A numeric, the opacity of the vehicle point. Default is 0.8.
+
+- veh_legend:
+
+  Optional. A boolean, should a legend be shown for vehicle formatting?
+  Default is NULL, where a legend will only appear if the shape or
+  outline format is mapped to.
 
 - label_field:
 

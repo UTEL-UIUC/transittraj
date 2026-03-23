@@ -5,7 +5,13 @@ Intended for internal use only.
 ## Usage
 
 ``` r
-plot_format_setup(plotting_df, attribute_input, attribute_type, attribute_name)
+plot_format_setup(
+  plotting_df,
+  attribute_input,
+  attribute_type,
+  attribute_name,
+  user_show_legend
+)
 ```
 
 ## Arguments
@@ -26,6 +32,10 @@ plot_format_setup(plotting_df, attribute_input, attribute_type, attribute_name)
 - attribute_name:
 
   The name of the attribute (e.g., "veh_outline")
+
+- user_show_legend:
+
+  Boolean, user input for if legend should be shown.
 
 ## Value
 

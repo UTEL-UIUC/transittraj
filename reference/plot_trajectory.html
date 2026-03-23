@@ -73,10 +73,12 @@ and customized as desired.</p>
 <span>  traj_type <span class="op">=</span> <span class="st">"solid"</span>,</span>
 <span>  traj_width <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  traj_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  traj_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  feature_color <span class="op">=</span> <span class="st">"grey30"</span>,</span>
 <span>  feature_type <span class="op">=</span> <span class="st">"dashed"</span>,</span>
 <span>  feature_width <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  feature_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  feature_legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_field <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  label_alpha <span class="op">=</span> <span class="fl">0.6</span>,</span>
@@ -155,6 +157,12 @@ Default is 1.</p></dd>
 Default is 1.</p></dd>
 
 
+<dt id="arg-traj-legend">traj_legend<a class="anchor" aria-label="anchor" href="#arg-traj-legend"></a></dt>
+<dd><p>Optional. A boolean, should a legend be shown for
+trajectory formatting? Default is NULL, where a legend will only appear if
+the linetype or color format is mapped to.</p></dd>
+
+
 <dt id="arg-feature-color">feature_color<a class="anchor" aria-label="anchor" href="#arg-feature-color"></a></dt>
 <dd><p>Optional. A color string, or a dataframe mapping an
 attribute in <code>feature_distances</code> to a color. Must contain column <code>color</code>.
@@ -175,6 +183,12 @@ Default is 0.8.</p></dd>
 <dt id="arg-feature-alpha">feature_alpha<a class="anchor" aria-label="anchor" href="#arg-feature-alpha"></a></dt>
 <dd><p>Optional. A numeric, the opacity of the feature point.
 Default is 1.</p></dd>
+
+
+<dt id="arg-feature-legend">feature_legend<a class="anchor" aria-label="anchor" href="#arg-feature-legend"></a></dt>
+<dd><p>Optional. A boolean, should a legend be shown for
+feature formatting? Default is NULL, where a legend will only appear if
+the linetype or color format is mapped to.</p></dd>
 
 
 <dt id="arg-label-field">label_field<a class="anchor" aria-label="anchor" href="#arg-label-field"></a></dt>

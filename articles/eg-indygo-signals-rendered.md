@@ -71,7 +71,7 @@ head(stopbars)
     ## 5    90N Shelby & Southern 2260.275318
     ## 6    90N  Shelby & Raymond 3046.512562
 
-Each signal’s “entrance” was taken to be 80 meters upstream of that
+Each signal’s entrance was taken to be 80 meters upstream of that
 signal’s stopbar; the exit was at the position of the opposing
 direction’s stopbar. These windows were adjusted on a case-by-case basis
 to ensure they captured the entire acceleration and decelaration curves
