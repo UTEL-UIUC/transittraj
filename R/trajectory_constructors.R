@@ -568,7 +568,8 @@ get_gtfs_trajectory_fun <- function(gtfs,
   # Get stop distances
   stop_dist_df <- get_stop_distances(gtfs = gtfs,
                                      shape_geometry = shape_geometry,
-                                     project_crs = project_crs)
+                                     project_crs = project_crs) %>%
+    dplyr::select(stop_id, shape_id, distance)
 
   # Get time by desired schedule time
   if (use_stop_time == "departure") {

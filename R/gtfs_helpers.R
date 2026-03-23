@@ -551,11 +551,11 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
     # Associate each stop with its shape ID
     dplyr::left_join(y = stop_shape_pairs, by = "stop_id",
                      relationship = "one-to-many") %>%
-    dplyr::select(stop_id, stop_lat, stop_lon, shape_id) %>%
     dplyr::filter(!is.na(shape_id))
 
   if (dim(stops_with_shapes)[1] == 0) {
-    stop("No stops served by provided shapes.")
+    rlang::abort(message = "No stops served by provided shapes.",
+                 class = "error_stopdists_inputshapes")
   }
 
   # Spatial

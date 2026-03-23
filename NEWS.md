@@ -1,6 +1,6 @@
 # transittraj 0.1.1.9000 (development version)
 
-*Latest commit: 3/16/2026*
+*Latest commit: 3/23/2026*
 
 * Adding examples to function documentation
 
@@ -14,6 +14,8 @@ files.
 `get_gtfs_service_dates()`. Read more at `help(get_gtfs_service_dates)`.
 
 * plotting legend override
+
+* `get_stop_distances()` will now return all columns in `stops.txt` (#4)
 
 # transittraj 0.1.1
 
