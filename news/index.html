@@ -42,13 +42,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1.9000" id="transittraj-0119000-development-version">transittraj 0.1.1.9000 (development version)<a class="anchor" aria-label="anchor" href="#transittraj-0119000-development-version"></a></h2>
-<p><em>Latest commit: 3/23/2026</em></p>
-<ul><li><p>Adding examples to function documentation</p></li>
-<li><p>New function <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>: Returns a dataframe of dates and their <code>service_id</code>s, build from a GTFS feed’s <code>calendar.txt</code> and/or <code>calendar_dates.txt</code> file, depending on how the agency has structured these files.</p></li>
-<li><p><code><a href="../reference/get_gtfs_trajectory_fun.html">get_gtfs_trajectory_fun()</a></code> now works for both methods of constructing <code>calendar.txt</code> and <code>calendar_dates.txt</code> (<a href="https://github.com/UTEL-UIUC/transittraj/issues/2" class="external-link">#2</a>), with refactoring through the new <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>. Read more at <code><a href="../reference/get_gtfs_service_dates.html">help(get_gtfs_service_dates)</a></code>.</p></li>
-<li><p>plotting legend override</p></li>
+<h2 class="pkg-version" data-toc-text="0.1.2" id="transittraj-012">transittraj 0.1.2<a class="anchor" aria-label="anchor" href="#transittraj-012"></a></h2>
+<p><em>Release: 3/25/2026</em></p>
+<ul><li><p>Added examples to all function documentation</p></li>
+<li>
+<p>GTFS helper functions:</p>
+<ul><li><p>New function <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>: Returns a dataframe of dates and their <code>service_id</code>s, built from a GTFS feed’s <code>calendar.txt</code> and/or <code>calendar_dates.txt</code> file, depending on how the agency has structured these files. Read more at <code><a href="../reference/get_gtfs_service_dates.html">help(get_gtfs_service_dates)</a></code>.</p></li>
+<li><p><code><a href="../reference/get_gtfs_trajectory_fun.html">get_gtfs_trajectory_fun()</a></code> now works for both methods of constructing <code>calendar.txt</code> and <code>calendar_dates.txt</code> (<a href="https://github.com/UTEL-UIUC/transittraj/issues/2" class="external-link">#2</a>), with refactoring through the new <code><a href="../reference/get_gtfs_service_dates.html">get_gtfs_service_dates()</a></code>. Read more at <code><a href="../reference/get_gtfs_trajectory_fun.html">help(get_gtfs_trajectory_fun)</a></code>.</p></li>
 <li><p><code><a href="../reference/get_stop_distances.html">get_stop_distances()</a></code> will now return all columns in <code>stops.txt</code> (<a href="https://github.com/UTEL-UIUC/transittraj/issues/4" class="external-link">#4</a>)</p></li>
+</ul></li>
+<li><p>Plotting functions now include input parameters <code>feature_legend</code>, <code>veh_legend</code>, and <code>traj_legend</code> to override whether a layer’s legend will appear on the plot. Read more at <code><a href="../reference/plot_trajectory.html">help(plot_trajectory)</a></code> and <code><a href="../reference/plot_animated_line.html">help(plot_animated_line)</a></code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="transittraj-011">transittraj 0.1.1<a class="anchor" aria-label="anchor" href="#transittraj-011"></a></h2>

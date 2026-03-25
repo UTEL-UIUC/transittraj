@@ -613,4 +613,4 @@ planning studies. We used spatial data and `transittraj`’s
 signal travel times and delays, then used these same tools to visualize
 the effect of bus priority treatments. To learn more about how to use
 `transittraj` to do this with your own data, check out
-`vignettes("articles/input-data")`.
+[`vignette("articles/input-data")`](https://obrien-ben.github.io/transittraj/articles/input-data.md).

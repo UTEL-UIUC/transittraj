@@ -24,15 +24,15 @@ get_gtfs_service_dates(
 
 - date_min:
 
-  Optional. The starting (earliest possible) date for the returned
-  dataframe. Default is NULL, where the earliest date in the GTFS will
-  be used.
+  Optional. The starting (earliest possible) Date object for the
+  returned dataframe. Default is `NULL`, where the earliest date in the
+  GTFS will be used.
 
 - date_max:
 
-  Optional. The starting (latest possible) date for the returned
-  dataframe. Default is NULL, where the latest date in the GTFS will be
-  used.
+  Optional. The ending (latest possible) Date object for the returned
+  dataframe. Default is `NULL`, where the latest date in the GTFS will
+  be used.
 
 - use_calendar_table:
 

@@ -187,7 +187,7 @@ plot_animated_map(
 - feature_legend:
 
   Optional. A boolean, should a legend be shown for feature formatting?
-  Default is NULL, where a legend will only appear if the shape or
+  Default is `NULL`, where a legend will only appear if the shape or
   outline format is mapped to.
 
 - veh_shape:
@@ -223,7 +223,7 @@ plot_animated_map(
 - veh_legend:
 
   Optional. A boolean, should a legend be shown for vehicle formatting?
-  Default is NULL, where a legend will only appear if the shape or
+  Default is `NULL`, where a legend will only appear if the shape or
   outline format is mapped to.
 
 - label_field:

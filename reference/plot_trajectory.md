@@ -104,7 +104,7 @@ plot_trajectory(
 - traj_legend:
 
   Optional. A boolean, should a legend be shown for trajectory
-  formatting? Default is NULL, where a legend will only appear if the
+  formatting? Default is `NULL`, where a legend will only appear if the
   linetype or color format is mapped to.
 
 - feature_color:
@@ -130,7 +130,7 @@ plot_trajectory(
 - feature_legend:
 
   Optional. A boolean, should a legend be shown for feature formatting?
-  Default is NULL, where a legend will only appear if the linetype or
+  Default is `NULL`, where a legend will only appear if the linetype or
   color format is mapped to.
 
 - label_field:
