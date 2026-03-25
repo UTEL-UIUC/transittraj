@@ -121,7 +121,7 @@ Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:
 
 - [Estimating Signal Delays in
-  Indianapolis](https://utel-uiuc.github.io/transittraj/articles/eg-indygo-signals-rendered.html)
+  Indianapolis](https://utel-uiuc.github.io/transittraj/articles/indygo-signals.html)
 
 ## Works in Progress
 

@@ -576,10 +576,10 @@ studies. We used spatial data and `transittraj`'s `predict()` method to
 find signal travel times and delays, then used these same tools to visualize
 the effect of bus priority treatments. To learn more about how to use
 `transittraj` to do this with your own data, check out
-`vignettes("input-data")`.
+`vignettes("articles/input-data")`.
 
 ``` {r, eval = FALSE, echo = FALSE}
 # Knit to rendered RMD
 knitr::knit(input = "vignettes/articles/eg_indygo_signals.Rmd",
-            output = "vignettes/articles/eg-indygo-signals-rendered.Rmd")
+            output = "vignettes/articles/indygo-signals.Rmd")
 ```

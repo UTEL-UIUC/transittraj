@@ -113,5 +113,5 @@ and if it does not, an error will be thrown describing what's wrong. When in
 doubt, try using `validate_tides()` or `tidytransit::validate_gtfs()` to check
 your data.
 
-In the next vignette (`vignette("data-workflow")`), we'll explore the AVL
+In the next vignette (`vignette("article/data-workflow")`), we'll explore the AVL
 cleaning process.

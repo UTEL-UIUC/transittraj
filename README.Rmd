@@ -109,7 +109,7 @@ Check out the following vignettes to learn more about how to use `transittraj`:
 Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:
 
-- [Estimating Signal Delays in Indianapolis](https://utel-uiuc.github.io/transittraj/articles/eg-indygo-signals-rendered.html)
+- [Estimating Signal Delays in Indianapolis](https://utel-uiuc.github.io/transittraj/articles/indygo-signals.html)
 
 ## Works in Progress
 
