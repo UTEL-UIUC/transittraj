@@ -14,13 +14,13 @@ get_gtfs_service_dates(
 \arguments{
 \item{gtfs}{A tidygtfs object.}
 
-\item{date_min}{Optional. The starting (earliest possible) date for the
-returned dataframe. Default is NULL, where the earliest date in the GTFS will
-be used.}
+\item{date_min}{Optional. The starting (earliest possible) Date object for
+the returned dataframe. Default is \code{NULL}, where the earliest date in the
+GTFS will be used.}
 
-\item{date_max}{Optional. The starting (latest possible) date for the
-returned dataframe. Default is NULL, where the latest date in the GTFS will
-be used.}
+\item{date_max}{Optional. The ending (latest possible) Date object for the
+returned dataframe. Default is \code{NULL}, where the latest date in the GTFS
+will be used.}
 
 \item{use_calendar_table}{Optional. Should the GTFS's \code{calendar.txt} or
 \code{calendar_dates.txt} be used for the feasible date range? Must be

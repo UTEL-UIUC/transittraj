@@ -178,7 +178,7 @@
 #' @param feature_alpha Optional. A numeric, the opacity of the feature point.
 #' Default is 1.
 #' @param feature_legend Optional. A boolean, should a legend be shown for
-#' feature formatting? Default is NULL, where a legend will only appear if
+#' feature formatting? Default is `NULL`, where a legend will only appear if
 #' the shape or outline format is mapped to.
 #' @param veh_shape Optional. A numeric specifying the `ggplot2` point shape, or
 #' a dataframe mapping an attribute in `distance_df` or `trajectory` to
@@ -195,7 +195,7 @@
 #' @param veh_alpha Optional. A numeric, the opacity of the vehicle point.
 #' Default is 0.8.
 #' @param veh_legend Optional. A boolean, should a legend be shown for
-#' vehicle formatting? Default is NULL, where a legend will only appear if
+#' vehicle formatting? Default is `NULL`, where a legend will only appear if
 #' the shape or outline format is mapped to.
 #' @param label_field Optional. A string specifying the column in
 #' `feature_distances` with which to label the feature lines. Default is `NULL`,
@@ -814,7 +814,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @param traj_alpha Optional. A numeric, the opacity of the trajectory line.
 #' Default is 1.
 #' @param traj_legend Optional. A boolean, should a legend be shown for
-#' trajectory formatting? Default is NULL, where a legend will only appear if
+#' trajectory formatting? Default is `NULL`, where a legend will only appear if
 #' the linetype or color format is mapped to.
 #' @param feature_color Optional. A color string, or a dataframe mapping an
 #' attribute in `feature_distances` to a color. Must contain column `color`.
@@ -825,7 +825,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @param feature_width Optional. A numeric, the width of the feature line.
 #' Default is 0.8.
 #' @param feature_legend Optional. A boolean, should a legend be shown for
-#' feature formatting? Default is NULL, where a legend will only appear if
+#' feature formatting? Default is `NULL`, where a legend will only appear if
 #' the linetype or color format is mapped to.
 #' @param label_pos Optional. A string specifying the label position on the
 #' graph. Must be either `"left"` or `"right"`. Default is `"left"`.

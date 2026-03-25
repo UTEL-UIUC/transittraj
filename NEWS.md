@@ -1,21 +1,26 @@
-# transittraj 0.1.1.9000 (development version)
+# transittraj 0.1.2
 
-*Latest commit: 3/23/2026*
+*Release: 3/25/2026*
 
-* Adding examples to function documentation
+* Added examples to all function documentation
 
-* New function `get_gtfs_service_dates()`: Returns a dataframe of dates and
-their `service_id`s, build from a GTFS feed's `calendar.txt` and/or
-`calendar_dates.txt` file, depending on how the agency has structured these
-files.
+* GTFS helper functions:
 
-* `get_gtfs_trajectory_fun()` now works for both methods of constructing
-`calendar.txt` and `calendar_dates.txt` (#2), with refactoring through the new
-`get_gtfs_service_dates()`. Read more at `help(get_gtfs_service_dates)`.
+  * New function `get_gtfs_service_dates()`: Returns a dataframe of dates and
+  their `service_id`s, built from a GTFS feed's `calendar.txt` and/or
+  `calendar_dates.txt` file, depending on how the agency has structured these
+  files. Read more at `help(get_gtfs_service_dates)`.
+  
+  * `get_gtfs_trajectory_fun()` now works for both methods of constructing
+  `calendar.txt` and `calendar_dates.txt` (#2), with refactoring through the
+  new `get_gtfs_service_dates()`. Read more at `help(get_gtfs_trajectory_fun)`.
 
-* plotting legend override
-
-* `get_stop_distances()` will now return all columns in `stops.txt` (#4)
+  * `get_stop_distances()` will now return all columns in `stops.txt` (#4)
+  
+* Plotting functions now include input parameters `feature_legend`,
+`veh_legend`, and `traj_legend` to override whether a layer's legend will
+appear on the plot. Read more at `help(plot_trajectory)` and
+`help(plot_animated_line)`.
 
 # transittraj 0.1.1
 

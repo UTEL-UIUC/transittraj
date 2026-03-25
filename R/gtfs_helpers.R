@@ -784,12 +784,12 @@ plot_interactive_gtfs <- function(gtfs,
 #' and `date_max`.
 #'
 #' @param gtfs A tidygtfs object.
-#' @param date_min Optional. The starting (earliest possible) date for the
-#' returned dataframe. Default is NULL, where the earliest date in the GTFS will
-#' be used.
-#' @param date_max Optional. The starting (latest possible) date for the
-#' returned dataframe. Default is NULL, where the latest date in the GTFS will
-#' be used.
+#' @param date_min Optional. The starting (earliest possible) Date object for
+#' the returned dataframe. Default is `NULL`, where the earliest date in the
+#' GTFS will be used.
+#' @param date_max Optional. The ending (latest possible) Date object for the
+#' returned dataframe. Default is `NULL`, where the latest date in the GTFS
+#' will be used.
 #' @param use_calendar_table Optional. Should the GTFS's `calendar.txt` or
 #' `calendar_dates.txt` be used for the feasible date range? Must be
 #' `"calendar"` or `"calendar_dates"`. Default is `"calendar"`.

@@ -138,7 +138,7 @@ outline. Default is 1.25.}
 Default is 1.}
 
 \item{feature_legend}{Optional. A boolean, should a legend be shown for
-feature formatting? Default is NULL, where a legend will only appear if
+feature formatting? Default is \code{NULL}, where a legend will only appear if
 the shape or outline format is mapped to.}
 
 \item{veh_shape}{Optional. A numeric specifying the \code{ggplot2} point shape, or
@@ -162,7 +162,7 @@ outline. Default is 2.}
 Default is 0.8.}
 
 \item{veh_legend}{Optional. A boolean, should a legend be shown for
-vehicle formatting? Default is NULL, where a legend will only appear if
+vehicle formatting? Default is \code{NULL}, where a legend will only appear if
 the shape or outline format is mapped to.}
 
 \item{label_field}{Optional. A string specifying the column in

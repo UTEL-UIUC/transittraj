@@ -74,7 +74,7 @@ Default is 1.}
 Default is 1.}
 
 \item{traj_legend}{Optional. A boolean, should a legend be shown for
-trajectory formatting? Default is NULL, where a legend will only appear if
+trajectory formatting? Default is \code{NULL}, where a legend will only appear if
 the linetype or color format is mapped to.}
 
 \item{feature_color}{Optional. A color string, or a dataframe mapping an
@@ -92,7 +92,7 @@ Default is 0.8.}
 Default is 1.}
 
 \item{feature_legend}{Optional. A boolean, should a legend be shown for
-feature formatting? Default is NULL, where a legend will only appear if
+feature formatting? Default is \code{NULL}, where a legend will only appear if
 the linetype or color format is mapped to.}
 
 \item{label_field}{Optional. A string specifying the column in
