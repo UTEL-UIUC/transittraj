@@ -443,7 +443,7 @@ before.
 In this vignette we saw how we can easily fit an interpolating
 trajectory curve to our cleaned AVL data. We used this to interpolate
 for new time, distance, and speed points along the route. We also
-explored some ways we can plot and visualize the trajectories. In future
-vignettes (*still work in progress*), we’ll dive deeper into the
-structure behind the trajectory object, as well as the options available
-in `transittraj`’s plotting functions.
+explored some ways we can plot and visualize the trajectories. Future
+vignettes
+([`vignette("articles/indygo-signals")`](https://obrien-ben.github.io/transittraj/articles/indygo-signals.md))
+will explore real-world applications of trajectories.

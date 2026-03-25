@@ -161,5 +161,5 @@ or
 [`tidytransit::validate_gtfs()`](https://r-transit.github.io/tidytransit/reference/validate_gtfs.html)
 to check your data.
 
-In the next vignette (`vignette("data-workflow")`), we’ll explore the
-AVL cleaning process.
+In the next vignette (`vignette("article/data-workflow")`), we’ll
+explore the AVL cleaning process.
