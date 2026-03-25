@@ -3,8 +3,8 @@
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
 
-This is a development version of `transittraj`. Expect it to change
-without warning.
+This is a development version of `transittraj`. It may change without
+warning.
 
 ## Introduction
 
@@ -131,7 +131,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.1,
+#>   Transit Vehicle Trajectories_. R package version 0.1.2,
 #>   https://utel-uiuc.github.io/transittraj/,
 #>   <https://github.com/UTEL-UIUC/transittraj>.
 #> 
@@ -141,7 +141,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.1, https://utel-uiuc.github.io/transittraj/},
+#>     note = {R package version 0.1.2, https://utel-uiuc.github.io/transittraj/},
 #>     url = {https://github.com/UTEL-UIUC/transittraj},
 #>   }
 ```
