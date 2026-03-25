@@ -15,6 +15,7 @@
 #' @param inv_tol Tolerance used in numeric inverse
 #' @param max_deriv Max derivative allowed
 #' @param used_speeds Whether speeds were used
+#' @param agency_tz Timezone of agency
 #' @param ... Other inputs
 #' @param class Object class
 #' @return Grouped trajectory object
@@ -691,3 +692,139 @@ get_gtfs_trajectory_fun <- function(gtfs,
                                   inv_tol = inv_tol,
                                   use_speeds = FALSE)
 }
+
+#' Group existing trajectory objects or split them apart.
+#'
+#' asd
+#'
+#' @param traj_list as
+#' @param grouping A character string, either `"group"` to group all
+#' trajectories in `traj_list`, or `"split"` to split `traj_list` into a list of
+#' single trajectories.
+group_trajectories <- function(traj_list,
+                               grouping) {
+
+  # --- Input Validation ---
+  # grouping
+  if (length(grouping) > 1) {
+    rlang::abort(message = "Please provide only one option for grouping.",
+                 class = "error_trajgrouping_input")
+  }
+  if (!(grouping %in% c("group", "split"))) {
+    rlang::abort(message = "Unrecognized grouping action. Please input either \"group\" or \"split\".",
+                 class = "error_trajgrouping_input")
+  }
+  # trajectories
+  if (class(traj_list) == "list") {
+    # If list and every object is not a traj, throw error
+    input_classes <- sapply(traj_list, function(x) class(x)[1])
+    if (!all(input_classes %in% c("avltrajectory_single", "avltrajectory_group"))) {
+      rlang::abort(message = "Unrecognized object in traj_list. Please provide one grouped trajectory, list of grouped trajectories, or list of single trajectories.",
+                   class = "error_trajgrouping_input")
+    }
+  } else if ("avltrajectory_single" %in% class(traj_list)) {
+    # If not list, but only one single, throw error
+    rlang::abort(message = "Only one single trajectory provided as traj_list. Please provide one grouped trajectory, list of grouped trajectories, or list of single trajectories.",
+                 class = "error_trajgrouping_input")
+  } else if (!("avltrajectory_group" %in% class(traj_list))) {
+    # If not some other group traj, throw error
+    rlang::abort(message = "Unrecognized traj_list. Please provide one grouped trajectory, list of grouped trajectories, or list of single trajectories.",
+                 class = "error_trajgrouping_input")
+  }
+
+  # --- Grouping ---
+  if (grouping == "group") { # If grouping together
+    # Get single dataframe of all trip extremes
+    all_extremes <- lapply(X = traj_list,
+                           FUN = get_trip_extremes)
+    all_extremes_df <- dplyr::bind_rows(all_extremes) %>%
+      dplyr::distinct(trip_id_performed,
+                      .keep_all = TRUE)
+
+    # Get single list of all traj functions
+
+  } else { # Otherwise, splitting apart
+    # Check that input is one grouped traj
+    if (!("avltrajectory_group" %in% class(traj_list))) {
+      rlang::abort(message = "Unrecognized traj_list. Please provide one grouped trajectory.",
+                   class = "error_trajgrouping_input")
+    }
+
+    # Get shared info
+    new_traj_type <- attr(traj_list, "traj_type")
+    new_inv_tol <- attr(traj_list, "inv_tol")
+    new_max_deriv <- attr(traj_list, "max_deriv")
+    new_used_speeds <- attr(traj_list, "used_speeds")
+    new_agency_tz <- attr(traj_list, "agency_tz")
+
+    # Create list of singles
+    num_trips <- length(traj_gtfs1)
+    single_traj_list <- vector(mode = "list", length = num_trips)
+    for (current_index in 1:num_trips) {
+      current_trip_id <- unclass(traj_gtfs)[current_index]
+      current_single_traj <- get_traj_index(group_traj = traj_list,
+                                            index_num = current_index,
+                                            new_traj_type = new_traj_type,
+                                            new_inv_tol = new_inv_tol,
+                                            new_max_deriv = new_max_deriv,
+                                            new_used_speeds = new_used_speeds,
+                                            new_agency_tz = new_agency_tz)
+      single_traj_list[[current_trip_id]] <- current_single_traj
+    }
+
+    return(single_traj_list)
+  }
+}
+
+#' Get a single trajectory object based on an index.
+#'
+#' From a grouped trajectory object and given index number, will return the
+#' single trajectory object at that index.
+#' Internal function. Not intended for external use.
+#'
+#' @param group_traj A transittraj avltrajectory_group object.
+#' @param index_num Number indicating index to pull trajectory from
+#' @param new_traj_type Interp method character string
+#' @param new_inv_tol Tolerance used in numeric inverse
+#' @param new_max_deriv Max derivative allowed
+#' @param new_used_speeds Whether speeds were used
+#' @param new_agency_tz
+#' @return Single trajectory object
+#' @keywords internal
+get_traj_index <- function(group_traj, index_num,
+                           new_traj_type, new_inv_tol, new_max_deriv,
+                           new_used_speeds, new_agency_tz) {
+
+  # Trip ID
+  new_trip_id <- unclass(group_traj)[index_num]
+
+  # Time & distance ranges
+  new_min_dist <- attr(group_traj, "min_dist")[index_num]
+  new_max_dist <- attr(group_traj, "max_dist")[index_num]
+  new_min_time <- attr(group_traj, "min_time")[index_num]
+  new_max_time <- attr(group_traj, "max_time")[index_num]
+
+  # Functions
+  new_traj_fun <- attr(group_traj, "traj_fun")[[index_num]]
+  new_inv_traj_fun <- attr(group_traj, "inv_traj_fun")[[index_num]]
+
+  # Create single traj
+  new_single_traj <- new_avltrajectory_single(trip_id_performed = new_trip_id,
+                                              traj_fun = new_traj_fun,
+                                              inv_traj_fun = new_inv_traj_fun,
+                                              min_dist = new_min_dist,
+                                              max_dist = new_max_dist,
+                                              min_time = new_min_time,
+                                              max_time = new_max_time,
+                                              traj_type = new_traj_type,
+                                              inv_tol = new_inv_tol,
+                                              max_deriv = new_max_deriv,
+                                              used_speeds = new_used_speeds,
+                                              agency_tz = new_agency_tz)
+  return(new_single_traj)
+}
+
+
+
+
+
