@@ -219,7 +219,7 @@ plot_trips_df_setup <- function(trajectory, distance_df,
       dplyr::filter(trip_id_performed %in% plot_trips)
 
     # Filter to distance limits
-    if (!is.null(distance_lims)) {
+    if (!is.null(distance_lim)) {
       trips_df <- trips_df %>%
         dplyr::filter((distance >= distance_lim[1]) &
                         (distance <= distance_lim[2]))
