@@ -695,12 +695,42 @@ get_gtfs_trajectory_fun <- function(gtfs,
 
 #' Group existing trajectory objects or split them apart.
 #'
-#' asd
+#' Trajectory objects hold the trajectory functions, and related information,
+#' from one or more trip IDs. This function groups the fit trajectories from
+#' multiple trips into one object, or splits a grouped object into many single
+#' trajectory objects, one for each trip.
 #'
-#' @param trajectories as
+#' See `help(get_trajectory_fun)` for more information.
+#'
+#' @param trajectories A trajectory object to operate on. Can be a list of
+#' single trajectories, a list of grouped trajectories, or one grouped
+#' trajectory.
 #' @param grouping A character string, either `"group"` to group all
 #' trajectories in `trajectories`, or `"split"` to split `trajectories` into
 #' a list of single trajectories.
+#' @export
+#' @examples
+#' # Get input data
+#' c53_mono <- new_transittraj_data("make_monotonic")
+#'
+#' # Fit a list of single trajectory functions
+#' c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
+#'                                        return_group_function = FALSE)
+#'
+#' # Show sample singles
+#' print(length(c53_traj_singles))
+#' print(c53_traj_singles[[2]])
+#'
+#' # Run function: group singles
+#' c53_traj_grouped <- group_trajectories(trajectories = c53_traj_singles,
+#'                                        grouping = "group")
+#' summary(c53_traj_grouped)
+#'
+#' # Run function: split apart again
+#' c53_traj_singles_2 <- group_trajectories(trajectories = c53_traj_grouped,
+#'                                          grouping = "split")
+#' print(length(c53_traj_singles_2))
+#' print(c53_traj_singles_2[[2]])
 group_trajectories <- function(trajectories,
                                grouping) {
 
@@ -715,7 +745,7 @@ group_trajectories <- function(trajectories,
                  class = "error_trajgrouping_input")
   }
   # trajectories
-  if (class(trajectories) == "list") {
+  if (class(trajectories)[1] == "list") {
     # If list and every object is not a traj, throw error
     input_classes <- sapply(trajectories, function(x) class(x)[1])
     if (!all(input_classes %in% c("avltrajectory_single", "avltrajectory_group"))) {
@@ -734,7 +764,7 @@ group_trajectories <- function(trajectories,
 
   # --- Grouping ---
   if (grouping == "group") { # If grouping together
-    if (class(trajectories) != "list") {
+    if (class(trajectories)[1] != "list") {
       rlang::abort(message = "Unrecognized trajectories. Please provide list for grouping.",
                    class = "error_trajgrouping_input")
     }
@@ -854,7 +884,7 @@ group_trajectories <- function(trajectories,
 #' @param new_inv_tol Tolerance used in numeric inverse
 #' @param new_max_deriv Max derivative allowed
 #' @param new_used_speeds Whether speeds were used
-#' @param new_agency_tz
+#' @param new_agency_tz Agency's timezone as Olson name
 #' @return Single trajectory object
 #' @keywords internal
 get_traj_index <- function(group_traj, index_num,

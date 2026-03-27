@@ -44,6 +44,8 @@ new_avltrajectory_group(
 
 \item{used_speeds}{Whether speeds were used}
 
+\item{agency_tz}{Timezone of agency}
+
 \item{...}{Other inputs}
 
 \item{class}{Object class}
