@@ -29,6 +29,9 @@ interp_df_setup <- function(trajectory, trip_time_extremes, timestep) {
 
     # For each trip, get all timesteps between the entry/exit times
     interp_times <- trip_time_extremes %>%
+      # Filter out trips that do not cross one of the boundaries
+      dplyr::filter(!is.na(min_time) & !is.na(max_time)) %>%
+      # Group by trip
       dplyr::group_by(trip_id_performed) %>%
       # Duplicate trip row for every interpolate timepoint necessary
       tidyr::uncount(weights = floor((max_time - min_time) / timestep + 1)) %>%
