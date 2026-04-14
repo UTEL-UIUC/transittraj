@@ -29,6 +29,7 @@ reference:
   contents:
   - get_trajectory_fun
   - get_gtfs_trajectory_fun
+  - group_trajectories
 - title: Trajectory Plotting
   desc: >
     Functions to plot trajectories.
@@ -44,7 +45,6 @@ reference:
     Functions for using trajectories.
   contents:
   - predict.avltrajectory_group
-  - predict.avltrajectory_single
   - print.avltrajectory_group
   - print.avltrajectory_single
   - summary.avltrajectory_single
