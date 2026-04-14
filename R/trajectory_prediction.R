@@ -204,6 +204,7 @@ predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
 
 predict_traj_setup_new_times <- function(new_times, trip_extremes) {
 
+  # --- Validate Input ---
   if (is.data.frame(new_times)) {
     # If DF provided
     # Check if has needed columns
@@ -211,27 +212,35 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
       rlang::abort(message = "Column event_timestamp missing from new_times.",
                    class = "error_trajpredict_input")
     }
-
     # If OK...
-
+    new_times_df <- new_times
   } else if (is.vector(new_times) & is.numeric(new_times)) {
     new_times_df <- data.frame(event_timestamp = new_times)
-
-    trips <- trip_extremes$trip_id_performed
-    num_times <- dim(new_times)[1]
-    num_trips <- dim(trip_extremes)[1]
-    new_times_trips <- new_times %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      tidyr::uncount(weights = num_trips) %>%
-      dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
-      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
-      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
-
   } else {
     # If not DF or vector
-    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or vector.",
+    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or numeric vector.",
                  class = "error_trajpredict_input")
+  }
+
+  # --- Setup ---
+  # Create DF of trip & time pairs
+  trips <- trip_extremes$trip_id_performed
+  num_times <- dim(new_times)[1]
+  num_trips <- dim(trip_extremes)[1]
+  new_times_trips <- new_times_df %>%
+    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+    tidyr::uncount(weights = num_trips) %>%
+    dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
+    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+    dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  # Check that observations remain
+  if (dim(new_times_trips)[1] == 0) {
+    rlang::abort(message = "No trips within range of new_times.",
+                 class = "error_trajpredict_range")
+  } else {
+    return(new_times_trips)
   }
 }
 
