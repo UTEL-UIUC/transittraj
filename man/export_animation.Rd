@@ -57,7 +57,7 @@ anim_line <- plot_animated_line(trajectory = c53_traj,
                                 label_field = "name",
                                 label_alpha = 0.8,
                                 label_pos = "right",
-                                distance_lim = my_dist_range,
+                                distance_lims = my_dist_range,
                                 center_vehicles = TRUE,
                                 timestep = 1)
 

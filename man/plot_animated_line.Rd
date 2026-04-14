@@ -10,7 +10,7 @@ plot_animated_line(
   distance_df = NULL,
   plot_trips = NULL,
   timestep = 5,
-  distance_lim = NULL,
+  distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
   transition_style = "linear",
@@ -44,7 +44,7 @@ plot_animated_map(
   distance_df = NULL,
   plot_trips = NULL,
   timestep = 5,
-  distance_lim = NULL,
+  distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
   background = "cartolight",
@@ -91,7 +91,7 @@ is \code{NULL}, which will plot all trips provided in the \code{trajectory} or
 \item{timestep}{Optional. If \code{trajectory} is provided, the time interval, in
 seconds, between interpolated observations to plot. Default is 5.}
 
-\item{distance_lim}{Optional. A vector with \verb{(minimum, maximum)} distance
+\item{distance_lims}{Optional. A vector with \verb{(minimum, maximum)} distance
 values to plot.}
 
 \item{center_vehicles}{Optional. A boolean, should all vehicle points be
@@ -194,7 +194,7 @@ for the background basemap. Default is 0.}
 
 \item{bbox_expand}{Optional. The distance by which to expand the plotting
 window in both directions. Default is \code{NULL}, which will expand the window by
-0.05\% of the larger dimension (or 0.0025\% if \code{distance_lim} is provided).}
+0.05\% of the larger dimension (or 0.0025\% if \code{distance_lims} is provided).}
 }
 \value{
 A \code{gganimate} object.
@@ -220,7 +220,7 @@ There are two ways to provide data to these plotting functions:
 \itemize{
 \item A single or grouped trajectory object. This will use the direct
 trajectory function at a resolution controlled by \code{timestep}. This is
-simplest, and looks best when zooming in using \code{distance_lim}. The only
+simplest, and looks best when zooming in using \code{distance_lims}. The only
 attribute that can be mapped to if using a trajectory is \code{trip_id_performed}.
 \item A \code{distance_df} of TIDES AVL data. This will use the distance and time
 point pairs for plotting, and draw linearly between them. This will look
@@ -317,7 +317,7 @@ give a much lower resolution may.
 Finally, the bounding box of the basemap can also be set. The bounding
 box is defined relative to the spatial range of \code{trajectory} or
 \code{distance_df}. The default is expansion is 0.05\% (0.0025\% for
-\code{distance_lim != NULL}) of the larger dimension (northing or easting) of the
+\code{distance_lims != NULL}) of the larger dimension (northing or easting) of the
 vehicle location bounding box. To customize, det \code{bbox_expand} to some
 numeric in the distance units of the \code{shape_geometry}'s spatial
 projection (e.g., meters if using a UTM projection).
@@ -342,7 +342,7 @@ anim_line <- plot_animated_line(trajectory = c53_traj,
                                 label_field = "name",
                                 label_alpha = 0.8,
                                 label_pos = "right",
-                                distance_lim = my_dist_range,
+                                distance_lims = my_dist_range,
                                 center_vehicles = TRUE,
                                 timestep = 1)
 
@@ -353,7 +353,7 @@ anim_map <- plot_animated_map(trajectory = c53_traj,
                               route_color = "firebrick4",
                               label_field = "name",
                               label_alpha = 0.8,
-                              distance_lim = my_dist_range,
+                              distance_lims = my_dist_range,
                               center_vehicles = TRUE,
                               timestep = 1,
                               bbox_expand = 40)

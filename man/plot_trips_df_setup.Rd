@@ -9,7 +9,7 @@ plot_trips_df_setup(
   distance_df,
   plot_trips,
   timestep,
-  distance_lim,
+  distance_lims,
   center_vehicles,
   convert_to_timezone
 )
@@ -23,7 +23,7 @@ plot_trips_df_setup(
 
 \item{timestep}{Time in seconds for interpolation.}
 
-\item{distance_lim}{Vector of (minimum, maximum) distance to plot.}
+\item{distance_lims}{Vector of (minimum, maximum) distance to plot.}
 
 \item{center_vehicles}{Should vehicles be centered}
 

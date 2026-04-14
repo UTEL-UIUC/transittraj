@@ -190,7 +190,7 @@ plot.avltrajectory_single <- function(x, ...) {
   plot_seq <- seq(from = attr(x, "min_time"),
                   to = attr(x, "max_time"),
                   by = 10)
-  plot_df <- predict.avltrajectory_single(object = x, new_times = plot_seq) %>%
+  plot_df <- predict.avltrajectory_group(object = x, new_times = plot_seq) %>%
     dplyr::rename(distance = interp)
 
   # Create & return plot

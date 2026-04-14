@@ -82,7 +82,7 @@ plot_traj_df_setup <- function(trajectory, has_inv, plot_trips,
                          max(trip_extremes$max_dist))
     }
     # Interpolate
-    interp_df <- predict(object = trajectory,
+    interp_df <- predict.avltrajectory_group(object = trajectory,
                          trips = plot_trips,
                          distance_lims = distance_lims,
                          timestep = timestep) %>%
@@ -99,7 +99,7 @@ plot_traj_df_setup <- function(trajectory, has_inv, plot_trips,
                     to = max(trip_extremes$max_time),
                     by = timestep)
     # Interpolate
-    interp_df <- predict(object = trajectory,
+    interp_df <- predict.avltrajectory_group(object = trajectory,
                          trips = plot_trips,
                          new_times = time_seq) %>%
       dplyr::rename(distance = interp)

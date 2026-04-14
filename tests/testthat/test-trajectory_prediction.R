@@ -112,7 +112,7 @@ test_that("predict_traj_setup_new_times: input validation", {
   # Not DF nor vector
   expect_error(
     predict(object = c53_traj,
-            new_times = list(timestamp = c(0, 1))),
+            new_times = c53_traj),
     class = "error_trajpredict_input"
   )
 
@@ -138,7 +138,7 @@ test_that("predict_traj_setup_new_dists: input validation", {
   # Not DF nor vector
   expect_error(
     predict(object = c53_traj,
-            new_distances = list(dist = c(0, 1))),
+            new_distances = c53_traj),
     class = "error_trajpredict_input"
   )
 
