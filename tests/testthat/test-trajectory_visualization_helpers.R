@@ -1,4 +1,4 @@
-test_that("plot_trips_df_setup: input validation", {
+test_that("plot_traj_input_validation: input validation", {
 
   c53_mono <- new_transittraj_data("make_monotonic")
   c53_traj <- get_trajectory_fun(distance_df = c53_mono,
@@ -57,6 +57,21 @@ test_that("plot_trips_df_setup: input validation", {
   expect_error(
     plot_trajectory(distance_df = (c53_mono %>%
                                      dplyr::mutate(distance = as.character(distance)))),
+    class = "error_plottraj_input"
+  )
+})
+
+test_that("plot_traj_df_setup: range validation", {
+
+  c53_mono <- new_transittraj_data("make_monotonic")
+  c53_traj_noinv <- get_trajectory_fun(distance_df = c53_mono,
+                                       find_inverse_function = FALSE)
+
+  # wrong distance lims w/ non-inverse
+  # bad lims w/ inverse will be caught by predict() validators
+  expect_error(
+    suppressMessages(plot_trajectory(trajectory = c53_traj_noinv,
+                                     distance_lims = c(50000, 50200))),
     class = "error_plottraj_input"
   )
 })

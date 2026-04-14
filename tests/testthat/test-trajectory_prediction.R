@@ -98,6 +98,65 @@ test_that("predict_traj_setup_dist_lims: input validation", {
   )
 })
 
+test_that("predict_traj_setup_new_times: input validation", {
+
+  c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+  # Dataframe, wrong cols
+  expect_error(
+    predict(object = c53_traj,
+            new_times = data.frame(timestamp = c(0, 1))),
+    class = "error_trajpredict_input"
+  )
+
+  # Not DF nor vector
+  expect_error(
+    predict(object = c53_traj,
+            new_times = list(timestamp = c(0, 1))),
+    class = "error_trajpredict_input"
+  )
+
+  # bad time range
+  expect_error(
+    predict(object = c53_traj,
+            new_times = c(0, 1)),
+    class = "error_trajpredict_range"
+  )
+})
+
+test_that("predict_traj_setup_new_dists: input validation", {
+
+  c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+  # Dataframe, wrong cols
+  expect_error(
+    predict(object = c53_traj,
+            new_distances = data.frame(dist = c(0, 1))),
+    class = "error_trajpredict_input"
+  )
+
+  # Not DF nor vector
+  expect_error(
+    predict(object = c53_traj,
+            new_distances = list(dist = c(0, 1))),
+    class = "error_trajpredict_input"
+  )
+
+  # vector not numeric
+  expect_error(
+    predict(object = c53_traj,
+            new_distances = c("100", "200")),
+    class = "error_trajpredict_input"
+  )
+
+  # bad dist range
+  expect_error(
+    predict(object = c53_traj,
+            new_distances = c(50000, 50200)),
+    class = "error_trajpredict_range"
+  )
+})
+
 test_that("get_trip_extremes: input validation", {
 
   c53_traj <- new_transittraj_data("get_trajectory_fun")

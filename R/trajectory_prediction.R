@@ -136,11 +136,11 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
     }
     # If OK...
     new_times_df <- new_times
-  } else if (is.vector(new_times) & is.numeric(new_times)) {
+  } else if (is.vector(new_times)) {
     new_times_df <- data.frame(event_timestamp = new_times)
   } else {
     # If not DF or vector
-    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or numeric vector.",
+    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or vector.",
                  class = "error_trajpredict_input")
   }
 
