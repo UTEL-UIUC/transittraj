@@ -148,12 +148,11 @@ predict_traj_input_validation <- function(new_times, new_distances,
   }
 }
 
-predict_traj_setup_dist_lims <- function(trajectory, trips,
+predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
                                          distance_lims, timestep) {
 
   # Get observed trip limits & user-defined limits
-  trip_extremes_filt <- get_trip_extremes(trajectory = trajectory,
-                                          filter_trips = trips) %>%
+  trip_extremes_filt <- trip_extremes %>%
     dplyr::select(-c(min_time, max_time)) %>%
     dplyr::mutate(user_min_dist = distance_lims[1],
                   user_max_dist = distance_lims[2]) %>%
@@ -162,12 +161,12 @@ predict_traj_setup_dist_lims <- function(trajectory, trips,
                     (max_dist >= user_min_dist))
 
   if (dim(trip_extremes_filt)[1] == 0) {
-    rlang::abort(message = "Trajectory distance range does not overlap with input distance limits.",
+    rlang::abort(message = "Trajectory distance range does not overlap with input distance_lims.",
                  class = "error_trajpredict_lims")
   }
 
   # Get min & max of user-defined and observed distance limits
-  trip_extremes <- trip_extremes_filt %>%
+  trip_absolute_extremes <- trip_extremes_filt %>%
     # Get max/min of user-defined range and observed range
     dplyr::mutate(min_time = pmax(min_dist, user_min_dist),
                   max_time = pmin(max_dist, user_max_dist)) %>%
@@ -517,12 +516,42 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
                                 deriv = deriv,
                                 max_deriv = max_deriv)
 
-  # df_list <- predict_traj_input_setup(new_times = new_times,
-  #                                     new_distances = new_distances,
-  #                                     distance_lims = distance_lims,
-  #                                     timestep = timestep)
-  # new_times_df <- df_list[[1]]
-  # new_distances_df <- df_list[[2]]
+  # --- DF Setup ---
+  trip_extremes <- get_trip_extremes(trajectory = object,
+                                     filter_trips = trips)
+  # Find correct function to use
+  if (!is.null(new_times)) {
+    new_times_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
+                                                    new_times = new_times)
+  }
+  if (!is.null(new_distances)) {
+    new_dist_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
+                                                   new_distances = new_distances)
+  }
+  if (!is.null(distance_lims)) {
+    new_times_trips <- predict_traj_setup_dist_lims(trajectory = trajectory,
+                                                    distance_lims = distance_lims,
+                                                    timestep = timestep)
+  }
+
+  # --- Interpolate ---
+  # Find correct function to use
+  if (!is.null(new_times_trips)) {
+    interpolate_distances(trajectory = trajectory,
+                          new_times_trips = new_times_trips,
+                          deriv = deriv)
+  }
+  if (!is.null(new_dist_trips)) {
+    interpolate_times(trajectory = trajectory,
+                      new_dist_trips = new_dist_trips)
+  }
+
+
+
+
+
+
+
 
   # Validate trips input
   all_trips <- unclass(object)
