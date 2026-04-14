@@ -130,7 +130,7 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
   if (is.data.frame(new_times)) {
     # If DF provided
     # Check if has needed columns
-    if (!("event_timestamp" %in% new_times)) {
+    if (!("event_timestamp" %in% names(new_times))) {
       rlang::abort(message = "Column event_timestamp missing from new_times.",
                    class = "error_trajpredict_input")
     }
@@ -172,7 +172,7 @@ predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
   if (is.data.frame(new_distances)) {
     # If DF provided
     # Check if has needed columns
-    if (!("distance" %in% new_distances)) {
+    if (!("distance" %in% names(new_distances))) {
       rlang::abort(message = "Column distance missing from new_distances.",
                    class = "error_trajpredict_input")
     }

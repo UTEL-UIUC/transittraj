@@ -698,9 +698,8 @@ get_gtfs_trajectory_fun <- function(gtfs,
 #' Trajectory objects hold the trajectory functions, and related information,
 #' from one or more trip IDs. This function groups the fit trajectories from
 #' multiple trips into one object, or splits a grouped object into many single
-#' trajectory objects, one for each trip.
-#'
-#' See `help(get_trajectory_fun)` for more information.
+#' trajectory objects, one for each trip. See `help(get_trajectory_fun)` for
+#' more information.
 #'
 #' @param trajectories A trajectory object to operate on. Can be a list of
 #' single trajectories, a list of grouped trajectories, or one grouped
