@@ -246,6 +246,43 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
 
 predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
 
+  # --- Validate Input ---
+  if (is.data.frame(new_distances)) {
+    # If DF provided
+    # Check if has needed columns
+    if (!("distance" %in% new_distances)) {
+      rlang::abort(message = "Column distance missing from new_distances.",
+                   class = "error_trajpredict_input")
+    }
+    # If OK...
+    new_distances_df <- new_distances
+  } else if (is.vector(new_distances) & is.numeric(new_distances)) {
+    new_distances_df <- data.frame(distance = new_distances)
+  } else {
+    # If not DF or vector
+    rlang::abort(message = "Unrecognized new_distances type. Please input either dataframe or numeric vector.",
+                 class = "error_trajpredict_input")
+  }
+
+  # --- Setup ---
+  # Create DF of trip & dist pairs
+  trips <- trip_extremes$trip_id_performed
+  num_dists <- dim(new_distances_df)[1]
+  num_trips <- dim(trip_extremes)[1]
+  new_distances_trips <- new_distances_df %>%
+    tidyr::uncount(weights = num_trips) %>%
+    dplyr::mutate(trip_id_performed = rep(trips, num_dists)) %>%
+    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+    dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
+    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  # Check that observations remain
+  if (dim(new_distances_trips)[1] == 0) {
+    rlang::abort(message = "No trips within range of new_distances.",
+                 class = "error_trajpredict_range")
+  } else {
+    return(new_distances_trips)
+  }
 }
 
 #' Get the distance and time range of each trip in a trajectory object.
