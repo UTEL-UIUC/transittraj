@@ -129,7 +129,7 @@ eventual submission to CRAN, we’re still working on the following:
 
 - Formal automated testing
 
-- Vignettes discussing methodology and inner-workings of `transittraj`
+- Vignettes demonstrating applications of `transittraj`
 
 Check out the latest updates at our
 [changelog](https://utel-uiuc.github.io/transittraj/news/index.html).
@@ -144,7 +144,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.2.9000,
+#>   Transit Vehicle Trajectories_. R package version 0.1.3,
 #>   https://utel-uiuc.github.io/transittraj/,
 #>   <https://github.com/UTEL-UIUC/transittraj>.
 #> 
@@ -154,7 +154,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.2.9000, https://utel-uiuc.github.io/transittraj/},
+#>     note = {R package version 0.1.3, https://utel-uiuc.github.io/transittraj/},
 #>     url = {https://github.com/UTEL-UIUC/transittraj},
 #>   }
 ```

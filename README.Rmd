@@ -117,7 +117,7 @@ submission to CRAN, we're still working on the following:
 
 - Formal automated testing
 
-- Vignettes discussing methodology and inner-workings of `transittraj`
+- Vignettes demonstrating applications of `transittraj`
 
 Check out the latest updates at our
 [changelog](https://utel-uiuc.github.io/transittraj/news/index.html).
