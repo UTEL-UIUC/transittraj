@@ -16,12 +16,12 @@ predict_traj_input_setup <- function(new_times, new_distances,
 
   # --- Check Inputs ---
   # Create list of allowed input combos
-  inputs <- list(new_times, new_distance, distance_lims, timestep)
+  inputs <- list(new_times, new_distances, distance_lims, timestep)
   valid_inputs <- list(c(TRUE, FALSE, FALSE, FALSE),
                        c(FALSE, TRUE, FALSE, FALSE),
                        c(FALSE, FALSE, TRUE, TRUE))
   # Check if provided combo is in list of alloweds
-  inputs_check <- sapply(X == valid_inputs, FUN = is.null)
+  inputs_check <- sapply(X = valid_inputs, FUN = is.null)
   inputs_ok <- any(sapply(X = valid_inputs, FUN = identical, inputs_check))
   # If not, throw error
   if (!inputs_ok) {
@@ -331,7 +331,7 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #'
 #' The latter option is particularly useful for finding crossing times of
 #' particular features, or the positions at notable points in time. For
-#' instance, `new_distance` may be a dataframe of corridors, with a column
+#' instance, `new_distances` may be a dataframe of corridors, with a column
 #' `name` for the corridor name and `inout` for whether each row is the
 #' entrance or exit to the corridor. The returned value will append the column
 #' `trip_id_performed` for each trip that crosses those distances, and `interp`
@@ -438,7 +438,9 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
   # --- Validation ---
   # Validate & format input DFs
   df_list <- predict_traj_input_setup(new_times = new_times,
-                                      new_distances = new_distances)
+                                      new_distances = new_distances,
+                                      distance_lims = distance_lims,
+                                      timestep = timestep)
   new_times_df <- df_list[[1]]
   new_distances_df <- df_list[[2]]
 
