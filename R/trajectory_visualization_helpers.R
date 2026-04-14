@@ -6,7 +6,8 @@
 #' that interpolation may be time consuming. Internal function.
 #'
 #' @param trajectory A trajectory objcet
-#' @param distance_df a DF with columns distance and event_timestamp
+#' @param distance_df a DF with columns distance, event_timestamp,
+#' and trip_id_performed
 #' @param has_inv a boolean, does the traj object have inv fun?
 #' @keywords internal
 plot_traj_input_validation <- function(trajectory, distance_df, has_inv) {
@@ -32,7 +33,7 @@ plot_traj_input_validation <- function(trajectory, distance_df, has_inv) {
 
     # - Check distance DF -
     # Check if required fields are present
-    required_fields <- c("event_timestamp", "distance")
+    required_fields <- c("trip_id_performed", "event_timestamp", "distance")
     fields_present <- required_fields %in% names(distance_df)
     if (!all(fields_present)) {
       fields_missing <- required_fields[!fields_present]
@@ -53,13 +54,119 @@ plot_traj_input_validation <- function(trajectory, distance_df, has_inv) {
   }
 }
 
-plot_trips_traj_setup <- function(trajectory, distance_df, plot_trips,
-                                timestep, distance_lims,
-                                center_vehicles, convert_to_timezone) {
+#' Sets up plotting DF is trajectory is provided.
+#'
+#' This function uses a trajectory object to create a DF of time, distance
+#' points for each trip. If inverse function is present, this will be used
+#' to interpolate only over the appropriate distance range of each trip. If
+#' not, interpolation will occur over the entire time range of the requested
+#' trips. Internal function.
+#'
+#' @param trajectory A trajectory object
+#' @param has_inv a boolean, does the traj object have inv fun?
+#' @param timestep A numeric, time interval between interpolated poitns
+#' @param distance_lims A vector of (minimum, maximum) distance to interpolate
+#' @keywords internal
+plot_traj_df_setup <- function(trajectory, has_inv, plot_trips,
+                               timestep, distance_lims) {
 
+  if (has_inv) {
+    # --- If Inverse Fun ---
+    # Get distance lims, either provided or from plot_trips range
+
+    # If distance_lims not provided, create one over all trips
+    if (is.null(distance_lims)) {
+      trip_extremes <- get_trip_extremes(trajectory = trajectory,
+                                         filter_trips = plot_trips)
+      distance_lims <- c(min(trip_extremes$min_dist),
+                         max(trip_extremes$max_dist))
+    }
+    # Interpolate
+    interp_df <- predict(object = trajectory,
+                         distance_lims = distance_lims,
+                         timestep = timestep) %>%
+      dplyr::rename(distance = interp)
+
+  } else {
+    # --- No Inverse Fun ---
+    # Must interpolate over entire range
+
+    # Get range
+    trip_extremes <- get_trip_extremes(trajectory = trajectory,
+                                       filter_trips = plot_trips)
+    time_seq <- seq(from = min(trip_extremes$min_time),
+                    to = max(trip_extremes$max_time),
+                    by = timestep)
+    # Interpolate
+    interp_df <- predict(object = trajectory,
+                         new_times = time_seq) %>%
+      dplyr::rename(distance = interp)
+
+    # Filter if needed
+    if (!is.null(distance_lims)) {
+      interp_df <- interp_df %>%
+        dplyr::filter((distance >= distance_lims[1]) &
+                        (distance <= distance_lims[2]))
+    }
+  }
+
+  return(interp_df)
 }
 
+plot_trips_df_setup <- function(trajectory, distance_df,
+                                plot_trips,
+                                timestep,
+                                distance_lims,
+                                center_vehicles,
+                                convert_to_timezone) {
 
+  # --- Validation ---
+  if ("avltrajectory_single" %in% class(trajectory)) {
+    has_inv <- is.function(attr(trajectory, "inv_traj_fun"))
+  } else if ("avltrajectory_group" %in% class(trajectory)) {
+    has_inv <- is.function(attr(trajectory, "inv_traj_fun")[[1]])
+  }
+  plot_traj_input_validation(trajectory = trajectory,
+                             distance_df = distance_df,
+                             has_inv = has_inv)
+
+  # --- Setup trips_df ---
+  if (!is.null(trajectory)) {
+    # - Setup for Traj -
+    trips_df <- plot_traj_df_setup(trajectory = trajectory,
+                                   has_inv = has_inv,
+                                   distance_lims = distance_lims,
+                                   timestep = timestep)
+  } else {
+    # - Setup for Dist DF -
+    if (!is.null(distance_lims)) {
+      trips_df <- distance_df %>%
+        dplyr::filter((distance >= distance_lims[1]) &
+                        (distance <= distance_lims[2]))
+    } else {
+      trips_df <- distance_df
+    }
+  }
+
+  # --- Timezone ---
+  if (convert_to_timezone) {
+    agency_tz <- attr(trajectory, "agency_tz")
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.POSIXct(event_timestamp,
+                                                 tz = agency_tz))
+  }
+
+  # --- Center ---
+  if (center_vehicles) {
+    trips_df <- trips_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+      dplyr::ungroup()
+  }
+
+  return(trips_df)
+}
 
 
 
@@ -83,113 +190,6 @@ plot_trips_df_setup <- function(trajectory, distance_df,
                           distance_lims,
                           center_vehicles,
                           convert_to_timezone) {
-
-  # Check provided trajectories & distance DF, and filter as needed
-  if (!is.null(trajectory) & !is.null(distance_df)) {
-    rlang::abort(message = "Please provide only one of trajectory and distance_df.",
-                 class = "error_plottraj_inputdata")
-  } else if (!is.null(trajectory)) {
-    # If trajectory is provided, generate the DF by predicting from functions
-
-    # First, validate traj
-    if (!("avltrajectory_group" %in% class(trajectory))) {
-      rlang::abort(message = "Unrecognized trajectory object. Please use get_trajectory_function() to generate a trajectory object.",
-                   class = "error_plottraj_inputdata")
-    }
-    if ("avltrajectory_single" %in% class(trajectory)) {
-      has_inv <- is.function(attr(trajectory, "inv_traj_fun"))
-    } else if ("avltrajectory_group" %in% class(trajectory)) {
-      has_inv <- is.function(attr(trajectory, "inv_traj_fun")[[1]])
-    }
-
-    # Identify appropraite interpolation method
-    if (!is.null(distance_lims) & has_inv) {
-      trips_df <- predict(object = trajectory,
-                          distance_lims = distance_lims,
-                          timestep = timestep) %>%
-        dplyr::rename(distance = interp)
-    } else {
-      if (!is.null(distance_lims)) {
-        # If no inverse function, interpolate over entire trip
-        rlang::inform(message = "Distance limit requested, but trajectory does not have inverse. Interpolating over entire route, then filtering; this may be time consuming.",
-                      class = "message_plottraj_inputdata")
-      }
-
-      # -- No dist lims --
-      trip_extremes <- get_trip_extremes(trajectory = trajectory,
-                                         filter_trips = plot_trips)
-      interp_times <- seq(from = min(trip_extremes$min_time),
-                          to = max(trip_extremes$max_time),
-                          by = timestep)
-
-      trips_df <- predict(object = trajectory,
-                          new_times = interp_times) %>%
-        dplyr::rename(distance = interp)
-    }
-
-    # Need to filter to dist lims in one scenario -- distance_lims but no inverse
-    if (!is.null(distance_lims) & !has_inv) {
-      trips_df <- trips_df %>%
-        dplyr::filter((distance >= distance_lims[1]) &
-                        (distance <= distance_lims[2]))
-
-      # Check that observations remain after filtering.
-      if (dim(trips_df)[1] == 0) {
-        rlang::abort(message = "No trip observations within trip or distance limit.",
-                     class = "error_plottraj_inputdata")
-      }
-    }
-
-    # For all trajectory DFs: adjust to timezone
-    if (convert_to_timezone) {
-      agency_tz <- attr(trajectory, "agency_tz")
-      trips_df <- trips_df %>%
-        dplyr::mutate(event_timestamp = as.POSIXct(event_timestamp,
-                                                   tz = agency_tz))
-    }
-  } else if (!is.null(distance_df)) {
-    # If distance_df provided, validate it
-    needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
-    validate_input_to_tides(needed_fields = needed_fields,
-                            avl_df = distance_df)
-
-    # Filter to desired trips
-    if (is.null(plot_trips)) {
-      plot_trips <- unique(distance_df$trip_id_performed)
-    }
-    trips_df <- distance_df %>%
-      dplyr::filter(trip_id_performed %in% plot_trips)
-
-    # Filter to distance limits
-    if (!is.null(distance_lims)) {
-      trips_df <- trips_df %>%
-        dplyr::filter((distance >= distance_lims[1]) &
-                        (distance <= distance_lims[2]))
-    }
-
-    # Check that observations remain after filtering.
-    if (dim(trips_df)[1] == 0) {
-      rlang::abort(message = "No trip observations within trip or distance limit.",
-                   class = "error_plottraj_inputdata")
-    }
-  } else {
-    # If both trajectory & distance_df are null
-    rlang::abort(message = "Please provide one of trajectory or distance_df.",
-                 class = "error_plottraj_inputdata")
-  }
-
-  # Center trajectories to all begin at same point
-  if (center_vehicles) {
-    trips_df <- trips_df %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
-      dplyr::ungroup()
-  }
-
-
-
-
 
   # Check provided trajectories & distance DF, and filter as needed
   if (!is.null(trajectory) & !is.null(distance_df)) {
