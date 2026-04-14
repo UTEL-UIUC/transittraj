@@ -26,7 +26,7 @@ test_that("predict_traj_input_setup: input combo validation", {
   # distance_lims w/out timestep
   expect_error(
     predict(object = c53_traj,
-            distance_lims = 1),
+            distance_lims = c(0, 1)),
     class = "error_trajpredict_input"
   )
   # nothing
