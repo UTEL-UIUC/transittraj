@@ -178,8 +178,8 @@ predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
                         values_to = "distance")
 
   # Get times at distance extremes
-  trip_time_extremes <- interpolate_times_group(new_dist_trips = trip_extremes,
-                                                inv_trajectory_function = attr(trajectory, "inv_traj_fun")) %>%
+  trip_time_extremes <- interpolate_times(trajectory = trajectory,
+                                          new_dist_trips = trip_absolute_extremes) %>%
     dplyr::rename(time_extreme = interp) %>%
     dplyr::select(-distance) %>%
     tidyr::pivot_wider(values_from = "time_extreme", names_from = "trip_end")
@@ -198,10 +198,41 @@ predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
                                         by = timestep)) %>%
     dplyr::select(-c(max_time, min_time)) %>%
     dplyr::ungroup()
+
+  return(interp_times)
 }
 
 predict_traj_setup_new_times <- function(new_times, trip_extremes) {
 
+  if (is.data.frame(new_times)) {
+    # If DF provided
+    # Check if has needed columns
+    if (!("event_timestamp" %in% new_times)) {
+      rlang::abort(message = "Column event_timestamp missing from new_times.",
+                   class = "error_trajpredict_input")
+    }
+
+    # If OK...
+
+  } else if (is.vector(new_times) & is.numeric(new_times)) {
+    new_times_df <- data.frame(event_timestamp = new_times)
+
+    trips <- trip_extremes$trip_id_performed
+    num_times <- dim(new_times)[1]
+    num_trips <- dim(trip_extremes)[1]
+    new_times_trips <- new_times %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      tidyr::uncount(weights = num_trips) %>%
+      dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  } else {
+    # If not DF or vector
+    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or vector.",
+                 class = "error_trajpredict_input")
+  }
 }
 
 predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
@@ -231,11 +262,27 @@ predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
 #' print(c53_extremes)
 get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 
+  # --- Validation ---
+  # Is traj
   if (!("avltrajectory_group" %in% class(trajectory))) {
     rlang::abort(message = "Unrecognized trajectory object. Please input a trajectory object from `get_trajectory_fun()`.",
                  class = "error_trajextremes_input")
   }
 
+  # Validate trips input: If filter_trips are provided, check that they are in traj functions
+  if (!is.null(filter_trips)) {
+    all_trips <- unclass(trajectory)
+    trips_check <- filter_trips %in% all_trips
+
+    if (!all(trips_check)) {
+      # If at least one trip is not supported by the function
+      rlang::abort(message = paste(c("The following requested trips are not in this trajectory function:\n",
+                                     filter_trips[!trips_check]), collapse = " "),
+                   class = "error_trajextremes_input")
+    }
+  }
+
+  # --- Get extremes ---
   trip_extremes <- data.frame(trip_id_performed = unclass(trajectory),
                               min_dist = attr(trajectory, "min_dist"),
                               max_dist = attr(trajectory, "max_dist"),
@@ -245,11 +292,6 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
   if (!is.null(filter_trips)) {
     trip_extremes_filt <- trip_extremes %>%
       dplyr::filter(trip_id_performed %in% filter_trips)
-
-    if (dim(trip_extremes_filt)[1] == 0) {
-      rlang::abort(message = "Desired trips not found in trajectory object.",
-                   class = "error_trajextremes_input")
-    }
     return(trip_extremes_filt)
   } else {
     return(trip_extremes)
@@ -516,34 +558,31 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
                                 deriv = deriv,
                                 max_deriv = max_deriv)
 
-  # --- DF Setup ---
+  # --- DF Setup & Interpolation ---
   trip_extremes <- get_trip_extremes(trajectory = object,
                                      filter_trips = trips)
   # Find correct function to use
   if (!is.null(new_times)) {
     new_times_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
                                                     new_times = new_times)
-  }
-  if (!is.null(new_distances)) {
-    new_dist_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
-                                                   new_distances = new_distances)
-  }
-  if (!is.null(distance_lims)) {
-    new_times_trips <- predict_traj_setup_dist_lims(trajectory = trajectory,
-                                                    distance_lims = distance_lims,
-                                                    timestep = timestep)
-  }
-
-  # --- Interpolate ---
-  # Find correct function to use
-  if (!is.null(new_times_trips)) {
     interpolate_distances(trajectory = trajectory,
                           new_times_trips = new_times_trips,
                           deriv = deriv)
   }
-  if (!is.null(new_dist_trips)) {
+  if (!is.null(new_distances)) {
+    new_dist_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
+                                                   new_distances = new_distances)
     interpolate_times(trajectory = trajectory,
                       new_dist_trips = new_dist_trips)
+  }
+  if (!is.null(distance_lims)) {
+    new_times_trips <- predict_traj_setup_dist_lims(trajectory = trajectory,
+                                                    trip_extremes = trip_extremes,
+                                                    distance_lims = distance_lims,
+                                                    timestep = timestep)
+    interpolate_distances(trajectory = trajectory,
+                          new_times_trips = new_times_trips,
+                          deriv = deriv)
   }
 
 
