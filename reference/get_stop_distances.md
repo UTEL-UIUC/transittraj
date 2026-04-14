@@ -23,7 +23,7 @@ get_stop_distances(gtfs, shape_geometry = NULL, project_crs = 4326)
   Optional. The SF object to project onto. Must include the field
   `shape_id`. See
   [`get_shape_geometry()`](https://obrien-ben.github.io/transittraj/reference/get_shape_geometry.md).
-  Default is NULL, where all shapes in `gtfs` will be used.
+  Default is `NULL`, where all shapes in `gtfs` will be used.
 
 - project_crs:
 

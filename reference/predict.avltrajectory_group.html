@@ -13,7 +13,7 @@ trajectory function."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ trajectory function."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Interpolate time or distance points using AVL trajectories.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v0.1.2/R/trajectory_prediction.R" class="external-link"><code>R/trajectory_prediction.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/R/trajectory_prediction.R" class="external-link"><code>R/trajectory_prediction.R</code></a></small>
       <div class="d-none name"><code>predict.avltrajectory_group.Rd</code></div>
     </div>
 
@@ -62,13 +62,12 @@ trajectory function.</p>
 <span>  <span class="va">object</span>,</span>
 <span>  new_times <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  new_distances <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  distance_lims <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  timestep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  deriv <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  trips <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'avltrajectory_single'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, new_times <span class="op">=</span> <span class="cn">NULL</span>, new_distances <span class="op">=</span> <span class="cn">NULL</span>, deriv <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -91,9 +90,21 @@ with at least the column <code>"distance"</code> of new distances to interpolate
 Default is <code>NULL</code>.</p></dd>
 
 
+<dt id="arg-distance-lims">distance_lims<a class="anchor" aria-label="anchor" href="#arg-distance-lims"></a></dt>
+<dd><p>Optional. A vector of (minimum, maximum) distance
+bounds over which to interpolate at a given timestep. If provided,
+<code>timestep</code> must also be provided. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
+<dd><p>Optional. A single numeric indicating the time interval
+between successive interpolating steps when defining <code>distance_lims</code>. If
+provided, <code>distance_lims</code> must also be provided. Default is <code>NULL</code>.</p></dd>
+
+
 <dt id="arg-deriv">deriv<a class="anchor" aria-label="anchor" href="#arg-deriv"></a></dt>
 <dd><p>Optional. The derivative with which to calculate at. Default is
-0.</p></dd>
+<code>0</code>.</p></dd>
 
 
 <dt id="arg-trips">trips<a class="anchor" aria-label="anchor" href="#arg-trips"></a></dt>
@@ -115,30 +126,58 @@ column will all trips for which that point is within range.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function is the recommended way to use a fit trajectory function. It has
 a few key features:</p><div class="section">
-<h3 id="interpolate-for-distance-or-time">Interpolate for Distance or Time<a class="anchor" aria-label="anchor" href="#interpolate-for-distance-or-time"></a></h3>
+<h3 id="interpolation">Interpolation<a class="anchor" aria-label="anchor" href="#interpolation"></a></h3>
+
+
+<p>There are three ways to interpolate: finding distance from times (direct
+trajectory function), times from distance (inverse trajectory function),
+or timesteps over a distance range (both inverse and direct trajectory
+function). For the former two, either a vector or dataframe of
+<code>new_times</code> or <code>new_distances</code> may be provided. If a dataframe is
+provided, it must contain the column <code>event_timestamp</code> or <code>distance</code>,
+and all additional columns will be preserved through the interpolation.</p><div class="section">
+<h4 id="distances-from-times">Distances from Times<a class="anchor" aria-label="anchor" href="#distances-from-times"></a></h4>
 
 
 <p>If <code>new_times</code> is provided, the function will find the <code>distance</code> of each
-trip at each new time using the direct trajectory function. Conversely, if
-<code>new_distances</code> is provided, the function will find the <code>event_timestamp</code> at
-which each trip crossed that distance using the inverse trajectory function.
-If an input trajectory object does not contain an inverse function, an error
-will be thrown.</p>
-<p>These new points can be either vectors or dataframes:</p><ul><li><p>If the input is a vector, the returned value will be a dataframe
-associating each trip with each new point and a column <code>interp</code> indicating
-the interpolated value.</p></li>
-<li><p>If the input is a dataframe, it must contain a column names
-<code>event_timestamp</code> or <code>distance</code>, depending on whether it is put into
-<code>new_times</code> or <code>new_distances</code>. All other columns will be preserved in the
-output. Each row will be duplicated for each trip, and a column <code>interp</code> will
-be added indicating the interpolated value.</p></li>
-</ul><p>The latter option is particularly useful for finding crossing times of
-particular features, or the positions at notable points in time. For
-instance, <code>new_distance</code> may be a dataframe of corridors, with a column
-<code>name</code> for the corridor name and <code>inout</code> for whether each row is the
-entrance or exit to the corridor. The returned value will append the column
-<code>trip_id_performed</code> for each trip that crosses those distances, and <code>interp</code>
-for the time the trip passes the entrance or exit.</p>
+trip at each point in time. If a dataframe is provided, it must contain
+the column <code>event_timestamp</code>. This will use the trajectory's direct function.
+When using <code>new_times</code>, a <code>deriv</code> value can also be set. See below for
+a more detailed discussion.</p>
+</div>
+
+<div class="section">
+<h4 id="times-from-distances">Times from Distances<a class="anchor" aria-label="anchor" href="#times-from-distances"></a></h4>
+
+
+<p>If <code>new_distances</code> is provided, the function will find the <code>event_timestamp</code>
+of each trip at each point in space. If a dataframe is provided, it must
+contain the column <code>distance</code>. This will use the trajectory's
+inverse function. When using <code>new_distances</code>, a <code>deriv</code> value cannot
+be set. See below for a more detailed discussion.</p>
+</div>
+
+<div class="section">
+<h4 id="time-amp-distance-pairs-from-distance-bounds">Time &amp; Distance Pairs from Distance Bounds<a class="anchor" aria-label="anchor" href="#time-amp-distance-pairs-from-distance-bounds"></a></h4>
+
+
+<p>Oftentimes, you may want to interpolate by small timesteps over a defined
+region of space. This can be done by setting <code>distance_lims</code> and
+<code>timestep</code>. The function will use the trajectory's inverse function to find
+each trip's entrance and exit time through <code>distance_lims</code>, then create
+a sequence between these entrance and exit times with a step of <code>timestep</code>.
+Finally, the trajectory's direct function is used to find the distance
+at each of these timepoints. A <code>deriv</code> value can also be set for the final
+direct interpolation.</p>
+<p>If you have a well-defined region of space, this approach allows you to
+interpolate vehicle positions at a very tight timescale over a large
+number of trips efficiently. You could alternatively use <code>new_times</code> to
+interpolate over the entire time range of all trips (which wouldn't
+require an inverse function), though this may require orders of magnitude
+more points and would be substantially less efficient.</p>
+</div>
+
+
 </div>
 
 <div class="section">
@@ -167,11 +206,10 @@ to find the derivative.</p>
 
 <p>By default, many fit interpolating curves will allow extrapolation (i.e.,
 the input of an <code>event_timestamp</code> beyond the original time domain of the
-trip). This is especially true for splines fit using <code><a href="https://rdrr.io/r/stats/splinefun.html" class="external-link">stats::splinefun()</a></code>.
-In general, this will not be reasonable for transit vehicles: time points
-should be constrained by the time that a trip has actually been observed,
-and distances should be constrained to the part of a route a trip actually
-ran.</p>
+trip). In general, this will not be reasonable for transit vehicles:
+time points should be constrained by the time that a trip has actually
+been observed, and distances should be constrained to the part of a route
+a trip actually ran.</p>
 <p>This function uses the maximum and minimum time and distance values stored
 in the trajectory object to identify if an input <code>new_times</code> or
 <code>new_distances</code> is beyond the domain/range of each trip individually. The
@@ -204,6 +242,8 @@ single function for that trip.</p>
 <span class="r-in"><span><span class="va">my_distances</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                   to <span class="op">=</span> <span class="fl">15000</span>,</span></span>
 <span class="r-in"><span>                   by <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_distance_lims</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">600</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_timestep</span> <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get input data</span></span></span>
 <span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
@@ -250,6 +290,23 @@ single function for that trip.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4     1000          35294100 1771260233</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5     2000           1306100 1771263094</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6     2000          13437100 1771259831</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run function: get time &amp; distance pairs given distance bounds</span></span></span>
+<span class="r-in"><span><span class="va">interp_time_dist_pairs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
+<span class="r-in"><span>                                  distance_lims <span class="op">=</span> <span class="va">my_distance_lims</span>,</span></span>
+<span class="r-in"><span>                                  timestep <span class="op">=</span> <span class="va">my_timestep</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">interp_time_dist_pairs</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6 3</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp_time_dist_pairs</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trip_id_performed event_timestamp interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1306100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">262</span>779.   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 1306100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">262</span>789.   532.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 1306100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">262</span>799.   558.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 13437100              <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">259</span>465.   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 35294100              <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">260</span>085.   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 35294100              <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">260</span>095.   578.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

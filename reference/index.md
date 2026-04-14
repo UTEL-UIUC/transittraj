@@ -50,6 +50,8 @@ Functions to build trajectory objections.
 - [`get_gtfs_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_trajectory_fun.md)
   : Fits continuous trajectory interpolating curves from GTFS schedule
   data.
+- [`group_trajectories()`](https://obrien-ben.github.io/transittraj/reference/group_trajectories.md)
+  : Group existing trajectory objects or split them apart.
 
 ## Trajectory Plotting
 
@@ -71,7 +73,6 @@ Functions to plot trajectories.
 Functions for using trajectories.
 
 - [`predict(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/predict.avltrajectory_group.md)
-  [`predict(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/predict.avltrajectory_group.md)
   : Interpolate time or distance points using AVL trajectories.
 - [`print(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)
   [`print(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)

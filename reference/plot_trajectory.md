@@ -14,7 +14,7 @@ plot_trajectory(
   distance_df = NULL,
   plot_trips = NULL,
   timestep = 5,
-  distance_lim = NULL,
+  distance_lims = NULL,
   center_trajectories = FALSE,
   feature_distances = NULL,
   convert_to_timezone = TRUE,
@@ -60,7 +60,7 @@ plot_trajectory(
   Optional. If `trajectory` is provided, the time interval, in seconds,
   between interpolated observations to plot. Default is 5.
 
-- distance_lim:
+- distance_lims:
 
   Optional. A vector with `(minimum, maximum)` distance values to plot.
 
@@ -164,7 +164,7 @@ There are two ways to provide data to these plotting functions:
 
 - A single or grouped trajectory object. This will use the direct
   trajectory function at a resolution controlled by `timestep`. This is
-  simplest, and looks best when zooming in using `distance_lim`. The
+  simplest, and looks best when zooming in using `distance_lims`. The
   only attribute that can be mapped to if using a trajectory is
   `trip_id_performed`.
 
@@ -252,7 +252,7 @@ plot_trajectory(trajectory = c53_traj,
                 feature_distances = my_features,
                 label_field = "name",
                 label_alpha = 0.8,
-                distance_lim = my_dist_range,
+                distance_lims = my_dist_range,
                 traj_color = "indianred3",
                 center_trajectories = TRUE,
                 timestep = 1)

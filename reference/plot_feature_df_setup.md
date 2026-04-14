@@ -6,7 +6,7 @@ necessary conditions.
 ## Usage
 
 ``` r
-plot_feature_df_setup(feature_distances, distance_lim)
+plot_feature_df_setup(feature_distances, distance_lims)
 ```
 
 ## Arguments
@@ -15,7 +15,7 @@ plot_feature_df_setup(feature_distances, distance_lim)
 
   DF of features & their distances
 
-- distance_lim:
+- distance_lims:
 
   Vector of min & max distances
 

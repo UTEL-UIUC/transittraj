@@ -22,7 +22,7 @@ plot_animated_line(
   distance_df = NULL,
   plot_trips = NULL,
   timestep = 5,
-  distance_lim = NULL,
+  distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
   transition_style = "linear",
@@ -56,7 +56,7 @@ plot_animated_map(
   distance_df = NULL,
   plot_trips = NULL,
   timestep = 5,
-  distance_lim = NULL,
+  distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
   background = "cartolight",
@@ -113,7 +113,7 @@ plot_animated_map(
   Optional. If `trajectory` is provided, the time interval, in seconds,
   between interpolated observations to plot. Default is 5.
 
-- distance_lim:
+- distance_lims:
 
   Optional. A vector with `(minimum, maximum)` distance values to plot.
 
@@ -270,7 +270,7 @@ plot_animated_map(
 
   Optional. The distance by which to expand the plotting window in both
   directions. Default is `NULL`, which will expand the window by 0.05%
-  of the larger dimension (or 0.0025% if `distance_lim` is provided).
+  of the larger dimension (or 0.0025% if `distance_lims` is provided).
 
 ## Value
 
@@ -284,7 +284,7 @@ There are two ways to provide data to these plotting functions:
 
 - A single or grouped trajectory object. This will use the direct
   trajectory function at a resolution controlled by `timestep`. This is
-  simplest, and looks best when zooming in using `distance_lim`. The
+  simplest, and looks best when zooming in using `distance_lims`. The
   only attribute that can be mapped to if using a trajectory is
   `trip_id_performed`.
 
@@ -391,8 +391,8 @@ will give a much lower resolution may.
 Finally, the bounding box of the basemap can also be set. The bounding
 box is defined relative to the spatial range of `trajectory` or
 `distance_df`. The default is expansion is 0.05% (0.0025% for
-`distance_lim != NULL`) of the larger dimension (northing or easting) of
-the vehicle location bounding box. To customize, det `bbox_expand` to
+`distance_lims != NULL`) of the larger dimension (northing or easting)
+of the vehicle location bounding box. To customize, det `bbox_expand` to
 some numeric in the distance units of the `shape_geometry`'s spatial
 projection (e.g., meters if using a UTM projection).
 
@@ -417,7 +417,7 @@ anim_line <- plot_animated_line(trajectory = c53_traj,
                                 label_field = "name",
                                 label_alpha = 0.8,
                                 label_pos = "right",
-                                distance_lim = my_dist_range,
+                                distance_lims = my_dist_range,
                                 center_vehicles = TRUE,
                                 timestep = 1)
 
@@ -428,7 +428,7 @@ anim_map <- plot_animated_map(trajectory = c53_traj,
                               route_color = "firebrick4",
                               label_field = "name",
                               label_alpha = 0.8,
-                              distance_lim = my_dist_range,
+                              distance_lims = my_dist_range,
                               center_vehicles = TRUE,
                               timestep = 1,
                               bbox_expand = 40)

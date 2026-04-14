@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,9 +38,19 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v0.1.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="transittraj-013">transittraj 0.1.3<a class="anchor" aria-label="anchor" href="#transittraj-013"></a></h2>
+<p><em>Release: 4/14/2026</em></p>
+<ul><li><p>Trajectory grouping: new function <code><a href="../reference/group_trajectories.html">group_trajectories()</a></code> allows the user to group together a list of single trajectory objects, or split apart a single grouped trajectory object. Read more at <code><a href="../reference/group_trajectories.html">help(group_trajectories)</a></code>.</p></li>
+<li>
+<p><code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> for trajectories:</p>
+<ul><li><p>New input parameters for trajectory <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> methods include <code>distance_lims</code> and <code>timestep</code>. These allow the user to interpolate at a specific time interval over a specific region of space. Read more at <code><a href="../articles/intro-trajectories.html">vignette("articles/intro-trajectories")</a></code>.</p></li>
+<li><p>Substantial refactoring of internal functions to improve cleanliness and readability.</p></li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="transittraj-012">transittraj 0.1.2<a class="anchor" aria-label="anchor" href="#transittraj-012"></a></h2>
 <p><em>Release: 3/25/2026</em></p>

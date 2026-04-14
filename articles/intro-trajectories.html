@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@
       <h1>Introduction to Trajectories</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v0.1.2/vignettes/articles/intro-trajectories.Rmd" class="external-link"><code>vignettes/articles/intro-trajectories.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/vignettes/articles/intro-trajectories.Rmd" class="external-link"><code>vignettes/articles/intro-trajectories.Rmd</code></a></small>
       <div class="d-none name"><code>intro-trajectories.Rmd</code></div>
     </div>
 
@@ -139,11 +139,69 @@ as well as the time and distances ranges for each trip. We can use
 <p>How do you use the fit curve to actually interpolate at new points?
 We recommend using <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>, as this will ensure that the
 curves aren’t used to extrapolate beyond the range of each trip. Using
-<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>, there are three main values we can interpolate
-for: time from distances (requires an inverse function), distances from
-times, and speeds from times (requires a spline).</p>
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>, there are three main ways we can interpolate:
+retrieve distance values from times, retrieve time values from
+distances, or retrieve time &amp; distance pairs over a spatial
+range.</p>
 <div class="section level3">
-<h3 id="interpolating-for-times">Interpolating for Times<a class="anchor" aria-label="anchor" href="#interpolating-for-times"></a>
+<h3 id="interpolating-for-distance-from-time">Interpolating for Distance from Time<a class="anchor" aria-label="anchor" href="#interpolating-for-distance-from-time"></a>
+</h3>
+<p>Let’s say you want to know where every vehicle is at a certain point
+in time. We can do that by providing <code>new_times</code> to
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>. Let’s see below:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
+<span><span class="va">c53_time_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
+<span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print full results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_time_interp</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed     interp</span></span>
+<span><span class="co">#&gt; 1      1771265000           1306100  8933.8531</span></span>
+<span><span class="co">#&gt; 2      1771265000          18298100 10899.0966</span></span>
+<span><span class="co">#&gt; 3      1771265000          21499100  4006.3031</span></span>
+<span><span class="co">#&gt; 4      1771265000          21555100 13912.1101</span></span>
+<span><span class="co">#&gt; 5      1771265000          22663100  6944.8919</span></span>
+<span><span class="co">#&gt; 6      1771275000          10185100  2883.3087</span></span>
+<span><span class="co">#&gt; 7      1771275000          10249100  7986.3226</span></span>
+<span><span class="co">#&gt; 8      1771275000          13478100   140.0436</span></span>
+<span><span class="co">#&gt; 9      1771275000           3597100  6792.4405</span></span></code></pre></div>
+<p>Here, <code>interp</code> will be the distance in meters from the
+route’s beginning. You’ll notice that, even though we have 24 trips,
+there were only four to five distance for each timepoint. This is
+because <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will only interpolate a distance value
+for trips that were actually running at that point in time.</p>
+<p>Using a similar function call, we can also find the speed of the
+vehicle at any point in time by setting the <code>deriv</code> parameter
+in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
+<span><span class="va">c53_speed_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
+<span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span>,</span>
+<span>  deriv <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_speed_interp</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
+<span><span class="co">#&gt; 1      1771265000           1306100 1.675073e-01</span></span>
+<span><span class="co">#&gt; 2      1771265000          18298100 1.464849e+00</span></span>
+<span><span class="co">#&gt; 3      1771265000          21499100 1.372977e+01</span></span>
+<span><span class="co">#&gt; 4      1771265000          21555100 6.424041e-01</span></span>
+<span><span class="co">#&gt; 5      1771265000          22663100 1.508816e+00</span></span>
+<span><span class="co">#&gt; 6      1771275000          10185100 4.473051e-01</span></span>
+<span><span class="co">#&gt; 7      1771275000          10249100 4.354498e-05</span></span>
+<span><span class="co">#&gt; 8      1771275000          13478100 7.213864e-01</span></span>
+<span><span class="co">#&gt; 9      1771275000           3597100 9.079446e-01</span></span></code></pre></div>
+<p>Here, <code>interp</code> will be the speed in meters per second.
+Finding speeds requires starting from time values; we cannot get speeds
+from distance values.</p>
+</div>
+<div class="section level3">
+<h3 id="interpolating-for-time-from-distance">Interpolating for Time from Distance<a class="anchor" aria-label="anchor" href="#interpolating-for-time-from-distance"></a>
 </h3>
 <p>One of the most common applications of the fit trajectory curve is to
 find the time at which each vehicle passed a point along its route. To
@@ -151,7 +209,7 @@ do this, we’ll use <code><a href="https://rdrr.io/r/stats/predict.html" class=
 <code>new_distances</code> parameter. We’ll begin by finding the
 distance of each stop along the route using
 <code><a href="../reference/get_stop_distances.html">get_stop_distances()</a></code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First, use stop_times to find which stop_ids are timepoints</span></span>
 <span><span class="va">c53_timepoints</span> <span class="op">&lt;-</span> <span class="va">c53_gtfs</span><span class="op">$</span><span class="va">stop_times</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">stop_id</span>, <span class="va">timepoint</span><span class="op">)</span></span>
@@ -183,7 +241,7 @@ distance of each stop along the route using
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2867    Alabama Av SE+Jasper St SE     <span style="text-decoration: underline;">2</span>037. No</span></span></code></pre></div>
 <p>Now that we have some distances, let’s interpolate using
 <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
 <span><span class="va">c53_stop_crossings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
@@ -206,65 +264,87 @@ stop for each trip. The interpolated times are in seconds of epoch
 time.</p>
 </div>
 <div class="section level3">
-<h3 id="interpolating-for-distances">Interpolating for Distances<a class="anchor" aria-label="anchor" href="#interpolating-for-distances"></a>
+<h3 id="interpolating-for-time-distance-pairs-over-a-range">Interpolating for Time &amp; Distance Pairs Over a Range<a class="anchor" aria-label="anchor" href="#interpolating-for-time-distance-pairs-over-a-range"></a>
 </h3>
-<p>Let’s say you want to know where every vehicle is at a certain point
-in time. We can do that by providing <code>new_times</code> to
-<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>. Let’s see below:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>The final interpolation method allows you to specify a range of
+distances, and a timestep over which to interpolate within this range.
+Here, <code>transittraj</code> will use your trajectory’s inverse
+function to find the time each trip enters and exits the
+<code>distance_lims</code>, then interpolate every <code>timestep</code>
+seconds that the vehicle stays in that range.</p>
+<p>To see what this does, let’s interpolate some timepoints for all
+trips over U Street between 13th and 14th Streets NW. We’ll begin by
+pulling a vector of this distance range:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get distance limits of U St between 13th and 14th</span></span>
+<span><span class="va">U_St_lims</span> <span class="op">&lt;-</span> <span class="va">c53_stops</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">stop_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"U St NW+13 St NW"</span>,</span>
+<span>                          <span class="st">"U St NW+14 St NW"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">distance</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">U_St_lims</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 12800.72 13000.01</span></span></code></pre></div>
+<p>Next, we can put this into <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> using the
+<code>distance_lims</code> parameter, alongside a <code>timestep</code>
+of 1 second:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
-<span><span class="va">c53_time_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
+<span><span class="va">c53_USt_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
-<span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span></span>
+<span>  distance_lims <span class="op">=</span> <span class="va">U_St_lims</span>,</span>
+<span>  timestep <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Print full results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_time_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_timestamp trip_id_performed     interp</span></span>
-<span><span class="co">#&gt; 1      1771265000           1306100  8933.8531</span></span>
-<span><span class="co">#&gt; 2      1771265000          18298100 10899.0966</span></span>
-<span><span class="co">#&gt; 3      1771265000          21499100  4006.3031</span></span>
-<span><span class="co">#&gt; 4      1771265000          21555100 13912.1101</span></span>
-<span><span class="co">#&gt; 5      1771265000          22663100  6944.8919</span></span>
-<span><span class="co">#&gt; 6      1771275000          10185100  2883.3087</span></span>
-<span><span class="co">#&gt; 7      1771275000          10249100  7986.3226</span></span>
-<span><span class="co">#&gt; 8      1771275000          13478100   140.0436</span></span>
-<span><span class="co">#&gt; 9      1771275000           3597100  6792.4405</span></span></code></pre></div>
-<p>Here, <code>interp</code> will be the distance in meters from the
-route’s beginning. You’ll notice that, even though we have 24 trips,
-there were only four to five distance for each timepoint. This is
-because <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will only interpolate a distance value
-for trips that were actually running at that point in time.</p>
-</div>
-<div class="section level3">
-<h3 id="interpolating-for-speeds">Interpolating for Speeds<a class="anchor" aria-label="anchor" href="#interpolating-for-speeds"></a>
-</h3>
-<p>The last thing we can interpolate for is the speed at any given point
-in time. We can control this by setting the <code>deriv</code> parameter
-in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
-<span><span class="va">c53_speed_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
-<span>  object <span class="op">=</span> <span class="va">c53_traj</span>,</span>
-<span>  new_times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1771265000</span>, <span class="fl">1771275000</span><span class="op">)</span>,</span>
-<span>  deriv <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span>
+<span><span class="co"># Print header</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_USt_interp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   trip_id_performed event_timestamp interp</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>405. <span style="text-decoration: underline;">12</span>801.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>406. <span style="text-decoration: underline;">12</span>803.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>407. <span style="text-decoration: underline;">12</span>805.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>408. <span style="text-decoration: underline;">12</span>808.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>409. <span style="text-decoration: underline;">12</span>811.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 1115100               <span style="text-decoration: underline;">1</span>771<span style="text-decoration: underline;">258</span>410. <span style="text-decoration: underline;">12</span>815.</span></span></code></pre></div>
+<p>We can see that, for the printed trip, the first timepoint occurs at
+the beginning of <code>U_St_lims</code>, then
+<code>event_timestamp</code> increments one second per row afterwards.
+The <code>interp</code> column is the distance at each time (you can
+also set <code>deriv</code> here). To better understand see what this
+did, we’ll generate a plot of these generated points. Below, we first
+“center” each trip to start at 0 seconds, then plot point colored by
+trip:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># "Center" all trips to start at 0 time</span></span>
+<span><span class="va">c53_USt_centered</span> <span class="op">&lt;-</span> <span class="va">c53_USt_interp</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">trip_id_performed</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>event_timestamp <span class="op">=</span> <span class="va">event_timestamp</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">event_timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distance <span class="op">=</span> <span class="va">interp</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Print results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_speed_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
-<span><span class="co">#&gt; 1      1771265000           1306100 1.675073e-01</span></span>
-<span><span class="co">#&gt; 2      1771265000          18298100 1.464849e+00</span></span>
-<span><span class="co">#&gt; 3      1771265000          21499100 1.372977e+01</span></span>
-<span><span class="co">#&gt; 4      1771265000          21555100 6.424041e-01</span></span>
-<span><span class="co">#&gt; 5      1771265000          22663100 1.508816e+00</span></span>
-<span><span class="co">#&gt; 6      1771275000          10185100 4.473051e-01</span></span>
-<span><span class="co">#&gt; 7      1771275000          10249100 4.354498e-05</span></span>
-<span><span class="co">#&gt; 8      1771275000          13478100 7.213864e-01</span></span>
-<span><span class="co">#&gt; 9      1771275000           3597100 9.079446e-01</span></span></code></pre></div>
-<p>Here, <code>interp</code> will be the speed in meters per second.
-Finding speeds requires starting from time values; we cannot get speeds
-from distance values.</p>
+<span><span class="co"># Create plot</span></span>
+<span><span class="va">USt_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">c53_USt_centered</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Add points</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_timestamp</span>, y <span class="op">=</span> <span class="va">distance</span>,</span>
+<span>                 color <span class="op">=</span> <span class="va">trip_id_performed</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Color points by trip</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_d</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Theming</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time (s)"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"C53 Second-by-Second Position"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"U St NW between 13th and 14th St NW"</span><span class="op">)</span></span>
+<span><span class="va">USt_plot</span></span></code></pre></div>
+<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>You could retrieve identical results by giving <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>
+a <code>new_times</code> sequence spanning the range of the trajectory’s
+<code>event_timestamp</code>’s, then filtering to the desired distance
+range. For large datasets – spanning, for example, months –, however,
+this would require a <em>massive</em> sequence. If an inverse function
+is available, using <code>distance_lims</code> and <code>timestep</code>
+is a much more efficient way to generate high-resolution trajectory
+profiles for a large number of trips, especially if you are interested
+in studying a specific region in space.</p>
 </div>
 </div>
 <div class="section level2">
@@ -276,9 +356,9 @@ from distance values.</p>
 <p>Now its time for the fun part – plotting our trajectory curves. We
 can use <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> to easily generate a plot of all
 trajectories:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">c53_traj</span><span class="op">)</span></span></code></pre></div>
-<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> is intended for quick visualizations of
 trajectories, and as such does not allow for much customization. In the
 next section, we’ll use <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code> to create more
@@ -294,7 +374,7 @@ can add a dataframe of feature distances, such as the
 can be controlled using input parameters. For features and trajectories,
 the linetypes and colors can also be mapped to attributes of that
 specific layer using a dataframe:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set formatting options for C53 stops</span></span>
 <span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>                              color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"firebrick"</span>, <span class="st">"grey50"</span><span class="op">)</span>,</span>
@@ -305,7 +385,7 @@ and/or <code>linetype</code>, telling <code>transittraj</code> which
 feature they describe.</p>
 <p>We can plug all that in to <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code> to generate
 our formatted plot:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run plotting function</span></span>
 <span><span class="va">traj_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Provide input data</span></span>
@@ -319,7 +399,7 @@ our formatted plot:</p>
 <span>  traj_width <span class="op">=</span> <span class="fl">0.4</span>, traj_alpha <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">traj_plot</span></span></code></pre></div>
-<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>It’s hard to see what’s actually going on here. The benefits of the
 cleaning we did, and of fitting a spline trajectory, become much more
 apparent when we zoom in. Below we use the <code>distance_lim</code>
@@ -331,7 +411,7 @@ side.</p>
 the same point in time. Second, <code>label_field</code> will create a
 label on our feature lines using the specified field from
 <code>c53_stops</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
 <span><span class="va">fl_U_intersection_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12000</span>, <span class="fl">12600</span><span class="op">)</span></span>
 <span></span>
@@ -354,7 +434,7 @@ label on our feature lines using the specified field from
 <span>  label_alpha <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">fl_U_plot</span></span></code></pre></div>
-<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="intro-trajectories_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>We can glean some insights from this. Almost every trip stops at
 Florida &amp; Georgia, either to serve the stop or wait for the signal.
 One trip sits there for a particularly long time. A handful of others
@@ -375,14 +455,14 @@ as points, moving along a straight line.</p>
 <code><a href="../reference/plot_trajectory.html">plot_trajectory()</a></code>. A dataframe can be used to map the
 <code>outline</code> color and <code>shape</code> attributes of stop and
 vehicle points to their attributes.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
 <span><span class="va">stop_formatting</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>                              outline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red1"</span>, <span class="st">"grey30"</span><span class="op">)</span>,</span>
 <span>                              shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">22</span>, <span class="fl">21</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>For this plot, we’ll zoom in to the Florida Ave-U St corridor of the
 route. Now we can generate our line animation:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set distance limits</span></span>
 <span><span class="va">fl_U_corridor_lims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9500</span>, <span class="fl">15500</span><span class="op">)</span></span>
 <span></span>
@@ -433,7 +513,7 @@ through the city.</p>
 feature options very similar to the previous two visualization
 functions. We can reuse the formatting options from
 <code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code> here.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run function</span></span>
 <span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_map</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Add trajectory, shape, &amp; feature data</span></span>

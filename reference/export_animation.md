@@ -70,14 +70,14 @@ anim_line <- plot_animated_line(trajectory = c53_traj,
                                 label_field = "name",
                                 label_alpha = 0.8,
                                 label_pos = "right",
-                                distance_lim = my_dist_range,
+                                distance_lims = my_dist_range,
                                 center_vehicles = TRUE,
                                 timestep = 1)
 
 # Create a place to store your file
 my_file_name <- tempfile("my_animation", fileext = ".gif")
 print(my_file_name)
-#> [1] "/tmp/RtmpoU6JLU/my_animation20103cfa04ea.gif"
+#> [1] "/tmp/RtmpJK5rNP/my_animation1eea53c88730.gif"
 
 # Run function: save animation locally
 if (interactive()) {

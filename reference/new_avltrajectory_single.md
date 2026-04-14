@@ -70,6 +70,10 @@ new_avltrajectory_single(
 
   Whether speeds were used
 
+- agency_tz:
+
+  Timezone of agency
+
 ## Value
 
 Single trajectory object

@@ -71,6 +71,10 @@ new_avltrajectory_group(
 
   Whether speeds were used
 
+- agency_tz:
+
+  Timezone of agency
+
 - ...:
 
   Other inputs

@@ -79,11 +79,75 @@ recommend using [`predict()`](https://rdrr.io/r/stats/predict.html), as
 this will ensure that the curves aren’t used to extrapolate beyond the
 range of each trip. Using
 [`predict()`](https://rdrr.io/r/stats/predict.html), there are three
-main values we can interpolate for: time from distances (requires an
-inverse function), distances from times, and speeds from times (requires
-a spline).
+main ways we can interpolate: retrieve distance values from times,
+retrieve time values from distances, or retrieve time & distance pairs
+over a spatial range.
 
-### Interpolating for Times
+### Interpolating for Distance from Time
+
+Let’s say you want to know where every vehicle is at a certain point in
+time. We can do that by providing `new_times` to
+[`predict()`](https://rdrr.io/r/stats/predict.html). Let’s see below:
+
+``` r
+# Run interpolating function
+c53_time_interp <- predict(
+  object = c53_traj,
+  new_times = c(1771265000, 1771275000)
+)
+
+# Print full results
+print(c53_time_interp)
+#>   event_timestamp trip_id_performed     interp
+#> 1      1771265000           1306100  8933.8531
+#> 2      1771265000          18298100 10899.0966
+#> 3      1771265000          21499100  4006.3031
+#> 4      1771265000          21555100 13912.1101
+#> 5      1771265000          22663100  6944.8919
+#> 6      1771275000          10185100  2883.3087
+#> 7      1771275000          10249100  7986.3226
+#> 8      1771275000          13478100   140.0436
+#> 9      1771275000           3597100  6792.4405
+```
+
+Here, `interp` will be the distance in meters from the route’s
+beginning. You’ll notice that, even though we have 24 trips, there were
+only four to five distance for each timepoint. This is because
+[`predict()`](https://rdrr.io/r/stats/predict.html) will only
+interpolate a distance value for trips that were actually running at
+that point in time.
+
+Using a similar function call, we can also find the speed of the vehicle
+at any point in time by setting the `deriv` parameter in
+[`predict()`](https://rdrr.io/r/stats/predict.html):
+
+``` r
+# Run interpolating function
+c53_speed_interp <- predict(
+  object = c53_traj,
+  new_times = c(1771265000, 1771275000),
+  deriv = 1
+)
+
+# Print results
+print(c53_speed_interp)
+#>   event_timestamp trip_id_performed       interp
+#> 1      1771265000           1306100 1.675073e-01
+#> 2      1771265000          18298100 1.464849e+00
+#> 3      1771265000          21499100 1.372977e+01
+#> 4      1771265000          21555100 6.424041e-01
+#> 5      1771265000          22663100 1.508816e+00
+#> 6      1771275000          10185100 4.473051e-01
+#> 7      1771275000          10249100 4.354498e-05
+#> 8      1771275000          13478100 7.213864e-01
+#> 9      1771275000           3597100 9.079446e-01
+```
+
+Here, `interp` will be the speed in meters per second. Finding speeds
+requires starting from time values; we cannot get speeds from distance
+values.
+
+### Interpolating for Time from Distance
 
 One of the most common applications of the fit trajectory curve is to
 find the time at which each vehicle passed a point along its route. To
@@ -150,71 +214,97 @@ head(c53_stop_crossings)
 Now we have the crossing time, labeled `interp` at each stop for each
 trip. The interpolated times are in seconds of epoch time.
 
-### Interpolating for Distances
+### Interpolating for Time & Distance Pairs Over a Range
 
-Let’s say you want to know where every vehicle is at a certain point in
-time. We can do that by providing `new_times` to
-[`predict()`](https://rdrr.io/r/stats/predict.html). Let’s see below:
+The final interpolation method allows you to specify a range of
+distances, and a timestep over which to interpolate within this range.
+Here, `transittraj` will use your trajectory’s inverse function to find
+the time each trip enters and exits the `distance_lims`, then
+interpolate every `timestep` seconds that the vehicle stays in that
+range.
+
+To see what this does, let’s interpolate some timepoints for all trips
+over U Street between 13th and 14th Streets NW. We’ll begin by pulling a
+vector of this distance range:
+
+``` r
+# Get distance limits of U St between 13th and 14th
+U_St_lims <- c53_stops %>%
+  filter(stop_name %in% c("U St NW+13 St NW",
+                          "U St NW+14 St NW")) %>%
+  pull(distance)
+print(U_St_lims)
+#> [1] 12800.72 13000.01
+```
+
+Next, we can put this into
+[`predict()`](https://rdrr.io/r/stats/predict.html) using the
+`distance_lims` parameter, alongside a `timestep` of 1 second:
 
 ``` r
 # Run interpolating function
-c53_time_interp <- predict(
+c53_USt_interp <- predict(
   object = c53_traj,
-  new_times = c(1771265000, 1771275000)
+  distance_lims = U_St_lims,
+  timestep = 1
 )
 
-# Print full results
-print(c53_time_interp)
-#>   event_timestamp trip_id_performed     interp
-#> 1      1771265000           1306100  8933.8531
-#> 2      1771265000          18298100 10899.0966
-#> 3      1771265000          21499100  4006.3031
-#> 4      1771265000          21555100 13912.1101
-#> 5      1771265000          22663100  6944.8919
-#> 6      1771275000          10185100  2883.3087
-#> 7      1771275000          10249100  7986.3226
-#> 8      1771275000          13478100   140.0436
-#> 9      1771275000           3597100  6792.4405
+# Print header
+head(c53_USt_interp)
+#> # A tibble: 6 × 3
+#>   trip_id_performed event_timestamp interp
+#>   <chr>                       <dbl>  <dbl>
+#> 1 1115100               1771258405. 12801.
+#> 2 1115100               1771258406. 12803.
+#> 3 1115100               1771258407. 12805.
+#> 4 1115100               1771258408. 12808.
+#> 5 1115100               1771258409. 12811.
+#> 6 1115100               1771258410. 12815.
 ```
 
-Here, `interp` will be the distance in meters from the route’s
-beginning. You’ll notice that, even though we have 24 trips, there were
-only four to five distance for each timepoint. This is because
-[`predict()`](https://rdrr.io/r/stats/predict.html) will only
-interpolate a distance value for trips that were actually running at
-that point in time.
-
-### Interpolating for Speeds
-
-The last thing we can interpolate for is the speed at any given point in
-time. We can control this by setting the `deriv` parameter in
-[`predict()`](https://rdrr.io/r/stats/predict.html):
+We can see that, for the printed trip, the first timepoint occurs at the
+beginning of `U_St_lims`, then `event_timestamp` increments one second
+per row afterwards. The `interp` column is the distance at each time
+(you can also set `deriv` here). To better understand see what this did,
+we’ll generate a plot of these generated points. Below, we first
+“center” each trip to start at 0 seconds, then plot point colored by
+trip:
 
 ``` r
-# Run interpolating function
-c53_speed_interp <- predict(
-  object = c53_traj,
-  new_times = c(1771265000, 1771275000),
-  deriv = 1
-)
+# "Center" all trips to start at 0 time
+c53_USt_centered <- c53_USt_interp %>%
+  group_by(trip_id_performed) %>%
+  mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
+  rename(distance = interp)
 
-# Print results
-print(c53_speed_interp)
-#>   event_timestamp trip_id_performed       interp
-#> 1      1771265000           1306100 1.675073e-01
-#> 2      1771265000          18298100 1.464849e+00
-#> 3      1771265000          21499100 1.372977e+01
-#> 4      1771265000          21555100 6.424041e-01
-#> 5      1771265000          22663100 1.508816e+00
-#> 6      1771275000          10185100 4.473051e-01
-#> 7      1771275000          10249100 4.354498e-05
-#> 8      1771275000          13478100 7.213864e-01
-#> 9      1771275000           3597100 9.079446e-01
+# Create plot
+USt_plot <- ggplot(data = c53_USt_centered) +
+  # Add points
+  geom_point(aes(x = event_timestamp, y = distance,
+                 color = trip_id_performed),
+             size = 2, alpha = 0.4) +
+  # Color points by trip
+  scale_color_viridis_d(guide = "none") +
+  # Theming
+  theme_minimal() +
+  labs(x = "Time (s)",
+       y = "Distance (m)",
+       title = "C53 Second-by-Second Position",
+       subtitle = "U St NW between 13th and 14th St NW")
+USt_plot
 ```
 
-Here, `interp` will be the speed in meters per second. Finding speeds
-requires starting from time values; we cannot get speeds from distance
-values.
+![](intro-trajectories_files/figure-html/unnamed-chunk-11-1.png)
+
+You could retrieve identical results by giving
+[`predict()`](https://rdrr.io/r/stats/predict.html) a `new_times`
+sequence spanning the range of the trajectory’s `event_timestamp`’s,
+then filtering to the desired distance range. For large datasets –
+spanning, for example, months –, however, this would require a *massive*
+sequence. If an inverse function is available, using `distance_lims` and
+`timestep` is a much more efficient way to generate high-resolution
+trajectory profiles for a large number of trips, especially if you are
+interested in studying a specific region in space.
 
 ## Visualizing Trajectories
 
@@ -228,7 +318,7 @@ generate a plot of all trajectories:
 plot(c53_traj)
 ```
 
-![](intro-trajectories_files/figure-html/unnamed-chunk-9-1.png)
+![](intro-trajectories_files/figure-html/unnamed-chunk-12-1.png)
 
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) is intended for
 quick visualizations of trajectories, and as such does not allow for
@@ -277,7 +367,7 @@ traj_plot <- plot_trajectory(
 traj_plot
 ```
 
-![](intro-trajectories_files/figure-html/unnamed-chunk-11-1.png)
+![](intro-trajectories_files/figure-html/unnamed-chunk-14-1.png)
 
 It’s hard to see what’s actually going on here. The benefits of the
 cleaning we did, and of fitting a spline trajectory, become much more
@@ -315,7 +405,7 @@ fl_U_plot <- plot_trajectory(
 fl_U_plot
 ```
 
-![](intro-trajectories_files/figure-html/unnamed-chunk-12-1.png)
+![](intro-trajectories_files/figure-html/unnamed-chunk-15-1.png)
 
 We can glean some insights from this. Almost every trip stops at Florida
 & Georgia, either to serve the stop or wait for the signal. One trip

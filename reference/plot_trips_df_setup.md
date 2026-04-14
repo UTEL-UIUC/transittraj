@@ -10,7 +10,7 @@ plot_trips_df_setup(
   distance_df,
   plot_trips,
   timestep,
-  distance_lim,
+  distance_lims,
   center_vehicles,
   convert_to_timezone
 )
@@ -34,7 +34,7 @@ plot_trips_df_setup(
 
   Time in seconds for interpolation.
 
-- distance_lim:
+- distance_lims:
 
   Vector of (minimum, maximum) distance to plot.
 

@@ -15,7 +15,7 @@ and customized as desired."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@ and customized as desired."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Plot vehicle trajectories or AVL data.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v0.1.2/R/trajectory_visualization.R" class="external-link"><code>R/trajectory_visualization.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/R/trajectory_visualization.R" class="external-link"><code>R/trajectory_visualization.R</code></a></small>
       <div class="d-none name"><code>plot_trajectory.Rd</code></div>
     </div>
 
@@ -65,7 +65,7 @@ and customized as desired.</p>
 <span>  distance_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_trips <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  timestep <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  distance_lim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  distance_lims <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  center_trajectories <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  feature_distances <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  convert_to_timezone <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -113,7 +113,7 @@ is <code>NULL</code>, which will plot all trips provided in the <code>trajectory
 seconds, between interpolated observations to plot. Default is 5.</p></dd>
 
 
-<dt id="arg-distance-lim">distance_lim<a class="anchor" aria-label="anchor" href="#arg-distance-lim"></a></dt>
+<dt id="arg-distance-lims">distance_lims<a class="anchor" aria-label="anchor" href="#arg-distance-lims"></a></dt>
 <dd><p>Optional. A vector with <code>(minimum, maximum)</code> distance
 values to plot.</p></dd>
 
@@ -225,7 +225,7 @@ graph. Must be either <code>"left"</code> or <code>"right"</code>. Default is <c
 
 <p>There are two ways to provide data to these plotting functions:</p><ul><li><p>A single or grouped trajectory object. This will use the direct
 trajectory function at a resolution controlled by <code>timestep</code>. This is
-simplest, and looks best when zooming in using <code>distance_lim</code>. The only
+simplest, and looks best when zooming in using <code>distance_lims</code>. The only
 attribute that can be mapped to if using a trajectory is <code>trip_id_performed</code>.</p></li>
 <li><p>A <code>distance_df</code> of TIDES AVL data. This will use the distance and time
 point pairs for plotting, and draw linearly between them. This will look
@@ -304,7 +304,7 @@ If using <code>distance_df</code>, they may be mapped to any column in <code>dis
 <span class="r-in"><span>                feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
 <span class="r-in"><span>                label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
 <span class="r-in"><span>                label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>                distance_lim <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
+<span class="r-in"><span>                distance_lims <span class="op">=</span> <span class="va">my_dist_range</span>,</span></span>
 <span class="r-in"><span>                traj_color <span class="op">=</span> <span class="st">"indianred3"</span>,</span></span>
 <span class="r-in"><span>                center_trajectories <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                timestep <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
