@@ -7,9 +7,27 @@
 #'
 #' @param new_times DF or vector of new times
 #' @param new_distances DF or vector of new distances
+#' @param distance_lims A vector of distance limits
+#' @param timestep An integer for the time interval between each step
 #' @return List of `new_times_df` and `new_distances_df`
 #' @keywords internal
-predict_traj_input_setup <- function(new_times, new_distances) {
+predict_traj_input_setup <- function(new_times, new_distances,
+                                     distance_lims, timestep) {
+
+  # --- Check Inputs ---
+  # Create list of allowed input combos
+  inputs <- list(new_times, new_distance, distance_lims, timestep)
+  valid_inputs <- list(c(TRUE, FALSE, FALSE, FALSE),
+                       c(FALSE, TRUE, FALSE, FALSE),
+                       c(FALSE, FALSE, TRUE, TRUE))
+  # Check if provided combo is in list of alloweds
+  inputs_check <- sapply(X == valid_inputs, FUN = is.null)
+  inputs_ok <- any(sapply(X = valid_inputs, FUN = identical, inputs_check))
+  # If not, throw error
+  if (!inputs_ok) {
+    rlang::abort(message = "Invalid inputs provided. Please provide one of: new_times; or new_distances; or distance_lims AND timestep.",
+                 class = "error_trajpredict_input")
+  }
 
   # Initialize final DFs as NULLs; they will be overridden if requirements
   # are met
@@ -21,9 +39,12 @@ predict_traj_input_setup <- function(new_times, new_distances) {
     # Only allow one of time or distance
     rlang::abort(message = "Please provide only one of new_times or new_distances.",
                  class = "error_trajpredict_input")
-  } else if (is.null(new_times) & is.null(new_distances)) {
+  } else if (!is.null(distance_lims) & is.null()) {
+
+  } else if (all(is.null(new_times), is.null(new_distances),
+                 is.null(distance_lims), is.null(timestep))) {
     # Require one of new_times or new_distances
-    rlang::abort(message = "Please provide one of new_times or new_distances.",
+    rlang::abort(message = "Please provide one of: new_times; or new_distances; or distance_lims AND timestep.",
                  class = "error_trajpredict_input")
   }
 
@@ -411,6 +432,7 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' dim(interp_times)
 #' head(interp_times)
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
+                                        distance_lims = NULL, timestep = NULL,
                                         deriv = 0, trips = NULL, ...) {
 
   # --- Validation ---
