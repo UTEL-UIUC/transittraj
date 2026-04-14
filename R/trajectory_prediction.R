@@ -440,6 +440,7 @@ interpolate_times.avltrajectory_single <- function(trajectory,
 #' @keywords internal
 interpolate_times.avltrajectory_group <- function(trajectory,
                                                   new_dist_trips) {
+
   # Pull inv traj fun
   inv_trajectory_function <- attr(trajectory, "inv_traj_fun")
 
@@ -448,6 +449,7 @@ interpolate_times.avltrajectory_group <- function(trajectory,
     dplyr::mutate(interp = purrr::map2_dbl(trip_id_performed, distance,
                                            function(trip_id_performed, distance) {
                                              inv_trajectory_function[[trip_id_performed]](distance)}))
+
   return(int_df)
 }
 
@@ -613,23 +615,25 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
   if (!is.null(new_times)) {
     new_times_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
                                                     new_times = new_times)
-    interpolate_distances(trajectory = object,
-                          new_times_trips = new_times_trips,
-                          deriv = deriv)
+    interp <- interpolate_distances(trajectory = object,
+                                    new_times_trips = new_times_trips,
+                                    deriv = deriv)
   }
   if (!is.null(new_distances)) {
-    new_dist_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
+    new_dist_trips <- predict_traj_setup_new_dists(trip_extremes = trip_extremes,
                                                    new_distances = new_distances)
-    interpolate_times(trajectory = object,
-                      new_dist_trips = new_dist_trips)
+    interp <- interpolate_times(trajectory = object,
+                                new_dist_trips = new_dist_trips)
   }
   if (!is.null(distance_lims)) {
     new_times_trips <- predict_traj_setup_dist_lims(trajectory = object,
                                                     trip_extremes = trip_extremes,
                                                     distance_lims = distance_lims,
                                                     timestep = timestep)
-    interpolate_distances(trajectory = object,
-                          new_times_trips = new_times_trips,
-                          deriv = deriv)
+    interp <- interpolate_distances(trajectory = object,
+                                    new_times_trips = new_times_trips,
+                                    deriv = deriv)
   }
+
+  return(interp)
 }
