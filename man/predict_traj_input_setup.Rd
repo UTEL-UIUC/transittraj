@@ -4,12 +4,16 @@
 \alias{predict_traj_input_setup}
 \title{Validate inputs to predict trajectory methods & set up dataframes.}
 \usage{
-predict_traj_input_setup(new_times, new_distances)
+predict_traj_input_setup(new_times, new_distances, distance_lims, timestep)
 }
 \arguments{
 \item{new_times}{DF or vector of new times}
 
 \item{new_distances}{DF or vector of new distances}
+
+\item{distance_lims}{A vector of distance limits}
+
+\item{timestep}{An integer for the time interval between each step}
 }
 \value{
 List of \code{new_times_df} and \code{new_distances_df}

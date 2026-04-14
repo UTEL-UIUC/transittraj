@@ -465,34 +465,49 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #' This function is the recommended way to use a fit trajectory function. It has
 #' a few key features:
 #'
-#' ## Interpolate for Distance or Time
+#' ## Interpolation
+#'
+#' There are three ways to interpolate: finding distance from times (direct
+#' trajectory function), times from distance (inverse trajectory function),
+#' or timesteps over a distance range (both inverse and direct trajectory
+#' function). For the former two, either a vector or dataframe of
+#' `new_times` or `new_distances` may be provided. If a dataframe is
+#' provided, it must contain the column `event_timestamp` or `distance`,
+#' and all additional columns will be preserved through the interpolation.
+#'
+#' ### Distances from Times
 #'
 #' If `new_times` is provided, the function will find the `distance` of each
-#' trip at each new time using the direct trajectory function. Conversely, if
-#' `new_distances` is provided, the function will find the `event_timestamp` at
-#' which each trip crossed that distance using the inverse trajectory function.
-#' If an input trajectory object does not contain an inverse function, an error
-#' will be thrown.
+#' trip at each point in time. If a dataframe is provided, it must contain
+#' the column `event_timestamp`. This will use the trajectory's direct function.
+#' When using `new_times`, a `deriv` value can also be set. See below for
+#' a more detailed discussion.
 #'
-#' These new points can be either vectors or dataframes:
+#' ### Times from Distances
 #'
-#' - If the input is a vector, the returned value will be a dataframe
-#' associating each trip with each new point and a column `interp` indicating
-#' the interpolated value.
+#' If `new_distances` is provided, the function will find the `event_timestamp`
+#' of each trip at each point in space. If a dataframe is provided, it must
+#' contain the column `distance`. This will use the trajectory's
+#' inverse function. When using `new_distances`, a `deriv` value cannot
+#' be set. See below for a more detailed discussion.
 #'
-#' - If the input is a dataframe, it must contain a column names
-#' `event_timestamp` or `distance`, depending on whether it is put into
-#' `new_times` or `new_distances`. All other columns will be preserved in the
-#' output. Each row will be duplicated for each trip, and a column `interp` will
-#' be added indicating the interpolated value.
+#' ### Time & Distance Pairs from Distance Bounds
 #'
-#' The latter option is particularly useful for finding crossing times of
-#' particular features, or the positions at notable points in time. For
-#' instance, `new_distances` may be a dataframe of corridors, with a column
-#' `name` for the corridor name and `inout` for whether each row is the
-#' entrance or exit to the corridor. The returned value will append the column
-#' `trip_id_performed` for each trip that crosses those distances, and `interp`
-#' for the time the trip passes the entrance or exit.
+#' Oftentimes, you may want to interpolate by small timesteps over a defined
+#' region of space. This can be done by setting `distance_lims` and
+#' `timestep`. The function will use the trajectory's inverse function to find
+#' each trip's entrance and exit time through `distance_lims`, then create
+#' a sequence between these entrance and exit times with a step of `timestep`.
+#' Finally, the trajectory's direct function is used to find the distance
+#' at each of these timepoints. A `deriv` value can also be set for the final
+#' direct interpolation.
+#'
+#' If you have a well-defined region of space, this approach allows you to
+#' interpolate vehicle positions at a very tight timescale over a large
+#' number of trips efficiently. You could alternatively use `new_times` to
+#' interpolate over the entire time range of all trips (which wouldn't
+#' require an inverse function), though this may require orders of magnitude
+#' more points and would be substantially less efficient.
 #'
 #' ## Finding Derivatives
 #'
@@ -519,11 +534,10 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #'
 #' By default, many fit interpolating curves will allow extrapolation (i.e.,
 #' the input of an `event_timestamp` beyond the original time domain of the
-#' trip). This is especially true for splines fit using `stats::splinefun()`.
-#' In general, this will not be reasonable for transit vehicles: time points
-#' should be constrained by the time that a trip has actually been observed,
-#' and distances should be constrained to the part of a route a trip actually
-#' ran.
+#' trip). In general, this will not be reasonable for transit vehicles:
+#' time points should be constrained by the time that a trip has actually
+#' been observed, and distances should be constrained to the part of a route
+#' a trip actually ran.
 #'
 #' This function uses the maximum and minimum time and distance values stored
 #' in the trajectory object to identify if an input `new_times` or
@@ -549,8 +563,14 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #' @param new_distances Optional. A vector of numeric distances, or a dataframe
 #' with at least the column `"distance"` of new distances to interpolate at.
 #' Default is `NULL`.
+#' @param distance_lims Optional. A vector of (minimum, maximum) distance
+#' bounds over which to interpolate at a given timestep. If provided,
+#' `timestep` must also be provided. Default is `NULL`.
+#' @param timestep Optional. A single numeric indicating the time interval
+#' between successive interpolating steps when defining `distance_lims`. If
+#' provided, `distance_lims` must also be provided. Default is `NULL`.
 #' @param deriv Optional. The derivative with which to calculate at. Default is
-#' 0.
+#' `0`.
 #' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
 #' Default is `NULL`, which will use all trips found in the trajectory object.
 #' @param ... Other parameters (not used).
@@ -566,6 +586,8 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #' my_distances = seq(from = 0,
 #'                    to = 15000,
 #'                    by = 1000)
+#' my_distance_lims = c(500, 600)
+#' my_timestep = 10
 #'
 #' # Get input data
 #' c53_traj <- new_transittraj_data("get_trajectory_fun")
@@ -588,6 +610,13 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #'                         new_distances = my_distances)
 #' dim(interp_times)
 #' head(interp_times)
+#'
+#' # Run function: get time & distance pairs given distance bounds
+#' interp_time_dist_pairs <- predict(object = c53_traj,
+#'                                   distance_lims = my_distance_lims,
+#'                                   timestep = my_timestep)
+#' dim(interp_time_dist_pairs)
+#' head(interp_time_dist_pairs)
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
                                         distance_lims = NULL, timestep = NULL,
                                         deriv = 0, trips = NULL, ...) {

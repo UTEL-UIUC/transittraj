@@ -3,7 +3,6 @@
 S3method(plot,avltrajectory_group)
 S3method(plot,avltrajectory_single)
 S3method(predict,avltrajectory_group)
-S3method(predict,avltrajectory_single)
 S3method(print,avltrajectory_group)
 S3method(print,avltrajectory_single)
 S3method(summary,avltrajectory_group)
