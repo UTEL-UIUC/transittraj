@@ -10,7 +10,7 @@ get_stop_distances(gtfs, shape_geometry = NULL, project_crs = 4326)
 \item{gtfs}{A tidygtfs object.}
 
 \item{shape_geometry}{Optional. The SF object to project onto. Must include
-the field \code{shape_id}. See \code{get_shape_geometry()}. Default is NULL, where
+the field \code{shape_id}. See \code{get_shape_geometry()}. Default is \code{NULL}, where
 all shapes in \code{gtfs} will be used.}
 
 \item{project_crs}{Optional. A numeric EPSG identifer indicating the

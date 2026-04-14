@@ -1,74 +1,210 @@
-#' Validate inputs to predict trajectory methods & set up dataframes.
+#' Internal function to validate inputs to trajectory prediction methods.
 #'
-#' Checks that the input `new_times` and `new_distances` to
-#' `predict.avltrajectory_group()` and `predict.avltrajectory_single()`
-#' meet requirements of these functions, and sets up dataframes for
-#' interpolation. Factoring intended to reduce code duplication.
+#' Checks that the proper combination of inputs is provided. Should be one
+#' of: new_times; new_distances; distance_lims AND timestep. If latter or
+#' new_distances, trajectory must also have inverse function. Derivative
+#' is also checked against maximum allowed.
 #'
-#' @param new_times DF or vector of new times
-#' @param new_distances DF or vector of new distances
-#' @return List of `new_times_df` and `new_distances_df`
+#' @param new_times A DF or vector of new time values, or `NULL`
+#' @param new_distances A DF or vector of new distance values, or `NULL`
+#' @param distance_lims A vector of min, max distance, or `NULL`
+#' @param timestep An integer for interpolation timestep, or `NULL`
+#' @param has_inv Boolean, does traj have inv fun?
+#' @param deriv User-requested derivative
+#' @param max_deriv Maximum derivative supported by traj fun
+#' @return Throws error only if not all OK
 #' @keywords internal
-predict_traj_input_setup <- function(new_times, new_distances) {
+predict_traj_input_validation <- function(new_times, new_distances,
+                                          distance_lims, timestep,
+                                          has_inv, deriv, max_deriv) {
 
-  # Initialize final DFs as NULLs; they will be overridden if requirements
-  # are met
-  new_times_df <- NULL
-  new_distances_df <- NULL
-
-  # Check DFs provided
-  if ((!is.null(new_times)) & (!is.null(new_distances))) {
-    # Only allow one of time or distance
-    rlang::abort(message = "Please provide only one of new_times or new_distances.",
-                 class = "error_trajpredict_input")
-  } else if (is.null(new_times) & is.null(new_distances)) {
-    # Require one of new_times or new_distances
-    rlang::abort(message = "Please provide one of new_times or new_distances.",
+  # --- Check Input Combination ---
+  # Create list of allowed input combos
+  inputs <- list(new_times, new_distances, distance_lims, timestep)
+  valid_inputs <- list(c(TRUE, FALSE, FALSE, FALSE),
+                       c(FALSE, TRUE, FALSE, FALSE),
+                       c(FALSE, FALSE, TRUE, TRUE))
+  # Check if provided combo is in list of alloweds
+  inputs_check <- sapply(X = inputs, FUN = function(x) !is.null(x))
+  inputs_ok <- any(sapply(X = valid_inputs, FUN = identical, inputs_check))
+  # If not, throw error
+  if (!inputs_ok) {
+    rlang::abort(message = "Invalid inputs provided. Please provide one of: new_times; or new_distances; or distance_lims AND timestep.",
                  class = "error_trajpredict_input")
   }
 
-  # Build DFs for interpolation
-  if (!is.null(new_times)) { # If interpolating for distance from new times
-
-    # Convert data types
-    if (is.vector(new_times)) {
-      # If a vector is provided, convert it to dataframe
-      new_times_df <- data.frame(event_timestamp = new_times)
-    } else if (is.data.frame(new_times)) {
-      # If a DF is provided
-      if (!("event_timestamp" %in% names(new_times))) {
-        # Check if new_times has needed column
-        rlang::abort(message = "Please provide event_timestamp column in new_times",
-                     class = "error_trajpredict_input")
-      } else {
-        new_times_df <- new_times
-      }
-    } else {
-      rlang::abort(message = "Please provide either a vector or dataframe of new_times.",
+  # --- Check Inverse ---
+  if (!has_inv) {
+    # Inv required if distance_lims in use
+    if (!is.null(distance_lims)) {
+      rlang::abort(message = "distance_lims and timestep provided, but trajectory has no inverse function. Inverse required for these inputs.",
                    class = "error_trajpredict_input")
     }
-  } else { # If interpolating for times from new distances
 
-    # Convert data types
-    if (is.vector(new_distances)) {
-      # If a vector is provided, convert it to dataframe
-      new_distances_df <- data.frame(distance = new_distances)
-    } else if (is.data.frame(new_distances)) {
-      # If a DF is provided
-      if (!("distance" %in% names(new_distances))) {
-        # Check if new_distances has needed column
-        rlang::abort(message = "Please provide distance column in new_distances",
-                     class = "error_trajpredict_input")
-      } else {
-        new_distances_df <- new_distances
-      }
-    } else {
-      rlang::abort(message = "Please provide either a vector or dataframe of new_distances.",
+    # Inv required if using new_distances
+    if (!is.null(new_distances)) {
+      rlang::abort(message = "new_distances provided, but trajectory has no inverse function. Inverse function required for this input.",
                    class = "error_trajpredict_input")
     }
   }
 
-  return(list(new_times_df, new_distances_df))
+  # --- Check Derivative ---
+  # Check that derivative is not provided with inv fun
+  if ((deriv > 0) & !is.null(new_distances)) {
+    rlang::abort(message = "Derivative not allowed for inverse function. Considering finding timepoints first, then derivatives at timepoints.",
+                 class = "error_trajpredict_input")
+  }
+  # If user-requested derivative is larger than function's maximum
+  if (deriv > max_deriv) {
+    rlang::abort(message = paste("Input deriv is larger than trajectory function's maximum (",
+                                 max_deriv, ").",
+                                 sep = ""),
+                 class = "error_trajpredict_input")
+  }
+  # If user-requested derivative is less than 0
+  if (deriv < 0) {
+    rlang::abort(message = paste("Negative deriv not allowed. Please enter value between 0 and ",
+                                 max_deriv, ".",
+                                 sep = ""),
+                 class = "error_trajpredict_input")
+  }
+}
+
+predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
+                                         distance_lims, timestep) {
+
+  # Get observed trip limits & user-defined limits
+  trip_extremes_filt <- trip_extremes %>%
+    dplyr::select(-c(min_time, max_time)) %>%
+    dplyr::mutate(user_min_dist = distance_lims[1],
+                  user_max_dist = distance_lims[2]) %>%
+    # Filter to trips whose observed ranges overlap with user-defined
+    dplyr::filter((min_dist <= user_max_dist) &
+                    (max_dist >= user_min_dist))
+
+  if (dim(trip_extremes_filt)[1] == 0) {
+    rlang::abort(message = "Trajectory distance range does not overlap with input distance_lims.",
+                 class = "error_trajpredict_lims")
+  }
+
+  # Get min & max of user-defined and observed distance limits
+  trip_absolute_extremes <- trip_extremes_filt %>%
+    # Get max/min of user-defined range and observed range
+    dplyr::mutate(min_time = pmax(min_dist, user_min_dist),
+                  max_time = pmin(max_dist, user_max_dist)) %>%
+    dplyr::select(-c(min_dist, max_dist,
+                     user_min_dist, user_max_dist)) %>%
+    # Pivot & add distance column
+    tidyr::pivot_longer(cols = c("min_time", "max_time"),
+                        names_to = "trip_end",
+                        values_to = "distance")
+
+  # Get times at distance extremes
+  trip_time_extremes <- interpolate_times(trajectory = trajectory,
+                                          new_dist_trips = trip_absolute_extremes) %>%
+    dplyr::rename(time_extreme = interp) %>%
+    dplyr::select(-distance) %>%
+    tidyr::pivot_wider(values_from = "time_extreme", names_from = "trip_end")
+
+  # For each trip, get all timesteps between the entry/exit times
+  interp_times <- trip_time_extremes %>%
+    # Filter out trips that do not cross one of the boundaries
+    dplyr::filter(!is.na(min_time) & !is.na(max_time)) %>%
+    # Group by trip
+    dplyr::group_by(trip_id_performed) %>%
+    # Duplicate trip row for every interpolate timepoint necessary
+    tidyr::uncount(weights = floor((max_time - min_time) / timestep + 1)) %>%
+    # Create interp timepoint sequence
+    dplyr::mutate(event_timestamp = seq(from = min_time[1],
+                                        to = max_time[1],
+                                        by = timestep)) %>%
+    dplyr::select(-c(max_time, min_time)) %>%
+    dplyr::ungroup()
+
+  return(interp_times)
+}
+
+predict_traj_setup_new_times <- function(new_times, trip_extremes) {
+
+  # --- Validate Input ---
+  if (is.data.frame(new_times)) {
+    # If DF provided
+    # Check if has needed columns
+    if (!("event_timestamp" %in% names(new_times))) {
+      rlang::abort(message = "Column event_timestamp missing from new_times.",
+                   class = "error_trajpredict_input")
+    }
+    # If OK...
+    new_times_df <- new_times
+  } else if (is.vector(new_times)) {
+    new_times_df <- data.frame(event_timestamp = new_times)
+  } else {
+    # If not DF or vector
+    rlang::abort(message = "Unrecognized new_times type. Please input either dataframe or vector.",
+                 class = "error_trajpredict_input")
+  }
+
+  # --- Setup ---
+  # Create DF of trip & time pairs
+  trips <- trip_extremes$trip_id_performed
+  num_times <- dim(new_times_df)[1]
+  num_trips <- dim(trip_extremes)[1]
+  new_times_trips <- new_times_df %>%
+    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+    tidyr::uncount(weights = num_trips) %>%
+    dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
+    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+    dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  # Check that observations remain
+  if (dim(new_times_trips)[1] == 0) {
+    rlang::abort(message = "No trips within range of new_times.",
+                 class = "error_trajpredict_range")
+  } else {
+    return(new_times_trips)
+  }
+}
+
+predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
+
+  # --- Validate Input ---
+  if (is.data.frame(new_distances)) {
+    # If DF provided
+    # Check if has needed columns
+    if (!("distance" %in% names(new_distances))) {
+      rlang::abort(message = "Column distance missing from new_distances.",
+                   class = "error_trajpredict_input")
+    }
+    # If OK...
+    new_distances_df <- new_distances
+  } else if (is.vector(new_distances) & is.numeric(new_distances)) {
+    new_distances_df <- data.frame(distance = new_distances)
+  } else {
+    # If not DF or vector
+    rlang::abort(message = "Unrecognized new_distances type. Please input either dataframe or numeric vector.",
+                 class = "error_trajpredict_input")
+  }
+
+  # --- Setup ---
+  # Create DF of trip & dist pairs
+  trips <- trip_extremes$trip_id_performed
+  num_dists <- dim(new_distances_df)[1]
+  num_trips <- dim(trip_extremes)[1]
+  new_distances_trips <- new_distances_df %>%
+    tidyr::uncount(weights = num_trips) %>%
+    dplyr::mutate(trip_id_performed = rep(trips, num_dists)) %>%
+    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+    dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
+    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  # Check that observations remain
+  if (dim(new_distances_trips)[1] == 0) {
+    rlang::abort(message = "No trips within range of new_distances.",
+                 class = "error_trajpredict_range")
+  } else {
+    return(new_distances_trips)
+  }
 }
 
 #' Get the distance and time range of each trip in a trajectory object.
@@ -94,11 +230,27 @@ predict_traj_input_setup <- function(new_times, new_distances) {
 #' print(c53_extremes)
 get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 
+  # --- Validation ---
+  # Is traj
   if (!("avltrajectory_group" %in% class(trajectory))) {
-    rlang::abort(messge = "Unrecognized trajectory object. Please input a trajectory object from `get_trajectory_fun()`.",
+    rlang::abort(message = "Unrecognized trajectory object. Please input a trajectory object from `get_trajectory_fun()`.",
                  class = "error_trajextremes_input")
   }
 
+  # Validate trips input: If filter_trips are provided, check that they are in traj functions
+  if (!is.null(filter_trips)) {
+    all_trips <- unclass(trajectory)
+    trips_check <- filter_trips %in% all_trips
+
+    if (!all(trips_check)) {
+      # If at least one trip is not supported by the function
+      rlang::abort(message = paste(c("The following requested trips are not in this trajectory function:\n",
+                                     filter_trips[!trips_check]), collapse = " "),
+                   class = "error_trajextremes_input")
+    }
+  }
+
+  # --- Get extremes ---
   trip_extremes <- data.frame(trip_id_performed = unclass(trajectory),
                               min_dist = attr(trajectory, "min_dist"),
                               max_dist = attr(trajectory, "max_dist"),
@@ -108,52 +260,58 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
   if (!is.null(filter_trips)) {
     trip_extremes_filt <- trip_extremes %>%
       dplyr::filter(trip_id_performed %in% filter_trips)
-
-    if (dim(trip_extremes_filt)[1] == 0) {
-      rlang::abort(message = "Desired trips not found in trajectory object.",
-                   class = "error_trajextremes_input")
-    }
     return(trip_extremes_filt)
   } else {
     return(trip_extremes)
   }
 }
 
-#' Distance interpolation for group trajectories
+#' Internal generic for performing interpolation of distances from times.
 #'
-#' Not intended for external use.
+#' Performs interpolation of distance values from a DF of times & trip IDs.
+#' A generic function, dispatches depending on whether trajectory is grouped
+#' or single.
 #'
-#' @param trip_extremes DF of max and min distance values
-#' @param new_times DF of new time points, not paired with trips
-#' @param new_times_trips DF of already-paired trip IDs & timepoints
-#' @param trajectory_function trajectory function list
-#' @param deriv derivative to use
-#' @return DF of interpolated values
+#' @param trajectory Single or grouped trajectory object
+#' @param new_times_trips DF with trip_id_performed and event_timestamp
+#' @param deriv A number, derivative for interpolation
+#' @return A DF with appended column "interp" of distance (or deriv) values
 #' @keywords internal
-interpolate_distances_group <- function(trip_extremes = NULL, new_times = NULL,
-                                        new_times_trips = NULL,
-                                        trajectory_function, deriv) {
+interpolate_distances <- function(trajectory, new_times_trips, deriv) {
+  UseMethod("interpolate_distances")
+}
 
-  # If new_times_trips not provided, create it -- only not true for plot_trips_df_setup
-  if (is.null(new_times_trips)) {
-    trips <- trip_extremes$trip_id_performed
-    num_times <- dim(new_times)[1]
-    num_trips <- dim(trip_extremes)[1]
-    new_times_trips <- new_times %>%
-      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-      tidyr::uncount(weights = num_trips) %>%
-      dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
-      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
-      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+#' @rdname interpolate_distances
+#' @keywords internal
+interpolate_distances.avltrajectory_single <- function(trajectory,
+                                                       new_times_trips, deriv) {
+
+  # Pull traj fun
+  trajectory_function <- attr(trajectory, "traj_fun")
+
+  # Interpolate
+  if (deriv == 0) {
+    # Interpolate
+    int_df <- new_times_trips %>%
+      dplyr::mutate(interp = trajectory_function(event_timestamp))
+  } else {
+    # Interpolate
+    int_df <- new_times_trips %>%
+      dplyr::mutate(interp = trajectory_function(event_timestamp,
+                                                 deriv = deriv))
   }
+  return(int_df)
+}
 
-  # Check that there are trips
-  if (dim(new_times_trips)[1] == 0) {
-    rlang::abort("No trips provided within the range of new_times.",
-                 class = "error_trajpredict_trips")
-  }
+#' @rdname interpolate_distances
+#' @keywords internal
+interpolate_distances.avltrajectory_group <- function(trajectory,
+                                                      new_times_trips, deriv) {
 
+  # Pull traj fun
+  trajectory_function <- attr(trajectory, "traj_fun")
+
+  # Interpolate
   if (deriv == 0) {
     # If deriv is 0, do not pass it
     # Deriv should always default to 0. If function does not take in deriv at all, we would get an error if trying to pass it
@@ -172,106 +330,48 @@ interpolate_distances_group <- function(trip_extremes = NULL, new_times = NULL,
   return(int_df)
 }
 
-#' Distance interpolation for single trajectories
+
+#' Internal generic for performing interpolation of times from distances.
 #'
-#' Not intended for external use.
+#' Performs interpolation of time values from a DF of distances & trip IDs.
+#' A generic function, dispatches depending on whether trajectory is grouped
+#' or single.
 #'
-#' @param trip_extremes DF of max and min distance values
-#' @param new_times DF of new time points
-#' @param trajectory_function trajectory function
-#' @param deriv derivative to use
-#' @return DF of interpolated values
+#' @param trajectory Single or grouped trajectory object
+#' @param new_dist_trips A DF with trip_id_performed and distance
+#' @return A DF with appended column "interp" of event_timestamp values
 #' @keywords internal
-interpolate_distances_single <- function(trip_extremes, new_times, trajectory_function, deriv) {
-  # Filter to allowed range
-  filt_df <- new_times %>%
-    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-    dplyr::filter((event_timestamp >= trip_extremes["min_time"]) &
-                    (event_timestamp <= trip_extremes["max_time"]))
+interpolate_times <- function(trajectory, new_dist_trips) {
+  UseMethod("interpolate_times")
+}
 
-  if (dim(filt_df)[1] == 0) {
-    # Check that points remain
-    rlang::abort("Trip not within the range of new_times.",
-                 class = "error_trajpredict_trips")
-  }
+#' @rdname interpolate_times
+#' @keywords internal
+interpolate_times.avltrajectory_single <- function(trajectory,
+                                                   new_dist_trips) {
+  # Pull inv traj fun
+  inv_trajectory_function <- attr(trajectory, "inv_traj_fun")
 
-  if (deriv == 0) {
-    # Interpolate
-    int_df <- filt_df %>%
-      dplyr::mutate(interp = trajectory_function(event_timestamp))
-  } else {
-    # Interpolate
-    int_df <- filt_df %>%
-      dplyr::mutate(interp = trajectory_function(event_timestamp,
-                                                 deriv = deriv))
-  }
-
+  # Interpolate
+  int_df <- new_dist_trips %>%
+    dplyr::mutate(interp = inv_trajectory_function(distance))
   return(int_df)
 }
 
-#' Time interpolation for grouped trajectories
-#'
-#' Not intended for external use.
-#'
-#' @param trip_extremes DF of max and min time values
-#' @param new_distances DF of new distance points
-#' @param new_dist_trips DF of new trip & distance pairs
-#' @param inv_trajectory_function Inverse trajectory function list
-#' @return DF of interpolated values
+#' @rdname interpolate_times
 #' @keywords internal
-interpolate_times_group <- function(trip_extremes = NULL, new_distances = NULL,
-                                    new_dist_trips = NULL, inv_trajectory_function) {
+interpolate_times.avltrajectory_group <- function(trajectory,
+                                                  new_dist_trips) {
 
-  # If new_dist_trips not provided, create it -- only not true for plot_trips_df_setup
-  if (is.null(new_dist_trips)) {
-    trips <- trip_extremes$trip_id_performed
-    num_dist <- dim(new_distances)[1]
-    num_trips <- dim(trip_extremes)[1]
-    new_dist_trips <- new_distances %>%
-      tidyr::uncount(weights = num_trips) %>%
-      dplyr::mutate(trip_id_performed = rep(trips, num_dist)) %>%
-      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-      dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
-      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
-  }
+  # Pull inv traj fun
+  inv_trajectory_function <- attr(trajectory, "inv_traj_fun")
 
-  if (dim(new_dist_trips)[1] == 0) {
-    rlang::abort("No trips provided within the range of new_distances.",
-                 class = "error_trajpredict_trips")
-  }
-
+  # Interpoalte
   int_df <- new_dist_trips %>%
     dplyr::mutate(interp = purrr::map2_dbl(trip_id_performed, distance,
                                            function(trip_id_performed, distance) {
                                              inv_trajectory_function[[trip_id_performed]](distance)}))
 
-  return(int_df)
-}
-
-#' Time interpolation for single trajectories
-#'
-#' Not intended for external use.
-#'
-#' @param trip_extremes DF of max and min time values
-#' @param new_distances DF of new distance points
-#' @param inv_trajectory_function Inverse trajectory function
-#' @return DF of interpolated values
-#' @keywords internal
-interpolate_times_single <- function(trip_extremes, new_distances, inv_trajectory_function) {
-  # Filter to allowed range
-  filt_df <- new_distances %>%
-    dplyr::filter((distance >= trip_extremes["min_dist"]) &
-                    (distance <= trip_extremes["max_dist"]))
-
-  if (dim(filt_df)[1] == 0) {
-    # Check that points remain
-    rlang::abort("Trip not within the range of new_distances",
-                 class = "error_trajpredict_trips")
-  }
-
-  # Interpolate
-  int_df <- filt_df %>%
-    dplyr::mutate(interp = inv_trajectory_function(distance))
   return(int_df)
 }
 
@@ -287,34 +387,49 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' This function is the recommended way to use a fit trajectory function. It has
 #' a few key features:
 #'
-#' ## Interpolate for Distance or Time
+#' ## Interpolation
+#'
+#' There are three ways to interpolate: finding distance from times (direct
+#' trajectory function), times from distance (inverse trajectory function),
+#' or timesteps over a distance range (both inverse and direct trajectory
+#' function). For the former two, either a vector or dataframe of
+#' `new_times` or `new_distances` may be provided. If a dataframe is
+#' provided, it must contain the column `event_timestamp` or `distance`,
+#' and all additional columns will be preserved through the interpolation.
+#'
+#' ### Distances from Times
 #'
 #' If `new_times` is provided, the function will find the `distance` of each
-#' trip at each new time using the direct trajectory function. Conversely, if
-#' `new_distances` is provided, the function will find the `event_timestamp` at
-#' which each trip crossed that distance using the inverse trajectory function.
-#' If an input trajectory object does not contain an inverse function, an error
-#' will be thrown.
+#' trip at each point in time. If a dataframe is provided, it must contain
+#' the column `event_timestamp`. This will use the trajectory's direct function.
+#' When using `new_times`, a `deriv` value can also be set. See below for
+#' a more detailed discussion.
 #'
-#' These new points can be either vectors or dataframes:
+#' ### Times from Distances
 #'
-#' - If the input is a vector, the returned value will be a dataframe
-#' associating each trip with each new point and a column `interp` indicating
-#' the interpolated value.
+#' If `new_distances` is provided, the function will find the `event_timestamp`
+#' of each trip at each point in space. If a dataframe is provided, it must
+#' contain the column `distance`. This will use the trajectory's
+#' inverse function. When using `new_distances`, a `deriv` value cannot
+#' be set. See below for a more detailed discussion.
 #'
-#' - If the input is a dataframe, it must contain a column names
-#' `event_timestamp` or `distance`, depending on whether it is put into
-#' `new_times` or `new_distances`. All other columns will be preserved in the
-#' output. Each row will be duplicated for each trip, and a column `interp` will
-#' be added indicating the interpolated value.
+#' ### Time & Distance Pairs from Distance Bounds
 #'
-#' The latter option is particularly useful for finding crossing times of
-#' particular features, or the positions at notable points in time. For
-#' instance, `new_distance` may be a dataframe of corridors, with a column
-#' `name` for the corridor name and `inout` for whether each row is the
-#' entrance or exit to the corridor. The returned value will append the column
-#' `trip_id_performed` for each trip that crosses those distances, and `interp`
-#' for the time the trip passes the entrance or exit.
+#' Oftentimes, you may want to interpolate by small timesteps over a defined
+#' region of space. This can be done by setting `distance_lims` and
+#' `timestep`. The function will use the trajectory's inverse function to find
+#' each trip's entrance and exit time through `distance_lims`, then create
+#' a sequence between these entrance and exit times with a step of `timestep`.
+#' Finally, the trajectory's direct function is used to find the distance
+#' at each of these timepoints. A `deriv` value can also be set for the final
+#' direct interpolation.
+#'
+#' If you have a well-defined region of space, this approach allows you to
+#' interpolate vehicle positions at a very tight timescale over a large
+#' number of trips efficiently. You could alternatively use `new_times` to
+#' interpolate over the entire time range of all trips (which wouldn't
+#' require an inverse function), though this may require orders of magnitude
+#' more points and would be substantially less efficient.
 #'
 #' ## Finding Derivatives
 #'
@@ -341,11 +456,10 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #'
 #' By default, many fit interpolating curves will allow extrapolation (i.e.,
 #' the input of an `event_timestamp` beyond the original time domain of the
-#' trip). This is especially true for splines fit using `stats::splinefun()`.
-#' In general, this will not be reasonable for transit vehicles: time points
-#' should be constrained by the time that a trip has actually been observed,
-#' and distances should be constrained to the part of a route a trip actually
-#' ran.
+#' trip). In general, this will not be reasonable for transit vehicles:
+#' time points should be constrained by the time that a trip has actually
+#' been observed, and distances should be constrained to the part of a route
+#' a trip actually ran.
 #'
 #' This function uses the maximum and minimum time and distance values stored
 #' in the trajectory object to identify if an input `new_times` or
@@ -371,8 +485,14 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' @param new_distances Optional. A vector of numeric distances, or a dataframe
 #' with at least the column `"distance"` of new distances to interpolate at.
 #' Default is `NULL`.
+#' @param distance_lims Optional. A vector of (minimum, maximum) distance
+#' bounds over which to interpolate at a given timestep. If provided,
+#' `timestep` must also be provided. Default is `NULL`.
+#' @param timestep Optional. A single numeric indicating the time interval
+#' between successive interpolating steps when defining `distance_lims`. If
+#' provided, `distance_lims` must also be provided. Default is `NULL`.
 #' @param deriv Optional. The derivative with which to calculate at. Default is
-#' 0.
+#' `0`.
 #' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
 #' Default is `NULL`, which will use all trips found in the trajectory object.
 #' @param ... Other parameters (not used).
@@ -388,6 +508,8 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #' my_distances = seq(from = 0,
 #'                    to = 15000,
 #'                    by = 1000)
+#' my_distance_lims = c(500, 600)
+#' my_timestep = 10
 #'
 #' # Get input data
 #' c53_traj <- new_transittraj_data("get_trajectory_fun")
@@ -410,136 +532,59 @@ interpolate_times_single <- function(trip_extremes, new_distances, inv_trajector
 #'                         new_distances = my_distances)
 #' dim(interp_times)
 #' head(interp_times)
+#'
+#' # Run function: get time & distance pairs given distance bounds
+#' interp_time_dist_pairs <- predict(object = c53_traj,
+#'                                   distance_lims = my_distance_lims,
+#'                                   timestep = my_timestep)
+#' dim(interp_time_dist_pairs)
+#' head(interp_time_dist_pairs)
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
+                                        distance_lims = NULL, timestep = NULL,
                                         deriv = 0, trips = NULL, ...) {
 
   # --- Validation ---
-  # Validate & format input DFs
-  df_list <- predict_traj_input_setup(new_times = new_times,
-                                      new_distances = new_distances)
-  new_times_df <- df_list[[1]]
-  new_distances_df <- df_list[[2]]
-
-  # Validate trips input
-  all_trips <- unclass(object)
-  if (is.null(trips)) {
-    # If not provided, use all
-    trips <- all_trips
+  if ("avltrajectory_single" %in% class(object)) {
+    has_inv <- is.function(attr(object, "inv_traj_fun"))
   } else {
-    # If trips are provided, check that they are in traj functions
-    trips_check <- trips %in% all_trips
-    if (!all(trips_check)) {
-      # If at least one trip is not supported by the function
-      rlang::abort(message = paste(c("The following requested trips are not in this trajectory function:\n",
-                                     trips[!trips_check]), collapse = " "),
-                   class = "error_trajpredict_trips")
-    }
+    has_inv <- is.function(attr(object, "inv_traj_fun")[[1]])
   }
+  max_deriv <- attr(object, "max_deriv")
+  # Validate & format input DFs
+  predict_traj_input_validation(new_times = new_times,
+                                new_distances = new_distances,
+                                distance_lims = distance_lims,
+                                timestep = timestep,
+                                has_inv = has_inv,
+                                deriv = deriv,
+                                max_deriv = max_deriv)
 
-  # --- Interpolation ---
-  # Get required data for all methods
+  # --- DF Setup & Interpolation ---
   trip_extremes <- get_trip_extremes(trajectory = object,
                                      filter_trips = trips)
-
+  # Find correct function to use
   if (!is.null(new_times)) {
-    # If interpolating for distances from new times
-
-    # Check deriv
-    if (deriv > attr(object, "max_deriv")) {
-      # Check if derivative is above function's allowed limit
-      rlang::abort(message = paste("Derivative too high. Maximum for this function is ",
-                                   attr(object, "max_deriv"), sep = ""),
-                   class = "error_trajpredict_input")
-    }
-
-    # Function
-    trajectory_function <- attr(object, "traj_fun")
-
-    # Call internal function to do interpolation
-    interpolate_distances_group(trip_extremes = trip_extremes,
-                                new_times = new_times_df,
-                                trajectory_function = trajectory_function,
-                                deriv = deriv)
-  } else {
-    # If interpolating for times from new distances
-    if (deriv > 0) {
-      # Check if derivative provided
-      rlang::abort(message = "Derivative not allowed for inverse function. Please find timepoints first, then derivatives at timepoints.",
-                   class = "error_trajpredict_input")
-    }
-
-    # Get inverse trajectory function
-    inv_trajectory_function <- attr(object, "inv_traj_fun")
-    if (is.null(inv_trajectory_function)) {
-      # Check that inverse function actually exists
-      rlang::abort(message = "Trajectory object does not contain inverse function. Please create one using get_trajectory_function().",
-                   class = "error_trajpredict_input")
-    }
-
-    # Call internal function to do interpolation
-    interpolate_times_group(trip_extremes = trip_extremes,
-                            new_distances = new_distances_df,
-                            inv_trajectory_function = inv_trajectory_function)
+    new_times_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
+                                                    new_times = new_times)
+    interp <- interpolate_distances(trajectory = object,
+                                    new_times_trips = new_times_trips,
+                                    deriv = deriv)
   }
-}
-
-#' @rdname predict.avltrajectory_group
-#' @export
-predict.avltrajectory_single <- function(object, new_times = NULL, new_distances = NULL,
-                                         deriv = 0, ...) {
-
-  # --- Validation ---
-  df_list <- predict_traj_input_setup(new_times = new_times,
-                                      new_distances = new_distances)
-  new_times_df <- df_list[[1]]
-  new_distances_df <- df_list[[2]]
-
-  # --- Interpolation ---
-  # Dist & time extremes
-  trip_extremes <- c("min_dist" = attr(object, "min_dist"),
-                     "max_dist" = attr(object, "max_dist"),
-                     "min_time" = attr(object, "min_time"),
-                     "max_time" = attr(object, "max_time"))
-
-  if (!is.null(new_times)) {
-    # If interpolating for distances from new times
-
-    # Check derivative value
-    if (deriv > attr(object, "max_deriv")) {
-      # Check if derivative is above function's allowed limit
-      rlang::abort(message = paste("Derivative too high. Maximum for this function is ",
-                                   attr(object, "max_deriv"), sep = ""),
-                   class = "error_trajpredict_input")
-    }
-
-    # Function
-    trajectory_function <- attr(object, "traj_fun")
-
-    # Call internal function to do interpolation
-    interpolate_distances_single(trip_extremes = trip_extremes,
-                                 new_times = new_times_df,
-                                 trajectory_function = trajectory_function,
-                                 deriv = deriv)
-  } else {
-    # If interpolating for times from new distance values
-
-    # Check if derivative provided
-    if (deriv > 0) {
-      rlang::abort(message = "Derivative not allowed for inverse function. Please find timepoints first, then derivatives at timepoints.",
-                   class = "error_trajpredict_input")
-    }
-
-    # Get inverse trajectory function
-    inv_trajectory_function <- attr(object, "inv_traj_fun")
-    if (is.null(inv_trajectory_function)) {
-      # Check that inverse function actually exists
-      rlang::abort(message = "Trajectory object does not contain inverse function. Please create one using get_trajectory_function().",
-                   class = "error_trajpredict_input")
-    }
-
-    # Call internal function to do interpolation
-    interpolate_times_single(trip_extremes = trip_extremes,
-                             new_distances = new_distances_df,
-                             inv_trajectory_function = inv_trajectory_function)
+  if (!is.null(new_distances)) {
+    new_dist_trips <- predict_traj_setup_new_dists(trip_extremes = trip_extremes,
+                                                   new_distances = new_distances)
+    interp <- interpolate_times(trajectory = object,
+                                new_dist_trips = new_dist_trips)
   }
+  if (!is.null(distance_lims)) {
+    new_times_trips <- predict_traj_setup_dist_lims(trajectory = object,
+                                                    trip_extremes = trip_extremes,
+                                                    distance_lims = distance_lims,
+                                                    timestep = timestep)
+    interp <- interpolate_distances(trajectory = object,
+                                    new_times_trips = new_times_trips,
+                                    deriv = deriv)
+  }
+
+  return(interp)
 }

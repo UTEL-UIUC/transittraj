@@ -4,12 +4,12 @@
 \alias{plot_feature_df_setup}
 \title{Set up feature distances DF}
 \usage{
-plot_feature_df_setup(feature_distances, distance_lim)
+plot_feature_df_setup(feature_distances, distance_lims)
 }
 \arguments{
 \item{feature_distances}{DF of features & their distances}
 
-\item{distance_lim}{Vector of min & max distances}
+\item{distance_lims}{Vector of min & max distances}
 }
 \value{
 A DF of filtered & validated feature distances

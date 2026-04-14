@@ -41,6 +41,8 @@ new_avltrajectory_single(
 \item{max_deriv}{Max derivative allowed}
 
 \item{used_speeds}{Whether speeds were used}
+
+\item{agency_tz}{Timezone of agency}
 }
 \value{
 Single trajectory object

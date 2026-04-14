@@ -2,19 +2,18 @@
 % Please edit documentation in R/trajectory_prediction.R
 \name{predict.avltrajectory_group}
 \alias{predict.avltrajectory_group}
-\alias{predict.avltrajectory_single}
 \title{Interpolate time or distance points using AVL trajectories.}
 \usage{
 \method{predict}{avltrajectory_group}(
   object,
   new_times = NULL,
   new_distances = NULL,
+  distance_lims = NULL,
+  timestep = NULL,
   deriv = 0,
   trips = NULL,
   ...
 )
-
-\method{predict}{avltrajectory_single}(object, new_times = NULL, new_distances = NULL, deriv = 0, ...)
 }
 \arguments{
 \item{object}{The single or grouped trajectory object.}
@@ -27,8 +26,16 @@ at. Default is \code{NULL}.}
 with at least the column \code{"distance"} of new distances to interpolate at.
 Default is \code{NULL}.}
 
+\item{distance_lims}{Optional. A vector of (minimum, maximum) distance
+bounds over which to interpolate at a given timestep. If provided,
+\code{timestep} must also be provided. Default is \code{NULL}.}
+
+\item{timestep}{Optional. A single numeric indicating the time interval
+between successive interpolating steps when defining \code{distance_lims}. If
+provided, \code{distance_lims} must also be provided. Default is \code{NULL}.}
+
 \item{deriv}{Optional. The derivative with which to calculate at. Default is
-0.}
+\code{0}.}
 
 \item{trips}{Optional. A vector of \code{trip_id_performed}s to interpolate for.
 Default is \code{NULL}, which will use all trips found in the trajectory object.}
@@ -49,34 +56,52 @@ trajectory function.
 \details{
 This function is the recommended way to use a fit trajectory function. It has
 a few key features:
-\subsection{Interpolate for Distance or Time}{
+\subsection{Interpolation}{
+
+There are three ways to interpolate: finding distance from times (direct
+trajectory function), times from distance (inverse trajectory function),
+or timesteps over a distance range (both inverse and direct trajectory
+function). For the former two, either a vector or dataframe of
+\code{new_times} or \code{new_distances} may be provided. If a dataframe is
+provided, it must contain the column \code{event_timestamp} or \code{distance},
+and all additional columns will be preserved through the interpolation.
+\subsection{Distances from Times}{
 
 If \code{new_times} is provided, the function will find the \code{distance} of each
-trip at each new time using the direct trajectory function. Conversely, if
-\code{new_distances} is provided, the function will find the \code{event_timestamp} at
-which each trip crossed that distance using the inverse trajectory function.
-If an input trajectory object does not contain an inverse function, an error
-will be thrown.
-
-These new points can be either vectors or dataframes:
-\itemize{
-\item If the input is a vector, the returned value will be a dataframe
-associating each trip with each new point and a column \code{interp} indicating
-the interpolated value.
-\item If the input is a dataframe, it must contain a column names
-\code{event_timestamp} or \code{distance}, depending on whether it is put into
-\code{new_times} or \code{new_distances}. All other columns will be preserved in the
-output. Each row will be duplicated for each trip, and a column \code{interp} will
-be added indicating the interpolated value.
+trip at each point in time. If a dataframe is provided, it must contain
+the column \code{event_timestamp}. This will use the trajectory's direct function.
+When using \code{new_times}, a \code{deriv} value can also be set. See below for
+a more detailed discussion.
 }
 
-The latter option is particularly useful for finding crossing times of
-particular features, or the positions at notable points in time. For
-instance, \code{new_distance} may be a dataframe of corridors, with a column
-\code{name} for the corridor name and \code{inout} for whether each row is the
-entrance or exit to the corridor. The returned value will append the column
-\code{trip_id_performed} for each trip that crosses those distances, and \code{interp}
-for the time the trip passes the entrance or exit.
+\subsection{Times from Distances}{
+
+If \code{new_distances} is provided, the function will find the \code{event_timestamp}
+of each trip at each point in space. If a dataframe is provided, it must
+contain the column \code{distance}. This will use the trajectory's
+inverse function. When using \code{new_distances}, a \code{deriv} value cannot
+be set. See below for a more detailed discussion.
+}
+
+\subsection{Time & Distance Pairs from Distance Bounds}{
+
+Oftentimes, you may want to interpolate by small timesteps over a defined
+region of space. This can be done by setting \code{distance_lims} and
+\code{timestep}. The function will use the trajectory's inverse function to find
+each trip's entrance and exit time through \code{distance_lims}, then create
+a sequence between these entrance and exit times with a step of \code{timestep}.
+Finally, the trajectory's direct function is used to find the distance
+at each of these timepoints. A \code{deriv} value can also be set for the final
+direct interpolation.
+
+If you have a well-defined region of space, this approach allows you to
+interpolate vehicle positions at a very tight timescale over a large
+number of trips efficiently. You could alternatively use \code{new_times} to
+interpolate over the entire time range of all trips (which wouldn't
+require an inverse function), though this may require orders of magnitude
+more points and would be substantially less efficient.
+}
+
 }
 
 \subsection{Finding Derivatives}{
@@ -105,11 +130,10 @@ to find the derivative.
 
 By default, many fit interpolating curves will allow extrapolation (i.e.,
 the input of an \code{event_timestamp} beyond the original time domain of the
-trip). This is especially true for splines fit using \code{stats::splinefun()}.
-In general, this will not be reasonable for transit vehicles: time points
-should be constrained by the time that a trip has actually been observed,
-and distances should be constrained to the part of a route a trip actually
-ran.
+trip). In general, this will not be reasonable for transit vehicles:
+time points should be constrained by the time that a trip has actually
+been observed, and distances should be constrained to the part of a route
+a trip actually ran.
 
 This function uses the maximum and minimum time and distance values stored
 in the trajectory object to identify if an input \code{new_times} or
@@ -138,6 +162,8 @@ my_times = seq(from = 1771260000,
 my_distances = seq(from = 0,
                    to = 15000,
                    by = 1000)
+my_distance_lims = c(500, 600)
+my_timestep = 10
 
 # Get input data
 c53_traj <- new_transittraj_data("get_trajectory_fun")
@@ -160,4 +186,11 @@ interp_times <- predict(object = c53_traj,
                         new_distances = my_distances)
 dim(interp_times)
 head(interp_times)
+
+# Run function: get time & distance pairs given distance bounds
+interp_time_dist_pairs <- predict(object = c53_traj,
+                                  distance_lims = my_distance_lims,
+                                  timestep = my_timestep)
+dim(interp_time_dist_pairs)
+head(interp_time_dist_pairs)
 }

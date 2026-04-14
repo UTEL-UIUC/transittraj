@@ -1,3 +1,21 @@
+# transittraj 0.1.3
+
+*Release: 4/14/2026*
+
+* Trajectory grouping: new function `group_trajectories()` allows the user
+to group together a list of single trajectory objects, or split apart a
+single grouped trajectory object. Read more at `help(group_trajectories)`.
+  
+* `predict()` for trajectories:
+
+  * New input parameters for trajectory `predict()` methods include
+  `distance_lims` and `timestep`. These allow the user to interpolate at a
+  specific time interval over a specific region of space. Read more at
+  `vignette("articles/intro-trajectories")`.
+  
+  * Substantial refactoring of internal functions to improve cleanliness
+  and readability.
+
 # transittraj 0.1.2
 
 *Release: 3/25/2026*

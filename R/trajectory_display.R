@@ -148,7 +148,8 @@ plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.
   if (length(x) > 50) {
-    warning("Many trajectories detected. Plotting first 50 only. See plot_trajectory() for additional controls.")
+    rlang::warn(message = "Many trajectories detected. Plotting first 50 only. See plot_trajectory() for additional controls.",
+                class = "warn_plotting_groupnum")
     plot_trips <- unclass(x)[1:50]
   } else {
     plot_trips <- unclass(x)
@@ -189,7 +190,7 @@ plot.avltrajectory_single <- function(x, ...) {
   plot_seq <- seq(from = attr(x, "min_time"),
                   to = attr(x, "max_time"),
                   by = 10)
-  plot_df <- predict.avltrajectory_single(object = x, new_times = plot_seq) %>%
+  plot_df <- predict.avltrajectory_group(object = x, new_times = plot_seq) %>%
     dplyr::rename(distance = interp)
 
   # Create & return plot

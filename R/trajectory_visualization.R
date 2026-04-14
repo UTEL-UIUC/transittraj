@@ -22,7 +22,7 @@
 #'
 #' - A single or grouped trajectory object. This will use the direct
 #' trajectory function at a resolution controlled by `timestep`. This is
-#' simplest, and looks best when zooming in using `distance_lim`. The only
+#' simplest, and looks best when zooming in using `distance_lims`. The only
 #' attribute that can be mapped to if using a trajectory is `trip_id_performed`.
 #'
 #' - A `distance_df` of TIDES AVL data. This will use the distance and time
@@ -118,7 +118,7 @@
 #' Finally, the bounding box of the basemap can also be set. The bounding
 #' box is defined relative to the spatial range of `trajectory` or
 #' `distance_df`. The default is expansion is 0.05% (0.0025% for
-#' `distance_lim != NULL`) of the larger dimension (northing or easting) of the
+#' `distance_lims != NULL`) of the larger dimension (northing or easting) of the
 #' vehicle location bounding box. To customize, det `bbox_expand` to some
 #' numeric in the distance units of the `shape_geometry`'s spatial
 #' projection (e.g., meters if using a UTM projection).
@@ -133,7 +133,7 @@
 #' for the background basemap. Default is 0.
 #' @param bbox_expand Optional. The distance by which to expand the plotting
 #' window in both directions. Default is `NULL`, which will expand the window by
-#' 0.05% of the larger dimension (or 0.0025% if `distance_lim` is provided).
+#' 0.05% of the larger dimension (or 0.0025% if `distance_lims` is provided).
 #' @param trajectory Optional. A trajectory object, either a single trajectory
 #' or grouped trajectory. If provided, `distance_df` must not be provided.
 #' Default is `NULL`.
@@ -148,7 +148,7 @@
 #' @param convert_to_timezone Optional. Should numeric epoch times be converted
 #' back to readable hour-minute-second time values, using the agency timezone?
 #' Default is `TRUE`.
-#' @param distance_lim Optional. A vector with `(minimum, maximum)` distance
+#' @param distance_lims Optional. A vector with `(minimum, maximum)` distance
 #' values to plot.
 #' @param center_vehicles Optional. A boolean, should all vehicle points be
 #' centered to start at the same time (0 seconds)? Default is `FALSE`.
@@ -228,7 +228,7 @@
 #'                                 label_field = "name",
 #'                                 label_alpha = 0.8,
 #'                                 label_pos = "right",
-#'                                 distance_lim = my_dist_range,
+#'                                 distance_lims = my_dist_range,
 #'                                 center_vehicles = TRUE,
 #'                                 timestep = 1)
 #'
@@ -239,7 +239,7 @@
 #'                               route_color = "firebrick4",
 #'                               label_field = "name",
 #'                               label_alpha = 0.8,
-#'                               distance_lim = my_dist_range,
+#'                               distance_lims = my_dist_range,
 #'                               center_vehicles = TRUE,
 #'                               timestep = 1,
 #'                               bbox_expand = 40)
@@ -251,7 +251,7 @@
 #'   anim_map
 #' }
 plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
-                               timestep = 5, distance_lim = NULL, center_vehicles = FALSE,
+                               timestep = 5, distance_lims = NULL, center_vehicles = FALSE,
                                feature_distances = NULL, transition_style = "linear",
                                convert_to_timezone = TRUE,
                                # Format route
@@ -276,24 +276,24 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
                                   distance_df = distance_df,
                                   timestep = timestep,
                                   plot_trips = plot_trips,
-                                  distance_lim = distance_lim,
+                                  distance_lims = distance_lims,
                                   center_vehicles = center_vehicles,
                                   convert_to_timezone = convert_to_timezone) %>%
     dplyr::mutate(x = 0)
   if (!is.null(feature_distances)) {
     feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
-                                               distance_lim = distance_lim) %>%
+                                               distance_lims = distance_lims) %>%
       dplyr::mutate(x = 0)
   }
 
   # --- Route DF setup ---
-  if (is.null(distance_lim)) {
+  if (is.null(distance_lims)) {
     # If distance limits are not provided, draw route between lowest & highest observed distance
     route_df <- data.frame(distance = c(min(trips_df$distance), max(trips_df$distance)),
                            x = c(0, 0))
   } else {
     # If distance limits are provided, draw route between these limits
-    route_df <- data.frame(distance = distance_lim,
+    route_df <- data.frame(distance = distance_lims,
                            x = c(0, 0))
   }
 
@@ -449,7 +449,7 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
 #' @rdname plot_animated_line
 #' @export
 plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = NULL,
-                              plot_trips = NULL, timestep = 5, distance_lim = NULL,
+                              plot_trips = NULL, timestep = 5, distance_lims = NULL,
                               center_vehicles = FALSE, feature_distances = NULL,
                               background = "cartolight", background_zoom = 0,
                               bbox_expand = NULL, transition_style = "linear",
@@ -476,12 +476,12 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
                                   distance_df = distance_df,
                                   timestep = timestep,
                                   plot_trips = plot_trips,
-                                  distance_lim = distance_lim,
+                                  distance_lims = distance_lims,
                                   center_vehicles = center_vehicles,
                                   convert_to_timezone = convert_to_timezone)
   if (!is.null(feature_distances)) {
     feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
-                                               distance_lim = distance_lim)
+                                               distance_lims = distance_lims)
   }
   # Validate shape geometry
   validate_shape_geometry(shape_geometry = shape_geometry,
@@ -558,7 +558,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   trips_sf <- trips_sf %>% dplyr::select(-point_geom)
   # If bounding box expansion not provided, calculate as portion of bbox
   if (is.null(bbox_expand)) {
-    if (is.null(distance_lim)) {
+    if (is.null(distance_lims)) {
       bbox_expand <- 0.0005 * max(c(bbox[1], bbox[2]))
     } else {
       # Use closer zoom if a distance limit provided
@@ -732,7 +732,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #'
 #' - A single or grouped trajectory object. This will use the direct
 #' trajectory function at a resolution controlled by `timestep`. This is
-#' simplest, and looks best when zooming in using `distance_lim`. The only
+#' simplest, and looks best when zooming in using `distance_lims`. The only
 #' attribute that can be mapped to if using a trajectory is `trip_id_performed`.
 #'
 #' - A `distance_df` of TIDES AVL data. This will use the distance and time
@@ -845,12 +845,12 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #'                 feature_distances = my_features,
 #'                 label_field = "name",
 #'                 label_alpha = 0.8,
-#'                 distance_lim = my_dist_range,
+#'                 distance_lims = my_dist_range,
 #'                 traj_color = "indianred3",
 #'                 center_trajectories = TRUE,
 #'                 timestep = 1)
 plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = NULL,
-                            timestep = 5, distance_lim = NULL, center_trajectories = FALSE,
+                            timestep = 5, distance_lims = NULL, center_trajectories = FALSE,
                             feature_distances = NULL, convert_to_timezone = TRUE,
                             # Trajectory line customization
                             traj_color = "coral", traj_type = "solid",
@@ -869,12 +869,12 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
                                   distance_df = distance_df,
                                   timestep = timestep,
                                   plot_trips = plot_trips,
-                                  distance_lim = distance_lim,
+                                  distance_lims = distance_lims,
                                   center_vehicles = center_trajectories,
                                   convert_to_timezone = convert_to_timezone)
   if (!is.null(feature_distances)) {
     feature_distances <- plot_feature_df_setup(feature_distances = feature_distances,
-                                               distance_lim = distance_lim)
+                                               distance_lims = distance_lims)
   }
 
   # --- Formatting setup ---
@@ -1034,7 +1034,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
 #'                                 label_field = "name",
 #'                                 label_alpha = 0.8,
 #'                                 label_pos = "right",
-#'                                 distance_lim = my_dist_range,
+#'                                 distance_lims = my_dist_range,
 #'                                 center_vehicles = TRUE,
 #'                                 timestep = 1)
 #'
