@@ -1,88 +1,3 @@
-#' Validate inputs to predict trajectory methods & set up dataframes.
-#'
-#' Checks that the input `new_times` and `new_distances` to
-#' `predict.avltrajectory_group()` and `predict.avltrajectory_single()`
-#' meet requirements of these functions, and sets up dataframes for
-#' interpolation. Factoring intended to reduce code duplication.
-#'
-#' @param new_times DF or vector of new times
-#' @param new_distances DF or vector of new distances
-#' @param distance_lims A vector of distance limits
-#' @param timestep An integer for the time interval between each step
-#' @return List of `new_times_df` and `new_distances_df`
-#' @keywords internal
-predict_traj_input_setup <- function(new_times, new_distances,
-                                     distance_lims, timestep) {
-
-  # --- Check Inputs ---
-  # Create list of allowed input combos
-  inputs <- list(new_times, new_distances, distance_lims, timestep)
-  valid_inputs <- list(c(TRUE, FALSE, FALSE, FALSE),
-                       c(FALSE, TRUE, FALSE, FALSE),
-                       c(FALSE, FALSE, TRUE, TRUE))
-  # Check if provided combo is in list of alloweds
-  inputs_check <- sapply(X = valid_inputs, FUN = is.null)
-  inputs_ok <- any(sapply(X = valid_inputs, FUN = identical, inputs_check))
-  # If not, throw error
-  if (!inputs_ok) {
-    rlang::abort(message = "Invalid inputs provided. Please provide one of: new_times; or new_distances; or distance_lims AND timestep.",
-                 class = "error_trajpredict_input")
-  }
-
-
-
-
-  # Initialize final DFs as NULLs; they will be overridden if requirements
-  # are met
-  new_times_df <- NULL
-  new_distances_df <- NULL
-
-
-  # Build DFs for interpolation
-  if (!is.null(new_times)) { # If interpolating for distance from new times
-
-    # Convert data types
-    if (is.vector(new_times)) {
-      # If a vector is provided, convert it to dataframe
-      new_times_df <- data.frame(event_timestamp = new_times)
-    } else if (is.data.frame(new_times)) {
-      # If a DF is provided
-      if (!("event_timestamp" %in% names(new_times))) {
-        # Check if new_times has needed column
-        rlang::abort(message = "Please provide event_timestamp column in new_times",
-                     class = "error_trajpredict_input")
-      } else {
-        new_times_df <- new_times
-      }
-    } else {
-      rlang::abort(message = "Please provide either a vector or dataframe of new_times.",
-                   class = "error_trajpredict_input")
-    }
-  } else { # If interpolating for times from new distances
-
-    # Convert data types
-    if (is.vector(new_distances)) {
-      # If a vector is provided, convert it to dataframe
-      new_distances_df <- data.frame(distance = new_distances)
-    } else if (is.data.frame(new_distances)) {
-      # If a DF is provided
-      if (!("distance" %in% names(new_distances))) {
-        # Check if new_distances has needed column
-        rlang::abort(message = "Please provide distance column in new_distances",
-                     class = "error_trajpredict_input")
-      } else {
-        new_distances_df <- new_distances
-      }
-    } else {
-      rlang::abort(message = "Please provide either a vector or dataframe of new_distances.",
-                   class = "error_trajpredict_input")
-    }
-  }
-
-  return(list(new_times_df, new_distances_df))
-}
-
-
 #' Internal function to validate inputs to trajectory prediction methods.
 #'
 #' Checks that the proper combination of inputs is provided. Should be one
@@ -143,6 +58,13 @@ predict_traj_input_validation <- function(new_times, new_distances,
   if (deriv > max_deriv) {
     rlang::abort(message = paste("Input deriv is larger than trajectory function's maximum (",
                                  max_deriv, ").",
+                                 sep = ""),
+                 class = "error_trajpredict_input")
+  }
+  # If user-requested derivative is less than 0
+  if (deriv < 0) {
+    rlang::abort(message = paste("Negative deriv not allowed. Please enter value between 0 and ",
+                                 max_deriv, ".",
                                  sep = ""),
                  class = "error_trajpredict_input")
   }

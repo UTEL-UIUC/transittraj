@@ -1,4 +1,4 @@
-test_that("predict_traj_input_setup: input combo validation", {
+test_that("predict_traj_input_validation: input combo validation", {
 
   c53_traj <- new_transittraj_data("get_trajectory_fun")
 
@@ -34,4 +34,85 @@ test_that("predict_traj_input_setup: input combo validation", {
     predict(object = c53_traj),
     class = "error_trajpredict_input"
   )
+})
+
+test_that("predict_traj_input_validation: derivative validation", {
+
+  c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+  # Larger than allowed
+  expect_error(
+    predict(object = c53_traj,
+            new_times = c(0, 1),
+            deriv = 5),
+    class = "error_trajpredict_input"
+  )
+  # Negative
+  expect_error(
+    predict(object = c53_traj,
+            new_times = c(0, 1),
+            deriv = -1),
+    class = "error_trajpredict_input"
+  )
+  # Deriv w/ new_distances
+  expect_error(
+    predict(object = c53_traj,
+            new_distance = c(100, 200),
+            deriv = 1),
+    class = "error_trajpredict_input"
+  )
+})
+
+test_that("predict_traj_input_validation: inverse validation", {
+
+  c53_mono <- new_transittraj_data("make_monotonic")
+  c53_traj_noinv <- get_trajectory_fun(distance_df = c53_mono,
+                                       find_inverse_function = FALSE)
+
+  # No inv w/ new_distances
+  expect_error(
+    predict(object = c53_traj_noinv,
+            new_distances = c(100, 200)),
+    class = "error_trajpredict_input"
+  )
+
+  # No inv w/ distance_lims
+  expect_error(
+    predict(object = c53_traj_noinv,
+            distance_lims = c(100, 200),
+            timestep = 10),
+    class = "error_trajpredict_input"
+  )
+})
+
+test_that("predict_traj_setup_dist_lims: input validation", {
+
+  c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+  # Correct range
+  expect_error(
+    predict(object = c53_traj,
+            distance_lims = c(50000, 50200),
+            timestep = 10),
+    class = "error_trajpredict_lims"
+  )
+})
+
+test_that("get_trip_extremes: input validation", {
+
+  c53_traj <- new_transittraj_data("get_trajectory_fun")
+
+  # --- trajectory ---
+  expect_error(
+    get_trip_extremes(trajectory = "abc"),
+    class = "error_trajextremes_input"
+  )
+
+  # --- filter_trips ---
+  expect_error(
+    get_trip_extremes(trajectory = c53_traj,
+                      filter_trips = c("a", "b")),
+    class = "error_trajextremes_input"
+  )
+
 })

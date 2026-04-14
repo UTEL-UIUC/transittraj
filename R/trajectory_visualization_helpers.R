@@ -15,7 +15,7 @@ plot_traj_input_validation <- function(trajectory, distance_df, has_inv) {
   if (!is.null(trajectory) & !is.null(distance_df)) {
     # - Check that both are not provided -
     rlang::abort(message = "Please provide only one of trajectory and distance_df.",
-                 class = "error_plottraj_inputdata")
+                 class = "error_plottraj_input")
   } else if (!is.null(trajectory)) {
 
     # - Check trajectory -
@@ -115,7 +115,7 @@ plot_traj_df_setup <- function(trajectory, has_inv, plot_trips,
   # Check that points remain after filtering
   if (dim(interp_df)[1] == 0) {
     rlang::abort(message = "No trip observations within trip or distance limit.",
-                 class = "error_plottraj_inputdata")
+                 class = "error_plottraj_input")
   }
 
   return(interp_df)
