@@ -83,9 +83,25 @@ predict_traj_input_setup <- function(new_times, new_distances,
 }
 
 
+#' Internal function to validate inputs to trajectory prediction methods.
+#'
+#' Checks that the proper combination of inputs is provided. Should be one
+#' of: new_times; new_distances; distance_lims AND timestep. If latter or
+#' new_distances, trajectory must also have inverse function. Derivative
+#' is also checked against maximum allowed.
+#'
+#' @param new_times A DF or vector of new time values, or `NULL`
+#' @param new_distances A DF or vector of new distance values, or `NULL`
+#' @param distance_lims A vector of min, max distance, or `NULL`
+#' @param timestep An integer for interpolation timestep, or `NULL`
+#' @param has_inv Boolean, does traj have inv fun?
+#' @param deriv User-requested derivative
+#' @param max_deriv Maximum derivative supported by traj fun
+#' @return Throws error only if not all OK
+#' @keywords internal
 predict_traj_input_validation <- function(new_times, new_distances,
                                           distance_lims, timestep,
-                                          has_inv) {
+                                          has_inv, deriv, max_deriv) {
 
   # --- Check Input Combination ---
   # Create list of allowed input combos
@@ -103,15 +119,37 @@ predict_traj_input_validation <- function(new_times, new_distances,
   }
 
   # --- Check Inverse ---
-  if (!is.null(distance_lims) & !has_inv) {
-    rlang::abort(message = "distance_lims and timestep provided, but trajectory has no inverse function. Inverse required for these inputs.",
-                 class = "error_trajpredict_input")
+  if (!has_inv) {
+    # Inv required if distance_lims in use
+    if (!is.null(distance_lims)) {
+      rlang::abort(message = "distance_lims and timestep provided, but trajectory has no inverse function. Inverse required for these inputs.",
+                   class = "error_trajpredict_input")
+    }
+
+    # Inv required if using new_distances
+    if (!is.null(new_distances)) {
+      rlang::abort(message = "new_distances provided, but trajectory has no inverse function. Inverse function required for this input.",
+                   class = "error_trajpredict_input")
+    }
   }
 
+  # --- Check Derivative ---
+  # Check that derivative is not provided with inv fun
+  if ((deriv > 0) & !is.null(new_distances)) {
+    rlang::abort(message = "Derivative not allowed for inverse function. Considering finding timepoints first, then derivatives at timepoints.",
+                 class = "error_trajpredict_input")
+  }
+  # If user-requested derivative is larger than function's maximum
+  if (deriv > max_deriv) {
+    rlang::abort(message = paste("Input deriv is larger than trajectory function's maximum (",
+                                 max_deriv, ").",
+                                 sep = ""),
+                 class = "error_trajpredict_input")
+  }
 }
 
-predict_traj_dist_lims <- function(trajectory, trips,
-                                   distance_lims, timestep) {
+predict_traj_setup_dist_lims <- function(trajectory, trips,
+                                         distance_lims, timestep) {
 
   # Get observed trip limits & user-defined limits
   trip_extremes_filt <- get_trip_extremes(trajectory = trajectory,
@@ -161,6 +199,14 @@ predict_traj_dist_lims <- function(trajectory, trips,
                                         by = timestep)) %>%
     dplyr::select(-c(max_time, min_time)) %>%
     dplyr::ungroup()
+}
+
+predict_traj_setup_new_times <- function(new_times, trip_extremes) {
+
+}
+
+predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
+
 }
 
 #' Get the distance and time range of each trip in a trajectory object.
@@ -460,13 +506,16 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
                                         deriv = 0, trips = NULL, ...) {
 
   # --- Validation ---
-  has_inv = is.function(attr(trajectory, "inv_traj_fun")[[1]])
+  has_inv <- is.function(attr(trajectory, "inv_traj_fun")[[1]])
+  max_deriv <- attr(object, "max_deriv")
   # Validate & format input DFs
   predict_traj_input_validation(new_times = new_times,
                                 new_distances = new_distances,
                                 distance_lims = distance_lims,
                                 timestep = timestep,
-                                has_inv = has_inv)
+                                has_inv = has_inv,
+                                deriv = deriv,
+                                max_deriv = max_deriv)
 
   # df_list <- predict_traj_input_setup(new_times = new_times,
   #                                     new_distances = new_distances,
