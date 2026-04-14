@@ -19,10 +19,8 @@ a list of single trajectories.}
 Trajectory objects hold the trajectory functions, and related information,
 from one or more trip IDs. This function groups the fit trajectories from
 multiple trips into one object, or splits a grouped object into many single
-trajectory objects, one for each trip.
-}
-\details{
-See \code{help(get_trajectory_fun)} for more information.
+trajectory objects, one for each trip. See \code{help(get_trajectory_fun)} for
+more information.
 }
 \examples{
 # Get input data
