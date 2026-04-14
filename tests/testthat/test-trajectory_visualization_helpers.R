@@ -75,3 +75,24 @@ test_that("plot_traj_df_setup: range validation", {
     class = "error_plottraj_input"
   )
 })
+
+test_that("plot_trips_df_setup: range validation", {
+
+  # problems w/ traj object will be caught by plot_traj_df_setup,
+  # so will only check distance_df here
+  c53_mono <- new_transittraj_data("make_monotonic")
+
+  # bad distance range
+  expect_error(
+    plot_trajectory(distance_df = c53_mono,
+                    distance_lims = c(50000, 50200)),
+    class = "error_plottraj_inputdata"
+  )
+
+  # bad trips
+  expect_error(
+    plot_trajectory(distance_df = c53_mono,
+                    plot_trips = c("a", "b")),
+    class = "error_plottraj_inputdata"
+  )
+})
