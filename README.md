@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# transittraj
+# transittraj <a href="https://obrien-ben.github.io/transittraj/"><img src="man/figures/logo.png" align="right" height="138" alt="transittraj website" /></a>
 
 <!-- badges: start -->
 
