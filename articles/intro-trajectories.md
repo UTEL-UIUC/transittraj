@@ -12,6 +12,7 @@ trajectory function.
 Let’s begin by loading the libraries we’ll be using:
 
 ``` r
+
 library(transittraj)
 library(tidytransit)
 library(dplyr)
@@ -41,6 +42,7 @@ Using the data we cleaned in the previous vignette, let’s fit our
 trajectory functions:
 
 ``` r
+
 # Run function
 c53_traj <- get_trajectory_fun(distance_df = c53_mono,
                                interp_method = "monoH.FC",
@@ -55,6 +57,7 @@ the time and distances ranges for each trip. We can use
 the object:
 
 ``` r
+
 summary(c53_traj)
 #> ------
 #> AVL Group Trajectory Object
@@ -90,6 +93,7 @@ time. We can do that by providing `new_times` to
 [`predict()`](https://rdrr.io/r/stats/predict.html). Let’s see below:
 
 ``` r
+
 # Run interpolating function
 c53_time_interp <- predict(
   object = c53_traj,
@@ -122,6 +126,7 @@ at any point in time by setting the `deriv` parameter in
 [`predict()`](https://rdrr.io/r/stats/predict.html):
 
 ``` r
+
 # Run interpolating function
 c53_speed_interp <- predict(
   object = c53_traj,
@@ -157,6 +162,7 @@ of each stop along the route using
 [`get_stop_distances()`](https://obrien-ben.github.io/transittraj/reference/get_stop_distances.md):
 
 ``` r
+
 # First, use stop_times to find which stop_ids are timepoints
 c53_timepoints <- c53_gtfs$stop_times %>%
   distinct(stop_id, timepoint)
@@ -192,6 +198,7 @@ Now that we have some distances, let’s interpolate using
 [`predict()`](https://rdrr.io/r/stats/predict.html):
 
 ``` r
+
 # Run interpolating function
 c53_stop_crossings <- predict(
   object = c53_traj,
@@ -228,6 +235,7 @@ over U Street between 13th and 14th Streets NW. We’ll begin by pulling a
 vector of this distance range:
 
 ``` r
+
 # Get distance limits of U St between 13th and 14th
 U_St_lims <- c53_stops %>%
   filter(stop_name %in% c("U St NW+13 St NW",
@@ -242,6 +250,7 @@ Next, we can put this into
 `distance_lims` parameter, alongside a `timestep` of 1 second:
 
 ``` r
+
 # Run interpolating function
 c53_USt_interp <- predict(
   object = c53_traj,
@@ -271,6 +280,7 @@ we’ll generate a plot of these generated points. Below, we first
 trip:
 
 ``` r
+
 # "Center" all trips to start at 0 time
 c53_USt_centered <- c53_USt_interp %>%
   group_by(trip_id_performed) %>%
@@ -315,6 +325,7 @@ use [`plot()`](https://rdrr.io/r/graphics/plot.default.html) to easily
 generate a plot of all trajectories:
 
 ``` r
+
 plot(c53_traj)
 ```
 
@@ -337,6 +348,7 @@ trajectories, the linetypes and colors can also be mapped to attributes
 of that specific layer using a dataframe:
 
 ``` r
+
 # Set formatting options for C53 stops
 stop_formatting <- data.frame(timepoint = c("Yes", "No"),
                               color = c("firebrick", "grey50"),
@@ -352,6 +364,7 @@ We can plug all that in to
 to generate our formatted plot:
 
 ``` r
+
 # Run plotting function
 traj_plot <- plot_trajectory(
   # Provide input data
@@ -381,6 +394,7 @@ point in time. Second, `label_field` will create a label on our feature
 lines using the specified field from `c53_stops`.
 
 ``` r
+
 # Set parameters
 fl_U_intersection_lims <- c(12000, 12600)
 
@@ -433,6 +447,7 @@ A dataframe can be used to map the `outline` color and `shape`
 attributes of stop and vehicle points to their attributes.
 
 ``` r
+
 # Set parameters
 stop_formatting <- data.frame(timepoint = c("Yes", "No"),
                               outline = c("red1", "grey30"),
@@ -443,6 +458,7 @@ For this plot, we’ll zoom in to the Florida Ave-U St corridor of the
 route. Now we can generate our line animation:
 
 ``` r
+
 # Set distance limits
 fl_U_corridor_lims <- c(9500, 15500)
 
@@ -499,6 +515,7 @@ visualization functions. We can reuse the formatting options from
 here.
 
 ``` r
+
 # Run function
 map_anim <- plot_animated_map(
   # Add trajectory, shape, & feature data

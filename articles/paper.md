@@ -16,6 +16,7 @@ You can install the development version of `transittraj` from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("UTEL-UIUC/transittraj")
 ```
@@ -125,6 +126,7 @@ eventual submission to CRAN, we’re still working on the following:
 helpful, we’d appreciate a citation:
 
 ``` r
+
 citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 

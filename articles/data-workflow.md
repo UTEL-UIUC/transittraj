@@ -17,6 +17,7 @@ data we’ll be using. Let’s begin by loading the libraries we’ll be
 using:
 
 ``` r
+
 library(transittraj)
 library(tidytransit)
 library(dplyr)
@@ -35,6 +36,7 @@ For this example, we’ll work with WMATA’s C53 bus route in the
 northbound direction. Let’s filter our AVL data to these specifications:
 
 ``` r
+
 # Set our filtering parameters
 c53 <- "C53"
 c53_dir <- 0 # 0 is NB, 1 is SB
@@ -49,6 +51,7 @@ below that this window has about 5,400 individual GPS pings across 33
 trips and 5 hours.
 
 ``` r
+
 # Pull attributes about our filtered AVL
 total_obs <- dim(c53_avl)[1]
 num_trips <- length(unique(c53_avl$trip_id_performed))
@@ -73,6 +76,7 @@ help with this. We’ll start by filtering our GTFS to just the northbound
 C53:
 
 ``` r
+
 # Filter the entire GTFS down to NB C53
 c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
                             route_ids = c53,
@@ -83,6 +87,7 @@ If we print a summary of this GTFS object, we’ll see that it only
 contains one route:
 
 ``` r
+
 summary(c53_gtfs)
 #> tidygtfs object
 #> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops
@@ -116,6 +121,7 @@ to grab the `shape_id` we want, turn it into a spatial line, and project
 it to the appropriate coordinate system:
 
 ``` r
+
 # Set our parameters
 c53_NB_shape_id <- "C53:04"
 dc_CRS <- 32618
@@ -130,6 +136,7 @@ If we print this new object, we’ll see that it is one multilinestring
 with `shape_id = "C53:04"` and the coordinate system UTM 18N.
 
 ``` r
+
 print(c53_shape)
 #> Simple feature collection with 1 feature and 1 field
 #> Geometry type: MULTILINESTRING
@@ -149,6 +156,7 @@ visualize the AVL points and route geometry so we understand what we’re
 working with:
 
 ``` r
+
 # Convert GPS points to spatial objects
 # You typically won't need to do this -- this is just for visualization
 c53_sf <- c53_avl %>%
@@ -218,6 +226,7 @@ We can now clip and linearize our AVL dataframe using
 [`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md):
 
 ``` r
+
 # Set parameters
 c53_buffer = 50 # meters
 
@@ -234,6 +243,7 @@ Now each observation is represented by a distance from the route’s
 beginning. Let’s first see how many observations were clipped out:
 
 ``` r
+
 # Pull dimensions of each
 step0_obs <- dim(c53_avl)[1]
 step1_obs <- dim(c53_distances)[1]
@@ -251,6 +261,7 @@ We had just under 500 observations clipped out of our dataset. We can
 also take a look at the new header of our dataset:
 
 ``` r
+
 head(c53_distances)
 #>   location_ping_id vehicle_id trip_id_performed service_date route_id
 #> 1                1       5461          18632100   2026-02-16      C53
@@ -313,6 +324,7 @@ Below we use `c53_cleaned_subtrips()` to identify and remove problematic
 trips:
 
 ``` r
+
 # Set parameters
 c53_check_op <- FALSE
 c53_remove_singles <- TRUE
@@ -332,6 +344,7 @@ c53_cleaned_subtrips <- clean_overlapping_subtrips(
 Let’s see how many trips or observations were removed:
 
 ``` r
+
 # Pull new dimensions
 step3_obs <- dim(c53_cleaned_subtrips)[1]
 
@@ -353,6 +366,7 @@ through that step and a brief explanation of why they were removed.
 Let’s check it out:
 
 ``` r
+
 # Get removals from previous function
 c53_step3_removals <- clean_overlapping_subtrips(
   # Same settigns as before
@@ -377,6 +391,7 @@ removed, and that it was removed because it was a single observation.
 Let’s see what this trip looked like in the original dataset:
 
 ``` r
+
 # Filter & print to violating trip
 print(c53_distances %>%
         filter(trip_id_performed == "8428100"))
@@ -420,6 +435,7 @@ as discussed above. The only input we need to change from its default is
 the maximum distance deviation.
 
 ``` r
+
 # Set parameters
 c53_max_jump <- 20 # meters
 c53_min_jump <- -1 * c53_max_jump # meters
@@ -436,6 +452,7 @@ c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
 Let’s see how many points were removed as outliers from this filter:
 
 ``` r
+
 # Pull dimensions
 step4_obs <- dim(c53_no_jumps)[1]
 
@@ -453,6 +470,7 @@ With these settings, 11 points were removed. We can use
 these outlying points:
 
 ``` r
+
 # Get removals
 c53_step4_removals <- clean_jumps(
   # Same settings as before
@@ -488,6 +506,7 @@ Let’s explore pings 16770 through 16910 from trip 1306100. We can plot
 the trip in this area to visualize the outliers:
 
 ``` r
+
 # Filter dataframe to our tirp & distances
 plot_df <- c53_cleaned_subtrips %>%
   filter(trip_id_performed == "1306100") %>%
@@ -555,6 +574,7 @@ Let’s run
 as discussed above:
 
 ``` r
+
 # Set parameters
 c53_min_dist <- 500 # meters
 c53_min_time <- 90 # seconds
@@ -575,6 +595,7 @@ Now that we’ve filtered our dataset, let’s see how many trips have been
 removed:
 
 ``` r
+
 step5_obs <- dim(c53_cleaned_incompletes)[1]
 step5_trips <- length(unique(c53_cleaned_incompletes$trip_id_performed))
 step4_trips <- length(unique(c53_no_jumps$trip_id_performed))
@@ -594,6 +615,7 @@ individual observations. As before, we can use `return_removals` to take
 a look at the violating trips:
 
 ``` r
+
 c53_step5_removals <- clean_incomplete_trips(
   # Same settings as before
   distance_df = c53_no_jumps,
@@ -623,6 +645,7 @@ Most of these were removed because of a large gap in data. Let’s take a
 look at one, trip 21956100:
 
 ``` r
+
 # Filter dataframe to our tirp & distances
 plot_df <- c53_cleaned_subtrips %>%
   filter(trip_id_performed == "21956100") %>%
@@ -677,6 +700,7 @@ Let’s run
 trimming both the beginning and ends of each trip:
 
 ``` r
+
 # Set parameters
 c53_trim_type <- "both"
 
@@ -690,6 +714,7 @@ c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
 Let’s see what was removed:
 
 ``` r
+
 # Pull dimensions
 step6_obs <- dim(c53_trimmed)[1]
 
@@ -706,6 +731,7 @@ For this example, it looks like there were no long deadheads along the
 route alignment. Let’s take a look at a the points removed:
 
 ``` r
+
 c53_step6_removals <- trim_trips(
   # Same settings as before
   distance_df = c53_cleaned_incompletes,
@@ -728,6 +754,7 @@ print(c53_step6_removals)
 We’ll plot the points removed along trip 35294100:
 
 ``` r
+
 # Filter dataframe to our tirp & distances
 plot_df <- c53_cleaned_incompletes %>%
   filter(trip_id_performed == "35294100") %>%
@@ -810,6 +837,7 @@ Let’s run
 using the parameters discussed above:
 
 ``` r
+
 # Set parameters
 c53_dist_error <- 0.001
 c53_correct_speeds <- TRUE
@@ -826,6 +854,7 @@ This function modifies existing data, but does not remove any points.
 The total number of observations should stay the same:
 
 ``` r
+
 # Pull dimensions
 step7_obs <- dim(c53_mono)[1]
 
@@ -843,6 +872,7 @@ We can check, though, if our dataset is now monotonic using
 We’ll ask the function to validate speeds as well:
 
 ``` r
+
 # Trimmed DF
 step6_val <- validate_monotonicity(distance_df = c53_trimmed,
                                    check_speed = TRUE)
@@ -865,6 +895,7 @@ how much, using the parameter `return_changes`. Below we plot an example
 trip, 21499100, around one stop it makes:
 
 ``` r
+
 # Set filter parameters
 plot_trip <- "21499100"
 plot_dists <- c(13700, 13950)

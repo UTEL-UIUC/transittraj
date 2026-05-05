@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/UTEL-UIUC/transittraj/blob/v0.1.3/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/UTEL-UIUC/transittraj/blob/main/DESCRIPTION)
 
 O'Brien B, Lehe L (2026). *transittraj: Reconstruct and Visualize
 Transit Vehicle Trajectories*. R package version 0.1.3,

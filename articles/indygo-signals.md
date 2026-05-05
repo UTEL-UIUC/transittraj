@@ -16,6 +16,7 @@ to learn more about how to get started with your own data.
 Let’s load some libraries to get started:
 
 ``` r
+
 library(transittraj)
 library(tidytransit)
 library(tidyverse)
@@ -48,6 +49,7 @@ with IndyGo’s BRT system, explore it using the interactive GTFS viewer
 below:
 
 ``` r
+
 indy_map <- plot_interactive_gtfs(gtfs = indy_brt_gtfs,
                                   color = "gtfs")
 indy_map
@@ -60,6 +62,7 @@ satellite imagery, then projected onto the Red Line’s alignment (see
 [`help(project_onto_route)`](https://obrien-ben.github.io/transittraj/reference/project_onto_route.md)).
 
 ``` r
+
 head(stopbars)
 ```
 
@@ -79,6 +82,7 @@ of the buses without capturing interference from nearby intersections,
 driveways, or stops. Here’s a snippet of the resulting signal locations:
 
 ``` r
+
 head(signal_boundings)
 ```
 
@@ -98,6 +102,7 @@ conversations with IndyGo, we also identified the four stops which the
 agency used as control timepoints.
 
 ``` r
+
 head(stops)
 ```
 
@@ -131,6 +136,7 @@ After fitting interpolating trajectory curves to these cleaned and
 monotonic data points, we can take a look at our trajectory object:
 
 ``` r
+
 summary(indygo_traj)
 ```
 
@@ -155,6 +161,7 @@ the route. We’ll use `transittraj`’s
 function:
 
 ``` r
+
 # Set formatting parameters
 plot_trips <- unclass(indygo_traj)[20:30]
 traj_format <- data.frame(trip_id_performed = plot_trips,
@@ -206,6 +213,7 @@ into [`predict()`](https://rdrr.io/r/stats/predict.html) using the
 trajectory function:
 
 ``` r
+
 # Perform interpolation
 crossing_times <- predict(object = indygo_traj,
                           new_distances = signal_boundings) %>%
@@ -230,6 +238,7 @@ traversal of one trip through one signal, with columns `enter` and
 difference between these columns.
 
 ``` r
+
 # Perform calculation
 travel_times_df <- crossing_times %>%
   pivot_wider(values_from = time_interp, names_from = inout,
@@ -244,6 +253,7 @@ dim(travel_times_df)
     ## [1] 543807      5
 
 ``` r
+
 head(travel_times_df)
 ```
 
@@ -259,11 +269,10 @@ head(travel_times_df)
 
 You’ll notice that we have about 540,000 individual signal traversals.
 That’s a bit smaller than the 576,600 we’d expect from the size of our
-dataset
-($9259{\mspace{6mu}\text{trips}} \times 62{\mspace{6mu}\text{signals}}$).
-Not every trip will traverse the entirety of every signal; if a trip’s
-distance range does pass through both a signal’s entrance and exit, it’s
-travel time cannot be calculated.
+dataset ($`9259 \text{ trips} \times 62 \text{ signals}`$). Not every
+trip will traverse the entirety of every signal; if a trip’s distance
+range does pass through both a signal’s entrance and exit, it’s travel
+time cannot be calculated.
 
 ### Delay
 
@@ -274,6 +283,7 @@ not the absolute fastest, but pretty close. We can find that by
 summarizing the travel time dataset:
 
 ``` r
+
 # Perform calculation
 signal_ff <- travel_times_df %>%
   # Group by signal name
@@ -299,6 +309,7 @@ Finally, to find delay, we’ll join these free-flow times back and
 subtract them from the total travel time:
 
 ``` r
+
 # Perform calculation
 delays_df <- travel_times_df %>%
   # Join free-flow times by signal name
@@ -333,6 +344,7 @@ South/East, just south of downtown Indianapolis. Let’s begin by getting
 the spatial data we need for our new plot:
 
 ``` r
+
 # Set plotting limits
 plot_signal <- "Virginia & South/East"
 dist_offset <- 80 # meters
@@ -357,6 +369,7 @@ creating the latter dataframe, we’ll center both trajectories by
 subtracting the time they enter the signal.
 
 ``` r
+
 # Set desired trips
 plot_trips <- c("2024-11-18-t3A7-b232C-sl3-N",
                 "2024-11-18-t7E5-b233E-sl3-N")
@@ -383,6 +396,7 @@ head(interp_times_df)
     ## 6  5770.64 2024-11-18-t7E5-b233E-sl3-N      1731980120
 
 ``` r
+
 # Get speeds from times
 interp_speeds_df <- predict(object = indygo_traj,
                             trips = plot_trips,
@@ -413,6 +427,7 @@ travel time and delay information relevant to these trips, then we store
 it in a dataframe:
 
 ``` r
+
 # Pull desired signal travel time data
 sig_ff <- signal_ff %>% filter(name %in% plot_signal) %>% pull(free_flow)
 plot_travel_times <- travel_times_df %>%
@@ -433,6 +448,7 @@ trips_label_df <- data.frame(trip = plot_trips,
 Now we can create our plot:
 
 ``` r
+
 # Create plot
 signal_traj_plot <- ggplot(data = interp_speeds_df) +
   # Add & format trajectory lines
@@ -485,6 +501,7 @@ week-by-week summary statistics at each signal. For this example, we’ll
 use the mean and inner-quartile range:
 
 ``` r
+
 delay_by_week <- delays_df %>%
   # Extract date & week number from trip ID
   mutate(service_date = as.Date(substr(trip_id_performed,
@@ -517,6 +534,7 @@ Let’s visualize how delays have changed over time. Below we plot the
 mean and inner-quartile range of signal delay at Virginia & South/East:
 
 ``` r
+
 # Filter to desired delay data
 plot_df <- delay_by_week %>%
   filter(name %in% plot_signal)
@@ -574,6 +592,7 @@ plots for two representative weeks: week 35, with the old system, and
 week 45, with the new system.
 
 ``` r
+
 # Filter to desired delay data
 plot_weeks <- c("35", "45")
 violin_df <- delays_df %>%

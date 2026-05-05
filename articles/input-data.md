@@ -23,6 +23,7 @@ feed, `wmata_avl`, and an archive of WMATA’s static GTFS feed,
 Before we begin, let’s add some needed packages:
 
 ``` r
+
 library(transittraj)
 library(tidytransit)
 ```
@@ -45,6 +46,7 @@ provided with `transittraj` is reformatted from GTFS-rt to meet TIDES’s
 needs. Below is a peak:
 
 ``` r
+
 head(wmata_avl)
 #>   location_ping_id vehicle_id trip_id_performed service_date route_id
 #> 1                0       4582          30095100   2026-02-16      D96
@@ -74,6 +76,7 @@ To check whether an input dataframe meets our needs, we can run
 present, and whether they have the correct data type.
 
 ``` r
+
 wmata_tides_val <- validate_tides(avl_df = wmata_avl)
 wmata_tides_val
 #>      required_field required_field_type field_present actual_field_type
@@ -117,6 +120,7 @@ data. `transittraj` is designed to use `tidygtfs` objects from the
 complements the `wmata_avl` dataset we saw above:
 
 ``` r
+
 summary(wmata_gtfs)
 #> tidygtfs object
 #> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops
@@ -142,6 +146,7 @@ Additionally, we can also create an interactive visualization of a GTFS
 feed:
 
 ``` r
+
 plot_interactive_gtfs(gtfs = wmata_gtfs,
                       color_palette = "gtfs")
 ```

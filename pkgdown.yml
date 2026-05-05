@@ -1,4 +1,4 @@
-pandoc: 3.1.11
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
@@ -7,7 +7,7 @@ articles:
   articles/input-data: input-data.html
   articles/intro-trajectories: intro-trajectories.html
   paper: paper.html
-last_built: 2026-04-14T23:33Z
+last_built: 2026-05-05T23:31Z
 urls:
   reference: https://obrien-ben.github.io/transittraj/reference
   article: https://obrien-ben.github.io/transittraj/articles
