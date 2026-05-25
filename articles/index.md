@@ -11,3 +11,5 @@
 - [Introduction to
   Trajectories](https://obrien-ben.github.io/transittraj/articles/intro-trajectories.md):
 - [paper](https://obrien-ben.github.io/transittraj/articles/paper.md):
+- [Transport Chicago 2026 Poster:
+  Supplement](https://obrien-ben.github.io/transittraj/articles/tc26.md):

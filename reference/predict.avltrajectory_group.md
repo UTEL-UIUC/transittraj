@@ -31,13 +31,16 @@ predict(
 
   Optional. A vector of numeric timepoints, or a dataframe with at least
   the column `"event_timestamp"` of new timepoints to interpolate at.
-  Default is `NULL`.
+  May also contain the column `trip_id_performed`, which will
+  interpolate distances at each trip and time row pair. Default is
+  `NULL`.
 
 - new_distances:
 
   Optional. A vector of numeric distances, or a dataframe with at least
-  the column `"distance"` of new distances to interpolate at. Default is
-  `NULL`.
+  the column `"distance"` of new distances to interpolate at. May also
+  contain the column `trip_id_performed`, which will interpolate times
+  at each trip and distance row pair. Default is `NULL`.
 
 - distance_lims:
 
@@ -58,7 +61,9 @@ predict(
 - trips:
 
   Optional. A vector of `trip_id_performed`s to interpolate for. Default
-  is `NULL`, which will use all trips found in the trajectory object.
+  is `NULL`, which will use all trips found in the trajectory object
+  (or, if include, in the `trip_id_performed` column of `new_times` or
+  `new_distances`).
 
 - ...:
 

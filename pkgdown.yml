@@ -7,7 +7,8 @@ articles:
   articles/input-data: input-data.html
   articles/intro-trajectories: intro-trajectories.html
   paper: paper.html
-last_built: 2026-05-05T23:44Z
+  articles/tc26: tc26.html
+last_built: 2026-05-25T18:26Z
 urls:
   reference: https://obrien-ben.github.io/transittraj/reference
   article: https://obrien-ben.github.io/transittraj/articles

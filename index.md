@@ -1,5 +1,9 @@
 # transittraj
 
+**Transport Chicago 2026 Attendees**: *For code & references related to
+the `transittraj` poster, check out*
+[`vignette("articles/tc26")`](https://obrien-ben.github.io/transittraj/articles/tc26.md).
+
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
 
