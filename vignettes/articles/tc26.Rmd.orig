@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 # Introduction
 
 Thanks for checking out `transittraj`! This article contains all code that
-produced the figures and stats you on our poster at Transport Chicago 2026.
+produced the figures and stats on our poster at Transport Chicago 2026.
 As this is intended to supplement the poster presentation, we will only
 minimally discuss our code here. If you have additional questions, feel free
 to contact us:
@@ -23,17 +23,40 @@ to contact us:
 
   - Lewis Lehe: lehe@illinois.edu
 
-Additionally, the data we used here was shared with is privately by IndyGo
+# Setup
+
+The data we used here was shared with is privately by IndyGo
 via their Swiftly API endpoint. As such, we unfortunately cannot share the
-raw AVL data. It has been preloaded into our RStudio workspace before running
-this vignette's code (as `avl_df`).
+raw AVL data. We've pre-loaded the following IndyGo data into our RStudio
+workspace before running this vignette:
 
-Let's begin:
+  - `avl_df`: The TIDES-compliant `vehicle_locations.csv` table of historic AVL data. This includes all northbound Red Line (90N) trips made on weekdays in September and November 2024.
 
-```{r setup}
+  - `route_geom`: The Red Line's northbound alignment, as retrieved from IndyGo's GTFS via `transittraj::get_shape_geometry()`.
+
+  - `stops`: The distance of each northbound Red Line stop along its alignment, as retrieved from IndyGo's GTFS via `transittraj::get_stop_distances()`.
+
+  - `signals` and `signal_boundings`: The distance of each northbound signal stopbar and entrance-exit analysis zone, respectively. These were identified using OpenStreetMap data and Google Earth satellite imagery, then projected onto the route via `transittraj::project_onto_route()`.
+
+With this, we can load the packages we'll need:
+
+```{r setup, message = FALSE, warning = FALSE}
 devtools::load_all() # library(transittraj)
 library(tidyverse)
 library(ggtext)
+```
+
+And we can set the parameters we'll use for our data cleaning. Throughout the cleaning process, we'll reference these names variables, rather than using numeric values.
+
+``` {r}
+# - Cleaning parameters -
+indy_crs <- 32616 # WGS 84 UTM Zone 16N
+route_buffer = 50 # meters
+min_dist = 200 # meters
+min_dur = 90 # seconds
+dist_error = 0.00001 # meters
+max_d_gap = 800 # meters
+hampel_t = 2.5
 ```
 
 # Proposed Workflow
@@ -49,17 +72,6 @@ signals <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana
   filter(grepl("90N", routes))
 signal_boundings <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Analysis_new\\spatial\\signals\\intersection_bounding_90N.rds") %>%
   select(-time)
-```
-
-``` {r}
-# --- Global cleaning parameters ---
-indy_crs <- 32616
-route_buffer = 50 # meters
-min_dist = 200 # meters
-min_dur = 90 # seconds
-dist_error = 0.00001 # meters
-max_d_gap = 800 # meters
-hampel_t = 2.5
 ```
 
 ## Steps 1 & 2: Buffer & Project onto Route
@@ -596,6 +608,14 @@ cleaning_summ <- data.frame(step = c("Init", "1 & 2", "3", "4",
          perc_trips = delta_trips / lag(n_trips) * 100)
 
 print(cleaning_summ)
+```
+
+Finding the total time, in seconds:
+
+``` {r}
+total_time <- sum(cleaning_summ$t_sec,
+                  na.rm = TRUE)
+print(total_time)
 ```
 
 # Example Applications
