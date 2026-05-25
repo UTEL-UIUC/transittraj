@@ -147,15 +147,30 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
   # --- Setup ---
   # Create DF of trip & time pairs
   trips <- trip_extremes$trip_id_performed
-  num_times <- dim(new_times_df)[1]
-  num_trips <- dim(trip_extremes)[1]
-  new_times_trips <- new_times_df %>%
-    dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
-    tidyr::uncount(weights = num_trips) %>%
-    dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
-    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-    dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
-    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+  if ("trip_id_performed" %in% names(new_times_df)) {
+    # If DF has trip IDs, use those; filter to desired trips & appropriate ranges
+    new_times_trips <- new_times_df %>%
+      # Filter to input plot_trips (via trip extremes)
+      dplyr::filter(trip_id_performed %in% trips) %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      # Join extremes & filter to non-extrapolated times
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+  } else {
+    # If DF doesn't have trip IDs, duplicate times for all trips & filter to appropraite ranges
+    num_times <- dim(new_times_df)[1]
+    num_trips <- dim(trip_extremes)[1]
+    new_times_trips <- new_times_df %>%
+      dplyr::mutate(event_timestamp = as.numeric(event_timestamp)) %>%
+      # Duplicate for all trip IDs
+      tidyr::uncount(weights = num_trips) %>%
+      dplyr::mutate(trip_id_performed = rep(trips, num_times)) %>%
+      # Join trip extremes & filter to non-extrapolated times
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((event_timestamp >= min_time) & (event_timestamp <= max_time))) %>% # Remove extrapolated points
+      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+  }
 
   # Check that observations remain
   if (dim(new_times_trips)[1] == 0) {
@@ -189,14 +204,26 @@ predict_traj_setup_new_dists <- function(new_distances, trip_extremes) {
   # --- Setup ---
   # Create DF of trip & dist pairs
   trips <- trip_extremes$trip_id_performed
-  num_dists <- dim(new_distances_df)[1]
-  num_trips <- dim(trip_extremes)[1]
-  new_distances_trips <- new_distances_df %>%
-    tidyr::uncount(weights = num_trips) %>%
-    dplyr::mutate(trip_id_performed = rep(trips, num_dists)) %>%
-    dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
-    dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
-    dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+
+  if ("trip_id_performed" %in% names(new_distances_df)) {
+    # If DF contains trip IDs, use those; filter to desired trips & ranges
+    new_distances_trips <- new_distances_df %>%
+      dplyr::filter(trip_id_performed %in% trips) %>%
+      # Join extremes & filter to non-extrapolated times
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
+      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+  } else {
+    # If DF does not contain trip IDs, duplicate distances for all trips & filter
+    num_dists <- dim(new_distances_df)[1]
+    num_trips <- dim(trip_extremes)[1]
+    new_distances_trips <- new_distances_df %>%
+      tidyr::uncount(weights = num_trips) %>%
+      dplyr::mutate(trip_id_performed = rep(trips, num_dists)) %>%
+      dplyr::left_join(y = trip_extremes, by = "trip_id_performed") %>%
+      dplyr::filter(((distance >= min_dist) & (distance <= max_dist))) %>% # Remove extrapolated points
+      dplyr::select(-c(min_time, max_time, min_dist, max_dist))
+  }
 
   # Check that observations remain
   if (dim(new_distances_trips)[1] == 0) {
@@ -481,10 +508,12 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #' @param object The single or grouped trajectory object.
 #' @param new_times Optional. A vector of numeric timepoints, or a dataframe
 #' with at least the column `"event_timestamp"` of new timepoints to interpolate
-#' at. Default is `NULL`.
+#' at. May also contain the column `trip_id_performed`, which will
+#' interpolate distances at each trip and time row pair. Default is `NULL`.
 #' @param new_distances Optional. A vector of numeric distances, or a dataframe
 #' with at least the column `"distance"` of new distances to interpolate at.
-#' Default is `NULL`.
+#' May also contain the column `trip_id_performed`, which will
+#' interpolate times at each trip and distance row pair. Default is `NULL`.
 #' @param distance_lims Optional. A vector of (minimum, maximum) distance
 #' bounds over which to interpolate at a given timestep. If provided,
 #' `timestep` must also be provided. Default is `NULL`.
@@ -494,7 +523,9 @@ interpolate_times.avltrajectory_group <- function(trajectory,
 #' @param deriv Optional. The derivative with which to calculate at. Default is
 #' `0`.
 #' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
-#' Default is `NULL`, which will use all trips found in the trajectory object.
+#' Default is `NULL`, which will use all trips found in the trajectory object
+#' (or, if include, in the `trip_id_performed` column of `new_times` or
+#' `new_distances`).
 #' @param ... Other parameters (not used).
 #' @return The input dataframe, with an additional column `"interp"` of the
 #' interpolated values requested, and an additional `"trip_id_performed"`

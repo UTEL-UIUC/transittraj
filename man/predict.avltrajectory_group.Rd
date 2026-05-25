@@ -20,11 +20,13 @@
 
 \item{new_times}{Optional. A vector of numeric timepoints, or a dataframe
 with at least the column \code{"event_timestamp"} of new timepoints to interpolate
-at. Default is \code{NULL}.}
+at. May also contain the column \code{trip_id_performed}, which will
+interpolate distances at each trip and time row pair. Default is \code{NULL}.}
 
 \item{new_distances}{Optional. A vector of numeric distances, or a dataframe
 with at least the column \code{"distance"} of new distances to interpolate at.
-Default is \code{NULL}.}
+May also contain the column \code{trip_id_performed}, which will
+interpolate times at each trip and distance row pair. Default is \code{NULL}.}
 
 \item{distance_lims}{Optional. A vector of (minimum, maximum) distance
 bounds over which to interpolate at a given timestep. If provided,
@@ -38,7 +40,9 @@ provided, \code{distance_lims} must also be provided. Default is \code{NULL}.}
 \code{0}.}
 
 \item{trips}{Optional. A vector of \code{trip_id_performed}s to interpolate for.
-Default is \code{NULL}, which will use all trips found in the trajectory object.}
+Default is \code{NULL}, which will use all trips found in the trajectory object
+(or, if include, in the \code{trip_id_performed} column of \code{new_times} or
+\code{new_distances}).}
 
 \item{...}{Other parameters (not used).}
 }
