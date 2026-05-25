@@ -7,6 +7,9 @@
 
 <!-- badges: end -->
 
+**Transport Chicago 2026 Attendees**: *For code & references related to
+the `transittraj` poster, check out* `vignette("articles/tc26")`.
+
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
 

@@ -79,3 +79,6 @@ navbar:
         - text: Applications
         - text: Signal Delays in Indianapolis
           href: articles/indygo-signals.html
+        - text: Presentations
+        - text: Transport Chicago 2026
+          href: articles/tc26.html
