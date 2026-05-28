@@ -41,9 +41,13 @@ workspace before running this vignette:
 With this, we can load the packages we'll need:
 
 ```{r setup, message = FALSE, warning = FALSE}
+# For analysis:
 devtools::load_all() # library(transittraj)
 library(tidyverse)
-library(ggtext)
+
+# For plotting:
+library(marquee)
+library(patchwork)
 ```
 
 And we can set the parameters we'll use for our data cleaning. Throughout the cleaning process, we'll reference these names variables, rather than using numeric values.
@@ -67,7 +71,9 @@ avl_df <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\
 route_geom <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Analysis_new\\spatial\\routes\\route_geom_90N.rds")
 stops <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Analysis_new\\spatial\\routes\\stop_distances.rds") %>%
   filter(route == "90N") %>%
-  select(-route)
+  select(-route) %>%
+  mutate(stop_name = str_remove_all(stop_name,
+                                    pattern = " Station NB"))
 signals <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Analysis_new\\spatial\\signals\\signals_90N.rds") %>%
   filter(grepl("90N", routes))
 signal_boundings <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Analysis_new\\spatial\\signals\\intersection_bounding_90N.rds") %>%
@@ -75,6 +81,8 @@ signal_boundings <- readRDS("C:\\Users\\obrie\\OneDrive - University of Illinois
 ```
 
 ## Steps 1 & 2: Buffer & Project onto Route
+
+Steps 1 and 2 share the same function, `get_linear_distances()`, as they both require geospatial analysis. There's no need for the user to engage with spatial data, though, as long as your input TIDES table (`avl_df`) has the appropriate `latitude` and `longitude` numeric columns.
 
 ``` {r}
 # Get initial dims
@@ -123,6 +131,31 @@ n_trips <- append(n_trips,
 
 Next, plot our example:
 
+``` {r, echo = FALSE, eval = FALSE}
+# Set marquee styles
+code_style <- classic_style(code_font = "Consolas") %>%
+  modify_style(tag = "code",
+               background = "#e8f7ff",
+               color = "#0a0738"
+  )
+lab_firebrick <- classic_style(
+  margin = trbl(0),
+  padding = trbl(4),
+  border = "firebrick",
+  border_width = trbl(1),
+  border_radius = 3,
+  align = "center"
+)
+lab_navy <- classic_style(
+  margin = trbl(0),
+  padding = trbl(4),
+  border = "navy",
+  border_width = trbl(1),
+  border_radius = 3,
+  align = "center"
+)
+```
+
 ``` {r, eval = FALSE}
 plot_trip <- "2024-09-12-t3B2-b232A-sl3-N"
 plot_df <- distance_df %>%
@@ -134,12 +167,12 @@ plot_df <- distance_df %>%
 step3_plot <- ggplot(data = plot_df) +
   geom_hline(data = stops,
              aes(yintercept = distance, linetype = "BRT Stops"),
-             color = "grey40", linewidth = 0.6) +
+             color = "grey40", linewidth = 0.4) +
   geom_line(aes(x = event_timestamp, y = distance, color = op_veh),
             linewidth = 2, alpha = 0.6) +
   geom_point(aes(x = event_timestamp, y = distance, color = op_veh),
             size = 0.8, alpha = 1) +
-  scale_color_manual(name = "Operator, Vehicle ID",
+  scale_color_manual(name = "Operator,\nVehicle ID",
                      values = c("10342, 1981" = "#f43155",
                                 "2339, 2393" = "#2f6ff8")) +
   scale_linetype_manual(name = "Features",
@@ -150,16 +183,19 @@ step3_plot <- ggplot(data = plot_df) +
   theme_minimal() +
   labs(x = "Time (morning of 9/12/24)",
        y = "Distance from Beginning(m)",
-       title = "Overlapping Subtrips",
+       title = "Sub-Trips in AVL: `clean_overlapping_subtrips()`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 step3_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = step3_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step3_plot_highres.png",
-       height = 5, width = 8, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\step3_plot_svg.svg",
+       height = 5, width = 8, scale = 0.8, device = svg)
 ggsave(plot = step3_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step3_plot_lowres.png",
        height = 5, width = 8, dpi = 300, scale = 0.8)
@@ -210,7 +246,11 @@ window_bounds <- data.frame(x = c(as.POSIXct("2024-09-10 19:36:28.7", tz = "Amer
          lwr = med - (hampel_t * 2.69 * 1.48))
 lab_df <- data.frame(y = 14290,
                      x = mean(window_bounds$x),
-                     lab = "*At AVL Ping ID 2012804*<br>**Window Median**: 14158 m<br>**Median Absolute Deviation**: 2.7 m<br>**Distance from Median**: 55 m")
+                     lab = paste("*At AVL Ping ID 2012804*",
+                                 "**Window Median**: 14158 m",
+                                 "**Median Absolute Deviation**: 2.7 m",
+                                 "**Distance from Median**: 55 m",
+                                 sep = "  \n"))
 step4_plot <- ggplot(data = plot_df) +
   geom_vline(data = window_bounds,
              aes(xintercept = x, linetype = "Window Bounds"),
@@ -237,23 +277,27 @@ step4_plot <- ggplot(data = plot_df) +
                         values = c("Window Bounds" = "dotted",
                                    "Window Median" = "dotdash",
                                    "Acceptable Range" = "longdash")) +
-  geom_textbox(data = lab_df,
-             aes(x = x, y = y, label = lab),
-             color = "firebrick", size = 3,
-             hjust = 0.5, halign = 0.5, width = 0.55) +
+  geom_marquee(data = lab_df,
+               aes(x = x, y = y, label = lab),
+               color = "firebrick", size = 3, hjust = 0.5,
+               style = lab_firebrick, fill = "white", alpha = 1,
+               family = "Verdana") +
   theme_minimal() +
   labs(x = "Time (evening of 9/10/24)",
        y = "Distance from Beginning (m)",
-       title = "Outlying Jump in AVL",
+       title = "Jump in AVL: `clean_jumps()`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 step4_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = step4_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step4_plot_highres.png",
-       height = 5, width = 8, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\step4_plot_svg.svg",
+       height = 5, width = 8, scale = 0.8, device = svg)
 ggsave(plot = step4_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step4_plot_lowres.png",
        height = 5, width = 8, dpi = 300, scale = 0.8)
@@ -292,39 +336,44 @@ plot_trip <- "2024-09-17-t4B1-b2333-sl3-N"
 plot_df <- step4_df %>%
   filter(trip_id_performed == plot_trip) %>%
   filter((distance >= 7000) & (distance <= 11000))
-lab_df <- data.frame(lab = "Distance gap: 844 m",
+lab_df <- data.frame(lab = "**Distance gap**: 844 m",
                      y = 9060,
                      x = as.POSIXct("2024-09-17 12:32:00", tz = "America/New_York"))
 
 step5_plot <- ggplot(data = plot_df) +
   geom_hline(data = (stops %>% filter((distance >= 7000) & (distance <= 11000))),
              aes(yintercept = distance, linetype = "BRT Stops"),
-             color = "grey40", linewidth = 0.8) +
+             color = "grey40", linewidth = 0.6) +
   geom_line(aes(x = event_timestamp, y = distance),
             linewidth = 1.5, color = "firebrick", alpha = 0.6) +
   geom_point(aes(x = event_timestamp, y = distance),
              size = 1.5, color = "firebrick4") +
   geom_label(data = (stops %>% filter((distance >= 7000) & (distance <= 11000))),
              aes(x = plot_df$event_timestamp[1], y = distance, label = stop_name),
-             hjust = "left", nudge_y = 0, size = 2.5, color = "grey40", alpha = 0.8) +
-  geom_label(data = lab_df,
-             aes(x = x, y = y, label = lab),
-             color = "firebrick", hjust = "left", size = 3.5) +
+             hjust = "left", nudge_y = 0, size = 2.8, color = "grey30", alpha = 0.9,
+             family = "Verdana") +
+  geom_marquee(data = lab_df,
+               aes(x = x, y = y, label = lab),
+               hjust = 0, color = "firebrick", size = 3.6, fill = "#FFFFFFE6",
+               family = "Verdana", style = lab_firebrick) +
   scale_linetype_manual(name = "Features",
                         values = c("BRT Stops" = "dashed")) +
   theme_minimal() +
   labs(x = "Time (afternoon of 9/17/24)",
        y = "Distance from Beginning (m)",
-       title = "Gap in AVL Data",
+       title = "Gap in AVL: `clean_incomplete_trips()`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 step5_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = step5_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step5_plot_highres.png",
-       height = 5, width = 8, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\step5_plot_svg.svg",
+       height = 5, width = 8, scale = 0.8, device = svg)
 ggsave(plot = step5_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step5_plot_lowres.png",
        height = 5, width = 8, dpi = 300, scale = 0.8)
@@ -367,13 +416,33 @@ plot_df <- step5_df %>%
   mutate(point_ok = if_else(condition = (location_ping_id %in% trimmed$location_ping_id),
                             true = "Trim",
                             false = "Ok"))
-lab_df <- data.frame(lab = "Minimum distance:\n0 m",
-                     x = as.POSIXct("2024-09-16 10:54:37", tz = "America/New_York"),
+lab_df <- plot_df %>%
+  filter(point_ok == "Ok") %>%
+  filter(location_ping_id == first(location_ping_id)) %>%
+  select(location_ping_id, event_timestamp, distance) %>%
+  mutate(lab = paste("*Min ping ID: ", location_ping_id, "*",
+                     "  \n**Distance**: ", distance,
+                     "  \n**Time**: ", strftime(event_timestamp,
+                                                format = "%H:%M:%S",
+                                                tz = "America/New_York"),
+                     sep = ""),
+         x1 = as.POSIXct("2024-09-16 10:51:00",
+                         tz = "America/New_York"),
+         x2 = as.POSIXct("2024-09-16 10:48:00",
+                         tz = "America/New_York"),
+         y1 = 3500,
+         y2 = distance + 100) %>%
+  select(-c(location_ping_id, event_timestamp, distance))
+
+
+  data.frame(lab = paste("*Minimum ping ID: ", locat
+                                 sep = ""),
+                     x = as.POSIXct("2024-09-16 10:5:37", tz = "America/New_York"),
                      y = 750)
 step6_plot <- ggplot(data = plot_df) +
   geom_hline(data = (stops %>% filter(distance <= 7250)),
              aes(yintercept = distance, linetype = "BRT Stops"),
-             color = "grey40", linewidth = 0.8) +
+             color = "grey40", linewidth = 0.6) +
   geom_line(aes(x = event_timestamp, y = distance, color = point_ok),
             linewidth = 1.5) +
   scale_color_manual(name = "Trim Point?",
@@ -381,25 +450,36 @@ step6_plot <- ggplot(data = plot_df) +
                                 "Ok" = "#2f6ff8")) +
   geom_label(data = (stops %>% filter((distance <= 7250))),
              aes(x = max(plot_df$event_timestamp), y = distance, label = stop_name),
-             hjust = "right", size = 2, color = "grey40", alpha = 0.8) +
-  geom_label(data = lab_df,
-             aes(x = x, y = y, label = lab),
-             hjust = "center", size = 3.5, color = "firebrick") +
+             hjust = "right", size = 2.7, color = "grey30", alpha = 0.9,
+             family = "Verdana") +
+  geom_marquee(data = lab_df,
+               aes(x = x1, y = y1, label = lab),
+               hjust = 0, color = "firebrick", size = 3.1, fill = "#FFFFFFE6",
+               family = "Verdana", style = lab_firebrick) +
+  geom_segment(data = lab_df,
+               aes(x = x1, xend = x2,
+                   y = y1, yend = y2),
+               arrow = arrow(ends = "last", type = "closed",
+                             length = unit(0.025, units = "npc")),
+               color = "firebrick", linetype = "solid", linewidth = 0.7) +
   scale_linetype_manual(name = "Features",
                         values = c("BRT Stops" = "dashed")) +
   theme_minimal() +
-  labs(title = "Trimmed Deadhead Along Route",
+  labs(title = "Deadhead to Trim in AVL: `trim_trips()`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
                         sep = ""),
        x = "Time (morning of 9/16/24)",
-       y = "Distance from Beginning (m)")
+       y = "Distance from Beginning (m)") +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 step6_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = step6_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step6_plot_highres.png",
-       height = 5, width = 8, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\step6_plot_svg.svg",
+       height = 5, width = 8, scale = 0.8, device = svg)
 ggsave(plot = step6_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step6_plot_lowres.png",
        height = 5, width = 8, dpi = 300, scale = 0.8)
@@ -457,19 +537,29 @@ step7_plot <- ggplot(data = plot_df1) +
   geom_point(data = plot_df2,
              aes(x = event_timestamp, y = distance,
                  color = "Corrected", fill = "Corrected"),
-             size = 2.5, stroke = 2, alpha = 1, shape = 21) +
+             size = 2.3, stroke = 2, alpha = 1, shape = 21) +
   geom_label(aes(x = event_timestamp, y = distance,
                  color = "Original", label = speed_lab),
-             nudge_y = -25, size = 2.3, show.legend = FALSE) +
+             nudge_y = -25, size = 2, alpha = 0.9, show.legend = FALSE,
+             family = "Verdana") +
   geom_label(data = plot_df2,
              aes(x = event_timestamp, y = distance,
                  color = "Corrected", label = speed_lab),
-             nudge_y = 25, size = 2.3, show.legend = FALSE) +
+             nudge_y = 25, size = 2, alpha = 0.9, show.legend = FALSE,
+             family = "Verdana") +
+  geom_segment(aes(x = as.POSIXct("2024-09-10 19:36:05",
+                                  tz = "America/New_York"),
+                   xend = as.POSIXct("2024-09-10 19:36:00",
+                                     tz = "America/New_York"),
+                   y = 14217, yend = 14157),
+               arrow = arrow(ends = "last", type = "closed",
+                             length = unit(0.025, units = "npc")),
+               color = "grey30", linetype = "solid", linewidth = 0.7) +
   geom_label(data = (stops %>% filter((distance >= 14000) & (distance <= 14320))),
-             aes(x = as.POSIXct("2024-09-10 19:36:00", tz = "America/New_York"),
-                 y = distance, label = stop_name),
-             color = "grey40", size = 2.5, alpha = 0.8, hjust = "left",
-             nudge_y = 50) +
+             aes(x = as.POSIXct("2024-09-10 19:36:05", tz = "America/New_York"),
+                 y = 14157, label = stop_name),
+             color = "grey30", size = 3, alpha = 0.9, hjust = "left",
+             nudge_y = 60, family = "Verdana") +
   scale_color_manual(name = "AVL Point",
                      values = c("Original" = "firebrick",
                                 "Corrected" = "#2f6ff8")) +
@@ -481,16 +571,19 @@ step7_plot <- ggplot(data = plot_df1) +
   theme_minimal() +
   labs(x = "Time (evening of 9/10/24)",
        y = "Distance from Beginning (m)",
-       title = "Monotonic Correction in AVL",
+       title = "Monotonic Correction in AVL: `make_monotonic()`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 step7_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = step7_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step7_plot_highres.png",
-       height = 5, width = 8, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\step7_plot_svg.svg",
+       height = 5, width = 8, device = svg, scale = 0.8)
 ggsave(plot = step7_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\step7_plot_lowres.png",
        height = 5, width = 8, dpi = 300, scale = 0.8)
@@ -533,7 +626,9 @@ traj_df <- predict(object = traj,
 point_df <- distance_df %>%
   filter(trip_id_performed == plot_trip) %>%
   filter((distance >= plot_lims[1]) & (distance <= plot_lims[2])) %>%
-  mutate(speed_lab = paste(round(speed, 1), " m/s", sep = ""))
+  mutate(speed_lab = if_else(condition = (distance == min(distance)),
+                             true = paste(round(speed, 1), " m/s", sep = "\n"),
+                             false = paste(round(speed, 1))))
 
 traj_plot <- ggplot() +
   geom_hline(data = (stops %>% filter((distance >= plot_lims[1]) & (distance <= plot_lims[2]))),
@@ -547,21 +642,24 @@ traj_plot <- ggplot() +
             linewidth = 2.5, alpha = 1) +
   geom_line(data = point_df,
             aes(x = event_timestamp, y = distance, color = "Linear"),
-            linewidth = 1.3, alpha = 0.7) +
+            linewidth = 1.3, alpha = 0.8) +
   geom_point(data = point_df,
              aes(x = event_timestamp, y = distance, shape = "Raw AVL"),
              color = "#2f6ff8", fill = "#2f6ff8", size = 2, stroke = 2, alpha = 0.8) +
   geom_label(data = point_df,
              aes(x = event_timestamp, y = distance, label = speed_lab),
-             color = "#2f6ff8", size = 3.4, alpha = 0.6, nudge_y = 30, nudge_x = -10) +
+             color = "#2f6ff8", size = 3.4, alpha = 0.8, nudge_y = 30, nudge_x = -7,
+             family = "Verdana") +
   geom_label(data = (stops %>% filter((distance >= plot_lims[1]) & (distance <= plot_lims[2]))),
              aes(x = as.POSIXct("2024-09-25 11:55:50", tz = "America/New_York"),
                  y = distance, label = stop_name),
-             color = "firebrick", size = 3.4, hjust = "left", alpha = 0.8) +
+             color = "firebrick", size = 3.4, hjust = "left", alpha = 0.9,
+             family = "Verdana") +
   geom_label(data = (signals %>% filter((distance >= plot_lims[1]) & (distance <= plot_lims[2]))),
-             aes(x = as.POSIXct("2024-09-25 11:58:50", tz = "America/New_York"),
+             aes(x = as.POSIXct("2024-09-25 11:58:58", tz = "America/New_York"),
                  y = distance, label = name),
-             color = "grey50", size = 3.4, hjust = "right", nudge_y = -0, alpha = 0.8) +
+             color = "grey30", size = 3.3, hjust = "right", nudge_y = -0, alpha = 0.9,
+             family = "Verdana") +
   scale_linetype_manual(name = "Features",
                         values = c("BRT Stops" = "longdash",
                                    "Signals" = "dotted")) +
@@ -573,16 +671,19 @@ traj_plot <- ggplot() +
   theme_minimal() +
   labs(x = "Time (morning of 9/25/24)",
        y = "Distance from Beginning (m)",
-       title = "Sample Trajectory",
+       title = "Final Trajectory: `get_trajectory_fun()`",
        subtitle = paste("IndyGo Red Line 90 NB through Fountain Square; Trip ID: ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 traj_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = traj_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\traj_plot_highres.png",
-       height = 5.75, width = 10.5, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\traj_plot_svg.svg",
+       height = 5.75, width = 10.5, device = svg, scale = 0.8)
 ggsave(plot = traj_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\traj_plot_lowres.png",
        height = 5.75, width = 10.5, dpi = 300, scale = 0.8)
@@ -704,9 +805,12 @@ lab_df <- plot_vals %>%
   mutate(delay = if_else(condition = (delay < 1),
                          true = 0,
                          false = delay),
-         lab = paste("*", trip_id_performed, "*<br>",
-                     "Travel time: ", travel_time, " s, Delay: ", delay, " s",
-                     sep = ""))
+         lab = paste("*", trip_id_performed, "*  \n",
+                     "**Travel time**: ", travel_time, " s, **Delay**: ", delay, " s",
+                     sep = ""),
+         x = if_else(condition = (trip_id_performed == plot_trips[1]),
+                     true = t_max - 2,
+                     false = t_max))
 
 # Create the plot
 delay_plot <- ggplot() +
@@ -720,10 +824,16 @@ delay_plot <- ggplot() +
   geom_hline(data = stopbars_filt,
              aes(yintercept = distance, linetype = "Stopbar"),
              linewidth = 0.8, color = "grey50") +
-  geom_textbox(data = lab_df,
-             aes(x = (t_max - 1), y = (y_max - 10), color = traj_type, label = lab),
-             size = 2.5, hjust = 1, halign = 1, width = 0.40, alpha = 0.9,
-             show.legend = FALSE) +
+  geom_marquee(data = lab_df %>% filter(trip_id_performed == plot_trips[1]),
+               aes(x = x, y = (y_max - 10), label = lab),
+               size = 2.3, hjust = 1, style = lab_navy, family = "Verdana",
+               color = "navy", fill = "#FFFFFFE6",
+               show.legend = FALSE) +
+  geom_marquee(data = lab_df %>% filter(trip_id_performed == plot_trips[2]),
+               aes(x = x, y = (y_max - 10), label = lab),
+               size = 2.3, hjust = 1, style = lab_firebrick, family = "Verdana",
+               color = "firebrick", fill = "#FFFFFFE6",
+               show.legend = FALSE) +
   scale_color_manual(name = "Trajectory Type",
                      values = c("Free-Flow" = "#2f6ff8",
                                 "Delayed" = "#f43155")) +
@@ -733,16 +843,21 @@ delay_plot <- ggplot() +
   theme_minimal() +
   labs(x = "Time from Intersection Entrance (s)",
        y = "Distance from Beginning (m)",
-       title = paste("Signal Delay at ", plot_sig, sep = ""),
+       title = paste("Signal Delay at ", plot_sig,
+                     ": `predict(new_distances)`",
+                     sep = ""),
        subtitle = paste("IndyGo Red Line 90 NB; Free-Flow: ", lab_df$travel_time[1], " s",
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 delay_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = delay_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\delay_plot_highres.png",
-       height = 5, width = 7.5, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\delay_plot_svg.svg",
+       height = 5, width = 7.5, device = svg, scale = 0.8)
 ggsave(plot = delay_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\delay_plot_lowres.png",
        height = 5, width = 7.5, dpi = 300, scale = 0.8)
@@ -772,9 +887,9 @@ lab_df <- plot_df %>%
   mutate(delta_mean = round(((mean_delay[2] - mean_delay[1]) / mean_delay[1]) * 100, 1),
          delta_85th = round(((delay_85th[2] - delay_85th[1]) / delay_85th[1]) * 100, 1),
          lab = if_else(condition = (period == "Before (9/2024)"),
-                       true = paste("**Mean Delay**: ", mean_delay, " s<br>**85% Delay**: ", delay_85th, " s", "<br>n = ", n_trips, " trips",
+                       true = paste("**Mean Delay**: ", mean_delay, " s  \n**85% Delay**: ", delay_85th, " s", "  \nn = ", n_trips, " trips",
                                     sep = ""),
-                       false = paste("**Mean Delay**: ", mean_delay, " s (", delta_mean, "%)<br>**85% Delay**: ", delay_85th, " s (", delta_85th, "%)", "<br>n = ", n_trips, " trips",
+                       false = paste("**Mean Delay**: ", mean_delay, " s (", delta_mean, "%)  \n**85% Delay**: ", delay_85th, " s (", delta_85th, "%)", "  \nn = ", n_trips, " trips",
                                      sep = "")),
          y = c(140, 100))
 
@@ -782,9 +897,15 @@ delay_violin <- ggplot() +
   geom_violin(data = plot_df,
               aes(x = period, y = delay, fill = period, color = period),
               show.legend = FALSE, linewidth = 0.8) +
-  geom_textbox(data = lab_df,
+  geom_marquee(data = lab_df %>% filter(period == "Before (9/2024)"),
                aes(x = period, y = y, label = lab, color = period),
-               alpha = 0.8, size = 2.7, halign = 0.5, hjust = 0.5, width = 0.53,
+               size = 2.4, hjust = 0.5, family = "Verdana",
+               style = lab_firebrick, fill = "#FFFFFFE6",
+               show.legend = FALSE) +
+  geom_marquee(data = lab_df %>% filter(period == "After (11/2024)"),
+               aes(x = period, y = y, label = lab, color = period),
+               size = 2.4, hjust = 0.5, family = "Verdana",
+               style = lab_navy, fill = "#FFFFFFE6",
                show.legend = FALSE) +
   scale_fill_manual(values = c("Before (9/2024)" = "#f43155",
                                "After (11/2024)" = "#2f6ff8")) +
@@ -793,16 +914,18 @@ delay_violin <- ggplot() +
   theme_minimal() +
   labs(x = "Period",
        y = "Signal Delay (s)",
-       title = "Distribution of Signal Delay at\nVirginia & South/East",
+       title = "Distribution of Signal Delay\nat Virginia & South/East",
        subtitle = "IndyGo Red Line 90 NB") +
-  ylim(c(0, 150))
+  ylim(c(0, 150)) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title.position = "plot")
 delay_violin
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = delay_violin,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\delay_violin_highres.png",
-       height = 5, width = 4.5, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\delay_violin_svg.svg",
+       height = 5, width = 4.5, device = svg, scale = 0.8)
 ggsave(plot = delay_violin,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\delay_violin_lowres.png",
        height = 5, width = 4.5, dpi = 300, scale = 0.8)
@@ -916,8 +1039,8 @@ stop_df <- trip_events %>%
   filter((trip_id_performed == plot_trip) & (is_stopped == 1)) %>%
   select(time_begin, time_end, time_elapsed) %>%
   mutate(time_elapsed = round(time_elapsed, 1),
-         lab = paste("*Stop ", row_number(), "*:<br>",
-                     "**Time stopped**: ", time_elapsed, " s",
+         lab = paste("*Stop ", row_number(), "*:  \n",
+                     "**Duration**: ", time_elapsed, " s",
                      sep = ""),
          x = (time_begin + time_end) / 2,
          y = sig_out - 10)
@@ -932,7 +1055,7 @@ sf_plot <- ggplot() +
              color = "firebrick", linewidth = 1, linetype = "dotdash") +
   geom_vline(data = stop_df,
              aes(xintercept = time_end),
-             color = "firebrick", linewidth = 1, linetype = "dotdash") +
+             color = "firebrick", linewidth = 0.9, linetype = "dotdash") +
   geom_hline(data = stopbars_filt,
              aes(yintercept = distance, linetype = "Stopbar"),
              linewidth = 0.8, color = "grey50") +
@@ -940,13 +1063,13 @@ sf_plot <- ggplot() +
             aes(x = event_timestamp, y = distance, color = speed),
             linewidth = 3) +
   geom_segment(data = stop_df,
-               aes(x = time_begin, xend = time_end, y = (y - 40), yend = (y - 40)),
+               aes(x = time_begin, xend = time_end, y = (y - 33), yend = (y - 33)),
                arrow = arrow(ends = "both", type = "closed", length = unit(0.025, units = "npc")),
                color = "firebrick", linetype = "solid", linewidth = 0.7) +
-  geom_textbox(data = stop_df,
+  geom_marquee(data = stop_df,
                aes(x = x, y = y, label = lab),
-               hjust = 0.5, halign = 0.5, size = 2.5, color = "firebrick",
-               alpha = 0.9, width = 0.22) +
+               hjust = 0.5, size = 2.6, color = "firebrick", fill = "#FFFFFFE6",
+               style = lab_firebrick, family = "Verdana") +
   scale_linetype_manual(name = "Features",
                         values = c("Entrance/Exit" = "longdash",
                                    "Stopbar" = "dotted")) +
@@ -955,16 +1078,19 @@ sf_plot <- ggplot() +
   theme_minimal() +
   labs(x = "Time (afternoon of 11/18/24)",
        y = "Distance from Beginning (m)",
-       title = "Split Failure at Virginia & South/East",
+       title = "Split Failure at Virginia & South/East: `predict(dist_lims, t_step)`",
        subtitle = paste("IndyGo Red Line 90 NB; Trip ID ", plot_trip,
-                        sep = ""))
+                        sep = "")) +
+  theme(text = element_text(family = "Verdana"),
+        plot.title = element_marquee(style = code_style),
+        plot.title.position = "plot")
 sf_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = sf_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\sf_plot_highres.png",
-       height = 5, width = 7.5, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\svgs\\sf_plot_svg.svg",
+       height = 5, width = 7.5, device = svg, scale = 0.8)
 ggsave(plot = sf_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\sf_plot_lowres.png",
        height = 5, width = 7.5, dpi = 300, scale = 0.8)
@@ -978,11 +1104,11 @@ Plot changes in AOG & SF:
 
 ``` {r, eval = FALSE}
 aog_lab <- aog %>%
-  mutate(lab = paste("**AOG**: ", round(est_AOG * 100, 1), " %<br>n = ", num_trips, " trips",
+  mutate(lab = paste("**AOG**: ", round(est_AOG * 100, 1), " %  \nn = ", num_trips, " trips",
                      sep = ""),
          y = est_AOG / 2)
 sf_lab <- split_failures %>%
-  mutate(lab = paste("**SF**: ", round(sf * 100, 2), " %<br>n = ", num_trips, " trips",
+  mutate(lab = paste("**SF**: ", round(sf * 100, 2), " %  \nn = ", num_trips, " trips",
                      sep = ""),
          y = sf / 2)
 
@@ -991,44 +1117,55 @@ aog_plot <- ggplot() +
            aes(x = period, y = est_AOG,
                color = period, fill = period),
            linewidth = 0.8, show.legend = FALSE) +
-  geom_textbox(data = aog_lab,
+  geom_marquee(data = aog_lab %>% filter(period == "Before (9/2024)"),
                aes(x = period, y = y, label = lab, color = period),
-               alpha = 0.9, size = 2.8, halign = 0.5, hjust = 0.5, width = 0.37,
-               show.legend = FALSE) +
+               size = 2.8, fill = "#FFFFFFE6", show.legend = FALSE,
+               style = lab_firebrick, family = "Verdana") +
+  geom_marquee(data = aog_lab %>% filter(period == "After (11/2024)"),
+               aes(x = period, y = y, label = lab, color = period),
+               size = 2.8, fill = "#FFFFFFE6", show.legend = FALSE,
+               style = lab_navy, family = "Verdana") +
   scale_fill_manual(values = c("Before (9/2024)" = "#f43155",
                                "After (11/2024)" = "#2f6ff8")) +
   scale_color_manual(values = c("Before (9/2024)" = "firebrick4",
                                 "After (11/2024)" = "navy")) +
   theme_minimal() +
   labs(y = "AOG") +
-  scale_x_discrete(name = NULL, labels = NULL)
+  scale_x_discrete(name = NULL, labels = NULL) +
+  theme(text = element_text(family = "Verdana"))
 sf_plot <- ggplot() +
   geom_col(data = split_failures,
            aes(x = period, y = sf,
                color = period, fill = period),
            linewidth = 0.8, show.legend = FALSE) +
-  geom_textbox(data = sf_lab,
+  geom_marquee(data = sf_lab %>% filter(period == "Before (9/2024)"),
                aes(x = period, y = y, label = lab, color = period),
-               alpha = 0.9, size = 2.8, halign = 0.5, hjust = 0.5, width = 0.37,
-               show.legend = FALSE) +
+               size = 2.8, fill = "#FFFFFFE6", show.legend = FALSE,
+               style = lab_firebrick, family = "Verdana") +
+  geom_marquee(data = sf_lab %>% filter(period == "After (11/2024)"),
+               aes(x = period, y = y, label = lab, color = period),
+               size = 2.8, fill = "#FFFFFFE6", show.legend = FALSE,
+               style = lab_navy, family = "Verdana") +
   scale_fill_manual(values = c("Before (9/2024)" = "#f43155",
                                "After (11/2024)" = "#2f6ff8")) +
   scale_color_manual(values = c("Before (9/2024)" = "firebrick4",
                                 "After (11/2024)" = "navy")) +
   theme_minimal() +
   labs(x = "Period",
-       y = "Probability of SF")
+       y = "Probability of SF") +
+  theme(text = element_text(family = "Verdana"))
 
 combo_plot <- (aog_plot / sf_plot) +
   plot_annotation(title = "Arrival-on-Green and Split Failures\nat Virginia & South/East",
-                  subtitle = "IndyGo Red Line 90 NB")
+                  subtitle = "IndyGo Red Line 90 NB",
+                  theme = theme(text = element_text(family = "Verdana")))
 combo_plot
 ```
 
 ``` {r, echo = FALSE, eval = FALSE}
 ggsave(plot = combo_plot,
-       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\combo_plot_highres.png",
-       height = 5, width = 4.5, dpi = 900, scale = 0.8)
+       filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\combo_plot_svg.svg",
+       height = 5, width = 4.5, device = svg, scale = 0.8)
 ggsave(plot = combo_plot,
        filename = "C:\\Users\\obrie\\OneDrive - University of Illinois - Urbana\\IndyGo Project\\Deliverables\\Conferences\\TC2026\\Figures\\combo_plot_lowres.png",
        height = 5, width = 4.5, dpi = 300, scale = 0.8)
@@ -1044,11 +1181,11 @@ knitr::include_graphics(path = "figures/combo_plot_lowres.png")
 
 [2] R. K. Pearson, Y. Neuvo, J. Astola, and M. Gabbouj, “Generalized Hampel Filters,” EURASIP J. Adv. Signal Process., vol. 2016, no. 1, p. 87, Aug. 2016, doi: 10.1186/s13634-016-0383-6.
 
-[3] J. Robbennolt, S. Munira, and S. D. Boyles, “A Comparative Study of Spline-Based Trajectory Reconstruction Methods Across Varying Automatic Vehicle Location Data Densities,” Aug. 28, 2025, arXiv: arXiv:2509.00119. doi: 10.48550/arXiv.2509.00119.
+[3] J. Robbennolt, S. Munira, and S. D. Boyles, “A Comparative Study of Spline-Based Trajectory Reconstruction Methods Across Varying Automatic Vehicle Location Data Densities,” presented at the 2026 Transportation Research Board Annual Meeting, Washington, D.C.: arXiv, Jan. 2026. doi: 10.48550/arXiv.2509.00119.
 
 [4] F. N. Fritsch and J. Butland, “A Method for Constructing Local Monotone Piecewise Cubic Interpolants,” SIAM Journal on Scientific and Statistical Computing, Jul. 2006, doi: 10.1137/0905021.
 
-[5] Y. Huang, A. Abdelhalim, A. Stewart, J. Zhao, and H. Koutsopoulos, “Reconstructing Transit Vehicle Trajectory Using High-Resolution GPS Data,” 2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC), Bilbao, Spain, 2023, pp. 5247-5253. https://dspace.mit.edu/handle/1721.1/156441
+[5] Y. Huang, A. Abdelhalim, A. Stewart, J. Zhao, and H. Koutsopoulos, “Reconstructing Transit Vehicle Trajectory Using High-Resolution GPS Data,” presented at the 2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC), Bilbao, Spain, 2023, pp. 5247-5253. https://dspace.mit.edu/handle/1721.1/156441
 
 [6] Transportation Research Board and E. National Academies of Sciences and Medicine, Performance-Based Management of Traffic Signals. Washington, DC: The National Academies Press, 2020. doi: 10.17226/25875.
 
