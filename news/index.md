@@ -2,6 +2,31 @@
 
 ## transittraj (development version)
 
+## transittraj 0.1.3.9000 (dev)
+
+*Last update: 6/2/2026*
+
+- Trajectory visualization:
+
+  - [`plot_animated_line()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md)
+    would throw an error when setting up the x-axis of the ggplot if
+    `feature_distances` was not provided
+    ([\#16](https://github.com/UTEL-UIUC/transittraj/issues/16)). This
+    has been resolved, and a plot can now be created without features.
+
+- Trajectory prediction:
+
+  - By default, [`predict()`](https://rdrr.io/r/stats/predict.html) will
+    interpolate at the times or distances provided for all trips in the
+    trajectory object. Even if an input dataframe (via `new_distances`
+    or `new_times`) already had point-trip pairs (i.e., had a
+    `trip_id_performed` column), each row would be duplicated for all
+    trips in the trajectory object
+    ([\#14](https://github.com/UTEL-UIUC/transittraj/issues/14)). This
+    has been changed, so that if `new_distances` or `new_times` already
+    has a column `trip_id_performed`, that row will only be interpolated
+    for that trip.
+
 ## transittraj 0.1.3
 
 *Release: 4/14/2026*
