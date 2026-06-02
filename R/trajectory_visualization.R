@@ -363,6 +363,8 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
     } else {
       x_lims <- c(-1, 1)
     }
+  } else {
+    x_lims <- c(-1, 1)
   }
 
   # Generate plot of routeline
