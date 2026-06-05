@@ -8,7 +8,7 @@
 <!-- badges: end -->
 
 **Transport Chicago 2026 Attendees**: *For code & references related to
-the `transittraj` poster, check out* `vignette("articles/tc26")`.
+the* `transittraj` *poster, check out* `vignette("articles/tc26")`.
 
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
@@ -109,13 +109,13 @@ Check out the following vignettes to learn more about how to use
 `transittraj`:
 
 - [Understanding Data
-  Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data.html)
+  Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data-la.html)
 
 - [The AVL Cleaning
-  Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow.html)
+  Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow-la.html)
 
 - [Using
-  Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html)
+  Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
 
 Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:
@@ -147,7 +147,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.3,
+#>   Transit Vehicle Trajectories_. R package version 0.1.3.9000,
 #>   https://utel-uiuc.github.io/transittraj/,
 #>   <https://github.com/UTEL-UIUC/transittraj>.
 #> 
@@ -157,7 +157,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.3, https://utel-uiuc.github.io/transittraj/},
+#>     note = {R package version 0.1.3.9000, https://utel-uiuc.github.io/transittraj/},
 #>     url = {https://github.com/UTEL-UIUC/transittraj},
 #>   }
 ```

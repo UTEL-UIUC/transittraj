@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-**Transport Chicago 2026 Attendees**: *For code & references related to the
-`transittraj` poster, check out* `vignette("articles/tc26")`.
+**Transport Chicago 2026 Attendees**: *For code & references related to the*
+`transittraj` *poster, check out* `vignette("articles/tc26")`.
 
 An R package for reconstructing and visualizing transit vehicle trajectories. 
 
@@ -100,11 +100,11 @@ Check out the vignettes below to get started.
 
 Check out the following vignettes to learn more about how to use `transittraj`:
 
-- [Understanding Data Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data.html)
+- [Understanding Data Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data-la.html)
 
-- [The AVL Cleaning Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow.html)
+- [The AVL Cleaning Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow-la.html)
 
-- [Using Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories.html)
+- [Using Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
 
 Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:

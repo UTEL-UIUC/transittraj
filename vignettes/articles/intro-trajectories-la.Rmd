@@ -5,7 +5,8 @@ title: "Introduction to Trajectories"
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  rmarkdown.html_vignette.check_title = FALSE
 )
 ```
 
@@ -461,7 +462,7 @@ gganimate::animate(line_anim,
 
 ``` {r, echo = FALSE}
 library(vembedr)
-embed_url("https://www.youtube.com/watch?v=WP4F62O9gws") %>%
+embed_url("https://www.youtube.com/watch?v=ctW5dI1069o") %>%
   use_align("center")
 ```
 

@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  rmarkdown.html_vignette.check_title = FALSE
 )
 ```
 
@@ -24,7 +25,7 @@ trips. This seven-step process is summarized in the figure below.
 knitr::include_graphics("figures/avl-cleaning-workflow.png")
 ```
 
-Check out `vignette("input-data")` to learn more about the AVL and GTFS data
+Check out `vignette("articles/input-data-la")` to learn more about the AVL and GTFS data
 we'll be using. Let's begin by loading the libraries we'll be using:
 
 ```{r setup, message = FALSE, warning = FALSE}
