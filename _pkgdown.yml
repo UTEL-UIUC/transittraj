@@ -60,8 +60,8 @@ reference:
   desc: >
     Datasets to test with.
   contents:
-  - wmata_avl
-  - wmata_gtfs
+  - lacmta_avl
+  - lacmta_gtfs
   - new_transittraj_data
 
 navbar:
