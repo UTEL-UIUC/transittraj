@@ -225,7 +225,7 @@ head(lineE_stop_crossings)
 Now we have the crossing time, labeled `interp` at each stop for each trip.
 The interpolated times are in seconds of epoch time. You'll notice that this
 preserves all other fields in the input `new_distances` dataframe (including
-`stop_id`, `stop_name`, and `shared`).
+`stop_id`, `stop_name`, and `Shared`).
 
 ## Interpolating for Time & Distance Pairs Over a Range
 
@@ -242,7 +242,7 @@ last stop Line E shares with Line A:
 ``` {r}
 # Get distance limits of U St between 13th and 14th
 downtown_stops <- lineE_stops %>%
-  filter(shared) %>%
+  filter(Shared) %>%
   pull(distance)
 downtown_lims <- c(min(downtown_stops),
                    max(downtown_stops))
