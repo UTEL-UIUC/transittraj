@@ -55,7 +55,7 @@ Let's see what TIDES AVL data looks like. The `lacmta_avl` dataset provided
 with `transittraj` is from Caltrans's open-source TIDES dataset:
 
 ```{r}
-head(wmata_avl)
+head(lacmta_avl)
 ```
 
 Due to the low adoption of TIDES, it is possible your AVL data is not in a
