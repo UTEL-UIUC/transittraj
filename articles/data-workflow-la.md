@@ -12,9 +12,10 @@ process](figures/avl-cleaning-workflow.png)
 
 `transittraj` AVL cleaning process
 
-Check out `vignette("input-data")` to learn more about the AVL and GTFS
-data we’ll be using. Let’s begin by loading the libraries we’ll be
-using:
+Check out
+[`vignette("articles/input-data-la")`](https://obrien-ben.github.io/transittraj/articles/input-data-la.md)
+to learn more about the AVL and GTFS data we’ll be using. Let’s begin by
+loading the libraries we’ll be using:
 
 ``` r
 
