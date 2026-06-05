@@ -26,12 +26,12 @@ formatting, see \code{plot_trajectory()}.
 }
 \examples{
 # Get input data
-c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
 # Plot: Grouped trajectory object
-plot(c53_traj_grouped)
+plot(lineE_traj_grouped)
 
 # Plot: Single trajectory object
-plot(c53_traj_singles[[2]])
+plot(lineE_traj_singles[[2]])
 }

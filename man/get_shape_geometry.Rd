@@ -39,12 +39,12 @@ at least the following fields:
 }
 \examples{
 # Set my parameters
-my_shape <- "C53:04"
-my_crs = 32618
+my_shape <- "804EB_RC_221121"
+my_crs = 32611
 
 # Get shape from WMATA GTFS
-c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
-                                shape = my_shape,
-                                project_crs = my_crs)
-print(c53_shape)
+lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs,
+                                  shape = my_shape,
+                                  project_crs = my_crs)
+print(lineE_shape)
 }

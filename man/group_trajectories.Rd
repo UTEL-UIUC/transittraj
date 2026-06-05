@@ -24,24 +24,24 @@ more information.
 }
 \examples{
 # Get input data
-c53_mono <- new_transittraj_data("make_monotonic")
+lineE_mono <- new_transittraj_data("make_monotonic")
 
 # Fit a list of single trajectory functions
-c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
-                                       return_group_function = FALSE)
+lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
+                                         return_group_function = FALSE)
 
 # Show sample singles
-print(length(c53_traj_singles))
-print(c53_traj_singles[[2]])
+print(length(lineE_traj_singles))
+print(lineE_traj_singles[[2]])
 
 # Run function: group singles
-c53_traj_grouped <- group_trajectories(trajectories = c53_traj_singles,
-                                       grouping = "group")
-summary(c53_traj_grouped)
+lineE_traj_grouped <- group_trajectories(trajectories = lineE_traj_singles,
+                                         grouping = "group")
+summary(lineE_traj_grouped)
 
 # Run function: split apart again
-c53_traj_singles_2 <- group_trajectories(trajectories = c53_traj_grouped,
-                                         grouping = "split")
-print(length(c53_traj_singles_2))
-print(c53_traj_singles_2[[2]])
+lineE_traj_singles_2 <- group_trajectories(trajectories = lineE_traj_grouped,
+                                           grouping = "split")
+print(length(lineE_traj_singles_2))
+print(lineE_traj_singles_2[[2]])
 }

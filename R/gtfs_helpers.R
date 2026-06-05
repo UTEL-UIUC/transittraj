@@ -52,14 +52,14 @@
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_route <- "C53"
+#' my_route <- "804"
 #' my_dir <- 0
 #'
 #' # Filter WMATA GTFS
-#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
-#'                             route_ids = my_route,
-#'                             dir_id = 0)
-#' summary(c53_gtfs)
+#' lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs,
+#'                               route_ids = my_route,
+#'                               dir_id = my_dir)
+#' summary(lineE_gtfs)
 filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 
   # --- Check GTFS is tidygtfs object ---
@@ -320,14 +320,14 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_shape <- "C53:04"
-#' my_crs = 32618
+#' my_shape <- "804EB_RC_221121"
+#' my_crs = 32611
 #'
 #' # Get shape from WMATA GTFS
-#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
-#'                                 shape = my_shape,
-#'                                 project_crs = my_crs)
-#' print(c53_shape)
+#' lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs,
+#'                                   shape = my_shape,
+#'                                   project_crs = my_crs)
+#' print(lineE_shape)
 get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
   # --- Validate ---
@@ -389,18 +389,19 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_crs <- 32618
+#' my_crs <- 32611
 #'
 #' # Get shape data
-#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#' lineE_shape <- new_transittraj_data("get_shape_geometry")
 #'
 #' # Set points of interest
-#' my_points <- data.frame(longitude = c(-76.990038, -77.036289),
-#'                         latitude = c(38.871335, 38.917054),
-#'                         poi_name = c("11th St Bridge", "16th & U"))
+#' my_points <- data.frame(longitude = c(-118.270924, -118.230056),
+#'                         latitude = c(34.033895, 34.047884),
+#'                         poi_name = c("Flower & Washington",
+#'                                      "1st St Viaduct"))
 #'
 #' # Run project_onto_route
-#' my_points_proj <- project_onto_route(shape_geometry = c53_shape,
+#' my_points_proj <- project_onto_route(shape_geometry = lineE_shape,
 #'                                      points = my_points,
 #'                                      project_crs = my_crs)
 #' head(my_points_proj)
@@ -492,22 +493,22 @@ project_onto_route <- function(shape_geometry, points,
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_shape <- "C53:04"
-#' my_crs <- 32618
-#' my_route <- "C53"
+#' my_shape <- "804EB_RC_221121"
+#' my_crs <- 32611
+#' my_route <- "804"
 #' my_dir <- 0
 #'
 #' # Get needed GTFS data
-#' c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route,
-#'                             dir_id = 0)
-#' c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape,
-#'                                 project_crs = my_crs)
+#' lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = my_route,
+#'                               dir_id = 0)
+#' lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs, shape = my_shape,
+#'                                   project_crs = my_crs)
 #'
 #' # Run stop distances function
-#' c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
-#'                                      shape_geometry = c53_shape,
-#'                                      project_crs = my_crs)
-#' head(c53_stop_dists)
+#' lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
+#'                                        shape_geometry = lineE_shape,
+#'                                        project_crs = my_crs)
+#' head(lineE_stop_dists)
 get_stop_distances <- function(gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
 
@@ -666,7 +667,7 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
 #' @return A Leaftlet object.
 #' @export
 #' @examples
-#' plot_interactive_gtfs(gtfs = wmata_gtfs,
+#' plot_interactive_gtfs(gtfs = lacmta_gtfs,
 #'                       color_palette = "gtfs")
 plot_interactive_gtfs <- function(gtfs,
                                   background = "Esri.WorldGrayCanvas",
@@ -798,15 +799,18 @@ plot_interactive_gtfs <- function(gtfs,
 #' @export
 #' @examples
 #' # Set parameters
-#' trb_start <- as.Date("2026-01-11")
-#' trb_end <- as.Date("2026-01-15")
+#' study_date <- as.Date("2026-05-27")
+#'
+#' # Get needed input data
+#' lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = "804",
+#'                               dir_id = 0)
 #'
 #' # Run function: get service ID by day in date range
-#' trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
-#'                                           date_min = trb_start,
-#'                                           date_max = trb_end,
-#'                                           use_calendar_table = "calendar")
-#' print(trb_service_ids)
+#' study_service_ids <- get_gtfs_service_dates(gtfs = lineE_gtfs,
+#'                                             date_min = study_date,
+#'                                             date_max = study_date,
+#'                                             use_calendar_table = "calendar")
+#' print(study_service_ids)
 get_gtfs_service_dates <- function(gtfs,
                                    date_min = NULL, date_max = NULL,
                                    use_calendar_table = "calendar") {
@@ -892,13 +896,13 @@ get_gtfs_service_dates <- function(gtfs,
                                                  "friday",
                                                  "saturday",
                                                  "sunday"),
-                                       sched_id = c(gtfs$calendar$service_id[gtfs$calendar$monday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$tuesday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$wednesday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$thursday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$friday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$saturday == 1],
-                                                    gtfs$calendar$service_id[gtfs$calendar$sunday == 1]))
+                                       sched_id = c(gtfs$calendar$service_id[which(gtfs$calendar$monday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$tuesday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$wednesday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$thursday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$friday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$saturday == 1)[1]],
+                                                    gtfs$calendar$service_id[which(gtfs$calendar$sunday == 1)[1]]))
     service_exceptions <- gtfs$calendar_dates %>%
       dplyr::filter(exception_type == 1) %>%
       dplyr::rename(excep_id = service_id) %>%

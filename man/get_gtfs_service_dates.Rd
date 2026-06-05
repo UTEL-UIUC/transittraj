@@ -60,13 +60,16 @@ and \code{date_max}.
 }
 \examples{
 # Set parameters
-trb_start <- as.Date("2026-01-11")
-trb_end <- as.Date("2026-01-15")
+study_date <- as.Date("2026-05-27")
+
+# Get needed input data
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = "804",
+                              dir_id = 0)
 
 # Run function: get service ID by day in date range
-trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
-                                          date_min = trb_start,
-                                          date_max = trb_end,
-                                          use_calendar_table = "calendar")
-print(trb_service_ids)
+study_service_ids <- get_gtfs_service_dates(gtfs = lineE_gtfs,
+                                            date_min = study_date,
+                                            date_max = study_date,
+                                            use_calendar_table = "calendar")
+print(study_service_ids)
 }

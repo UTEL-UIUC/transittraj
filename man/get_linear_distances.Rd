@@ -46,18 +46,18 @@ shape from the beginning terminal.
 \examples{
 # Set my parameters
 my_buffer <- 50 # meters
-my_crs <- 32618
+my_crs <- 32611
 
 # Get input data
-c53_avl <- new_transittraj_data("c53_avl")
-c53_shape <- new_transittraj_data("get_shape_geometry")
-dim(c53_avl)
+lineE_avl <- new_transittraj_data("lineE_avl")
+lineE_shape <- new_transittraj_data("get_shape_geometry")
+dim(lineE_avl)
 
 # Run function
-c53_dists <- get_linear_distances(avl_df = c53_avl,
-                                  shape_geometry = c53_shape,
-                                  clip_buffer = my_buffer,
-                                  project_crs = my_crs)
-dim(c53_dists)
-head(c53_dists)
+lineE_dists <- get_linear_distances(avl_df = lineE_avl,
+                                    shape_geometry = lineE_shape,
+                                    clip_buffer = my_buffer,
+                                    project_crs = my_crs)
+dim(lineE_dists)
+head(lineE_dists)
 }

@@ -25,9 +25,9 @@ be filtered to a desired set of \code{trip_id_performed}s.
 }
 \examples{
 # Get input data
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
 
 # Run function
-c53_extremes <- get_trip_extremes(c53_traj)
-print(c53_extremes)
+lineE_extremes <- get_trip_extremes(lineE_traj)
+print(lineE_extremes)
 }

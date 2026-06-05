@@ -193,23 +193,23 @@ available at (xyz).
 }
 \examples{
 # Set my parameters
-my_crs <- 32618
-my_start_date <- as.Date("2026-02-16")
-my_end_date <- as.Date("2026-02-16")
+my_crs <- 32611
+my_start_date <- as.Date("2026-05-27")
+my_end_date <- as.Date("2026-05-27")
 
 # Get input data
-c53_gtfs <- new_transittraj_data("filter_by_route")
-c53_shape <- new_transittraj_data("get_shape_geometry")
+lineE_gtfs <- new_transittraj_data("filter_by_route")
+lineE_shape <- new_transittraj_data("get_shape_geometry")
 
 # Run function: build trajectory
-c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-                                              project_crs = my_crs,
-                                              date_min = my_start_date,
-                                              date_max = my_end_date)
+lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
+                                                project_crs = my_crs,
+                                                date_min = my_start_date,
+                                                date_max = my_end_date)
 
 # Show trajectory: summary & plot
-summary(c53_scheduled_traj)
-plot_trajectory(trajectory = c53_scheduled_traj,
-                plot_trips = unclass(c53_scheduled_traj)[8:10],
+summary(lineE_scheduled_traj)
+plot_trajectory(trajectory = lineE_scheduled_traj,
+                plot_trips = unclass(lineE_scheduled_traj)[8:10],
                 traj_color = "indianred3")
 }

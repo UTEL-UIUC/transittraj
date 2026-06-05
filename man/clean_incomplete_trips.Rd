@@ -51,17 +51,17 @@ middle. Violating trips will be removed.
 }
 \examples{
 # Set my parameters
-my_min_dist <- 500
-my_max_gap <- 500
+my_min_dist <- 1000
+my_max_gap <- 1000
 
 # Get input data
-c53_no_jumps <- new_transittraj_data("clean_jumps")
-dim(c53_no_jumps)
+lineE_no_jumps <- new_transittraj_data("clean_jumps")
+dim(lineE_no_jumps)
 
 # Run function
-c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
-                                          min_trip_distance = my_min_dist,
-                                          max_distance_gap = my_max_gap)
-dim(c53_clean_trips)
-head(c53_clean_trips)
+lineE_clean_trips <- clean_incomplete_trips(distance_df = lineE_no_jumps,
+                                            min_trip_distance = my_min_dist,
+                                            max_distance_gap = my_max_gap)
+dim(lineE_clean_trips)
+head(lineE_clean_trips)
 }

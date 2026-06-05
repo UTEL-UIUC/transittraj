@@ -13,14 +13,14 @@
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+#' lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
 #' # Run function: grouped trajectory object
-#' summary(c53_traj_grouped)
+#' summary(lineE_traj_grouped)
 #'
 #' # Run function: single trajectory object
-#' summary(c53_traj_singles[[2]])
+#' summary(lineE_traj_singles[[2]])
 summary.avltrajectory_group <- function(object, ...) {
   num_trips <- length(object)
   min_dist <- min(attr(object, "min_dist"))
@@ -102,14 +102,14 @@ summary.avltrajectory_single <- function(object, ...) {
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+#' lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
 #' # Print: Grouped trajectory object
-#' print(c53_traj_grouped)
+#' print(lineE_traj_grouped)
 #'
 #' # Print: Single trajectory object
-#' print(c53_traj_singles[[2]])
+#' print(lineE_traj_singles[[2]])
 print.avltrajectory_group <- function(x, ...) {
   print(paste("AVL group trajectory with ", length(x), " trips.",
               sep = ""))
@@ -136,14 +136,14 @@ print.avltrajectory_single <- function(x, ...) {
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-#' c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+#' lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+#' lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 #'
 #' # Plot: Grouped trajectory object
-#' plot(c53_traj_grouped)
+#' plot(lineE_traj_grouped)
 #'
 #' # Plot: Single trajectory object
-#' plot(c53_traj_singles[[2]])
+#' plot(lineE_traj_singles[[2]])
 plot.avltrajectory_group <- function(x, ...) {
   # Get trips to plot
   # Constrain to first 50 only. User can use more customizable function if they want more.

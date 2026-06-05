@@ -55,12 +55,12 @@ describing what is missing.
 }
 \examples{
 # Set my parameters
-my_route <- "C53"
+my_route <- "804"
 my_dir <- 0
 
 # Filter WMATA GTFS
-c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
-                            route_ids = my_route,
-                            dir_id = 0)
-summary(c53_gtfs)
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs,
+                              route_ids = my_route,
+                              dir_id = my_dir)
+summary(lineE_gtfs)
 }

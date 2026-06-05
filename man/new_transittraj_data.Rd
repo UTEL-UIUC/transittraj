@@ -17,7 +17,7 @@ The object returned by the specified function.
 \description{
 This function runs \code{transittraj}'s AVL cleaning and trajectory reconstruction
 workflow up until a certain point (as defined by \code{func_output}), then returns
-the object at that point. A subset of the \code{wmata_avl} dataset is used.
+the object at that point. A subset of the \code{lacmta_avl} dataset is used.
 }
 \details{
 This is primarily intended for use in testing and examples. The workflow
@@ -25,6 +25,6 @@ applied here is the same as what is in \code{vignette("data-workflow")}.
 }
 \examples{
 # Get AVL data after projection onto route
-c53_dists <- new_transittraj_data("get_linear_distances")
-head(c53_dists)
+lineE_dists <- new_transittraj_data("get_linear_distances")
+head(lineE_dists)
 }

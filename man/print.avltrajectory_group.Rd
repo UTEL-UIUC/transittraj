@@ -24,12 +24,12 @@ trajectories, the number of trips will be printed.
 }
 \examples{
 # Get input data
-c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
 # Print: Grouped trajectory object
-print(c53_traj_grouped)
+print(lineE_traj_grouped)
 
 # Print: Single trajectory object
-print(c53_traj_singles[[2]])
+print(lineE_traj_singles[[2]])
 }

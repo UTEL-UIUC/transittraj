@@ -160,39 +160,39 @@ single function for that trip.
 }
 \examples{
 # Set my parameters
-my_times = seq(from = 1771260000,
-               to = 1771264000,
+my_times = seq(from = 1779890000,
+               to = 1779893600,
                by = 180)
-my_distances = seq(from = 0,
-                   to = 15000,
-                   by = 1000)
+my_distances = seq(from = 100,
+                   to = 35000,
+                   by = 5000)
 my_distance_lims = c(500, 600)
 my_timestep = 10
 
 # Get input data
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
 
 # Run function: get distances from times
-interp_dists <- predict(object = c53_traj,
+interp_dists <- predict(object = lineE_traj,
                         new_times = my_times)
 dim(interp_dists)
 head(interp_dists)
 
 # Run function: get speeds from times
-interp_speeds <- predict(object = c53_traj,
+interp_speeds <- predict(object = lineE_traj,
                          new_times = my_times,
                          deriv = 1)
 dim(interp_speeds)
 head(interp_speeds)
 
 # Run function: get times from distances
-interp_times <- predict(object = c53_traj,
+interp_times <- predict(object = lineE_traj,
                         new_distances = my_distances)
 dim(interp_times)
 head(interp_times)
 
 # Run function: get time & distance pairs given distance bounds
-interp_time_dist_pairs <- predict(object = c53_traj,
+interp_time_dist_pairs <- predict(object = lineE_traj,
                                   distance_lims = my_distance_lims,
                                   timestep = my_timestep)
 dim(interp_time_dist_pairs)

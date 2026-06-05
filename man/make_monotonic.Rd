@@ -90,11 +90,11 @@ conditions are met.
 my_dist_err = 0.001
 
 # Get input data
-c53_trimmed <- new_transittraj_data("trim_trips")
+lineE_trimmed <- new_transittraj_data("trim_trips")
 
 # Run function
-c53_mono <- make_monotonic(distance_df = c53_trimmed,
+lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
                            add_distance_error = my_dist_err,
                            correct_speed = TRUE)
-head(c53_mono)
+head(lineE_mono)
 }

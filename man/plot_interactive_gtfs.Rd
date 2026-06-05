@@ -76,6 +76,6 @@ for more information.
 }
 }
 \examples{
-plot_interactive_gtfs(gtfs = wmata_gtfs,
+plot_interactive_gtfs(gtfs = lacmta_gtfs,
                       color_palette = "gtfs")
 }

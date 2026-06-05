@@ -32,20 +32,20 @@ by that shape.
 }
 \examples{
 # Set my parameters
-my_shape <- "C53:04"
-my_crs <- 32618
-my_route <- "C53"
+my_shape <- "804EB_RC_221121"
+my_crs <- 32611
+my_route <- "804"
 my_dir <- 0
 
 # Get needed GTFS data
-c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route,
-                            dir_id = 0)
-c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape,
-                                project_crs = my_crs)
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = my_route,
+                              dir_id = 0)
+lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs, shape = my_shape,
+                                  project_crs = my_crs)
 
 # Run stop distances function
-c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
-                                     shape_geometry = c53_shape,
-                                     project_crs = my_crs)
-head(c53_stop_dists)
+lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
+                                       shape_geometry = lineE_shape,
+                                       project_crs = my_crs)
+head(lineE_stop_dists)
 }

@@ -181,17 +181,17 @@ new_avltrajectory_single <- function(trip_id_performed = character(),
 #' @export
 #' @examples
 #' # Get input data
-#' c53_mono <- new_transittraj_data("make_monotonic")
+#' lineE_mono <- new_transittraj_data("make_monotonic")
 #'
 #' # Run function: grouped trajectory object
-#' c53_traj_grouped <- get_trajectory_fun(distance_df = c53_mono)
-#' summary(c53_traj_grouped)
+#' lineE_traj_grouped <- get_trajectory_fun(distance_df = lineE_mono)
+#' summary(lineE_traj_grouped)
 #'
 #' # Run function: list of single trajectory objects
-#' c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
-#'                                        return_group_function = FALSE)
-#' length(c53_traj_singles)
-#' summary(c53_traj_singles[[2]])
+#' lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
+#'                                          return_group_function = FALSE)
+#' length(lineE_traj_singles)
+#' summary(lineE_traj_singles[[2]])
 get_trajectory_fun <- function(distance_df,
                                interp_method = "monoH.FC", use_speeds = TRUE,
                                find_inverse_function = TRUE, inv_tol = 0.01,
@@ -500,24 +500,24 @@ get_trajectory_fun <- function(distance_df,
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_crs <- 32618
-#' my_start_date <- as.Date("2026-02-16")
-#' my_end_date <- as.Date("2026-02-16")
+#' my_crs <- 32611
+#' my_start_date <- as.Date("2026-05-27")
+#' my_end_date <- as.Date("2026-05-27")
 #'
 #' # Get input data
-#' c53_gtfs <- new_transittraj_data("filter_by_route")
-#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#' lineE_gtfs <- new_transittraj_data("filter_by_route")
+#' lineE_shape <- new_transittraj_data("get_shape_geometry")
 #'
 #' # Run function: build trajectory
-#' c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-#'                                               project_crs = my_crs,
-#'                                               date_min = my_start_date,
-#'                                               date_max = my_end_date)
+#' lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
+#'                                                 project_crs = my_crs,
+#'                                                 date_min = my_start_date,
+#'                                                 date_max = my_end_date)
 #'
 #' # Show trajectory: summary & plot
-#' summary(c53_scheduled_traj)
-#' plot_trajectory(trajectory = c53_scheduled_traj,
-#'                 plot_trips = unclass(c53_scheduled_traj)[8:10],
+#' summary(lineE_scheduled_traj)
+#' plot_trajectory(trajectory = lineE_scheduled_traj,
+#'                 plot_trips = unclass(lineE_scheduled_traj)[8:10],
 #'                 traj_color = "indianred3")
 get_gtfs_trajectory_fun <- function(gtfs,
                                     shape_geometry = NULL, project_crs = 4326,
@@ -710,26 +710,26 @@ get_gtfs_trajectory_fun <- function(gtfs,
 #' @export
 #' @examples
 #' # Get input data
-#' c53_mono <- new_transittraj_data("make_monotonic")
+#' lineE_mono <- new_transittraj_data("make_monotonic")
 #'
 #' # Fit a list of single trajectory functions
-#' c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
-#'                                        return_group_function = FALSE)
+#' lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
+#'                                          return_group_function = FALSE)
 #'
 #' # Show sample singles
-#' print(length(c53_traj_singles))
-#' print(c53_traj_singles[[2]])
+#' print(length(lineE_traj_singles))
+#' print(lineE_traj_singles[[2]])
 #'
 #' # Run function: group singles
-#' c53_traj_grouped <- group_trajectories(trajectories = c53_traj_singles,
-#'                                        grouping = "group")
-#' summary(c53_traj_grouped)
+#' lineE_traj_grouped <- group_trajectories(trajectories = lineE_traj_singles,
+#'                                          grouping = "group")
+#' summary(lineE_traj_grouped)
 #'
 #' # Run function: split apart again
-#' c53_traj_singles_2 <- group_trajectories(trajectories = c53_traj_grouped,
-#'                                          grouping = "split")
-#' print(length(c53_traj_singles_2))
-#' print(c53_traj_singles_2[[2]])
+#' lineE_traj_singles_2 <- group_trajectories(trajectories = lineE_traj_grouped,
+#'                                            grouping = "split")
+#' print(length(lineE_traj_singles_2))
+#' print(lineE_traj_singles_2[[2]])
 group_trajectories <- function(trajectories,
                                grouping) {
 

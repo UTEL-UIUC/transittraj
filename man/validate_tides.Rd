@@ -48,6 +48,6 @@ function verifies that the required fields and data types are present before
 proceeding.
 }
 \examples{
-wmata_tides_val <- validate_tides(avl_df = wmata_avl)
-print(wmata_tides_val)
+lacmta_val <- validate_tides(avl_df = lacmta_avl)
+print(lacmta_val)
 }

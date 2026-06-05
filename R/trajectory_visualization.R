@@ -213,16 +213,16 @@
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
-#' c53_shape <- new_transittraj_data("get_shape_geometry")
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
+#' lineE_shape <- new_transittraj_data("get_shape_geometry")
 #'
 #' # Set my parameters
-#' my_features <- data.frame(name = c("16th & U Stop"),
-#'                           distance = c(13402.281))
-#' my_dist_range <- c(13300, 13500)
+#' my_features <- data.frame(name = c("Metro Center"),
+#'                           distance = c(24556))
+#' my_dist_range <- c(24000, 25000)
 #'
 #' # Run function: Line animation
-#' anim_line <- plot_animated_line(trajectory = c53_traj,
+#' anim_line <- plot_animated_line(trajectory = lineE_traj,
 #'                                 feature_distances = my_features,
 #'                                 route_color = "firebrick4",
 #'                                 label_field = "name",
@@ -233,8 +233,8 @@
 #'                                 timestep = 1)
 #'
 #' # Run function: Map animation
-#' anim_map <- plot_animated_map(trajectory = c53_traj,
-#'                               shape_geometry = c53_shape,
+#' anim_map <- plot_animated_map(trajectory = lineE_traj,
+#'                               shape_geometry = lineE_shape,
 #'                               feature_distances = my_features,
 #'                               route_color = "firebrick4",
 #'                               label_field = "name",
@@ -835,15 +835,15 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' @export
 #' @examples
 #' # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
 #'
 #' # Set my parameters
-#' my_features <- data.frame(name = c("16th & U Stop"),
-#'                           distance = c(13402.281))
-#' my_dist_range <- c(13300, 13500)
+#' my_features <- data.frame(name = c("Metro Center"),
+#'                           distance = c(24556))
+#' my_dist_range <- c(24000, 25000)
 #'
 #' # Run function
-#' plot_trajectory(trajectory = c53_traj,
+#' plot_trajectory(trajectory = lineE_traj,
 #'                 feature_distances = my_features,
 #'                 label_field = "name",
 #'                 label_alpha = 0.8,
@@ -1022,15 +1022,15 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
 #' @export
 #' @examples
 #  # Get input data
-#' c53_traj <- new_transittraj_data("get_trajectory_fun")
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
 #'
 #' # Set my parameters
-#' my_features <- data.frame(name = c("16th & U Stop"),
-#'                           distance = c(13402.281))
-#' my_dist_range <- c(13300, 13500)
+#' my_features <- data.frame(name = c("Metro Center"),
+#'                           distance = c(24556))
+#' my_dist_range <- c(24000, 25000)
 #'
 #' # Create `gganimate` object
-#' anim_line <- plot_animated_line(trajectory = c53_traj,
+#' anim_line <- plot_animated_line(trajectory = lineE_traj,
 #'                                 feature_distances = my_features,
 #'                                 route_color = "firebrick4",
 #'                                 label_field = "name",

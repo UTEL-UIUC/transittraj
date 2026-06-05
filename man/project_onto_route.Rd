@@ -39,18 +39,19 @@ the linear distance from the beginning terminal of the route.
 }
 \examples{
 # Set my parameters
-my_crs <- 32618
+my_crs <- 32611
 
 # Get shape data
-c53_shape <- new_transittraj_data("get_shape_geometry")
+lineE_shape <- new_transittraj_data("get_shape_geometry")
 
 # Set points of interest
-my_points <- data.frame(longitude = c(-76.990038, -77.036289),
-                        latitude = c(38.871335, 38.917054),
-                        poi_name = c("11th St Bridge", "16th & U"))
+my_points <- data.frame(longitude = c(-118.270924, -118.230056),
+                        latitude = c(34.033895, 34.047884),
+                        poi_name = c("Flower & Washington",
+                                     "1st St Viaduct"))
 
 # Run project_onto_route
-my_points_proj <- project_onto_route(shape_geometry = c53_shape,
+my_points_proj <- project_onto_route(shape_geometry = lineE_shape,
                                      points = my_points,
                                      project_crs = my_crs)
 head(my_points_proj)

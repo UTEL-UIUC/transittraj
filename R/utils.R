@@ -47,7 +47,9 @@ utils::globalVariables(c(
   "required_field", "fc_alpha", "fc_beta", "sum_sq", "is_fc_speed",
   "field_type_ok", "field_present", "x_spatial", "y_spatial", "stp_time",
   "point_geom", "distance_lims", "excep_id", "sched_id", "wkday",
-  "user_min_dist", "user_max_dist"
+  "user_min_dist", "user_max_dist",
+  # Exported datasets
+  "lacmta_avl", "lacmta_gtfs"
   ))
 
 #' Calculates numerical inverse of a trajectory function
@@ -115,7 +117,7 @@ correct_speeds_fun <- function(m_0, deltas) {
 #'
 #' This function runs `transittraj`'s AVL cleaning and trajectory reconstruction
 #' workflow up until a certain point (as defined by `func_output`), then returns
-#' the object at that point. A subset of the `wmata_avl` dataset is used.
+#' the object at that point. A subset of the `lacmta_avl` dataset is used.
 #'
 #' This is primarily intended for use in testing and examples. The workflow
 #' applied here is the same as what is in `vignette("data-workflow")`.
@@ -127,13 +129,13 @@ correct_speeds_fun <- function(m_0, deltas) {
 #' @export
 #' @examples
 #' # Get AVL data after projection onto route
-#' c53_dists <- new_transittraj_data("get_linear_distances")
-#' head(c53_dists)
+#' lineE_dists <- new_transittraj_data("get_linear_distances")
+#' head(lineE_dists)
 new_transittraj_data <- function(func_output = NULL) {
 
   # Define allowed steps
   allowed_steps <- c("filter_by_route",
-                     "c53_avl",
+                     "lineE_avl",
                      "get_shape_geometry",
                      "get_linear_distances",
                      "clean_overlapping_subtrips",
@@ -151,103 +153,115 @@ new_transittraj_data <- function(func_output = NULL) {
   }
 
   # - filter_by_route -
-  c53 <- "C53"
-  c53_dir <- 0 # 0 is NB, 1 is SB
-  c53_avl <- transittraj::wmata_avl %>%
-    dplyr::filter((route_id == c53) & (direction_id == c53_dir)) %>%
-    dplyr::filter(trip_id_performed %in% c("35294100", "13437100", "1306100", "13927100"))
-  c53_gtfs <- filter_by_route(gtfs = transittraj::wmata_gtfs,
-                              route_ids = c53,
-                              dir_id = c53_dir)
+  filt_dir <- 0 # 0 is EB, 1 is WB
+  lineE_id <- "804" # the internal route ID for Line E
+  lineE_avl <- lacmta_avl %>%
+    dplyr::filter((route_id == lineE_id) & (direction_id == filt_dir))
+  lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs,
+                                route_ids = lineE_id,
+                                dir_id = filt_dir)
   if (func_output == "filter_by_route") {
-    return(c53_gtfs)
+    return(lineE_gtfs)
   }
-  if (func_output == "c53_avl") {
-    return(c53_avl)
+  if (func_output == "lineE_avl") {
+    return(lineE_avl)
   }
 
   # - get_shape_geometry -
-  c53_NB_shape_id <- "C53:04"
-  dc_CRS <- 32618
-  c53_shape <- get_shape_geometry(gtfs = c53_gtfs,
-                                  shape = c53_NB_shape_id,
-                                  project_crs = dc_CRS)
+  lineE_EB_shape_id <- "804EB_RC_221121"
+  la_CRS <- 32611
+  lineE_shape <- get_shape_geometry(gtfs = lineE_gtfs,
+                                    shape = lineE_EB_shape_id,
+                                    project_crs = la_CRS)
   if (func_output == "get_shape_geometry") {
-    return(c53_shape)
+    return(lineE_shape)
   }
 
   # - get_linear_distances -
-  c53_buffer = 50 # meters
-  c53_distances <- get_linear_distances(avl_df = c53_avl,
-                                        shape_geometry = c53_shape,
-                                        project_crs = dc_CRS,
-                                        clip_buffer = c53_buffer)
+  buffer = 50 # meters
+  lineE_distances <- get_linear_distances(avl_df = lineE_avl,
+                                          shape_geometry = lineE_shape,
+                                          project_crs = la_CRS,
+                                          clip_buffer = buffer)
   if (func_output == "get_linear_distances") {
-    return(c53_distances)
+    return(lineE_distances)
   }
 
   # - clean_overlapping_subtrips -
-  c53_cleaned_subtrips <- clean_overlapping_subtrips(
-    distance_df = c53_distances,
-    check_operator = FALSE,
-    remove_single_observations = TRUE,
-    remove_non_overlapping = FALSE
+  lineE_check_op <- FALSE
+  lineE_remove_singles <- TRUE
+  lineE_remove_non_overlap <- FALSE
+  lineE_cleaned_subtrips <- clean_overlapping_subtrips(
+    distance_df = lineE_distances,
+    check_operator = lineE_check_op,
+    remove_single_observations = lineE_remove_singles,
+    remove_non_overlapping = lineE_remove_non_overlap
   )
+
   if (func_output == "clean_overlapping_subtrips") {
-    return(c53_cleaned_subtrips)
+    return(lineE_cleaned_subtrips)
   }
 
   # - clean_jumps -
-  c53_max_jump <- 20 # meters
-  c53_min_jump <- -1 * c53_max_jump # meters
-  c53_no_jumps <- clean_jumps(distance_df = c53_cleaned_subtrips,
-                              max_median_deviation = c53_max_jump,
-                              min_median_deviation = c53_min_jump,
-                              t_cutoff = Inf)
+  lineE_max_jump <- 80 # meters
+  lineE_min_jump <- -1 * lineE_max_jump # meters
+  lineE_no_jumps <- clean_jumps(distance_df = lineE_cleaned_subtrips,
+                                max_median_deviation = lineE_max_jump,
+                                min_median_deviation = lineE_min_jump,
+                                t_cutoff = Inf)
+
   if (func_output == "clean_jumps") {
-    return(c53_no_jumps)
+    return(lineE_no_jumps)
   }
 
   # - clean_incomplete_trips -
-  c53_min_dist <- 500 # meters
-  c53_min_time <- 90 # seconds
-  c53_max_gap <- 500 # meters
-  c53_cleaned_incompletes <- clean_incomplete_trips(
-    distance_df = c53_no_jumps,
-    min_trip_distance = c53_min_dist,
-    min_trip_duration = c53_min_time,
-    max_distance_gap = c53_max_gap
+  lineE_min_dist <- 1000 # meters
+  lineE_min_time <- 120 # seconds
+  lineE_max_gap <- 1000 # meters
+  lineE_cleaned_incompletes <- clean_incomplete_trips(
+    distance_df = lineE_no_jumps,
+    min_trip_distance = lineE_min_dist,
+    min_trip_duration = lineE_min_time,
+    max_distance_gap = lineE_max_gap
   )
   if (func_output == "clean_incomplete_trips") {
-    return(c53_cleaned_incompletes)
+    return(lineE_cleaned_incompletes)
   }
 
   # - trim_trips -
-  c53_trimmed <- trim_trips(distance_df = c53_cleaned_incompletes,
-                            trim_type = "both")
+  lineE_trim_type <- "both"
+  lineE_trimmed <- trim_trips(distance_df = lineE_cleaned_incompletes,
+                              trim_type = lineE_trim_type)
   if (func_output == "trim_trips") {
-    return(c53_trimmed)
+    return(lineE_trimmed)
   }
 
   # - make_monotonic -
-  c53_dist_error = 0.001
-  c53_mono <- make_monotonic(distance_df = c53_trimmed,
-                             correct_speed = TRUE,
-                             add_distance_error = c53_dist_error)
+  lineE_dist_error <- 0.001
+  lineE_correct_speeds <- TRUE
+  lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
+                               correct_speed = lineE_correct_speeds,
+                               add_distance_error = lineE_dist_error)
   if (func_output == "make_monotonic") {
-    return(c53_mono)
+    return(lineE_mono)
   }
 
   # - get_trajectory_fun - grouped
-  c53_traj <- get_trajectory_fun(distance_df = c53_mono)
+  lineE_traj <- get_trajectory_fun(distance_df = lineE_mono,
+                                   interp_method = "monoH.FC",
+                                   use_speeds = TRUE,
+                                   find_inverse_function = TRUE)
   if (func_output == "get_trajectory_fun") {
-    return(c53_traj)
+    return(lineE_traj)
   }
 
   # - get_trajectory_fun - single
-  c53_traj_s <- get_trajectory_fun(distance_df = c53_mono,
+  lineE_traj_s <- get_trajectory_fun(distance_df = lineE_mono,
+                                   interp_method = "monoH.FC",
+                                   use_speeds = TRUE,
+                                   find_inverse_function = TRUE,
                                    return_group_function = FALSE)
   if (func_output == "get_trajectory_fun_single") {
-    return(c53_traj_s)
+    return(lineE_traj_s)
   }
 }

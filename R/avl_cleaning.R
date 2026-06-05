@@ -21,20 +21,20 @@
 #' @examples
 #' # Set my parameters
 #' my_buffer <- 50 # meters
-#' my_crs <- 32618
+#' my_crs <- 32611
 #'
 #' # Get input data
-#' c53_avl <- new_transittraj_data("c53_avl")
-#' c53_shape <- new_transittraj_data("get_shape_geometry")
-#' dim(c53_avl)
+#' lineE_avl <- new_transittraj_data("lineE_avl")
+#' lineE_shape <- new_transittraj_data("get_shape_geometry")
+#' dim(lineE_avl)
 #'
 #' # Run function
-#' c53_dists <- get_linear_distances(avl_df = c53_avl,
-#'                                   shape_geometry = c53_shape,
-#'                                   clip_buffer = my_buffer,
-#'                                   project_crs = my_crs)
-#' dim(c53_dists)
-#' head(c53_dists)
+#' lineE_dists <- get_linear_distances(avl_df = lineE_avl,
+#'                                     shape_geometry = lineE_shape,
+#'                                     clip_buffer = my_buffer,
+#'                                     project_crs = my_crs)
+#' dim(lineE_dists)
+#' head(lineE_dists)
 get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
                                  original_crs = 4326, project_crs = 4326) {
 
@@ -121,13 +121,13 @@ get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
 #' @export
 #' @examples
 #' # Get input data
-#' c53_dists <- new_transittraj_data("get_linear_distances")
-#' dim(c53_dists)
+#' lineE_dists <- new_transittraj_data("get_linear_distances")
+#' dim(lineE_dists)
 #'
 #' # Run function
-#' c53_no_overlaps <- clean_overlapping_subtrips(distance_df = c53_dists)
-#' dim(c53_no_overlaps)
-#' head(c53_no_overlaps)
+#' lineE_no_overlaps <- clean_overlapping_subtrips(distance_df = lineE_dists)
+#' dim(lineE_no_overlaps)
+#' head(lineE_no_overlaps)
 clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
                                        remove_single_observations = TRUE,
                                        remove_non_overlapping = FALSE,
@@ -340,15 +340,15 @@ clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
 #' my_neighborhood = 9
 #'
 #' # Get input data
-#' c53_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
-#' dim(c53_no_overlaps)
+#' lineE_no_overlaps <- new_transittraj_data("clean_overlapping_subtrips")
+#' dim(lineE_no_overlaps)
 #'
 #' # Run function
-#' c53_no_jumps <- clean_jumps(distance_df = c53_no_overlaps,
-#'                             neighborhood_width = my_neighborhood,
-#'                             t_cutoff = my_cutoff)
-#' dim(c53_no_jumps)
-#' head(c53_no_jumps)
+#' lineE_no_jumps <- clean_jumps(distance_df = lineE_no_overlaps,
+#'                               neighborhood_width = my_neighborhood,
+#'                               t_cutoff = my_cutoff)
+#' dim(lineE_no_jumps)
+#' head(lineE_no_jumps)
 clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
                         min_median_deviation = -Inf, max_median_deviation = Inf,
                         evaluate_tails = FALSE, evaluate_implosions = FALSE,
@@ -436,19 +436,19 @@ clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
 #' @export
 #' @examples
 #' # Set my parameters
-#' my_min_dist <- 500
-#' my_max_gap <- 500
+#' my_min_dist <- 1000
+#' my_max_gap <- 1000
 #'
 #' # Get input data
-#' c53_no_jumps <- new_transittraj_data("clean_jumps")
-#' dim(c53_no_jumps)
+#' lineE_no_jumps <- new_transittraj_data("clean_jumps")
+#' dim(lineE_no_jumps)
 #'
 #' # Run function
-#' c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
-#'                                           min_trip_distance = my_min_dist,
-#'                                           max_distance_gap = my_max_gap)
-#' dim(c53_clean_trips)
-#' head(c53_clean_trips)
+#' lineE_clean_trips <- clean_incomplete_trips(distance_df = lineE_no_jumps,
+#'                                             min_trip_distance = my_min_dist,
+#'                                             max_distance_gap = my_max_gap)
+#' dim(lineE_clean_trips)
+#' head(lineE_clean_trips)
 clean_incomplete_trips <- function(distance_df,
                                    max_trip_distance = Inf,
                                    min_trip_distance = -Inf,
@@ -526,13 +526,13 @@ clean_incomplete_trips <- function(distance_df,
 #' @export
 #' @examples
 #' # Get input data
-#' c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
-#' dim(c53_clean_trips)
+#' lineE_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+#' dim(lineE_clean_trips)
 #'
 #' # Run function
-#' c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
-#' dim(c53_trimmed)
-#' head(c53_trimmed)
+#' lineE_trimmed <- trim_trips(distance_df = lineE_clean_trips)
+#' dim(lineE_trimmed)
+#' head(lineE_trimmed)
 trim_trips <- function(distance_df, trim_type = "both",
                        return_removals = FALSE) {
 
@@ -693,13 +693,13 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' my_dist_err = 0.001
 #'
 #' # Get input data
-#' c53_trimmed <- new_transittraj_data("trim_trips")
+#' lineE_trimmed <- new_transittraj_data("trim_trips")
 #'
 #' # Run function
-#' c53_mono <- make_monotonic(distance_df = c53_trimmed,
+#' lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
 #'                            add_distance_error = my_dist_err,
 #'                            correct_speed = TRUE)
-#' head(c53_mono)
+#' head(lineE_mono)
 make_monotonic <- function(distance_df,
                            correct_speed = FALSE, add_distance_error = 0,
                            return_changes = FALSE) {
