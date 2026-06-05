@@ -72,22 +72,22 @@ be thrown describing what is missing.
 
 ``` r
 # Set my parameters
-my_route <- "C53"
+my_route <- "804"
 my_dir <- 0
 
 # Filter WMATA GTFS
-c53_gtfs <- filter_by_route(gtfs = wmata_gtfs,
-                            route_ids = my_route,
-                            dir_id = 0)
-summary(c53_gtfs)
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs,
+                              route_ids = my_route,
+                              dir_id = my_dir)
+summary(lineE_gtfs)
 #> tidygtfs object
-#> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops
-#> agency       WMATA
-#> service      from 2025-12-14 to 2026-06-13
+#> files        agency, routes, stop_times, trips, fare_rules, shapes, calendar, calendar_dates, stops
+#> agency       Metro - Los Angeles
+#> service      from 2026-05-27 to 2026-06-05
 #> uses         stop_times (no frequencies)
 #> # routes       1
-#> # trips      952
-#> # stop_ids    57
-#> # stop_names  57
-#> # shapes       2
+#> # trips      123
+#> # stop_ids    29
+#> # stop_names  29
+#> # shapes       1
 ```

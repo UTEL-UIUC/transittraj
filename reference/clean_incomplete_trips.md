@@ -70,31 +70,30 @@ The input distance_df, with violating trips removed. If
 
 ``` r
 # Set my parameters
-my_min_dist <- 500
-my_max_gap <- 500
+my_min_dist <- 1000
+my_max_gap <- 1000
 
 # Get input data
-c53_no_jumps <- new_transittraj_data("clean_jumps")
-dim(c53_no_jumps)
-#> [1] 629  11
+lineE_no_jumps <- new_transittraj_data("clean_jumps")
+dim(lineE_no_jumps)
+#> [1] 3085   10
 
 # Run function
-c53_clean_trips <- clean_incomplete_trips(distance_df = c53_no_jumps,
-                                          min_trip_distance = my_min_dist,
-                                          max_distance_gap = my_max_gap)
-dim(c53_clean_trips)
-#> [1] 627  11
-head(c53_clean_trips)
-#> # A tibble: 6 × 11
-#>   location_ping_id vehicle_id trip_id_performed service_date route_id
-#>   <chr>            <chr>      <chr>             <date>       <chr>   
-#> 1 12620            2836       1306100           2026-02-16   C53     
-#> 2 12647            2836       1306100           2026-02-16   C53     
-#> 3 12728            2836       1306100           2026-02-16   C53     
-#> 4 12809            2836       1306100           2026-02-16   C53     
-#> 5 12890            2836       1306100           2026-02-16   C53     
-#> 6 12971            2836       1306100           2026-02-16   C53     
-#> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
-#> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
-#> #   distance <dbl>
+lineE_clean_trips <- clean_incomplete_trips(distance_df = lineE_no_jumps,
+                                            min_trip_distance = my_min_dist,
+                                            max_distance_gap = my_max_gap)
+dim(lineE_clean_trips)
+#> [1] 2250   10
+head(lineE_clean_trips)
+#> # A tibble: 6 × 10
+#>   location_ping_id               service_date trip_id_performed speed vehicle_id
+#>   <chr>                          <chr>        <chr>             <dbl> <chr>     
+#> 1 4af122e0b668d6821335d641a89ad… 2026-05-27   63383915           1.74 1047-1048…
+#> 2 ef3b602e52fe3556a7539491e7792… 2026-05-27   63383915           3.31 1047-1048…
+#> 3 a940808be7f3a59066c981bffe3e5… 2026-05-27   63383915           2.15 1047-1048…
+#> 4 6df05dfca51b44f25d403356de5a3… 2026-05-27   63383915           0    1047-1048…
+#> 5 5326947f997dad696a09f510d4857… 2026-05-27   63383915           0    1047-1048…
+#> 6 0eeafa189aab82fe0bff169a9dc58… 2026-05-27   63383915           0    1047-1048…
+#> # ℹ 5 more variables: event_timestamp <dttm>, direction_id <int>,
+#> #   shape_id <chr>, route_id <chr>, distance <dbl>
 ```

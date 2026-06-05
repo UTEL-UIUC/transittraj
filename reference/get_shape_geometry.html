@@ -25,9 +25,9 @@ requirements on the input GTFS."><meta property="og:image" content="https://obri
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -98,23 +98,23 @@ at least the following fields:</p><ul><li><p><code>shape_id</code></p></li>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
-<span class="r-in"><span><span class="va">my_shape</span> <span class="op">&lt;-</span> <span class="st">"C53:04"</span></span></span>
-<span class="r-in"><span><span class="va">my_crs</span> <span class="op">=</span> <span class="fl">32618</span></span></span>
+<span class="r-in"><span><span class="va">my_shape</span> <span class="op">&lt;-</span> <span class="st">"804EB_RC_221121"</span></span></span>
+<span class="r-in"><span><span class="va">my_crs</span> <span class="op">=</span> <span class="fl">32611</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get shape from WMATA GTFS</span></span></span>
-<span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu">get_shape_geometry</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
-<span class="r-in"><span>                                shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
-<span class="r-in"><span>                                project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_shape</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_shape</span> <span class="op">&lt;-</span> <span class="fu">get_shape_geometry</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lacmta_gtfs</span>,</span></span>
+<span class="r-in"><span>                                  shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
+<span class="r-in"><span>                                  project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_shape</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 1 feature and 1 field</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTILINESTRING</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Projected CRS: WGS 84 / UTM zone 18N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 362276 ymin: 3764673 xmax: 393555.7 ymax: 3768928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Projected CRS: WGS 84 / UTM zone 11N</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   shape_id                                                              geometry</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                    <span style="color: #949494; font-style: italic;">&lt;MULTILINESTRING [m]&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 804EB_RC_221121 ((362276 3764673, 362291.9 3764699, 362324.6 3764751, 362332.…</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

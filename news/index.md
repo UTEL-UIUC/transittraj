@@ -43,8 +43,7 @@
     [`predict()`](https://rdrr.io/r/stats/predict.html) methods include
     `distance_lims` and `timestep`. These allow the user to interpolate
     at a specific time interval over a specific region of space. Read
-    more at
-    [`vignette("articles/intro-trajectories")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories.md).
+    more at `vignette("articles/intro-trajectories")`.
 
   - Substantial refactoring of internal functions to improve cleanliness
     and readability.

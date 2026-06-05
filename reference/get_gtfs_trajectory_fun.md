@@ -238,28 +238,28 @@ is available at (xyz).
 
 ``` r
 # Set my parameters
-my_crs <- 32618
-my_start_date <- as.Date("2026-02-16")
-my_end_date <- as.Date("2026-02-16")
+my_crs <- 32611
+my_start_date <- as.Date("2026-05-27")
+my_end_date <- as.Date("2026-05-27")
 
 # Get input data
-c53_gtfs <- new_transittraj_data("filter_by_route")
-c53_shape <- new_transittraj_data("get_shape_geometry")
+lineE_gtfs <- new_transittraj_data("filter_by_route")
+lineE_shape <- new_transittraj_data("get_shape_geometry")
 
 # Run function: build trajectory
-c53_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = c53_gtfs,
-                                              project_crs = my_crs,
-                                              date_min = my_start_date,
-                                              date_max = my_end_date)
+lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
+                                                project_crs = my_crs,
+                                                date_min = my_start_date,
+                                                date_max = my_end_date)
 
 # Show trajectory: summary & plot
-summary(c53_scheduled_traj)
+summary(lineE_scheduled_traj)
 #> ------
 #> AVL Group Trajectory Object
 #> ------
-#> Number of trips: 108
-#> Total distance range: 2.073578 to 15463.51
-#> Total time range: 1771221600 to 1771310100
+#> Number of trips: 123
+#> Total distance range: 41.19898 to 35314.05
+#> Total time range: 1779878760 to 1779955380
 #> ------
 #> Trajectory function present: TRUE
 #>    --> Trajectory interpolation method: linear
@@ -268,7 +268,7 @@ summary(c53_scheduled_traj)
 #> Inverse function present: TRUE
 #>    --> Inverse function tolerance: 0.01
 #> ------
-plot_trajectory(trajectory = c53_scheduled_traj,
-                plot_trips = unclass(c53_scheduled_traj)[8:10],
+plot_trajectory(trajectory = lineE_scheduled_traj,
+                plot_trips = unclass(lineE_scheduled_traj)[8:10],
                 traj_color = "indianred3")
 ```

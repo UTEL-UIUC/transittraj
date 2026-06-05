@@ -27,9 +27,9 @@ and customized as desired."><meta property="og:image" content="https://obrien-be
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -293,15 +293,15 @@ If using <code>distance_df</code>, they may be mapped to any column in <code>dis
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
-<span class="r-in"><span><span class="va">my_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"16th &amp; U Stop"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                          distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13402.281</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">my_dist_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13300</span>, <span class="fl">13500</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Metro Center"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                          distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24556</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_dist_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24000</span>, <span class="fl">25000</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="fu">plot_trajectory</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">c53_traj</span>,</span></span>
+<span class="r-in"><span><span class="fu">plot_trajectory</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
 <span class="r-in"><span>                feature_distances <span class="op">=</span> <span class="va">my_features</span>,</span></span>
 <span class="r-in"><span>                label_field <span class="op">=</span> <span class="st">"name"</span>,</span></span>
 <span class="r-in"><span>                label_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span></span>

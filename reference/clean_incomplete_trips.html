@@ -23,9 +23,9 @@ middle. Violating trips will be removed."><meta property="og:image" content="htt
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -120,33 +120,32 @@ If <code>return_removals = TRUE</code>, a dataframe of trips removed and why.</p
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
-<span class="r-in"><span><span class="va">my_min_dist</span> <span class="op">&lt;-</span> <span class="fl">500</span></span></span>
-<span class="r-in"><span><span class="va">my_max_gap</span> <span class="op">&lt;-</span> <span class="fl">500</span></span></span>
+<span class="r-in"><span><span class="va">my_min_dist</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></span>
+<span class="r-in"><span><span class="va">my_max_gap</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_no_jumps</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"clean_jumps"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">c53_no_jumps</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 629  11</span>
+<span class="r-in"><span><span class="va">lineE_no_jumps</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"clean_jumps"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_no_jumps</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3085   10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="va">c53_clean_trips</span> <span class="op">&lt;-</span> <span class="fu">clean_incomplete_trips</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_no_jumps</span>,</span></span>
-<span class="r-in"><span>                                          min_trip_distance <span class="op">=</span> <span class="va">my_min_dist</span>,</span></span>
-<span class="r-in"><span>                                          max_distance_gap <span class="op">=</span> <span class="va">my_max_gap</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">c53_clean_trips</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 627  11</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_clean_trips</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 11</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id vehicle_id trip_id_performed service_date route_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 12620            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 12647            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 12728            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 12809            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 12890            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 12971            2836       1306100           2026-02-16   C53     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: direction_id &lt;dbl&gt;, speed &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   trip_stop_sequence &lt;dbl&gt;, event_timestamp &lt;dttm&gt;, stop_id &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   distance &lt;dbl&gt;</span></span>
+<span class="r-in"><span><span class="va">lineE_clean_trips</span> <span class="op">&lt;-</span> <span class="fu">clean_incomplete_trips</span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_no_jumps</span>,</span></span>
+<span class="r-in"><span>                                            min_trip_distance <span class="op">=</span> <span class="va">my_min_dist</span>,</span></span>
+<span class="r-in"><span>                                            max_distance_gap <span class="op">=</span> <span class="va">my_max_gap</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_clean_trips</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2250   10</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_clean_trips</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id               service_date trip_id_performed speed vehicle_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 4af122e0b668d6821335d641a89ad… 2026-05-27   63383915           1.74 1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ef3b602e52fe3556a7539491e7792… 2026-05-27   63383915           3.31 1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> a940808be7f3a59066c981bffe3e5… 2026-05-27   63383915           2.15 1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 6df05dfca51b44f25d403356de5a3… 2026-05-27   63383915           0    1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 5326947f997dad696a09f510d4857… 2026-05-27   63383915           0    1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 0eeafa189aab82fe0bff169a9dc58… 2026-05-27   63383915           0    1047-1048…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: event_timestamp &lt;dttm&gt;, direction_id &lt;int&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   shape_id &lt;chr&gt;, route_id &lt;chr&gt;, distance &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

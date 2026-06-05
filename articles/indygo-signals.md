@@ -10,8 +10,8 @@ This vignette will demonstrate how we’ve used `transittraj` to
 understand delays at traffic signals along IndyGo’s bus rapid transit
 routes. We’ll skip over the data cleaning process, and instead focus on
 the applications of finalized trajectories. Check out
-[`vignette("articles/input-data")`](https://obrien-ben.github.io/transittraj/articles/input-data.md)
-to learn more about how to get started with your own data.
+`vignette("articles/input-data")` to learn more about how to get started
+with your own data.
 
 Let’s load some libraries to get started:
 
@@ -632,4 +632,4 @@ planning studies. We used spatial data and `transittraj`’s
 signal travel times and delays, then used these same tools to visualize
 the effect of bus priority treatments. To learn more about how to use
 `transittraj` to do this with your own data, check out
-[`vignette("articles/input-data")`](https://obrien-ben.github.io/transittraj/articles/input-data.md).
+`vignette("articles/input-data")`.

@@ -103,23 +103,22 @@ speed conditions are met.
 my_dist_err = 0.001
 
 # Get input data
-c53_trimmed <- new_transittraj_data("trim_trips")
+lineE_trimmed <- new_transittraj_data("trim_trips")
 
 # Run function
-c53_mono <- make_monotonic(distance_df = c53_trimmed,
+lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
                            add_distance_error = my_dist_err,
                            correct_speed = TRUE)
-head(c53_mono)
-#> # A tibble: 6 × 11
-#>   location_ping_id vehicle_id trip_id_performed service_date route_id
-#>   <chr>            <chr>      <chr>             <date>       <chr>   
-#> 1 12620            2836       1306100           2026-02-16   C53     
-#> 2 12647            2836       1306100           2026-02-16   C53     
-#> 3 12728            2836       1306100           2026-02-16   C53     
-#> 4 12809            2836       1306100           2026-02-16   C53     
-#> 5 12890            2836       1306100           2026-02-16   C53     
-#> 6 12971            2836       1306100           2026-02-16   C53     
-#> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
-#> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
-#> #   distance <dbl>
+head(lineE_mono)
+#> # A tibble: 6 × 10
+#>   location_ping_id             service_date trip_id_performed   speed vehicle_id
+#>   <chr>                        <chr>        <chr>               <dbl> <chr>     
+#> 1 0eeafa189aab82fe0bff169a9dc… 2026-05-27   63383915          5.26e-5 1047-1048…
+#> 2 3436b03ae5feecd4947d7a0d1d4… 2026-05-27   63383915          1.91e-8 1047-1048…
+#> 3 02939a6bc750b44fad6c842fa8b… 2026-05-27   63383915          1.76e-4 1047-1048…
+#> 4 1a479dd51a750a1e37b7be112ee… 2026-05-27   63383915          4   e-5 1047-1048…
+#> 5 55ecfed9996432eeca7dfcb0167… 2026-05-27   63383915          6.67e-5 1047-1048…
+#> 6 822d16b82b32c422ce9d25ec61f… 2026-05-27   63383915          4.88e-5 1047-1048…
+#> # ℹ 5 more variables: event_timestamp <dttm>, direction_id <int>,
+#> #   shape_id <chr>, route_id <chr>, distance <dbl>
 ```

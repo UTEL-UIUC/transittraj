@@ -32,14 +32,14 @@ A printing character string.
 
 ``` r
 # Get input data
-c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
 # Print: Grouped trajectory object
-print(c53_traj_grouped)
-#> [1] "AVL group trajectory with 3 trips."
+print(lineE_traj_grouped)
+#> [1] "AVL group trajectory with 11 trips."
 
 # Print: Single trajectory object
-print(c53_traj_singles[[2]])
-#> [1] "AVL single trajectory for trip ID 13437100"
+print(lineE_traj_singles[[2]])
+#> [1] "AVL single trajectory for trip ID 63383917"
 ```

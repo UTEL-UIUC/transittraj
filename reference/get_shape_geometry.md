@@ -50,21 +50,21 @@ contain at least the following fields:
 
 ``` r
 # Set my parameters
-my_shape <- "C53:04"
-my_crs = 32618
+my_shape <- "804EB_RC_221121"
+my_crs = 32611
 
 # Get shape from WMATA GTFS
-c53_shape <- get_shape_geometry(gtfs = wmata_gtfs,
-                                shape = my_shape,
-                                project_crs = my_crs)
-print(c53_shape)
+lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs,
+                                  shape = my_shape,
+                                  project_crs = my_crs)
+print(lineE_shape)
 #> Simple feature collection with 1 feature and 1 field
 #> Geometry type: MULTILINESTRING
 #> Dimension:     XY
-#> Bounding box:  xmin: 322061.8 ymin: 4301418 xmax: 329233.3 ymax: 4310353
-#> Projected CRS: WGS 84 / UTM zone 18N
+#> Bounding box:  xmin: 362276 ymin: 3764673 xmax: 393555.7 ymax: 3768928
+#> Projected CRS: WGS 84 / UTM zone 11N
 #> # A tibble: 1 × 2
 #>   shape_id                                                              geometry
 #>   <chr>                                                    <MULTILINESTRING [m]>
-#> 1 C53:04   ((327507.1 4301484, 327505.6 4301478, 327504.9 4301473, 327504 43014…
+#> 1 804EB_RC_221121 ((362276 3764673, 362291.9 3764699, 362324.6 3764751, 362332.…
 ```

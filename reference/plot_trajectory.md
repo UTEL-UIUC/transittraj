@@ -240,15 +240,15 @@ column in `distance_df` (e.g., vehicle or operator IDs).
 
 ``` r
 # Get input data
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
 
 # Set my parameters
-my_features <- data.frame(name = c("16th & U Stop"),
-                          distance = c(13402.281))
-my_dist_range <- c(13300, 13500)
+my_features <- data.frame(name = c("Metro Center"),
+                          distance = c(24556))
+my_dist_range <- c(24000, 25000)
 
 # Run function
-plot_trajectory(trajectory = c53_traj,
+plot_trajectory(trajectory = lineE_traj,
                 feature_distances = my_features,
                 label_field = "name",
                 label_alpha = 0.8,

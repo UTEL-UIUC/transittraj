@@ -34,17 +34,17 @@ A summary character string.
 
 ``` r
 # Get input data
-c53_traj_grouped <- new_transittraj_data("get_trajectory_fun")
-c53_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
+lineE_traj_grouped <- new_transittraj_data("get_trajectory_fun")
+lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
 # Run function: grouped trajectory object
-summary(c53_traj_grouped)
+summary(lineE_traj_grouped)
 #> ------
 #> AVL Group Trajectory Object
 #> ------
-#> Number of trips: 3
-#> Total distance range: 0 to 15365.46
-#> Total time range: 1771258111 to 1771267268
+#> Number of trips: 11
+#> Total distance range: 0.6366599 to 35292.87
+#> Total time range: 1779886240 to 1779898116
 #> ------
 #> Trajectory function present: TRUE
 #>    --> Trajectory interpolation method: monoH.FC
@@ -55,13 +55,13 @@ summary(c53_traj_grouped)
 #> ------
 
 # Run function: single trajectory object
-summary(c53_traj_singles[[2]])
+summary(lineE_traj_singles[[2]])
 #> ------
 #> AVL Single Trajectory Object
 #> ------
-#> Trip ID: 13437100
-#> Trip distance range: 0 to 15365.46
-#> Trip time range: 1771258111 to 1771263913
+#> Trip ID: 63383917
+#> Trip distance range: 7.863145 to 35227.39
+#> Trip time range: 1779887281 to 1779892057
 #> ------
 #> Trajectory function present: TRUE
 #>    --> Trajectory interpolation method: monoH.FC

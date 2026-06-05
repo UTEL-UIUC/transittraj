@@ -42,29 +42,30 @@ using UTM).
 
 ``` r
 # Set my parameters
-my_shape <- "C53:04"
-my_crs <- 32618
-my_route <- "C53"
+my_shape <- "804EB_RC_221121"
+my_crs <- 32611
+my_route <- "804"
 my_dir <- 0
 
 # Get needed GTFS data
-c53_gtfs <- filter_by_route(gtfs = wmata_gtfs, route_ids = my_route,
-                            dir_id = 0)
-c53_shape <- get_shape_geometry(gtfs = wmata_gtfs, shape = my_shape,
-                                project_crs = my_crs)
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = my_route,
+                              dir_id = 0)
+lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs, shape = my_shape,
+                                  project_crs = my_crs)
 
 # Run stop distances function
-c53_stop_dists <- get_stop_distances(gtfs = c53_gtfs,
-                                     shape_geometry = c53_shape,
-                                     project_crs = my_crs)
-head(c53_stop_dists)
-#> # A tibble: 6 × 8
-#>   stop_id stop_code stop_name       stop_desc zone_id stop_url shape_id distance
-#>   <chr>   <chr>     <chr>           <chr>     <chr>   <chr>    <chr>       <dbl>
-#> 1 2584    1000181   Alabama Av SE+… NA        NA      NA       C53:04       677.
-#> 2 2609    1000188   Alabama Av SE+… NA        NA      NA       C53:04       880.
-#> 3 2683    1000203   Alabama Av SE+… NA        NA      NA       C53:04      1155.
-#> 4 2793    1000219   Alabama Av SE+… NA        NA      NA       C53:04      1605.
-#> 5 2811    1000225   Alabama Av SE+… NA        NA      NA       C53:04      1807.
-#> 6 2867    1000238   Alabama Av SE+… NA        NA      NA       C53:04      2037.
+lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
+                                       shape_geometry = lineE_shape,
+                                       project_crs = my_crs)
+head(lineE_stop_dists)
+#> # A tibble: 6 × 10
+#>   stop_id stop_code stop_name    stop_desc stop_url location_type parent_station
+#>   <chr>   <chr>     <chr>        <chr>     <chr>            <int> <chr>         
+#> 1 80121   80121     Pico Station NA        NA                   0 80121S        
+#> 2 80122   80122     7th Street … NA        NA                   0 80122S        
+#> 3 80123   80123     LATTC / Ort… NA        NA                   0 80123S        
+#> 4 80124   80124     Jefferson /… NA        NA                   0 80124S        
+#> 5 80125   80125     Expo Park /… NA        NA                   0 80125S        
+#> 6 80126   80126     Expo / Verm… NA        NA                   0 80126S        
+#> # ℹ 3 more variables: tpis_name <chr>, shape_id <chr>, distance <dbl>
 ```

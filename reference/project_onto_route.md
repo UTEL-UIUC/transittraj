@@ -50,22 +50,23 @@ used (e.g., meters if using UTM).
 
 ``` r
 # Set my parameters
-my_crs <- 32618
+my_crs <- 32611
 
 # Get shape data
-c53_shape <- new_transittraj_data("get_shape_geometry")
+lineE_shape <- new_transittraj_data("get_shape_geometry")
 
 # Set points of interest
-my_points <- data.frame(longitude = c(-76.990038, -77.036289),
-                        latitude = c(38.871335, 38.917054),
-                        poi_name = c("11th St Bridge", "16th & U"))
+my_points <- data.frame(longitude = c(-118.270924, -118.230056),
+                        latitude = c(34.033895, 34.047884),
+                        poi_name = c("Flower & Washington",
+                                     "1st St Viaduct"))
 
 # Run project_onto_route
-my_points_proj <- project_onto_route(shape_geometry = c53_shape,
+my_points_proj <- project_onto_route(shape_geometry = lineE_shape,
                                      points = my_points,
                                      project_crs = my_crs)
 head(my_points_proj)
-#>   longitude latitude       poi_name  distance
-#> 1 -76.99004 38.87134 11th St Bridge  5422.615
-#> 2 -77.03629 38.91705       16th & U 13402.281
+#>   longitude latitude            poi_name distance
+#> 1 -118.2709 34.03390 Flower & Washington 22573.28
+#> 2 -118.2301 34.04788      1st St Viaduct 27758.35
 ```

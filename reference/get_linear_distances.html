@@ -23,9 +23,9 @@ shape from the beginning terminal."><meta property="og:image" content="https://o
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -109,36 +109,43 @@ meters if using UTM).</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
 <span class="r-in"><span><span class="va">my_buffer</span> <span class="op">&lt;-</span> <span class="fl">50</span> <span class="co"># meters</span></span></span>
-<span class="r-in"><span><span class="va">my_crs</span> <span class="op">&lt;-</span> <span class="fl">32618</span></span></span>
+<span class="r-in"><span><span class="va">my_crs</span> <span class="op">&lt;-</span> <span class="fl">32611</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_avl</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"c53_avl"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_shape_geometry"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">c53_avl</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 709  12</span>
+<span class="r-in"><span><span class="va">lineE_avl</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"lineE_avl"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_shape_geometry"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_avl</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3318   11</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="va">c53_dists</span> <span class="op">&lt;-</span> <span class="fu">get_linear_distances</span><span class="op">(</span>avl_df <span class="op">=</span> <span class="va">c53_avl</span>,</span></span>
-<span class="r-in"><span>                                  shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span></span>
-<span class="r-in"><span>                                  clip_buffer <span class="op">=</span> <span class="va">my_buffer</span>,</span></span>
-<span class="r-in"><span>                                  project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">c53_dists</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 639  11</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_dists</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id vehicle_id trip_id_performed service_date route_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1586       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2             1667       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3             1694       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4             1775       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5             2018       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6             2261       5516          13437100   2026-02-16      C53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   direction_id  speed trip_stop_sequence     event_timestamp stop_id distance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1            0 6.4008                  2 2026-02-16 11:08:31   13111  0.00000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2            0 0.0000                  2 2026-02-16 11:09:01   13111  2.08491</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3            0 0.0000                  2 2026-02-16 11:09:11   13111  2.08491</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4            0 0.0000                  2 2026-02-16 11:09:41   13111  2.08491</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5            0 0.0000                  2 2026-02-16 11:11:12   13111  2.08491</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6            0 0.0000                  2 2026-02-16 11:12:43   13111  2.08491</span>
+<span class="r-in"><span><span class="va">lineE_dists</span> <span class="op">&lt;-</span> <span class="fu">get_linear_distances</span><span class="op">(</span>avl_df <span class="op">=</span> <span class="va">lineE_avl</span>,</span></span>
+<span class="r-in"><span>                                    shape_geometry <span class="op">=</span> <span class="va">lineE_shape</span>,</span></span>
+<span class="r-in"><span>                                    clip_buffer <span class="op">=</span> <span class="va">my_buffer</span>,</span></span>
+<span class="r-in"><span>                                    project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_dists</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3268   10</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_dists</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   location_ping_id service_date trip_id_performed    speed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 4af122e0b668d6821335d641a89ad312   2026-05-27          63383915 1.743456</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 ef3b602e52fe3556a7539491e7792c74   2026-05-27          63383915 3.308096</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 a940808be7f3a59066c981bffe3e537a   2026-05-27          63383915 2.145792</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 6df05dfca51b44f25d403356de5a3e0a   2026-05-27          63383915 0.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 5326947f997dad696a09f510d4857d2c   2026-05-27          63383915 0.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0eeafa189aab82fe0bff169a9dc587f7   2026-05-27          63383915 0.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       vehicle_id     event_timestamp direction_id        shape_id route_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1047-1048-1185 2026-05-27 05:48:58            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1047-1048-1185 2026-05-27 05:49:19            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1047-1048-1185 2026-05-27 05:49:40            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1047-1048-1185 2026-05-27 05:49:59            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1047-1048-1185 2026-05-27 05:50:20            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1047-1048-1185 2026-05-27 05:50:40            0 804EB_RC_221121      804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    distance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 197.58271</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  99.22546</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  98.72317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  62.66861</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  83.11011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  31.67278</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -177,75 +177,75 @@ objects, these will return the single function for that trip.
 
 ``` r
 # Set my parameters
-my_times = seq(from = 1771260000,
-               to = 1771264000,
+my_times = seq(from = 1779890000,
+               to = 1779893600,
                by = 180)
-my_distances = seq(from = 0,
-                   to = 15000,
-                   by = 1000)
+my_distances = seq(from = 100,
+                   to = 35000,
+                   by = 5000)
 my_distance_lims = c(500, 600)
 my_timestep = 10
 
 # Get input data
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
 
 # Run function: get distances from times
-interp_dists <- predict(object = c53_traj,
+interp_dists <- predict(object = lineE_traj,
                         new_times = my_times)
 dim(interp_dists)
-#> [1] 55  3
+#> [1] 115   3
 head(interp_dists)
-#>   event_timestamp trip_id_performed    interp
-#> 1      1771260000          13437100 2738.0345
-#> 2      1771260000          35294100  113.3561
-#> 3      1771260180          13437100 3131.5815
-#> 4      1771260180          35294100  895.2449
-#> 5      1771260360          13437100 4254.6383
-#> 6      1771260360          35294100 1594.6588
+#>   event_timestamp trip_id_performed       interp
+#> 1      1779890000          63383915 24448.633529
+#> 2      1779890000          63383917 19442.787256
+#> 3      1779890000          63383949     5.021461
+#> 4      1779890000          63383991 22745.011225
+#> 5      1779890000          63384002  8811.392101
+#> 6      1779890000          63384022   487.996271
 
 # Run function: get speeds from times
-interp_speeds <- predict(object = c53_traj,
+interp_speeds <- predict(object = lineE_traj,
                          new_times = my_times,
                          deriv = 1)
 dim(interp_speeds)
-#> [1] 55  3
+#> [1] 115   3
 head(interp_speeds)
-#>   event_timestamp trip_id_performed     interp
-#> 1      1771260000          13437100 13.2568830
-#> 2      1771260000          35294100  3.0495604
-#> 3      1771260180          13437100  0.1946919
-#> 4      1771260180          35294100  0.7279382
-#> 5      1771260360          13437100  2.8749519
-#> 6      1771260360          35294100  1.9051702
+#>   event_timestamp trip_id_performed       interp
+#> 1      1779890000          63383915 1.627226e+01
+#> 2      1779890000          63383917 8.896095e+00
+#> 3      1779890000          63383949 5.714286e-05
+#> 4      1779890000          63383991 2.101088e+00
+#> 5      1779890000          63384002 1.734515e+01
+#> 6      1779890000          63384022 1.519963e+01
 
 # Run function: get times from distances
-interp_times <- predict(object = c53_traj,
+interp_times <- predict(object = lineE_traj,
                         new_distances = my_distances)
 dim(interp_times)
-#> [1] 46  3
+#> [1] 70  3
 head(interp_times)
 #>   distance trip_id_performed     interp
-#> 1        0          13437100 1771258111
-#> 2     1000           1306100 1771262889
-#> 3     1000          13437100 1771259592
-#> 4     1000          35294100 1771260233
-#> 5     2000           1306100 1771263094
-#> 6     2000          13437100 1771259831
+#> 1      100          63383915 1779887121
+#> 2      100          63383917 1779888079
+#> 3      100          63383949 1779890558
+#> 4      100          63383991 1779887571
+#> 5      100          63384002 1779889061
+#> 6      100          63384022 1779889605
 
 # Run function: get time & distance pairs given distance bounds
-interp_time_dist_pairs <- predict(object = c53_traj,
+interp_time_dist_pairs <- predict(object = lineE_traj,
                                   distance_lims = my_distance_lims,
                                   timestep = my_timestep)
 dim(interp_time_dist_pairs)
-#> [1] 6 3
+#> [1] 10  3
 head(interp_time_dist_pairs)
 #> # A tibble: 6 × 3
 #>   trip_id_performed event_timestamp interp
 #>   <chr>                       <dbl>  <dbl>
-#> 1 1306100               1771262779.   500.
-#> 2 1306100               1771262789.   532.
-#> 3 1306100               1771262799.   558.
-#> 4 13437100              1771259465.   500.
-#> 5 35294100              1771260085.   500.
-#> 6 35294100              1771260095.   578.
+#> 1 63383915              1779887157.   500.
+#> 2 63383917              1779888133.   500.
+#> 3 63383949              1779890607.   500.
+#> 4 63383991              1779887611.   500.
+#> 5 63384002              1779889141.   500.
+#> 6 63384022              1779890001.   500.
 ```

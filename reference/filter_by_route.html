@@ -25,9 +25,9 @@ required files and fields"><meta property="og:image" content="https://obrien-ben
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -109,24 +109,24 @@ describing what is missing.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
-<span class="r-in"><span><span class="va">my_route</span> <span class="op">&lt;-</span> <span class="st">"C53"</span></span></span>
+<span class="r-in"><span><span class="va">my_route</span> <span class="op">&lt;-</span> <span class="st">"804"</span></span></span>
 <span class="r-in"><span><span class="va">my_dir</span> <span class="op">&lt;-</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter WMATA GTFS</span></span></span>
-<span class="r-in"><span><span class="va">c53_gtfs</span> <span class="op">&lt;-</span> <span class="fu">filter_by_route</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
-<span class="r-in"><span>                            route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
-<span class="r-in"><span>                            dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_gtfs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_gtfs</span> <span class="op">&lt;-</span> <span class="fu">filter_by_route</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lacmta_gtfs</span>,</span></span>
+<span class="r-in"><span>                              route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
+<span class="r-in"><span>                              dir_id <span class="op">=</span> <span class="va">my_dir</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lineE_gtfs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> tidygtfs object</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> files        agency, routes, stop_times, trips, shapes, calendar, calendar_dates, stops</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> agency       WMATA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> service      from 2025-12-14 to 2026-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> files        agency, routes, stop_times, trips, fare_rules, shapes, calendar, calendar_dates, stops</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> agency       Metro - Los Angeles</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> service      from 2026-05-27 to 2026-06-05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> uses         stop_times (no frequencies)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # routes       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # trips      952</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_ids    57</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_names  57</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # shapes       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # trips      123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_ids    29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # stop_names  29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # shapes       1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

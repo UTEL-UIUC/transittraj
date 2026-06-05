@@ -41,25 +41,24 @@ The input `distance_df` with violating points removed. If
 
 ``` r
 # Get input data
-c53_clean_trips <- new_transittraj_data("clean_incomplete_trips")
-dim(c53_clean_trips)
-#> [1] 627  11
+lineE_clean_trips <- new_transittraj_data("clean_incomplete_trips")
+dim(lineE_clean_trips)
+#> [1] 2250   10
 
 # Run function
-c53_trimmed <- trim_trips(distance_df = c53_clean_trips)
-dim(c53_trimmed)
-#> [1] 625  11
-head(c53_trimmed)
-#> # A tibble: 6 × 11
-#>   location_ping_id vehicle_id trip_id_performed service_date route_id
-#>   <chr>            <chr>      <chr>             <date>       <chr>   
-#> 1 12620            2836       1306100           2026-02-16   C53     
-#> 2 12647            2836       1306100           2026-02-16   C53     
-#> 3 12728            2836       1306100           2026-02-16   C53     
-#> 4 12809            2836       1306100           2026-02-16   C53     
-#> 5 12890            2836       1306100           2026-02-16   C53     
-#> 6 12971            2836       1306100           2026-02-16   C53     
-#> # ℹ 6 more variables: direction_id <dbl>, speed <dbl>,
-#> #   trip_stop_sequence <dbl>, event_timestamp <dttm>, stop_id <int>,
-#> #   distance <dbl>
+lineE_trimmed <- trim_trips(distance_df = lineE_clean_trips)
+dim(lineE_trimmed)
+#> [1] 2130   10
+head(lineE_trimmed)
+#> # A tibble: 6 × 10
+#>   location_ping_id               service_date trip_id_performed speed vehicle_id
+#>   <chr>                          <chr>        <chr>             <dbl> <chr>     
+#> 1 0eeafa189aab82fe0bff169a9dc58… 2026-05-27   63383915              0 1047-1048…
+#> 2 3436b03ae5feecd4947d7a0d1d49d… 2026-05-27   63383915              0 1047-1048…
+#> 3 02939a6bc750b44fad6c842fa8be6… 2026-05-27   63383915              0 1047-1048…
+#> 4 1a479dd51a750a1e37b7be112ee00… 2026-05-27   63383915              0 1047-1048…
+#> 5 55ecfed9996432eeca7dfcb016701… 2026-05-27   63383915              0 1047-1048…
+#> 6 822d16b82b32c422ce9d25ec61fe6… 2026-05-27   63383915              0 1047-1048…
+#> # ℹ 5 more variables: event_timestamp <dttm>, direction_id <int>,
+#> #   shape_id <chr>, route_id <chr>, distance <dbl>
 ```

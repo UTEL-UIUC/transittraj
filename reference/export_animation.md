@@ -56,15 +56,15 @@ export_animation(
 ## Examples
 
 ``` r
-c53_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
 
 # Set my parameters
-my_features <- data.frame(name = c("16th & U Stop"),
-                          distance = c(13402.281))
-my_dist_range <- c(13300, 13500)
+my_features <- data.frame(name = c("Metro Center"),
+                          distance = c(24556))
+my_dist_range <- c(24000, 25000)
 
 # Create `gganimate` object
-anim_line <- plot_animated_line(trajectory = c53_traj,
+anim_line <- plot_animated_line(trajectory = lineE_traj,
                                 feature_distances = my_features,
                                 route_color = "firebrick4",
                                 label_field = "name",
@@ -77,7 +77,7 @@ anim_line <- plot_animated_line(trajectory = c53_traj,
 # Create a place to store your file
 my_file_name <- tempfile("my_animation", fileext = ".gif")
 print(my_file_name)
-#> [1] "/tmp/RtmpBQUrYC/my_animation1e544e627f07.gif"
+#> [1] "/tmp/RtmpG3STtA/my_animation1e3d60b78e6b.gif"
 
 # Run function: save animation locally
 if (interactive()) {

@@ -1,12 +1,12 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://obrien-ben.github.io/transittraj/404.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/LICENSE.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/data-workflow.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/articles/data-workflow-la.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/figures/ex-indygo-map.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/index.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/indygo-signals.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/input-data.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/articles/intro-trajectories.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/articles/input-data-la.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/articles/intro-trajectories-la.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/paper.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/articles/tc26.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/authors.html</loc></url>
@@ -31,6 +31,8 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/index.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/interpolate_distances.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/interpolate_times.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/lacmta_avl.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/lacmta_gtfs.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/make_monotonic.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/new_avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/new_avltrajectory_single.html</loc></url>
@@ -47,6 +49,9 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/plot_trips_df_setup.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/predict.avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/predict_traj_input_validation.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/predict_traj_setup_dist_lims.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/predict_traj_setup_new_dists.html</loc></url>
+<url><loc>https://obrien-ben.github.io/transittraj/reference/predict_traj_setup_new_times.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/project_onto_route.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/set_globals.html</loc></url>
@@ -57,7 +62,5 @@
 <url><loc>https://obrien-ben.github.io/transittraj/reference/validate_monotonicity.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/validate_shape_geometry.html</loc></url>
 <url><loc>https://obrien-ben.github.io/transittraj/reference/validate_tides.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/reference/wmata_avl.html</loc></url>
-<url><loc>https://obrien-ben.github.io/transittraj/reference/wmata_gtfs.html</loc></url>
 </urlset>
 

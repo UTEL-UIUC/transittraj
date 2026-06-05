@@ -73,19 +73,18 @@ used. To restrict the date enumeration to only a specific window, set
 
 ``` r
 # Set parameters
-trb_start <- as.Date("2026-01-11")
-trb_end <- as.Date("2026-01-15")
+study_date <- as.Date("2026-05-27")
+
+# Get needed input data
+lineE_gtfs <- filter_by_route(gtfs = lacmta_gtfs, route_ids = "804",
+                              dir_id = 0)
 
 # Run function: get service ID by day in date range
-trb_service_ids <- get_gtfs_service_dates(gtfs = wmata_gtfs,
-                                          date_min = trb_start,
-                                          date_max = trb_end,
-                                          use_calendar_table = "calendar")
-print(trb_service_ids)
-#>         date service_id
-#> 1 2026-01-11          2
-#> 2 2026-01-12          9
-#> 3 2026-01-13          9
-#> 4 2026-01-14         10
-#> 5 2026-01-15          9
+study_service_ids <- get_gtfs_service_dates(gtfs = lineE_gtfs,
+                                            date_min = study_date,
+                                            date_max = study_date,
+                                            use_calendar_table = "calendar")
+print(study_service_ids)
+#>         date              service_id
+#> 1 2026-05-27 RDEC25-804-1_Weekday-90
 ```

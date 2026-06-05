@@ -96,11 +96,11 @@ Functions for validating data.
 
 Datasets to test with.
 
-- [`wmata_avl`](https://obrien-ben.github.io/transittraj/reference/wmata_avl.md)
-  : WMATA Bus Automatic Vehicle Location Data
+- [`lacmta_avl`](https://obrien-ben.github.io/transittraj/reference/lacmta_avl.md)
+  : LA Metro AVL Data
 
-- [`wmata_gtfs`](https://obrien-ben.github.io/transittraj/reference/wmata_gtfs.md)
-  : WMATA Bus GTFS
+- [`lacmta_gtfs`](https://obrien-ben.github.io/transittraj/reference/lacmta_gtfs.md)
+  : LA Metro GTFS
 
 - [`new_transittraj_data()`](https://obrien-ben.github.io/transittraj/reference/new_transittraj_data.md)
   :

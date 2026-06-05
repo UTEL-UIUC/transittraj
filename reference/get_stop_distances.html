@@ -27,9 +27,9 @@ by that shape."><meta property="og:image" content="https://obrien-ben.github.io/
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -95,31 +95,32 @@ using UTM).</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set my parameters</span></span></span>
-<span class="r-in"><span><span class="va">my_shape</span> <span class="op">&lt;-</span> <span class="st">"C53:04"</span></span></span>
-<span class="r-in"><span><span class="va">my_crs</span> <span class="op">&lt;-</span> <span class="fl">32618</span></span></span>
-<span class="r-in"><span><span class="va">my_route</span> <span class="op">&lt;-</span> <span class="st">"C53"</span></span></span>
+<span class="r-in"><span><span class="va">my_shape</span> <span class="op">&lt;-</span> <span class="st">"804EB_RC_221121"</span></span></span>
+<span class="r-in"><span><span class="va">my_crs</span> <span class="op">&lt;-</span> <span class="fl">32611</span></span></span>
+<span class="r-in"><span><span class="va">my_route</span> <span class="op">&lt;-</span> <span class="st">"804"</span></span></span>
 <span class="r-in"><span><span class="va">my_dir</span> <span class="op">&lt;-</span> <span class="fl">0</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get needed GTFS data</span></span></span>
-<span class="r-in"><span><span class="va">c53_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
-<span class="r-in"><span>                            dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">c53_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>, shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
-<span class="r-in"><span>                                project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lacmta_gtfs</span>, route_ids <span class="op">=</span> <span class="va">my_route</span>,</span></span>
+<span class="r-in"><span>                              dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_shape_geometry.html">get_shape_geometry</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lacmta_gtfs</span>, shape <span class="op">=</span> <span class="va">my_shape</span>,</span></span>
+<span class="r-in"><span>                                  project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run stop distances function</span></span></span>
-<span class="r-in"><span><span class="va">c53_stop_dists</span> <span class="op">&lt;-</span> <span class="fu">get_stop_distances</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">c53_gtfs</span>,</span></span>
-<span class="r-in"><span>                                     shape_geometry <span class="op">=</span> <span class="va">c53_shape</span>,</span></span>
-<span class="r-in"><span>                                     project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">c53_stop_dists</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   stop_id stop_code stop_name       stop_desc zone_id stop_url shape_id distance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 2584    1000181   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04       677.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2609    1000188   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04       880.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 2683    1000203   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04      <span style="text-decoration: underline;">1</span>155.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 2793    1000219   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04      <span style="text-decoration: underline;">1</span>605.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 2811    1000225   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04      <span style="text-decoration: underline;">1</span>807.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 2867    1000238   Alabama Av SE+… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>       C53:04      <span style="text-decoration: underline;">2</span>037.</span>
+<span class="r-in"><span><span class="va">lineE_stop_dists</span> <span class="op">&lt;-</span> <span class="fu">get_stop_distances</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lineE_gtfs</span>,</span></span>
+<span class="r-in"><span>                                       shape_geometry <span class="op">=</span> <span class="va">lineE_shape</span>,</span></span>
+<span class="r-in"><span>                                       project_crs <span class="op">=</span> <span class="va">my_crs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_stop_dists</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   stop_id stop_code stop_name    stop_desc stop_url location_type parent_station</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 80121   80121     Pico Station <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80121S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 80122   80122     7th Street … <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80122S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 80123   80123     LATTC / Ort… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80123S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 80124   80124     Jefferson /… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80124S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 80125   80125     Expo Park /… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80125S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 80126   80126     Expo / Verm… <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>                   0 80126S        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: tpis_name &lt;chr&gt;, shape_id &lt;chr&gt;, distance &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

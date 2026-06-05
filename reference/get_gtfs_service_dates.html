@@ -25,9 +25,9 @@ Details for a discussion."><meta property="og:image" content="https://obrien-ben
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -120,21 +120,20 @@ and <code>date_max</code>.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Set parameters</span></span></span>
-<span class="r-in"><span><span class="va">trb_start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2026-01-11"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">trb_end</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2026-01-15"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">study_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2026-05-27"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get needed input data</span></span></span>
+<span class="r-in"><span><span class="va">lineE_gtfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="filter_by_route.html">filter_by_route</a></span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lacmta_gtfs</span>, route_ids <span class="op">=</span> <span class="st">"804"</span>,</span></span>
+<span class="r-in"><span>                              dir_id <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: get service ID by day in date range</span></span></span>
-<span class="r-in"><span><span class="va">trb_service_ids</span> <span class="op">&lt;-</span> <span class="fu">get_gtfs_service_dates</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">wmata_gtfs</span>,</span></span>
-<span class="r-in"><span>                                          date_min <span class="op">=</span> <span class="va">trb_start</span>,</span></span>
-<span class="r-in"><span>                                          date_max <span class="op">=</span> <span class="va">trb_end</span>,</span></span>
-<span class="r-in"><span>                                          use_calendar_table <span class="op">=</span> <span class="st">"calendar"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">trb_service_ids</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         date service_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2026-01-11          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2026-01-12          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2026-01-13          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 2026-01-14         10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 2026-01-15          9</span>
+<span class="r-in"><span><span class="va">study_service_ids</span> <span class="op">&lt;-</span> <span class="fu">get_gtfs_service_dates</span><span class="op">(</span>gtfs <span class="op">=</span> <span class="va">lineE_gtfs</span>,</span></span>
+<span class="r-in"><span>                                            date_min <span class="op">=</span> <span class="va">study_date</span>,</span></span>
+<span class="r-in"><span>                                            date_max <span class="op">=</span> <span class="va">study_date</span>,</span></span>
+<span class="r-in"><span>                                            use_calendar_table <span class="op">=</span> <span class="st">"calendar"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">study_service_ids</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         date              service_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2026-05-27 RDEC25-804-1_Weekday-90</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

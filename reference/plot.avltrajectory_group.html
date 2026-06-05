@@ -27,9 +27,9 @@ formatting, see plot_trajectory()."><meta property="og:image" content="https://o
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -88,15 +88,15 @@ formatting, see <code><a href="plot_trajectory.html">plot_trajectory()</a></code
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj_grouped</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj_singles</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun_single"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj_grouped</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj_singles</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun_single"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot: Grouped trajectory object</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">c53_traj_grouped</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lineE_traj_grouped</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.avltrajectory_group-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot: Single trajectory object</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">c53_traj_singles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lineE_traj_singles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.avltrajectory_group-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

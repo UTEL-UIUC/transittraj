@@ -57,27 +57,34 @@ for removal.
 
 ``` r
 # Get input data
-c53_dists <- new_transittraj_data("get_linear_distances")
-dim(c53_dists)
-#> [1] 639  11
+lineE_dists <- new_transittraj_data("get_linear_distances")
+dim(lineE_dists)
+#> [1] 3268   10
 
 # Run function
-c53_no_overlaps <- clean_overlapping_subtrips(distance_df = c53_dists)
-dim(c53_no_overlaps)
-#> [1] 639  11
-head(c53_no_overlaps)
-#>   location_ping_id vehicle_id trip_id_performed service_date route_id
-#> 1             1586       5516          13437100   2026-02-16      C53
-#> 2             1667       5516          13437100   2026-02-16      C53
-#> 3             1694       5516          13437100   2026-02-16      C53
-#> 4             1775       5516          13437100   2026-02-16      C53
-#> 5             2018       5516          13437100   2026-02-16      C53
-#> 6             2261       5516          13437100   2026-02-16      C53
-#>   direction_id  speed trip_stop_sequence     event_timestamp stop_id distance
-#> 1            0 6.4008                  2 2026-02-16 11:08:31   13111  0.00000
-#> 2            0 0.0000                  2 2026-02-16 11:09:01   13111  2.08491
-#> 3            0 0.0000                  2 2026-02-16 11:09:11   13111  2.08491
-#> 4            0 0.0000                  2 2026-02-16 11:09:41   13111  2.08491
-#> 5            0 0.0000                  2 2026-02-16 11:11:12   13111  2.08491
-#> 6            0 0.0000                  2 2026-02-16 11:12:43   13111  2.08491
+lineE_no_overlaps <- clean_overlapping_subtrips(distance_df = lineE_dists)
+dim(lineE_no_overlaps)
+#> [1] 3104   10
+head(lineE_no_overlaps)
+#>                   location_ping_id service_date trip_id_performed    speed
+#> 1 4af122e0b668d6821335d641a89ad312   2026-05-27          63383915 1.743456
+#> 2 ef3b602e52fe3556a7539491e7792c74   2026-05-27          63383915 3.308096
+#> 3 a940808be7f3a59066c981bffe3e537a   2026-05-27          63383915 2.145792
+#> 4 6df05dfca51b44f25d403356de5a3e0a   2026-05-27          63383915 0.000000
+#> 5 5326947f997dad696a09f510d4857d2c   2026-05-27          63383915 0.000000
+#> 6 0eeafa189aab82fe0bff169a9dc587f7   2026-05-27          63383915 0.000000
+#>       vehicle_id     event_timestamp direction_id        shape_id route_id
+#> 1 1047-1048-1185 2026-05-27 05:48:58            0 804EB_RC_221121      804
+#> 2 1047-1048-1185 2026-05-27 05:49:19            0 804EB_RC_221121      804
+#> 3 1047-1048-1185 2026-05-27 05:49:40            0 804EB_RC_221121      804
+#> 4 1047-1048-1185 2026-05-27 05:49:59            0 804EB_RC_221121      804
+#> 5 1047-1048-1185 2026-05-27 05:50:20            0 804EB_RC_221121      804
+#> 6 1047-1048-1185 2026-05-27 05:50:40            0 804EB_RC_221121      804
+#>    distance
+#> 1 197.58271
+#> 2  99.22546
+#> 3  98.72317
+#> 4  62.66861
+#> 5  83.11011
+#> 6  31.67278
 ```

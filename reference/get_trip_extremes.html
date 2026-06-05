@@ -23,9 +23,9 @@ be filtered to a desired set of trip_id_performeds."><meta property="og:image" c
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -82,15 +82,23 @@ dataframe to. At least one must of <code>filter_trips</code> must be present in
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function</span></span></span>
-<span class="r-in"><span><span class="va">c53_extremes</span> <span class="op">&lt;-</span> <span class="fu">get_trip_extremes</span><span class="op">(</span><span class="va">c53_traj</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_extremes</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   trip_id_performed   min_dist max_dist   min_time   max_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1306100 0.04191312 15356.17 1771262290 1771267268</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          13437100 0.00000000 15365.46 1771258111 1771263913</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          35294100 0.04191312 15363.48 1771259264 1771264338</span>
+<span class="r-in"><span><span class="va">lineE_extremes</span> <span class="op">&lt;-</span> <span class="fu">get_trip_extremes</span><span class="op">(</span><span class="va">lineE_traj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_extremes</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    trip_id_performed     min_dist max_dist   min_time   max_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           63383915 3.167278e+01 35292.87 1779886240 1779891480</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2           63383917 7.863145e+00 35227.39 1779887281 1779892057</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           63383949 5.010461e+00 35192.59 1779889773 1779894642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           63383991 7.197114e+00 34686.08 1779887038 1779891459</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           63384002 5.770401e+00 35151.47 1779887757 1779892976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           63384022 5.484959e+00 27125.84 1779889141 1779892840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7           63384063 6.366599e-01 34684.70 1779892098 1779896499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8           63384093 2.690944e+04 35234.77 1779886677 1779887777</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9           63384094 1.831250e+01 35207.69 1779893803 1779898116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10          63384135 3.869933e+00 35243.03 1779888197 1779892675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11          63384143 3.001684e+01 35255.01 1779892496 1779897459</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

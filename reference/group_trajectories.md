@@ -31,28 +31,28 @@ group_trajectories(trajectories, grouping)
 
 ``` r
 # Get input data
-c53_mono <- new_transittraj_data("make_monotonic")
+lineE_mono <- new_transittraj_data("make_monotonic")
 
 # Fit a list of single trajectory functions
-c53_traj_singles <- get_trajectory_fun(distance_df = c53_mono,
-                                       return_group_function = FALSE)
+lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
+                                         return_group_function = FALSE)
 
 # Show sample singles
-print(length(c53_traj_singles))
-#> [1] 3
-print(c53_traj_singles[[2]])
-#> [1] "AVL single trajectory for trip ID 13437100"
+print(length(lineE_traj_singles))
+#> [1] 11
+print(lineE_traj_singles[[2]])
+#> [1] "AVL single trajectory for trip ID 63383917"
 
 # Run function: group singles
-c53_traj_grouped <- group_trajectories(trajectories = c53_traj_singles,
-                                       grouping = "group")
-summary(c53_traj_grouped)
+lineE_traj_grouped <- group_trajectories(trajectories = lineE_traj_singles,
+                                         grouping = "group")
+summary(lineE_traj_grouped)
 #> ------
 #> AVL Group Trajectory Object
 #> ------
-#> Number of trips: 3
-#> Total distance range: 0 to 15365.46
-#> Total time range: 1771258111 to 1771267268
+#> Number of trips: 11
+#> Total distance range: 0.6366599 to 35292.87
+#> Total time range: 1779886240 to 1779898116
 #> ------
 #> Trajectory function present: TRUE
 #>    --> Trajectory interpolation method: monoH.FC
@@ -63,10 +63,10 @@ summary(c53_traj_grouped)
 #> ------
 
 # Run function: split apart again
-c53_traj_singles_2 <- group_trajectories(trajectories = c53_traj_grouped,
-                                         grouping = "split")
-print(length(c53_traj_singles_2))
-#> [1] 3
-print(c53_traj_singles_2[[2]])
-#> [1] "AVL single trajectory for trip ID 13437100"
+lineE_traj_singles_2 <- group_trajectories(trajectories = lineE_traj_grouped,
+                                           grouping = "split")
+print(length(lineE_traj_singles_2))
+#> [1] 11
+print(lineE_traj_singles_2[[2]])
+#> [1] "AVL single trajectory for trip ID 63383917"
 ```

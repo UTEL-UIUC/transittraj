@@ -61,8 +61,8 @@ before proceeding.
 ## Examples
 
 ``` r
-wmata_tides_val <- validate_tides(avl_df = wmata_avl)
-print(wmata_tides_val)
+lacmta_val <- validate_tides(avl_df = lacmta_avl)
+print(lacmta_val)
 #>      required_field required_field_type field_present actual_field_type
 #> 1  location_ping_id           character          TRUE         character
 #> 2 trip_id_performed           character          TRUE         character

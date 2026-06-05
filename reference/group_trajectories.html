@@ -27,9 +27,9 @@ more information."><meta property="og:image" content="https://obrien-ben.github.
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Data</h6></li>
-    <li><a class="dropdown-item" href="../articles/input-data.html">Overview of Data</a></li>
-    <li><a class="dropdown-item" href="../articles/data-workflow.html">AVL Cleaning</a></li>
-    <li><a class="dropdown-item" href="../articles/intro-trajectories.html">Intro to Trajectories</a></li>
+    <li><a class="dropdown-item" href="../articles/input-data-la.html">Overview of Data</a></li>
+    <li><a class="dropdown-item" href="../articles/data-workflow-la.html">AVL Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/intro-trajectories-la.html">Intro to Trajectories</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/indygo-signals.html">Signal Delays in Indianapolis</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Presentations</h6></li>
@@ -84,28 +84,28 @@ a list of single trajectories.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get input data</span></span></span>
-<span class="r-in"><span><span class="va">c53_mono</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"make_monotonic"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_mono</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"make_monotonic"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit a list of single trajectory functions</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj_singles</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_trajectory_fun.html">get_trajectory_fun</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">c53_mono</span>,</span></span>
-<span class="r-in"><span>                                       return_group_function <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj_singles</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_trajectory_fun.html">get_trajectory_fun</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_mono</span>,</span></span>
+<span class="r-in"><span>                                         return_group_function <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show sample singles</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">c53_traj_singles</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_traj_singles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AVL single trajectory for trip ID 13437100"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lineE_traj_singles</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 11</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_traj_singles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AVL single trajectory for trip ID 63383917"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: group singles</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj_grouped</span> <span class="op">&lt;-</span> <span class="fu">group_trajectories</span><span class="op">(</span>trajectories <span class="op">=</span> <span class="va">c53_traj_singles</span>,</span></span>
-<span class="r-in"><span>                                       grouping <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">c53_traj_grouped</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj_grouped</span> <span class="op">&lt;-</span> <span class="fu">group_trajectories</span><span class="op">(</span>trajectories <span class="op">=</span> <span class="va">lineE_traj_singles</span>,</span></span>
+<span class="r-in"><span>                                         grouping <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lineE_traj_grouped</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> AVL Group Trajectory Object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trips: 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Total distance range: 0 to 15365.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Total time range: 1771258111 to 1771267268</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trips: 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Total distance range: 0.6366599 to 35292.87</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Total time range: 1779886240 to 1779898116</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Trajectory function present: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Trajectory interpolation method: monoH.FC</span>
@@ -116,12 +116,12 @@ a list of single trajectories.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: split apart again</span></span></span>
-<span class="r-in"><span><span class="va">c53_traj_singles_2</span> <span class="op">&lt;-</span> <span class="fu">group_trajectories</span><span class="op">(</span>trajectories <span class="op">=</span> <span class="va">c53_traj_grouped</span>,</span></span>
-<span class="r-in"><span>                                         grouping <span class="op">=</span> <span class="st">"split"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">c53_traj_singles_2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">c53_traj_singles_2</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AVL single trajectory for trip ID 13437100"</span>
+<span class="r-in"><span><span class="va">lineE_traj_singles_2</span> <span class="op">&lt;-</span> <span class="fu">group_trajectories</span><span class="op">(</span>trajectories <span class="op">=</span> <span class="va">lineE_traj_grouped</span>,</span></span>
+<span class="r-in"><span>                                           grouping <span class="op">=</span> <span class="st">"split"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lineE_traj_singles_2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 11</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_traj_singles_2</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AVL single trajectory for trip ID 63383917"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

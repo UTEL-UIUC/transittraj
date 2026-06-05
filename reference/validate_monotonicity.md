@@ -46,16 +46,16 @@ conditions are satisfied.
 
 ``` r
 # Get & test non-monotonic dataset
-c53_dists <- new_transittraj_data("get_linear_distances")
-c53_dists_val <- validate_monotonicity(c53_dists, check_speed = TRUE)
-print(c53_dists_val)
+lineE_dists <- new_transittraj_data("get_linear_distances")
+lineE_dists_val <- validate_monotonicity(lineE_dists, check_speed = TRUE)
+print(lineE_dists_val)
 #>   weak strict  speed 
 #>  FALSE  FALSE  FALSE 
 
 # Get & test monotonic dataset
-c53_mono <- new_transittraj_data("make_monotonic")
-c53_mono_val <- validate_monotonicity(c53_mono, check_speed = TRUE)
-print(c53_mono_val)
+lineE_mono <- new_transittraj_data("make_monotonic")
+lineE_mono_val <- validate_monotonicity(lineE_mono, check_speed = TRUE)
+print(lineE_mono_val)
 #>   weak strict  speed 
 #>   TRUE   TRUE   TRUE 
 ```
