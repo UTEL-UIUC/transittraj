@@ -1,7 +1,7 @@
-#' Summary function for AVL trajectories.
+#' Summarize an AVL trajectory object
 #'
 #' @description
-#' This function prints a summary for grouped or single trajectory object
+#' This function prints a summary for grouped or single trajectory object.
 #' If the input is a single trajectory, the trip's ID and distance & time range
 #' will be printed. If the input is a grouped trajectory, the number of trips
 #' and the distance & time range across all trips will be printed. For both,
@@ -89,7 +89,7 @@ summary.avltrajectory_single <- function(object, ...) {
   invisible(object)
 }
 
-#' Print function for AVL trajectories
+#' Print an AVL trajectory object
 #'
 #' @description
 #' This function prints a one-line report for grouped or single trajectory
@@ -122,7 +122,7 @@ print.avltrajectory_single <- function(x, ...) {
               sep = ""))
 }
 
-#' Quickly plots an AVL trajectory.
+#' Quickly plot an AVL trajectory
 #'
 #' This function generates a quick plot of a single or grouped trajectory
 #' object. Using the trajectory function, the entire trajectory will be plotted
@@ -132,7 +132,7 @@ print.avltrajectory_single <- function(x, ...) {
 #'
 #' @param x A trajectory object.
 #' @param ... Other parameters (not used).
-#' @return A ggplot2 object.
+#' @return A `ggplot2` object.
 #' @export
 #' @examples
 #' # Get input data

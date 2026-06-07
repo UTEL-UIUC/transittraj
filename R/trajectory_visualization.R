@@ -1,4 +1,4 @@
-#' Animate vehicle trajectory or AVL data.
+#' Animate vehicle trajectory or AVL data
 #'
 #' @description
 #' These functions use the input trajectory object or TIDES AVL data to animate
