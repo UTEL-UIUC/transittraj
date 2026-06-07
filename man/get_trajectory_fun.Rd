@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{get_trajectory_fun}
 \alias{get_trajectory_fun}
-\title{Fits continuous trajectory interpolating curves from transit AVL data.}
+\title{Fit continuous trajectory interpolating curves from AVL data}
 \usage{
 get_trajectory_fun(
   distance_df,
@@ -31,7 +31,7 @@ function (time ~ distance) be calculated? Default is \code{TRUE}.}
 
 \item{inv_tol}{Optional. A numeric in the units of input \code{distance}, the
 tolerance used when calculating the numeric inverse function. Default is
-0.01.}
+\code{0.01}.}
 
 \item{return_group_function}{Optional. A boolean, should the returned
 trajectory object be grouped into a single function? If FALSE, will return a
@@ -40,14 +40,18 @@ is \code{TRUE}.}
 }
 \value{
 If \code{return_group_function = TRUE}, a grouped trajectory object. If
-\code{FALSE}, a list of single trajectory objects, index by their
+\code{FALSE}, a list of single trajectory objects, indexed by their
 \code{trip_id_performed}.
 }
 \description{
-This function fits a continuous vehicle trajectory function to observed AVL
-points, returning a trajectory object. Interpolation can be done linearly
-(\code{interp_method = "linear"}), or via any method supported by
-\code{stats::splinefun()}.
+This function fits a continuous vehicle trajectory to cleaned AVL
+points (see \code{vignette("articles/data-workflow-la")}). This function
+operates as a "function factory", returning a function (closure) which
+takes a timestamp and returns each trip's position. A separate curve is
+fit for each trip, and stored in a special trajectory object class.
+The default interpolating method is a velocity-informed piecewise
+cubic interpolating polynomial, but linear interpolation and other
+spline-based techniques are also supported. See \code{Details} for a discussion.
 }
 \details{
 \subsection{Interpolating Methods}{
@@ -57,7 +61,7 @@ vehicle's distance traveled as a function of time, for each trip. This
 function supports to types of interpolating curves:
 \itemize{
 \item Linear interpolation, for \code{interp_method = "linear"}. This will fit a
-simple linear function, ignorant of recorded \code{speed} values.
+simple linear function, ignorant to recorded \code{speed} values.
 \item Spline interpolation, for \code{interp_method} set to any method supported by
 \code{stats::splinefun()} (i.e., \code{"fmm"}, \code{"natural"}, \code{"periodic"}, \code{"monoH.FC"},
 or \code{"hyman"}.) Only \code{interp_method = "monoH.FC"} supports use of recorded
@@ -72,8 +76,8 @@ function is guaranteed to be montonic. See \code{make_monotonic()} and
 \code{validate_monotonicity()}.
 
 Note that \code{use_speeds = TRUE} requires \code{interp_method = "monoH.FC"}, but
-\code{interp_method = "monoH.FC"} does not require \code{use_speeds = TRUE}. In this
-scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
+\code{interp_method = "monoH.FC"} does not require \code{use_speeds = TRUE}. In the
+latter scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
 can be created. If input \code{distance} values are monotonic, this curve is
 guaranteed to be monotonic.
 }
@@ -81,10 +85,11 @@ guaranteed to be monotonic.
 \subsection{Inverse Functions}{
 
 Often times, we are concerned not with the position of a vehicle at a
-particular time, but when a vehicle crosses a specific point in space. This
-can be accomplished by computing an inverse trajectory function. If
-\code{find_inverse_function = TRUE} (the default), a numeric inverse to the fit
-trajectory function will be found, with a tolerance controlled by \code{inv_tol}.
+particular time, but the time at which a vehicle crosses a specific point
+in space. This can be accomplished by computing an inverse trajectory
+function. If \code{find_inverse_function = TRUE} (the default), a numeric
+inverse to the fit trajectory function will be found, with a tolerance
+controlled by \code{inv_tol}.
 
 Because the inverse function is numerical, it can be found for any type of
 interpolating curve (linear or spline). However, the input data must be
@@ -102,23 +107,26 @@ such, \code{get_trajectory_fun()} returns an AVL trajectory object. If
 single object containing:
 \itemize{
 \item A vector of \code{trip_id_performed}s present in \code{distance_df}.
-\item A list of fit trajectory functions, indexed by their \code{trip_id_performed}.
-\item A list of fit inverse trajectory functions, indexed by their
-\code{trip_id_performed}.
+\item A list of fit trajectory functions (closures), one per trip, indexed by
+their \code{trip_id_performed}.
+\item A list of fit inverse trajectory functions (closures), one per trip,
+indexed by their \code{trip_id_performed}.
 \item Information about how the trajectory and inverse trajectory functions were
 fit, including \code{interp_method}, \code{use_speeds}, and \code{inv_tol}.
 \item A vector each for the minimum distances, maximum distances, minimum times,
 and maximum times of each trip. These inform the domain and range of the
 trajectory function and its inverse, preventing extrapolation beyond the
 time or distance range actually served by a trip.
+\item The agency's timezone (see \code{OlsonNames()}), as extracted from
+the \code{event_timestamp} column.
 }
 
 Alternatively, if \code{return_group_function = FALSE}, a separate trajectory
-object will be fit for each trip. \code{get_trajectory_fun()} will return a list
-of trajectory objects indexed by their \code{trip_id_performed}.
+object will be returned for each trip, as a list of objects indexed by
+their \code{trip_id_performed}.
 
 More information about the trajectory object classes and how to use them is
-available at (xyz).
+available at \code{vignette("articles/intro-trajectories-la")}.
 }
 }
 \examples{

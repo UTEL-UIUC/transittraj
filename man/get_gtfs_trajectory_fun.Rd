@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{get_gtfs_trajectory_fun}
 \alias{get_gtfs_trajectory_fun}
-\title{Fits continuous trajectory interpolating curves from GTFS schedule data.}
+\title{Fit continuous trajectory interpolating curves from GTFS schedule data}
 \usage{
 get_gtfs_trajectory_fun(
   gtfs,
@@ -78,18 +78,21 @@ is \code{TRUE}.}
 
 \item{inv_tol}{Optional. A numeric in the units of input \code{distance}, the
 tolerance used when calculating the numeric inverse function. Default is
-0.01.}
+\code{0.01}.}
 }
 \value{
 If \code{return_group_function = TRUE}, a grouped trajectory object. If
-\code{FALSE}, a list of single trajectory objects, index by their
+\code{FALSE}, a list of single trajectory objects, indexed by their
 \code{trip_id_performed}.
 }
 \description{
 This function fits a continuous vehicle trajectory function to scheduled GTFS
-\code{stop_times}, returning a trajectory object. Interpolation can be done
-linearly (\code{interp_method = "linear"}), or via any method supported by
-\code{stats::splinefun()}.
+\code{stop_times}. This function
+operates as a "function factory", returning a function (closure) which
+takes a timestamp and returns each trip's position. A separate curve is
+fit for each trip, and stored in a special trajectory object class.
+The default interpolating method is linear, but
+spline-based techniques are also supported. See \code{Details} for a discussion.
 }
 \details{
 \subsection{Stops, Dwells, and Monotonicity}{
@@ -132,10 +135,10 @@ If both dwell times and an inverse function are desired, consider setting
 
 The goal of this function is to fit a continuous function representing a
 GTFS trip's scheduled distance traveled as a function of time. This
-function supports to types of interpolating curves:
+function supports two types of interpolating curves:
 \itemize{
 \item Linear interpolation, for \code{interp_method = "linear"}. This will fit a
-simple linear function, ignorant of recorded \code{speed} values.
+simple linear function between stops.
 \item Spline interpolation, for \code{interp_method} set to any method supported by
 \code{stats::splinefun()} (i.e., \code{"fmm"}, \code{"natural"}, \code{"periodic"}, \code{"monoH.FC"},
 or \code{"hyman"}.)
@@ -151,10 +154,11 @@ trajectory.
 \subsection{Inverse Functions}{
 
 Often times, we are concerned not with the position of a vehicle at a
-particular time, but when a vehicle crosses a specific point in space. This
-can be accomplished by computing an inverse trajectory function. If
-\code{find_inverse_function = TRUE} (the default), a numeric inverse to the fit
-trajectory function will be found, with a tolerance controlled by \code{inv_tol}.
+particular time, but the time at which a vehicle crosses a specific point
+in space. This can be accomplished by computing an inverse trajectory
+function. If \code{find_inverse_function = TRUE} (the default), a numeric
+inverse to the fit trajectory function will be found, with a tolerance
+controlled by \code{inv_tol}.
 
 Because the inverse function is numerical, it can be found for any type of
 interpolating curve (linear or spline). However, the input data must be
@@ -171,24 +175,27 @@ such, \code{get_trajectory_fun()} returns an AVL trajectory object. If
 \code{return_group_function = TRUE} (the default), the function will return a
 single object containing:
 \itemize{
-\item A vector of \code{trip_id_performed}s, from the \code{trip_id}s found in \code{trips}.
-\item A list of fit trajectory functions, indexed by their \code{trip_id_performed}.
-\item A list of fit inverse trajectory functions, indexed by their
-\code{trip_id_performed}.
+\item A vector of \code{trip_id_performed}s present in \code{distance_df}.
+\item A list of fit trajectory functions (closures), one per trip, indexed by
+their \code{trip_id_performed}.
+\item A list of fit inverse trajectory functions (closures), one per trip,
+indexed by their \code{trip_id_performed}.
 \item Information about how the trajectory and inverse trajectory functions were
 fit, including \code{interp_method}, \code{use_speeds}, and \code{inv_tol}.
 \item A vector each for the minimum distances, maximum distances, minimum times,
 and maximum times of each trip. These inform the domain and range of the
 trajectory function and its inverse, preventing extrapolation beyond the
 time or distance range actually served by a trip.
+\item The agency's timezone (see \code{OlsonNames()}), as extracted from
+the \code{event_timestamp} column.
 }
 
 Alternatively, if \code{return_group_function = FALSE}, a separate trajectory
-object will be fit for each trip. \code{get_trajectory_fun()} will return a list
-of trajectory objects indexed by their \code{trip_id_performed}.
+object will be returned for each trip, as a list of objects indexed by
+their \code{trip_id_performed}.
 
 More information about the trajectory object classes and how to use them is
-available at (xyz).
+available at \code{vignette("articles/intro-trajectories-la")}.
 }
 }
 \examples{
@@ -207,9 +214,14 @@ lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
                                                 date_min = my_start_date,
                                                 date_max = my_end_date)
 
-# Show trajectory: summary & plot
+# Show trajectory: summary
 summary(lineE_scheduled_traj)
+
+# Show trajectory: plot (just a handful of trips)
+ordered_trips <- get_trip_extremes(lineE_scheduled_traj) \%>\%
+   dplyr::arrange(min_time) \%>\%
+   dplyr::pull(trip_id_performed)
 plot_trajectory(trajectory = lineE_scheduled_traj,
-                plot_trips = unclass(lineE_scheduled_traj)[8:10],
+                plot_trips = ordered_trips[20:25],
                 traj_color = "indianred3")
 }

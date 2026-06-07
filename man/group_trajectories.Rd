@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_constructors.R
 \name{group_trajectories}
 \alias{group_trajectories}
-\title{Group existing trajectory objects or split them apart.}
+\title{Group existing trajectory objects or split them apart}
 \usage{
 group_trajectories(trajectories, grouping)
 }
