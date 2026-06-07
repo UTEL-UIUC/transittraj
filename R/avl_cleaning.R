@@ -1,22 +1,22 @@
-#' Linearizes latitude-longitude GPS points to a provided route shape.
+#' Linearize latitude-longitude GPS points on a provided route shape
 #'
 #' @description
 #' This functions projects raw AVL data, as GPS latitude-longitude points, onto
-#' a provided route geometry, returning the distance of that point along the
-#' shape from the beginning terminal.
+#' a provided route geometry, returning each point's distance of that point
+#' along the shape its the beginning terminal.
 #'
 #' @inheritParams project_onto_route
 #' @param avl_df A dataframe of raw AVL data. Must include at least `longitude`
 #' and `latitude` columns. See `validate_tides()`.
-#' @param clip_buffer Optional. The distance, in units of the used spatial
+#' @param clip_buffer Optional. The distance, in units of the chosen spatial
 #' projection, to clip the GPS points. Only points within this distance of the
-#' `shape_geometry` will be kept. Default is NULL, where no clip will be
+#' `shape_geometry` will be kept. Default is `NULL`, where no clip will be
 #' applied.
 #' @param shape_geometry The SF object to project onto. Must be only one shape.
 #' See `get_shape_geometry()`.
 #' @return The input `avl_df` with `latitude` and `longitude` columns replaced
 #' by a `distance` column, in the units of the spatial projection used (e.g.,
-#' meters if using UTM).
+#' meters if using WGS UTM).
 #' @export
 #' @examples
 #' # Set my parameters
@@ -93,31 +93,30 @@ get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
   return(dist_df)
 }
 
-#' Removes trips with multiple overlapping operators or vehicles assigned to the
-#' same trip number.
+#' Remove trips with multiple operators or vehicles assigned to the
+#' same trip ID
 #'
 #' @description
-#' In some AVL vendors, multiple vehicles or operators may be logged to the same
+#' In some AVL systems, multiple vehicles or operators may be logged to the same
 #' trip ID at the same time. This may be acceptable in some scenarios (e.g., a
 #' vehicle/operator tradeoff mid-trip). Other times, it may be an error, with
 #' these distinct (trip, vehicle, operator) truples running simulataneously.
-#' This function identifies both scenarios, and gives the option to remove one
-#' or both.
+#' This function identifies both scenarios, and gives the option to
+#' remove either.
 #'
 #' @param distance_df A dataframe of linearized AVL data. Must include
 #' `event_timestamp`, `trip_id_performed`, and `vehicle_id`. Optionally, may
 #' include `operator_id`.
-#' @param check_operator Optional. A boolean, should overlaps of multiple
-#' `operator_id`s be checked for? Default is FALSE.
+#' @param check_operator Optional. A boolean, should the function check for
+#' overlaps of multiple `operator_id`s? Default is `FALSE`.
 #' @param remove_single_observations Optional. A boolean, should subtrips with
-#'  only one observation be removed? Default is TRUE.
+#'  only one observation be removed? Default is `TRUE`.
 #' @param remove_non_overlapping Optional. A boolean, should trips with multiple
-#' vehicles or operators that do not overlap be removed? Default is FALSE.
+#' vehicles or operators that do not overlap be removed? Default is `FALSE`.
 #' @param return_removals Optional. A boolean, should the function return a
-#' dataframe of trips removed and why? Default is FALSE.
+#' dataframe of trips removed and why? Default is `FALSE`.
 #' @return The input distance_df, with violating trips removed. If
-#' return_removals = TRUE, a dataframe with trip IDs and the reason why it was
-#' identified for removal.
+#' `return_removals = TRUE`, a dataframe with trip IDs removed and why.
 #' @export
 #' @examples
 #' # Get input data
@@ -257,7 +256,7 @@ clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
   }
 }
 
-#' Applies median filters to detect large jumps (i.e., outliers) in the
+#' Apply median filters to detect large jumps (i.e., outliers) in
 #' trajectories.
 #'
 #' @description
@@ -328,7 +327,7 @@ clean_overlapping_subtrips <- function(distance_df, check_operator = FALSE,
 #' Default is `-Inf`.
 #' @param max_median_deviation Optional. A numeric, the maximum allowed
 #' deviation of an observation from its window median, in units of distance.
-#' Default is `-Inf`.
+#' Default is `Inf`.
 #' @param return_removals Optional. A boolean, should the function return
 #' a dataframe of points removed and why? Default is `FALSE`.
 #' @return The input `distance_df` with violating points removed. If
@@ -410,28 +409,28 @@ clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
   }
 }
 
-#' Filters out entire trips which do not meet distance or duration requirements.
+#' Filter out entire trips which do not meet distance or duration requirements
 #'
 #' This function identifies trips that do not meet some acceptable duration and
 #' distance traveled ranges, or that have large time or distance gaps in the
-#' middle. Violating trips will be removed.
+#' middle. Violating trips are removed.
 #'
 #' @inheritParams clean_jumps
 #' @param max_trip_distance Optional. The maximum distance traveled over one
-#' trip, in units of input `distance`. Default is Inf.
+#' trip, in units of input `distance`. Default is `Inf`.
 #' @param min_trip_distance Optional. The minimum distance traveled over one
-#' trip, in units of input `distance`. Default is -Inf.
-#' @param max_trip_duration Optional. The maximum event_timestamp duration
-#' of one trip, in seconds. Default is Inf.
-#' @param min_trip_duration Optional. The minimum event_timestamp duration
-#' of one trip, in seconds. Default is -Inf.
+#' trip, in units of input `distance`. Default is `-Inf`.
+#' @param max_trip_duration Optional. The maximum duration
+#' of one trip, in seconds. Default is `Inf`.
+#' @param min_trip_duration Optional. The minimum duration
+#' of one trip, in seconds. Default is `-Inf`.
 #' @param max_distance_gap Optional. The maximum change in distance between two
-#' observations, in units of input `distance`. Default is Inf.
+#' observations, in units of input `distance`. Default is `Inf`.
 #' @param max_time_gap Optional. The maximum time between two observations, in
-#' seconds. Default is Inf.
+#' seconds. Default is `Inf`.
 #' @param return_removals Optional. A boolean, should the function return
 #' a dataframe of trips removed and why? Default is `FALSE`.
-#' @return The input distance_df, with violating trips removed.
+#' @return The input `distance_df`, with violating trips removed.
 #' If `return_removals = TRUE`, a dataframe of trips removed and why.
 #' @export
 #' @examples
@@ -506,21 +505,21 @@ clean_incomplete_trips <- function(distance_df,
   }
 }
 
-#' Removes observations occurring before a trip's minimum distance, or after a
-#' trip's maximum distance.
+#' Remove observations occurring before a trip's minimum distance, or after a
+#' trip's maximum distance
 #'
-#' Sometimes observations will be recorded under a trip ID while a vehicle is
+#' Sometimes AVL pings can be recorded under a trip ID while a vehicle is
 #' still traveling in the opposite direction. Conversely, a trip may continue
 #' recording as it begins traversing the opposite direction. This function
 #' attempts to remove these observations by identifying each trip's minimum
 #' (beginning) and maximum (ending) distance, then filtering to only
-#' observations after and before these points. For both ends, the first
-#' occurrence of the beginning/maximum value is used.
+#' observations between these points. For both ends, the first
+#' occurrence of the beginning/ending value is used.
 #'
 #' @inheritParams clean_jumps
 #' @param trim_type Optional. A string, indicating whether the beginning of
 #' trips, end of trips, or both beginning and end of trips should be trimmed.
-#' Must be one of "beginning", "end", or "both". Default is "beginning".
+#' Must be one of `"beginning"`, `"end"`, or `"both"`. Default is `"both"`.
 #' @return The input `distance_df` with violating points removed. If
 #' `return_removals = TRUE`, a dataframe with observations removed and why.
 #' @export
@@ -618,8 +617,8 @@ trim_trips <- function(distance_df, trim_type = "both",
   }
 }
 
-#' Corrects distance observations, and optionally speeds, to be weakly or
-#' strictly monotonic.
+#' Correct distance observations, and optionally speeds, to be weakly or
+#' strictly monotonic
 #'
 #' @description
 #' Due to error in GPS position and speed measurements, raw AVL data is often
@@ -634,22 +633,24 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' - Weak monotonicity: The trajectory is increasing or constant. To make points
 #' weakly monotonic, this function replaces each point with the cumulative
 #' maximum `distance` value at that point in the trip. This means that
-#' backtracking points will be "pulled up".
+#' backtracking points will be "pulled up."
 #'
 #' - Strict monotonicity: The trajectory is increasing only, never constant. To
 #' make points strictly monotonic, we first begin with a weakly monotonic
 #' trajectory. Then, constant portions (adjacent points with equal `distance`
 #' values) are identified, and `add_distance_error` is added to each point. The
-#' function identifies and prevents "overshoots". Effectively, this gives flat
-#' portions of the trajectory a slight upward slope.
+#' function identifies and prevents "overshoots," ensuring that an adjusted
+#' point never moves past an observed point sometime after it. Effectively,
+#' this gives flat portions of the trajectory a slight upward slope.
 #'
 #' Weak monotonicity most accurately describes real transit vehicle trajectories:
 #' we expect the vehicle to either move forwards, or stand still at a stop.
-#' However, strict monotonicity is a nice mathematical property that allows us
-#' to find the inverse trajectory (i.e., retrieve time as a function of
-#' distance). Choose between these two options by setting `add_distance_error`.
-#' If `add_distance_error = 0` (the default), a weakly monotonic trajectory is
-#' returned. Otherwise, the trajectory will be strictly monotonic.
+#' However, strict monotonicity is a convenient mathematical property that
+#' allows us to find the inverse trajectory (i.e., retrieve time as a
+#' function of distance). Choose between these two options by setting
+#' `add_distance_error`. If `add_distance_error = 0` (the default), a weakly
+#' monotonic trajectory is returned; otherwise, the trajectory will be
+#' strictly monotonic.
 #'
 #' In addition to distance corrections, some applications (e.g., fitting a
 #' velocity-informed interpolation spline) require speeds to satisfy certain
@@ -672,8 +673,8 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' interpolating curve.
 #'
 #' After using this function to perform corrections, use
-#' `validate_montonicity()` to check if weak, strict, and Fritsch-Carlson speed
-#' conditions are met.
+#' `validate_monotonicity()` to check if weak, strict, and Fritsch-Carlson
+#' speed conditions are met.
 #'
 #' @param distance_df A dataframe of linearized AVL data. Must include
 #' `trip_id_performed`, `event_timestamp`, and `distance`. If
@@ -682,7 +683,7 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' adjusted distances and Fritsch-Carlson conditions? Default is `FALSE`.
 #' @param add_distance_error Optional. If non-zero, each "flat" observation will
 #' be adjusted by this amount forwards, in units of input `distance`. Default is
-#' 0.
+#' `0`.
 #' @param return_changes Optional. Should a dataframe of each observation
 #' changed be returned? Default is `FALSE`.
 #' @return The input `distance_df` with distances and speeds adjusted. If

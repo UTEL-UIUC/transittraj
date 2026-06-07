@@ -62,7 +62,7 @@ many seconds of dwell should be added? This will adjust forward the
 
 \item{add_distance_error}{Optional. If non-zero, each "flat" observation will
 be adjusted by this amount forwards, in units of input \code{distance}. Default is
-0.}
+\code{0}.}
 
 \item{interp_method}{Optional. The type of interpolation function to be fit.
 Either \code{"linear"}, or a spline method from \code{stats::splinefun()}. Default is

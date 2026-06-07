@@ -2,8 +2,8 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{make_monotonic}
 \alias{make_monotonic}
-\title{Corrects distance observations, and optionally speeds, to be weakly or
-strictly monotonic.}
+\title{Correct distance observations, and optionally speeds, to be weakly or
+strictly monotonic}
 \usage{
 make_monotonic(
   distance_df,
@@ -22,7 +22,7 @@ adjusted distances and Fritsch-Carlson conditions? Default is \code{FALSE}.}
 
 \item{add_distance_error}{Optional. If non-zero, each "flat" observation will
 be adjusted by this amount forwards, in units of input \code{distance}. Default is
-0.}
+\code{0}.}
 
 \item{return_changes}{Optional. Should a dataframe of each observation
 changed be returned? Default is \code{FALSE}.}
@@ -44,22 +44,24 @@ There are two primary types of monotonicity:
 \item Weak monotonicity: The trajectory is increasing or constant. To make points
 weakly monotonic, this function replaces each point with the cumulative
 maximum \code{distance} value at that point in the trip. This means that
-backtracking points will be "pulled up".
+backtracking points will be "pulled up."
 \item Strict monotonicity: The trajectory is increasing only, never constant. To
 make points strictly monotonic, we first begin with a weakly monotonic
 trajectory. Then, constant portions (adjacent points with equal \code{distance}
 values) are identified, and \code{add_distance_error} is added to each point. The
-function identifies and prevents "overshoots". Effectively, this gives flat
-portions of the trajectory a slight upward slope.
+function identifies and prevents "overshoots," ensuring that an adjusted
+point never moves past an observed point sometime after it. Effectively,
+this gives flat portions of the trajectory a slight upward slope.
 }
 
 Weak monotonicity most accurately describes real transit vehicle trajectories:
 we expect the vehicle to either move forwards, or stand still at a stop.
-However, strict monotonicity is a nice mathematical property that allows us
-to find the inverse trajectory (i.e., retrieve time as a function of
-distance). Choose between these two options by setting \code{add_distance_error}.
-If \code{add_distance_error = 0} (the default), a weakly monotonic trajectory is
-returned. Otherwise, the trajectory will be strictly monotonic.
+However, strict monotonicity is a convenient mathematical property that
+allows us to find the inverse trajectory (i.e., retrieve time as a
+function of distance). Choose between these two options by setting
+\code{add_distance_error}. If \code{add_distance_error = 0} (the default), a weakly
+monotonic trajectory is returned; otherwise, the trajectory will be
+strictly monotonic.
 
 In addition to distance corrections, some applications (e.g., fitting a
 velocity-informed interpolation spline) require speeds to satisfy certain
@@ -82,8 +84,8 @@ consider setting \code{correct_speed = TRUE} to guarantee a monotonic
 interpolating curve.
 
 After using this function to perform corrections, use
-\code{validate_montonicity()} to check if weak, strict, and Fritsch-Carlson speed
-conditions are met.
+\code{validate_monotonicity()} to check if weak, strict, and Fritsch-Carlson
+speed conditions are met.
 }
 \examples{
 # Set my parameters

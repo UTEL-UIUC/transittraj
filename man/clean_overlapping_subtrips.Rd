@@ -2,8 +2,8 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{clean_overlapping_subtrips}
 \alias{clean_overlapping_subtrips}
-\title{Removes trips with multiple overlapping operators or vehicles assigned to the
-same trip number.}
+\title{Remove trips with multiple operators or vehicles assigned to the
+same trip ID}
 \usage{
 clean_overlapping_subtrips(
   distance_df,
@@ -18,30 +18,29 @@ clean_overlapping_subtrips(
 \code{event_timestamp}, \code{trip_id_performed}, and \code{vehicle_id}. Optionally, may
 include \code{operator_id}.}
 
-\item{check_operator}{Optional. A boolean, should overlaps of multiple
-\code{operator_id}s be checked for? Default is FALSE.}
+\item{check_operator}{Optional. A boolean, should the function check for
+overlaps of multiple \code{operator_id}s? Default is \code{FALSE}.}
 
 \item{remove_single_observations}{Optional. A boolean, should subtrips with
-only one observation be removed? Default is TRUE.}
+only one observation be removed? Default is \code{TRUE}.}
 
 \item{remove_non_overlapping}{Optional. A boolean, should trips with multiple
-vehicles or operators that do not overlap be removed? Default is FALSE.}
+vehicles or operators that do not overlap be removed? Default is \code{FALSE}.}
 
 \item{return_removals}{Optional. A boolean, should the function return a
-dataframe of trips removed and why? Default is FALSE.}
+dataframe of trips removed and why? Default is \code{FALSE}.}
 }
 \value{
 The input distance_df, with violating trips removed. If
-return_removals = TRUE, a dataframe with trip IDs and the reason why it was
-identified for removal.
+\code{return_removals = TRUE}, a dataframe with trip IDs removed and why.
 }
 \description{
-In some AVL vendors, multiple vehicles or operators may be logged to the same
+In some AVL systems, multiple vehicles or operators may be logged to the same
 trip ID at the same time. This may be acceptable in some scenarios (e.g., a
 vehicle/operator tradeoff mid-trip). Other times, it may be an error, with
 these distinct (trip, vehicle, operator) truples running simulataneously.
-This function identifies both scenarios, and gives the option to remove one
-or both.
+This function identifies both scenarios, and gives the option to
+remove either.
 }
 \examples{
 # Get input data

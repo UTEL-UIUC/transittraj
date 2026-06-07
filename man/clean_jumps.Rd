@@ -2,7 +2,7 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{clean_jumps}
 \alias{clean_jumps}
-\title{Applies median filters to detect large jumps (i.e., outliers) in the
+\title{Apply median filters to detect large jumps (i.e., outliers) in
 trajectories.}
 \usage{
 clean_jumps(
@@ -33,7 +33,7 @@ Default is \code{-Inf}.}
 
 \item{max_median_deviation}{Optional. A numeric, the maximum allowed
 deviation of an observation from its window median, in units of distance.
-Default is \code{-Inf}.}
+Default is \code{Inf}.}
 
 \item{evaluate_tails}{Optional. A boolean, should the beginning and ending
 observations, before a complete window can be formed, be evaluated? Default

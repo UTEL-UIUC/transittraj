@@ -2,7 +2,7 @@
 % Please edit documentation in R/avl_cleaning.R
 \name{get_linear_distances}
 \alias{get_linear_distances}
-\title{Linearizes latitude-longitude GPS points to a provided route shape.}
+\title{Linearize latitude-longitude GPS points on a provided route shape}
 \usage{
 get_linear_distances(
   avl_df,
@@ -19,9 +19,9 @@ and \code{latitude} columns. See \code{validate_tides()}.}
 \item{shape_geometry}{The SF object to project onto. Must be only one shape.
 See \code{get_shape_geometry()}.}
 
-\item{clip_buffer}{Optional. The distance, in units of the used spatial
+\item{clip_buffer}{Optional. The distance, in units of the chosen spatial
 projection, to clip the GPS points. Only points within this distance of the
-\code{shape_geometry} will be kept. Default is NULL, where no clip will be
+\code{shape_geometry} will be kept. Default is \code{NULL}, where no clip will be
 applied.}
 
 \item{original_crs}{Optional. A numeric EPSG identifier. If a dataframe is
@@ -36,12 +36,12 @@ Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 \value{
 The input \code{avl_df} with \code{latitude} and \code{longitude} columns replaced
 by a \code{distance} column, in the units of the spatial projection used (e.g.,
-meters if using UTM).
+meters if using WGS UTM).
 }
 \description{
 This functions projects raw AVL data, as GPS latitude-longitude points, onto
-a provided route geometry, returning the distance of that point along the
-shape from the beginning terminal.
+a provided route geometry, returning each point's distance of that point
+along the shape its the beginning terminal.
 }
 \examples{
 # Set my parameters
