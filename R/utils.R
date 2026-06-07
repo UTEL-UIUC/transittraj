@@ -113,14 +113,14 @@ correct_speeds_fun <- function(m_0, deltas) {
   return(m_0)
 }
 
-#' Returns an object from a particular step of `transittraj`'s workflow.
+#' Retrieve an object from a particular step of `transittraj`'s workflow
 #'
 #' This function runs `transittraj`'s AVL cleaning and trajectory reconstruction
 #' workflow up until a certain point (as defined by `func_output`), then returns
 #' the object at that point. A subset of the `lacmta_avl` dataset is used.
-#'
 #' This is primarily intended for use in testing and examples. The workflow
-#' applied here is the same as what is in `vignette("data-workflow")`.
+#' applied here is the same as what is in
+#' `vignette("articles/data-workflow-la")`.
 #'
 #' @param func_output The `transittraj` function to return an output for. Should
 #' be a string corresponding to the function name. Default is `NULL`, where a
@@ -131,6 +131,10 @@ correct_speeds_fun <- function(m_0, deltas) {
 #' # Get AVL data after projection onto route
 #' lineE_dists <- new_transittraj_data("get_linear_distances")
 #' head(lineE_dists)
+#'
+#' # Get a full, fit trajectory
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
+#' summary(lineE_traj)
 new_transittraj_data <- function(func_output = NULL) {
 
   # Define allowed steps

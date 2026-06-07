@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{new_transittraj_data}
 \alias{new_transittraj_data}
-\title{Returns an object from a particular step of \code{transittraj}'s workflow.}
+\title{Retrieve an object from a particular step of \code{transittraj}'s workflow}
 \usage{
 new_transittraj_data(func_output = NULL)
 }
@@ -18,13 +18,16 @@ The object returned by the specified function.
 This function runs \code{transittraj}'s AVL cleaning and trajectory reconstruction
 workflow up until a certain point (as defined by \code{func_output}), then returns
 the object at that point. A subset of the \code{lacmta_avl} dataset is used.
-}
-\details{
 This is primarily intended for use in testing and examples. The workflow
-applied here is the same as what is in \code{vignette("data-workflow")}.
+applied here is the same as what is in
+\code{vignette("articles/data-workflow-la")}.
 }
 \examples{
 # Get AVL data after projection onto route
 lineE_dists <- new_transittraj_data("get_linear_distances")
 head(lineE_dists)
+
+# Get a full, fit trajectory
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+summary(lineE_traj)
 }

@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{lacmta_avl}}{
 
-A dataframe with 20,777 rows and 12 columns.
+A dataframe with 14,179 rows and 11 columns.
 \describe{
 \item{location_ping_id}{A unique ID for each row.}
 \item{service_date}{The date of the trip's beginning.}

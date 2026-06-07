@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{lacmta_gtfs}}{
 
-A tidytransit object (list) with 8 files.
+A \code{tidytransit} \code{tidygtfs} object (list) with 8 files.
 \describe{
 \item{agency}{The GTFS \code{agency.txt} file.}
 \item{routes}{The GTFS \code{routes.txt} file.}
