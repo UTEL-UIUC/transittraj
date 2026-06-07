@@ -1,8 +1,8 @@
-# Get the distance and time range of each trip in a trajectory object.
+# Get the distance and time range of each trip in a trajectory object
 
 This function extracts the time and distance ranges stored in a
-trajectory object and formats them into a dataframe for each use. The
-dataframe can be filtered to a desired set of `trip_id_performed`s.
+trajectory object and formats them into a dataframe. The dataframe can
+be filtered to a desired set of `trip_id_performed`s.
 
 ## Usage
 

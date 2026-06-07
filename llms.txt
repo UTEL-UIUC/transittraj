@@ -223,7 +223,7 @@ Functions to plot trajectories.
 Functions for using trajectories.
 
 - [`predict(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/predict.avltrajectory_group.md)
-  : Interpolate time or distance points using AVL trajectories.
+  : Interpolate time or distance points using AVL trajectories
 - [`print(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)
   [`print(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)
   : Print an AVL trajectory object
@@ -231,16 +231,16 @@ Functions for using trajectories.
   [`summary(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/summary.avltrajectory_group.md)
   : Summarize an AVL trajectory object
 - [`get_trip_extremes()`](https://obrien-ben.github.io/transittraj/reference/get_trip_extremes.md)
-  : Get the distance and time range of each trip in a trajectory object.
+  : Get the distance and time range of each trip in a trajectory object
 
 ## Data Validation
 
 Functions for validating data.
 
 - [`validate_tides()`](https://obrien-ben.github.io/transittraj/reference/validate_tides.md)
-  : Check if an AVL dataframe meets TIDES standards.
+  : Check if AVL data meets TIDES standards
 - [`validate_monotonicity()`](https://obrien-ben.github.io/transittraj/reference/validate_monotonicity.md)
-  : Check if an AVL dataframe satisfies assumptions of monotonicity.
+  : Check if AVL data satisfies assumptions of monotonicity
 
 ## Supporting Datasets
 

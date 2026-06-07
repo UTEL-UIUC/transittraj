@@ -1,10 +1,10 @@
-# Check if an AVL dataframe meets TIDES standards.
+# Check if AVL data meets TIDES standards
 
 The transit integrated data exchange standard (TIDES) specifies columns
 that should be present in AVL data tables and the data types of these
 columns. This function verifies if those columns are present in the
-input `avl_df`, and those columns are of the correct data type. See
-`Details` for more information.
+input `avl_df` are of the correct data type. See `Details` for more
+information.
 
 ## Usage
 

@@ -1,9 +1,10 @@
-# Interpolate time or distance points using AVL trajectories.
+# Interpolate time or distance points using AVL trajectories
 
-Using a function stored in a grouped or single trajectory object, new
-points will be interpolated along a trajectory. Depending on whether
-new_times or new_distances is provided, the function will utilize the
-direct or inverse trajectory function.
+This function uses a fit interpolating curve stored in a grouped or
+single trajectory object to find new points along each trip's
+trajectory. Depending on whether `new_times` or `new_distances` is
+provided, the function will utilize the direct or inverse trajectory
+function.
 
 ## Usage
 
@@ -30,23 +31,22 @@ predict(
 - new_times:
 
   Optional. A vector of numeric timepoints, or a dataframe with at least
-  the column `"event_timestamp"` of new timepoints to interpolate at.
-  May also contain the column `trip_id_performed`, which will
-  interpolate distances at each trip and time row pair. Default is
-  `NULL`.
+  the column `event_timestamp` of new timepoints to interpolate at. May
+  also contain the column `trip_id_performed`, which will interpolate
+  distances at each trip and time row pair. Default is `NULL`.
 
 - new_distances:
 
   Optional. A vector of numeric distances, or a dataframe with at least
-  the column `"distance"` of new distances to interpolate at. May also
+  the column `distance` of new distances to interpolate at. May also
   contain the column `trip_id_performed`, which will interpolate times
   at each trip and distance row pair. Default is `NULL`.
 
 - distance_lims:
 
-  Optional. A vector of (minimum, maximum) distance bounds over which to
-  interpolate at a given timestep. If provided, `timestep` must also be
-  provided. Default is `NULL`.
+  Optional. A vector of `(minimum, maximum)` distance bounds over which
+  to interpolate at a given timestep. If provided, `timestep` must also
+  be provided. Default is `NULL`.
 
 - timestep:
 
@@ -56,7 +56,9 @@ predict(
 
 - deriv:
 
-  Optional. The derivative with which to calculate at. Default is `0`.
+  Optional. The derivative with which to calculate at. May only be set
+  if `new_times` or `distance_lims`/`timestep` is provided, and not if
+  `new_distances` is provided. Default is `0` (i.e., position).
 
 - trips:
 
@@ -71,8 +73,8 @@ predict(
 
 ## Value
 
-The input dataframe, with an additional column `"interp"` of the
-interpolated values requested, and an additional `"trip_id_performed"`
+The input dataframe, with an additional column `interp` of the
+interpolated values requested, and an additional `trip_id_performed`
 column will all trips for which that point is within range.
 
 ## Details
@@ -95,8 +97,8 @@ and all additional columns will be preserved through the interpolation.
 If `new_times` is provided, the function will find the `distance` of
 each trip at each point in time. If a dataframe is provided, it must
 contain the column `event_timestamp`. This will use the trajectory's
-direct function. When using `new_times`, a `deriv` value can also be
-set. See below for a more detailed discussion.
+direct function. When using `new_times`, a `deriv` value can also be set
+greater than 0. See below for a more detailed discussion.
 
 #### Times from Distances
 
@@ -104,7 +106,8 @@ If `new_distances` is provided, the function will find the
 `event_timestamp` of each trip at each point in space. If a dataframe is
 provided, it must contain the column `distance`. This will use the
 trajectory's inverse function. When using `new_distances`, a `deriv`
-value cannot be set. See below for a more detailed discussion.
+value cannot be set greater than 0. See below for a more detailed
+discussion.
 
 #### Time & Distance Pairs from Distance Bounds
 
@@ -115,7 +118,7 @@ find each trip's entrance and exit time through `distance_lims`, then
 create a sequence between these entrance and exit times with a step of
 `timestep`. Finally, the trajectory's direct function is used to find
 the distance at each of these timepoints. A `deriv` value can also be
-set for the final direct interpolation.
+set greater than 0 for the final direct interpolation.
 
 If you have a well-defined region of space, this approach allows you to
 interpolate vehicle positions at a very tight timescale over a large
@@ -127,34 +130,36 @@ magnitude more points and would be substantially less efficient.
 ### Finding Derivatives
 
 Depending on the `interp_method` used when fitting the trajectory
-object, a its derivative may be able to be found:
+object, a derivative may be able to be found:
 
-- `interp_method = "linear"`. This will not allow derivatives. This is
+- `interp_method = "linear"`: This will not allow derivatives. This is
   because, at each observation, the piecewise linear function is not
   differentiable.
 
 - `interp_method` is a spline from
-  [`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html). This
-  will typically be differentiable up to the third degree.
+  [`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html): This
+  will typically be differentiable up to the third degree (i.e.,
+  `deriv = 0` is position, `deriv = 1` is speed, etc.).
 
 The derivative returned (as column `interp`) is the derivative of
 distance with respect to time. This means the first derivative is
 velocity, second is acceleration, and third is jerk. The derivative is
 taken from the direct trajectory, not the inverse, and the inverse
 trajectory cannot be used to find derivatives. This means that if
-`new_distances` is provided, `deriv ` must equal 0. If starting from
+`new_distances` is provided, `deriv` must equal 0. If starting from
 distance values, but derivatives are desired, consider interpolating for
 timepoints first, then using these as `new_times` to find the
 derivative.
 
 ### Prevents Extrapolation
 
-By default, many fit interpolating curves will allow extrapolation
-(i.e., the input of an `event_timestamp` beyond the original time domain
-of the trip). In general, this will not be reasonable for transit
-vehicles: time points should be constrained by the time that a trip has
-actually been observed, and distances should be constrained to the part
-of a route a trip actually ran.
+By default, many interpolating curves provided by R and `stats` will
+allow extrapolation (i.e., the input of an `event_timestamp` or
+`distance` beyond the original time or space domain of the trip). In
+general, this will not be reasonable for transit vehicles: time points
+should be constrained by the time that a trip has actually been
+observed, and distances should be constrained to the part of a route a
+trip actually ran.
 
 This function uses the maximum and minimum time and distance values
 stored in the trajectory object to identify if an input `new_times` or

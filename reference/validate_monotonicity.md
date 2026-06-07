@@ -1,4 +1,4 @@
-# Check if an AVL dataframe satisfies assumptions of monotonicity.
+# Check if AVL data satisfies assumptions of monotonicity
 
 This function checks whether the provided AVL dataframe of linearized
 distances satisfies three conditions:
@@ -7,7 +7,7 @@ distances satisfies three conditions:
 
 - Strict monotonicty, increasing only
 
-- Speeds satisfy Fritsch-Carlson constraints
+- Fritsch-Carlson constraints for speeds
 
 See
 [`make_monotonic()`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md)
@@ -29,13 +29,14 @@ validate_monotonicity(distance_df, check_speed = FALSE, return_full = FALSE)
 
 - check_speed:
 
-  Optional. A boolean, should the Fritsch-Carlson conditions
+  Optional. A boolean, should the Fritsch-Carlson conditions for slopes
+  be checked? Default is `FALSE`, where the speed check will return
+  `NA`.
 
 - return_full:
 
   Optional. Should a dataframe of each point checked be returned?
-  Default is `FALSE`. for slopes be checked? Default is `FALSE`, where
-  the speed check will return `NA`.
+  Default is `FALSE`.
 
 ## Value
 
