@@ -1,9 +1,15 @@
-# Fits continuous trajectory interpolating curves from transit AVL data.
+# Fit continuous trajectory interpolating curves from AVL data
 
-This function fits a continuous vehicle trajectory function to observed
-AVL points, returning a trajectory object. Interpolation can be done
-linearly (`interp_method = "linear"`), or via any method supported by
-[`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html).
+This function fits a continuous vehicle trajectory to cleaned AVL points
+(see
+[`vignette("articles/data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/data-workflow-la.md)).
+This function operates as a "function factory", returning a function
+(closure) which takes a timestamp and returns each trip's position. A
+separate curve is fit for each trip, and stored in a special trajectory
+object class. The default interpolating method is a velocity-informed
+piecewise cubic interpolating polynomial, but linear interpolation and
+other spline-based techniques are also supported. See `Details` for a
+discussion.
 
 ## Usage
 
@@ -47,7 +53,7 @@ get_trajectory_fun(
 - inv_tol:
 
   Optional. A numeric in the units of input `distance`, the tolerance
-  used when calculating the numeric inverse function. Default is 0.01.
+  used when calculating the numeric inverse function. Default is `0.01`.
 
 - return_group_function:
 
@@ -58,7 +64,7 @@ get_trajectory_fun(
 ## Value
 
 If `return_group_function = TRUE`, a grouped trajectory object. If
-`FALSE`, a list of single trajectory objects, index by their
+`FALSE`, a list of single trajectory objects, indexed by their
 `trip_id_performed`.
 
 ## Details
@@ -70,7 +76,7 @@ vehicle's distance traveled as a function of time, for each trip. This
 function supports to types of interpolating curves:
 
 - Linear interpolation, for `interp_method = "linear"`. This will fit a
-  simple linear function, ignorant of recorded `speed` values.
+  simple linear function, ignorant to recorded `speed` values.
 
 - Spline interpolation, for `interp_method` set to any method supported
   by [`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html)
@@ -90,18 +96,18 @@ and
 
 Note that `use_speeds = TRUE` requires `interp_method = "monoH.FC"`, but
 `interp_method = "monoH.FC"` does not require `use_speeds = TRUE`. In
-this scenario, a "velocity-ignorant' Fritsch-Carlson interpolating
+the latter scenario, a "velocity-ignorant' Fritsch-Carlson interpolating
 function can be created. If input `distance` values are monotonic, this
 curve is guaranteed to be monotonic.
 
 ### Inverse Functions
 
 Often times, we are concerned not with the position of a vehicle at a
-particular time, but when a vehicle crosses a specific point in space.
-This can be accomplished by computing an inverse trajectory function. If
-`find_inverse_function = TRUE` (the default), a numeric inverse to the
-fit trajectory function will be found, with a tolerance controlled by
-`inv_tol`.
+particular time, but the time at which a vehicle crosses a specific
+point in space. This can be accomplished by computing an inverse
+trajectory function. If `find_inverse_function = TRUE` (the default), a
+numeric inverse to the fit trajectory function will be found, with a
+tolerance controlled by `inv_tol`.
 
 Because the inverse function is numerical, it can be found for any type
 of interpolating curve (linear or spline). However, the input data must
@@ -120,11 +126,11 @@ single object containing:
 
 - A vector of `trip_id_performed`s present in `distance_df`.
 
-- A list of fit trajectory functions, indexed by their
-  `trip_id_performed`.
+- A list of fit trajectory functions (closures), one per trip, indexed
+  by their `trip_id_performed`.
 
-- A list of fit inverse trajectory functions, indexed by their
-  `trip_id_performed`.
+- A list of fit inverse trajectory functions (closures), one per trip,
+  indexed by their `trip_id_performed`.
 
 - Information about how the trajectory and inverse trajectory functions
   were fit, including `interp_method`, `use_speeds`, and `inv_tol`.
@@ -135,12 +141,17 @@ single object containing:
   extrapolation beyond the time or distance range actually served by a
   trip.
 
+- The agency's timezone (see
+  [`OlsonNames()`](https://rdrr.io/r/base/timezones.html)), as extracted
+  from the `event_timestamp` column.
+
 Alternatively, if `return_group_function = FALSE`, a separate trajectory
-object will be fit for each trip. `get_trajectory_fun()` will return a
-list of trajectory objects indexed by their `trip_id_performed`.
+object will be returned for each trip, as a list of objects indexed by
+their `trip_id_performed`.
 
 More information about the trajectory object classes and how to use them
-is available at (xyz).
+is available at
+[`vignette("articles/intro-trajectories-la")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories-la.md).
 
 ## Examples
 

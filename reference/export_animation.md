@@ -77,7 +77,7 @@ anim_line <- plot_animated_line(trajectory = lineE_traj,
 # Create a place to store your file
 my_file_name <- tempfile("my_animation", fileext = ".gif")
 print(my_file_name)
-#> [1] "/tmp/Rtmpj0QGln/my_animation1e3cd3e138b.gif"
+#> [1] "/tmp/RtmpUEmmJD/my_animation1e5148c5a8.gif"
 
 # Run function: save animation locally
 if (interactive()) {

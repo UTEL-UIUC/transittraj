@@ -1,4 +1,4 @@
-# Group existing trajectory objects or split them apart.
+# Group existing trajectory objects or split them apart
 
 Trajectory objects hold the trajectory functions, and related
 information, from one or more trip IDs. This function groups the fit

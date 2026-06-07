@@ -196,13 +196,12 @@ Functions to clean AVL data.
 Functions to build trajectory objections.
 
 - [`get_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_trajectory_fun.md)
-  : Fits continuous trajectory interpolating curves from transit AVL
-  data.
+  : Fit continuous trajectory interpolating curves from AVL data
 - [`get_gtfs_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_trajectory_fun.md)
-  : Fits continuous trajectory interpolating curves from GTFS schedule
-  data.
+  : Fit continuous trajectory interpolating curves from GTFS schedule
+  data
 - [`group_trajectories()`](https://obrien-ben.github.io/transittraj/reference/group_trajectories.md)
-  : Group existing trajectory objects or split them apart.
+  : Group existing trajectory objects or split them apart
 
 ## Trajectory Plotting
 

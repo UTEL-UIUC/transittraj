@@ -1,9 +1,12 @@
-# Fits continuous trajectory interpolating curves from GTFS schedule data.
+# Fit continuous trajectory interpolating curves from GTFS schedule data
 
 This function fits a continuous vehicle trajectory function to scheduled
-GTFS `stop_times`, returning a trajectory object. Interpolation can be
-done linearly (`interp_method = "linear"`), or via any method supported
-by [`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html).
+GTFS `stop_times`. This function operates as a "function factory",
+returning a function (closure) which takes a timestamp and returns each
+trip's position. A separate curve is fit for each trip, and stored in a
+special trajectory object class. The default interpolating method is
+linear, but spline-based techniques are also supported. See `Details`
+for a discussion.
 
 ## Usage
 
@@ -112,12 +115,12 @@ get_gtfs_trajectory_fun(
 - inv_tol:
 
   Optional. A numeric in the units of input `distance`, the tolerance
-  used when calculating the numeric inverse function. Default is 0.01.
+  used when calculating the numeric inverse function. Default is `0.01`.
 
 ## Value
 
 If `return_group_function = TRUE`, a grouped trajectory object. If
-`FALSE`, a list of single trajectory objects, index by their
+`FALSE`, a list of single trajectory objects, indexed by their
 `trip_id_performed`.
 
 ## Details
@@ -166,10 +169,10 @@ for more details.
 
 The goal of this function is to fit a continuous function representing a
 GTFS trip's scheduled distance traveled as a function of time. This
-function supports to types of interpolating curves:
+function supports two types of interpolating curves:
 
 - Linear interpolation, for `interp_method = "linear"`. This will fit a
-  simple linear function, ignorant of recorded `speed` values.
+  simple linear function between stops.
 
 - Spline interpolation, for `interp_method` set to any method supported
   by [`stats::splinefun()`](https://rdrr.io/r/stats/splinefun.html)
@@ -185,11 +188,11 @@ trajectory.
 ### Inverse Functions
 
 Often times, we are concerned not with the position of a vehicle at a
-particular time, but when a vehicle crosses a specific point in space.
-This can be accomplished by computing an inverse trajectory function. If
-`find_inverse_function = TRUE` (the default), a numeric inverse to the
-fit trajectory function will be found, with a tolerance controlled by
-`inv_tol`.
+particular time, but the time at which a vehicle crosses a specific
+point in space. This can be accomplished by computing an inverse
+trajectory function. If `find_inverse_function = TRUE` (the default), a
+numeric inverse to the fit trajectory function will be found, with a
+tolerance controlled by `inv_tol`.
 
 Because the inverse function is numerical, it can be found for any type
 of interpolating curve (linear or spline). However, the input data must
@@ -207,14 +210,13 @@ such,
 returns an AVL trajectory object. If `return_group_function = TRUE` (the
 default), the function will return a single object containing:
 
-- A vector of `trip_id_performed`s, from the `trip_id`s found in
-  `trips`.
+- A vector of `trip_id_performed`s present in `distance_df`.
 
-- A list of fit trajectory functions, indexed by their
-  `trip_id_performed`.
+- A list of fit trajectory functions (closures), one per trip, indexed
+  by their `trip_id_performed`.
 
-- A list of fit inverse trajectory functions, indexed by their
-  `trip_id_performed`.
+- A list of fit inverse trajectory functions (closures), one per trip,
+  indexed by their `trip_id_performed`.
 
 - Information about how the trajectory and inverse trajectory functions
   were fit, including `interp_method`, `use_speeds`, and `inv_tol`.
@@ -225,14 +227,17 @@ default), the function will return a single object containing:
   extrapolation beyond the time or distance range actually served by a
   trip.
 
+- The agency's timezone (see
+  [`OlsonNames()`](https://rdrr.io/r/base/timezones.html)), as extracted
+  from the `event_timestamp` column.
+
 Alternatively, if `return_group_function = FALSE`, a separate trajectory
-object will be fit for each trip.
-[`get_trajectory_fun()`](https://obrien-ben.github.io/transittraj/reference/get_trajectory_fun.md)
-will return a list of trajectory objects indexed by their
-`trip_id_performed`.
+object will be returned for each trip, as a list of objects indexed by
+their `trip_id_performed`.
 
 More information about the trajectory object classes and how to use them
-is available at (xyz).
+is available at
+[`vignette("articles/intro-trajectories-la")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories-la.md).
 
 ## Examples
 
@@ -252,7 +257,7 @@ lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
                                                 date_min = my_start_date,
                                                 date_max = my_end_date)
 
-# Show trajectory: summary & plot
+# Show trajectory: summary
 summary(lineE_scheduled_traj)
 #> ------
 #> AVL Group Trajectory Object
@@ -268,7 +273,12 @@ summary(lineE_scheduled_traj)
 #> Inverse function present: TRUE
 #>    --> Inverse function tolerance: 0.01
 #> ------
+
+# Show trajectory: plot (just a handful of trips)
+ordered_trips <- get_trip_extremes(lineE_scheduled_traj) %>%
+   dplyr::arrange(min_time) %>%
+   dplyr::pull(trip_id_performed)
 plot_trajectory(trajectory = lineE_scheduled_traj,
-                plot_trips = unclass(lineE_scheduled_traj)[8:10],
+                plot_trips = ordered_trips[20:25],
                 traj_color = "indianred3")
 ```
