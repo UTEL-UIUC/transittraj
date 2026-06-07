@@ -1,8 +1,8 @@
-# Filters out entire trips which do not meet distance or duration requirements.
+# Filter out entire trips which do not meet distance or duration requirements
 
 This function identifies trips that do not meet some acceptable duration
 and distance traveled ranges, or that have large time or distance gaps
-in the middle. Violating trips will be removed.
+in the middle. Violating trips are removed.
 
 ## Usage
 
@@ -29,32 +29,32 @@ clean_incomplete_trips(
 - max_trip_distance:
 
   Optional. The maximum distance traveled over one trip, in units of
-  input `distance`. Default is Inf.
+  input `distance`. Default is `Inf`.
 
 - min_trip_distance:
 
   Optional. The minimum distance traveled over one trip, in units of
-  input `distance`. Default is -Inf.
+  input `distance`. Default is `-Inf`.
 
 - max_trip_duration:
 
-  Optional. The maximum event_timestamp duration of one trip, in
-  seconds. Default is Inf.
+  Optional. The maximum duration of one trip, in seconds. Default is
+  `Inf`.
 
 - min_trip_duration:
 
-  Optional. The minimum event_timestamp duration of one trip, in
-  seconds. Default is -Inf.
+  Optional. The minimum duration of one trip, in seconds. Default is
+  `-Inf`.
 
 - max_distance_gap:
 
   Optional. The maximum change in distance between two observations, in
-  units of input `distance`. Default is Inf.
+  units of input `distance`. Default is `Inf`.
 
 - max_time_gap:
 
   Optional. The maximum time between two observations, in seconds.
-  Default is Inf.
+  Default is `Inf`.
 
 - return_removals:
 
@@ -63,7 +63,7 @@ clean_incomplete_trips(
 
 ## Value
 
-The input distance_df, with violating trips removed. If
+The input `distance_df`, with violating trips removed. If
 `return_removals = TRUE`, a dataframe of trips removed and why.
 
 ## Examples

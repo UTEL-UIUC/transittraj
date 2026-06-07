@@ -1,11 +1,11 @@
-# Removes trips with multiple overlapping operators or vehicles assigned to the same trip number.
+# Remove trips with multiple operators or vehicles assigned to the same trip ID
 
-In some AVL vendors, multiple vehicles or operators may be logged to the
+In some AVL systems, multiple vehicles or operators may be logged to the
 same trip ID at the same time. This may be acceptable in some scenarios
 (e.g., a vehicle/operator tradeoff mid-trip). Other times, it may be an
 error, with these distinct (trip, vehicle, operator) truples running
 simulataneously. This function identifies both scenarios, and gives the
-option to remove one or both.
+option to remove either.
 
 ## Usage
 
@@ -29,29 +29,28 @@ clean_overlapping_subtrips(
 
 - check_operator:
 
-  Optional. A boolean, should overlaps of multiple `operator_id`s be
-  checked for? Default is FALSE.
+  Optional. A boolean, should the function check for overlaps of
+  multiple `operator_id`s? Default is `FALSE`.
 
 - remove_single_observations:
 
   Optional. A boolean, should subtrips with only one observation be
-  removed? Default is TRUE.
+  removed? Default is `TRUE`.
 
 - remove_non_overlapping:
 
   Optional. A boolean, should trips with multiple vehicles or operators
-  that do not overlap be removed? Default is FALSE.
+  that do not overlap be removed? Default is `FALSE`.
 
 - return_removals:
 
   Optional. A boolean, should the function return a dataframe of trips
-  removed and why? Default is FALSE.
+  removed and why? Default is `FALSE`.
 
 ## Value
 
-The input distance_df, with violating trips removed. If return_removals
-= TRUE, a dataframe with trip IDs and the reason why it was identified
-for removal.
+The input distance_df, with violating trips removed. If
+`return_removals = TRUE`, a dataframe with trip IDs removed and why.
 
 ## Examples
 

@@ -1,12 +1,12 @@
-# Removes observations occurring before a trip's minimum distance, or after a trip's maximum distance.
+# Remove observations occurring before a trip's minimum distance, or after a trip's maximum distance
 
-Sometimes observations will be recorded under a trip ID while a vehicle
-is still traveling in the opposite direction. Conversely, a trip may
+Sometimes AVL pings can be recorded under a trip ID while a vehicle is
+still traveling in the opposite direction. Conversely, a trip may
 continue recording as it begins traversing the opposite direction. This
 function attempts to remove these observations by identifying each
 trip's minimum (beginning) and maximum (ending) distance, then filtering
-to only observations after and before these points. For both ends, the
-first occurrence of the beginning/maximum value is used.
+to only observations between these points. For both ends, the first
+occurrence of the beginning/ending value is used.
 
 ## Usage
 
@@ -25,7 +25,7 @@ trim_trips(distance_df, trim_type = "both", return_removals = FALSE)
 
   Optional. A string, indicating whether the beginning of trips, end of
   trips, or both beginning and end of trips should be trimmed. Must be
-  one of "beginning", "end", or "both". Default is "beginning".
+  one of `"beginning"`, `"end"`, or `"both"`. Default is `"both"`.
 
 - return_removals:
 

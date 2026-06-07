@@ -174,22 +174,22 @@ Functions to manipulate tidygtfs objects.
 Functions to clean AVL data.
 
 - [`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md)
-  : Linearizes latitude-longitude GPS points to a provided route shape.
+  : Linearize latitude-longitude GPS points on a provided route shape
 - [`clean_overlapping_subtrips()`](https://obrien-ben.github.io/transittraj/reference/clean_overlapping_subtrips.md)
-  : Removes trips with multiple overlapping operators or vehicles
-  assigned to the same trip number.
+  : Remove trips with multiple operators or vehicles assigned to the
+  same trip ID
 - [`clean_jumps()`](https://obrien-ben.github.io/transittraj/reference/clean_jumps.md)
-  : Applies median filters to detect large jumps (i.e., outliers) in the
+  : Apply median filters to detect large jumps (i.e., outliers) in
   trajectories.
 - [`clean_incomplete_trips()`](https://obrien-ben.github.io/transittraj/reference/clean_incomplete_trips.md)
-  : Filters out entire trips which do not meet distance or duration
-  requirements.
+  : Filter out entire trips which do not meet distance or duration
+  requirements
 - [`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md)
-  : Removes observations occurring before a trip's minimum distance, or
-  after a trip's maximum distance.
+  : Remove observations occurring before a trip's minimum distance, or
+  after a trip's maximum distance
 - [`make_monotonic()`](https://obrien-ben.github.io/transittraj/reference/make_monotonic.md)
-  : Corrects distance observations, and optionally speeds, to be weakly
-  or strictly monotonic.
+  : Correct distance observations, and optionally speeds, to be weakly
+  or strictly monotonic
 
 ## Trajectory Construction
 

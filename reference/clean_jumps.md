@@ -1,4 +1,4 @@
-# Applies median filters to detect large jumps (i.e., outliers) in the trajectories.
+# Apply median filters to detect large jumps (i.e., outliers) in trajectories.
 
 Noise in GPS trajectories can manifest itself as one or more points
 lying far away from points recorded at a similar time. This function
@@ -46,7 +46,7 @@ clean_jumps(
 - max_median_deviation:
 
   Optional. A numeric, the maximum allowed deviation of an observation
-  from its window median, in units of distance. Default is `-Inf`.
+  from its window median, in units of distance. Default is `Inf`.
 
 - evaluate_tails:
 

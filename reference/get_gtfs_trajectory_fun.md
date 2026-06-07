@@ -89,7 +89,7 @@ get_gtfs_trajectory_fun(
 - add_distance_error:
 
   Optional. If non-zero, each "flat" observation will be adjusted by
-  this amount forwards, in units of input `distance`. Default is 0.
+  this amount forwards, in units of input `distance`. Default is `0`.
 
 - interp_method:
 

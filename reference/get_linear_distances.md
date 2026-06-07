@@ -1,8 +1,8 @@
-# Linearizes latitude-longitude GPS points to a provided route shape.
+# Linearize latitude-longitude GPS points on a provided route shape
 
 This functions projects raw AVL data, as GPS latitude-longitude points,
-onto a provided route geometry, returning the distance of that point
-along the shape from the beginning terminal.
+onto a provided route geometry, returning each point's distance of that
+point along the shape its the beginning terminal.
 
 ## Usage
 
@@ -31,10 +31,10 @@ get_linear_distances(
 
 - clip_buffer:
 
-  Optional. The distance, in units of the used spatial projection, to
+  Optional. The distance, in units of the chosen spatial projection, to
   clip the GPS points. Only points within this distance of the
-  `shape_geometry` will be kept. Default is NULL, where no clip will be
-  applied.
+  `shape_geometry` will be kept. Default is `NULL`, where no clip will
+  be applied.
 
 - original_crs:
 
@@ -53,7 +53,7 @@ get_linear_distances(
 
 The input `avl_df` with `latitude` and `longitude` columns replaced by a
 `distance` column, in the units of the spatial projection used (e.g.,
-meters if using UTM).
+meters if using WGS UTM).
 
 ## Examples
 
