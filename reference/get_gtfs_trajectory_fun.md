@@ -30,7 +30,7 @@ get_gtfs_trajectory_fun(
 
 - gtfs:
 
-  A tidygtfs object.
+  A `tidygtfs` object.
 
 - shape_geometry:
 
@@ -48,13 +48,13 @@ get_gtfs_trajectory_fun(
 
 - date_min:
 
-  Optional. The starting (earliest possible) Date object for the
+  Optional. The starting (earliest possible) `Date` object for the
   returned dataframe. Default is `NULL`, where the earliest date in the
   GTFS will be used.
 
 - date_max:
 
-  Optional. The ending (latest possible) Date object for the returned
+  Optional. The ending (latest possible) `Date` object for the returned
   dataframe. Default is `NULL`, where the latest date in the GTFS will
   be used.
 

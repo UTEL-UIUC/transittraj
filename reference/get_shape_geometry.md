@@ -1,7 +1,7 @@
-# Get the geometry of a route shape.
+# Get the geometry of a route shape
 
 This function returns an SF multilinestring of the route alignments from
-GTFS shapes. Similar to tidytransit's `get_geometry()`, but allows
+GTFS shapes. Similar to `tidytransit::get_geometry()`, but allows
 filtering by `shape_id` and projection to a new coordinate system. See
 `Details` for requirements on the input GTFS.
 
@@ -15,12 +15,12 @@ get_shape_geometry(gtfs, shape = NULL, project_crs = 4326)
 
 - gtfs:
 
-  A tidygtfs object.
+  A `tidygtfs` object.
 
 - shape:
 
-  Optional. The GTFS shape_id to use. Can be a single value, or a
-  vector. Default is NULL, where all `shape_id`s in `gtfs` will be used.
+  Optional. A vector of GTFS `shape_id`s to pull. Default is NULL, where
+  all `shape_id`s in `gtfs` will be used.
 
 - project_crs:
 

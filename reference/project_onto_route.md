@@ -1,7 +1,9 @@
-# Projects points to linear distances along a route shape.
+# Project points to linear distances along a route
 
-This function takes spatial points and projects them onto a route,
-returning the linear distance from the beginning terminal of the route.
+This function takes spatial points and projects them onto a route (i.e.,
+"snaps" them to the nearest point on the shape), returning the linear
+distance of each point along the route shape, starting from the route's
+beginning terminal.
 
 ## Usage
 
@@ -44,7 +46,7 @@ project_onto_route(
 The `points` input (either dataframe or SF) with an appended column for
 the linear distance along the route. If `points` is an SFC, a vector of
 numeric distances is returned. Units are those of the spatial projection
-used (e.g., meters if using UTM).
+set in `project_crs` (e.g., meters if using WGS UTM).
 
 ## Examples
 

@@ -1,4 +1,4 @@
-# Filter GTFS to a desired route(s) and direction(s).
+# Filter GTFS to a desired route(s) and direction(s)
 
 This function returns a new `tidygtfs` object with only the information
 relevant to your desired routes and directions. All fields included in
@@ -15,16 +15,15 @@ filter_by_route(gtfs, route_ids, dir_id = NULL)
 
 - gtfs:
 
-  A tidygtfs object.
+  A `tidygtfs` object.
 
 - route_ids:
 
-  A numeric vector or single numeric containing the desired route ID(s).
+  A vector containing the desired route ID(s).
 
 - dir_id:
 
-  Optional. A numeric vector or single numeric containing the desired
-  direction ID(s).
+  Optional. A vector containing the desired direction ID(s).
 
 ## Value
 
@@ -44,8 +43,8 @@ The following files and fields are required for this function:
 
 - `stop_times`: with `stop_id` and `trip_id`
 
-The following files are optional. If they are included, the must include
-the listed fields:
+The following files are optional. If included, they must include the
+listed fields:
 
 - `stops`: with `stop_id`
 

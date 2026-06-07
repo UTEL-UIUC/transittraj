@@ -5,18 +5,18 @@
 Functions to manipulate tidygtfs objects.
 
 - [`filter_by_route()`](https://obrien-ben.github.io/transittraj/reference/filter_by_route.md)
-  : Filter GTFS to a desired route(s) and direction(s).
+  : Filter GTFS to a desired route(s) and direction(s)
 - [`get_shape_geometry()`](https://obrien-ben.github.io/transittraj/reference/get_shape_geometry.md)
-  : Get the geometry of a route shape.
+  : Get the geometry of a route shape
 - [`project_onto_route()`](https://obrien-ben.github.io/transittraj/reference/project_onto_route.md)
-  : Projects points to linear distances along a route shape.
+  : Project points to linear distances along a route
 - [`get_stop_distances()`](https://obrien-ben.github.io/transittraj/reference/get_stop_distances.md)
-  : Get the distances of stops along routes.
+  : Get the distances of stops along routes
 - [`get_gtfs_service_dates()`](https://obrien-ben.github.io/transittraj/reference/get_gtfs_service_dates.md)
   : Get a dataframe of all service dates and their service IDs from a
-  GTFS.
+  GTFS
 - [`plot_interactive_gtfs()`](https://obrien-ben.github.io/transittraj/reference/plot_interactive_gtfs.md)
-  : Generates a Leaflet viewer of GTFS routes and stops.
+  : Generate a Leaflet viewer of GTFS routes and stops
 
 ## AVL Cleaning
 

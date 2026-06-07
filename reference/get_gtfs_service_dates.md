@@ -1,7 +1,7 @@
-# Get a dataframe of all service dates and their service IDs from a GTFS.
+# Get a dataframe of all service dates and their service IDs from a GTFS
 
-This function returns a dataframe of each date covered by a GTFS and the
-`service_id` run on this date. This data is extracted from the
+This function returns a dataframe with each date covered by a GTFS and
+the `service_id` run on that date. This data is extracted from the
 `calendar.txt` and `calendar_dates.txt` files, depending on how the GTFS
 is structured. See `Details` for a discussion.
 
@@ -24,13 +24,13 @@ get_gtfs_service_dates(
 
 - date_min:
 
-  Optional. The starting (earliest possible) Date object for the
+  Optional. The starting (earliest possible) `Date` object for the
   returned dataframe. Default is `NULL`, where the earliest date in the
   GTFS will be used.
 
 - date_max:
 
-  Optional. The ending (latest possible) Date object for the returned
+  Optional. The ending (latest possible) `Date` object for the returned
   dataframe. Default is `NULL`, where the latest date in the GTFS will
   be used.
 
@@ -42,7 +42,7 @@ get_gtfs_service_dates(
 
 ## Value
 
-A dataframe with Date column `date`, and numeric column `service_id`.
+A dataframe with `Date` column `date` and character column `service_id`.
 
 ## Details
 
@@ -68,6 +68,15 @@ use. If `use_calendar_table = "calendar"`, the former method will be
 used; if `use_calendar_table = "calendar_dates"`, the latter will be
 used. To restrict the date enumeration to only a specific window, set
 `date_min` and `date_max`.
+
+This function is also intended for GTFS feeds with only one service ID
+per day. Some GTFS providers (including `lacmta_gtfs`) have unique
+`service_id`s by route, and thus service dates do not have unique
+`service_id`s. Consider filtering your GTFS to a single route before
+using this function (see
+[`filter_by_route()`](https://obrien-ben.github.io/transittraj/reference/filter_by_route.md)).
+If there are multiple service IDs on a given day, the first appearing
+will be returned.
 
 ## Examples
 

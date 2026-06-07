@@ -1,4 +1,4 @@
-# Get the distances of stops along routes.
+# Get the distances of stops along routes
 
 This function returns the linear distance of each stop along a route
 shape, starting from the route's beginning terminal. Unless a
@@ -16,7 +16,7 @@ get_stop_distances(gtfs, shape_geometry = NULL, project_crs = 4326)
 
 - gtfs:
 
-  A tidygtfs object.
+  A `tidygtfs` object.
 
 - shape_geometry:
 
@@ -36,7 +36,7 @@ get_stop_distances(gtfs, shape_geometry = NULL, project_crs = 4326)
 
 A dataframe containing `stop_id`, the `shape_id` it was projected onto,
 and `distance`, in units of the spatial projection (e.g., meters if
-using UTM).
+using WGS UTM).
 
 ## Examples
 
@@ -56,16 +56,16 @@ lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs, shape = my_shape,
 # Run stop distances function
 lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
                                        shape_geometry = lineE_shape,
-                                       project_crs = my_crs)
+                                       project_crs = my_crs) %>%
+   dplyr::select(-c(stop_desc, stop_url, tpis_name, location_type))
 head(lineE_stop_dists)
-#> # A tibble: 6 × 10
-#>   stop_id stop_code stop_name    stop_desc stop_url location_type parent_station
-#>   <chr>   <chr>     <chr>        <chr>     <chr>            <int> <chr>         
-#> 1 80121   80121     Pico Station NA        NA                   0 80121S        
-#> 2 80122   80122     7th Street … NA        NA                   0 80122S        
-#> 3 80123   80123     LATTC / Ort… NA        NA                   0 80123S        
-#> 4 80124   80124     Jefferson /… NA        NA                   0 80124S        
-#> 5 80125   80125     Expo Park /… NA        NA                   0 80125S        
-#> 6 80126   80126     Expo / Verm… NA        NA                   0 80126S        
-#> # ℹ 3 more variables: tpis_name <chr>, shape_id <chr>, distance <dbl>
+#> # A tibble: 6 × 6
+#>   stop_id stop_code stop_name                   parent_station shape_id distance
+#>   <chr>   <chr>     <chr>                       <chr>          <chr>       <dbl>
+#> 1 80121   80121     Pico Station                80121S         804EB_R…   23454.
+#> 2 80122   80122     7th Street / Metro Center … 80122S         804EB_R…   24556.
+#> 3 80123   80123     LATTC / Ortho Institute St… 80123S         804EB_R…   21989.
+#> 4 80124   80124     Jefferson / USC Station     80124S         804EB_R…   21105.
+#> 5 80125   80125     Expo Park / USC Station     80125S         804EB_R…   20157.
+#> 6 80126   80126     Expo / Vermont Station      80126S         804EB_R…   19621.
 ```
