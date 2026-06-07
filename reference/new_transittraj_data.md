@@ -1,9 +1,12 @@
-# Returns an object from a particular step of `transittraj`'s workflow.
+# Retrieve an object from a particular step of `transittraj`'s workflow
 
 This function runs `transittraj`'s AVL cleaning and trajectory
 reconstruction workflow up until a certain point (as defined by
 `func_output`), then returns the object at that point. A subset of the
-`lacmta_avl` dataset is used.
+`lacmta_avl` dataset is used. This is primarily intended for use in
+testing and examples. The workflow applied here is the same as what is
+in
+[`vignette("articles/data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/data-workflow-la.md).
 
 ## Usage
 
@@ -22,11 +25,6 @@ new_transittraj_data(func_output = NULL)
 ## Value
 
 The object returned by the specified function.
-
-## Details
-
-This is primarily intended for use in testing and examples. The workflow
-applied here is the same as what is in `vignette("data-workflow")`.
 
 ## Examples
 
@@ -55,4 +53,22 @@ head(lineE_dists)
 #> 4  62.66861
 #> 5  83.11011
 #> 6  31.67278
+
+# Get a full, fit trajectory
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+summary(lineE_traj)
+#> ------
+#> AVL Group Trajectory Object
+#> ------
+#> Number of trips: 11
+#> Total distance range: 0.6366599 to 35292.87
+#> Total time range: 1779886240 to 1779898116
+#> ------
+#> Trajectory function present: TRUE
+#>    --> Trajectory interpolation method: monoH.FC
+#>    --> Maximum derivative: 3
+#>    --> Fit with speeds: TRUE
+#> Inverse function present: TRUE
+#>    --> Inverse function tolerance: 0.01
+#> ------
 ```

@@ -18,7 +18,7 @@ lacmta_avl
 
 ### `lacmta_avl`
 
-A dataframe with 20,777 rows and 12 columns.
+A dataframe with 14,179 rows and 11 columns.
 
 - location_ping_id:
 

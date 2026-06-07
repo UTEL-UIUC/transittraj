@@ -104,4 +104,4 @@ Datasets to test with.
 - [`new_transittraj_data()`](https://obrien-ben.github.io/transittraj/reference/new_transittraj_data.md)
   :
 
-  Returns an object from a particular step of `transittraj`'s workflow.
+  Retrieve an object from a particular step of `transittraj`'s workflow

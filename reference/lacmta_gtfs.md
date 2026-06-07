@@ -16,7 +16,7 @@ lacmta_gtfs
 
 ### `lacmta_gtfs`
 
-A tidytransit object (list) with 8 files.
+A `tidytransit` `tidygtfs` object (list) with 8 files.
 
 - agency:
 
