@@ -1175,6 +1175,126 @@ ggsave(plot = combo_plot,
 knitr::include_graphics(path = "figures/combo_plot_lowres.png")
 ```
 
+## Animations
+
+A final component of `transittraj` worth demonstrating, but difficult to show
+on a poster, are animations. We support two types:
+
+  - *Animated map*: This draws the vehicle's route spatially, then uses the
+  trajectory to show the each vehicle moving through space over time. The
+  result will be similar to animated raw GPS points, but with the cleaning
+  and interpolation curve we performed earlier.
+
+  - *Animated line*: This is similar, but simplifies the route to a single,
+  vertical line on a blank background. This is a good option for visualizing
+  the trajectory without adding unneeded spatial context.
+
+In this section, we'll demonstrate each by animating trajectories with
+the average travel times before and after the TSP upgrade.
+We'll begin by setting up some dataframes used to format our features. For
+more discussion on how this works, see `help(plot_animated_map)` and
+`vignette("articles/intro-trajectories-la")`.
+
+``` {r, eval = FALSE}
+# One DF for all features
+plot_features <- rbind(
+  signal_boundings %>%
+    filter(name == model_sig) %>%
+    select(distance) %>%
+    mutate(feature = "Entrance/Exit"),
+  signals %>%
+    filter(name == model_sig) %>%
+    select(distance) %>%
+    mutate(feature = "Stopbar")
+) %>%
+  rename(Feature = feature)
+
+# Trips to plot
+plot_trips <- c("2024-07-01-t416-b232E-sl3-N", # mean travel time before
+                "2024-11-29-t79F-b2339-sl3-N") # mean travel time after
+
+# Vehicle & feature formatting DFs
+veh_format <- data.frame(Period = c("Before", "After"), # `trip_id_performed = plot_trips`
+                         shape = c(21, 23),
+                         outline = c(my_red, my_blue))
+feat_format <- plot_features %>%
+  mutate(shape = c(4, 4, 20)) %>%
+  select(Feature, shape)
+```
+
+### Animated Map
+
+We'll begin with an animated map. This requires our trajectory object and
+route geometry.
+
+``` {r, eval = FALSE}
+# Create base animation
+map_anim <- plot_animated_map(
+  # Setup traj data
+  trajectory = traj, plot_trips = plot_trips, center_vehicles = TRUE,
+  # Spatial data
+  shape_geometry = route_geom, distance_lims = plot_lims, bbox_expand = 20,
+  # Route formatting
+  route_color = "red4", route_width = 2.7,
+  # Vehicle formatting
+  veh_shape = veh_format, veh_outline = veh_format,
+  veh_stroke = 2.5, veh_alpha = 0.9,
+  # Feature formatting
+  feature_distances = plot_features,
+  feature_outline = "grey50", feature_shape = feat_format,
+  feature_stroke = 2, feature_size = 3
+)
+
+# Add plot formatting
+map_anim <- map_anim +
+  labs(y = "Distance (m)",
+       title = "Average trips: `plot_animated_map()`")
+
+map_anim
+```
+
+``` {r, echo = FALSE}
+library(vembedr)
+embed_url("https://www.youtube.com/watch?v=K0hC5sWsAJQ") %>%
+  use_align("center")
+```
+
+### Animated Line
+
+Next, we can make our animated line. This will look almost identical, but
+does not need the route geometry.
+
+``` {r, eval = FALSE}
+# Create base animation
+line_anim <- plot_animated_map(
+  # Setup traj data
+  trajectory = traj, plot_trips = plot_trips, center_vehicles = TRUE,
+  # Spatial data
+  distance_lims = plot_lims,
+  # Route formatting
+  route_color = "red4", route_width = 2.5,
+  # Vehicle formatting
+  veh_shape = veh_format, veh_outline = veh_format,
+  veh_stroke = 2.5, veh_alpha = 0.9,
+  # Feature formatting
+  feature_distances = plot_features,
+  feature_outline = "grey50", feature_shape = feat_format,
+  feature_stroke = 2, feature_size = 3
+)
+
+# Add plot formatting
+line_anim <- line_anim +
+  labs(y = "Distance (m)",
+       title = "Average trips: `plot_animated_line()`")
+
+line_anim
+```
+
+``` {r, echo = FALSE}
+embed_url("https://www.youtube.com/watch?v=TvhfHtmI9XA") %>%
+  use_align("center")
+```
+
 # References
 
 [1] M. M. Garcez Duarte and M. Sakr, “An experimental study of existing tools for outlier detection and cleaning in trajectories,” Geoinformatica, vol. 29, no. 1, pp. 31–51, Jan. 2025, doi: 10.1007/s10707-024-00522-y.
