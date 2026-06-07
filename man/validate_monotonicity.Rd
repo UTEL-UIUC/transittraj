@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides_validation.R
 \name{validate_monotonicity}
 \alias{validate_monotonicity}
-\title{Check if an AVL dataframe satisfies assumptions of monotonicity.}
+\title{Check if AVL data satisfies assumptions of monotonicity}
 \usage{
 validate_monotonicity(distance_df, check_speed = FALSE, return_full = FALSE)
 }
@@ -11,12 +11,12 @@ validate_monotonicity(distance_df, check_speed = FALSE, return_full = FALSE)
 \code{trip_id_performed}, \code{event_timestamp}, and \code{distance}. If
 \code{check_speed = TRUE}, must also include \code{speed}.}
 
-\item{check_speed}{Optional. A boolean, should the Fritsch-Carlson conditions}
-
-\item{return_full}{Optional. Should a dataframe of each point checked be
-returned? Default is \code{FALSE}.
+\item{check_speed}{Optional. A boolean, should the Fritsch-Carlson conditions
 for slopes be checked? Default is \code{FALSE}, where the speed check will return
 \code{NA}.}
+
+\item{return_full}{Optional. Should a dataframe of each point checked be
+returned? Default is \code{FALSE}.}
 }
 \value{
 A named vector of booleans indicating whether each of the three
@@ -28,7 +28,7 @@ distances satisfies three conditions:
 \itemize{
 \item Weak monotonicity, either flat or increasing
 \item Strict monotonicty, increasing only
-\item Speeds satisfy Fritsch-Carlson constraints
+\item Fritsch-Carlson constraints for speeds
 }
 
 See \code{make_monotonic()} for more information.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides_validation.R
 \name{validate_tides}
 \alias{validate_tides}
-\title{Check if an AVL dataframe meets TIDES standards.}
+\title{Check if AVL data meets TIDES standards}
 \usage{
 validate_tides(avl_df)
 }
@@ -17,9 +17,8 @@ the field is present, and whether the data type matches expectations.
 \description{
 The transit integrated data exchange standard (TIDES) specifies columns that
 should be present in AVL data tables and the data types of these columns.
-This function verifies if those columns are present in the input \code{avl_df},
-and those columns are of the correct data type. See \code{Details} for
-more information.
+This function verifies if those columns are present in the input \code{avl_df}
+are of the correct data type. See \code{Details} for more information.
 }
 \details{
 The AVL cleaning functions in this package generally require the input

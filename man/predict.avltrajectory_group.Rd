@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_prediction.R
 \name{predict.avltrajectory_group}
 \alias{predict.avltrajectory_group}
-\title{Interpolate time or distance points using AVL trajectories.}
+\title{Interpolate time or distance points using AVL trajectories}
 \usage{
 \method{predict}{avltrajectory_group}(
   object,
@@ -19,16 +19,16 @@
 \item{object}{The single or grouped trajectory object.}
 
 \item{new_times}{Optional. A vector of numeric timepoints, or a dataframe
-with at least the column \code{"event_timestamp"} of new timepoints to interpolate
+with at least the column \code{event_timestamp} of new timepoints to interpolate
 at. May also contain the column \code{trip_id_performed}, which will
 interpolate distances at each trip and time row pair. Default is \code{NULL}.}
 
 \item{new_distances}{Optional. A vector of numeric distances, or a dataframe
-with at least the column \code{"distance"} of new distances to interpolate at.
+with at least the column \code{distance} of new distances to interpolate at.
 May also contain the column \code{trip_id_performed}, which will
 interpolate times at each trip and distance row pair. Default is \code{NULL}.}
 
-\item{distance_lims}{Optional. A vector of (minimum, maximum) distance
+\item{distance_lims}{Optional. A vector of \verb{(minimum, maximum)} distance
 bounds over which to interpolate at a given timestep. If provided,
 \code{timestep} must also be provided. Default is \code{NULL}.}
 
@@ -36,8 +36,9 @@ bounds over which to interpolate at a given timestep. If provided,
 between successive interpolating steps when defining \code{distance_lims}. If
 provided, \code{distance_lims} must also be provided. Default is \code{NULL}.}
 
-\item{deriv}{Optional. The derivative with which to calculate at. Default is
-\code{0}.}
+\item{deriv}{Optional. The derivative with which to calculate at. May
+only be set if \code{new_times} or \code{distance_lims}/\code{timestep} is provided, and
+not if \code{new_distances} is provided. Default is \code{0} (i.e., position).}
 
 \item{trips}{Optional. A vector of \code{trip_id_performed}s to interpolate for.
 Default is \code{NULL}, which will use all trips found in the trajectory object
@@ -47,14 +48,15 @@ Default is \code{NULL}, which will use all trips found in the trajectory object
 \item{...}{Other parameters (not used).}
 }
 \value{
-The input dataframe, with an additional column \code{"interp"} of the
-interpolated values requested, and an additional \code{"trip_id_performed"}
+The input dataframe, with an additional column \code{interp} of the
+interpolated values requested, and an additional \code{trip_id_performed}
 column will all trips for which that point is within range.
 }
 \description{
-Using a function stored in a grouped or single trajectory object, new points
-will be interpolated along a trajectory. Depending on whether new_times or
-new_distances is provided, the function will utilize the direct or inverse
+This function uses a fit interpolating curve stored in a grouped or single
+trajectory object to find new points along each trip's trajectory.
+Depending on whether \code{new_times} or
+\code{new_distances} is provided, the function will utilize the direct or inverse
 trajectory function.
 }
 \details{
@@ -74,8 +76,8 @@ and all additional columns will be preserved through the interpolation.
 If \code{new_times} is provided, the function will find the \code{distance} of each
 trip at each point in time. If a dataframe is provided, it must contain
 the column \code{event_timestamp}. This will use the trajectory's direct function.
-When using \code{new_times}, a \code{deriv} value can also be set. See below for
-a more detailed discussion.
+When using \code{new_times}, a \code{deriv} value can also be set greater than 0.
+See below for a more detailed discussion.
 }
 
 \subsection{Times from Distances}{
@@ -84,7 +86,7 @@ If \code{new_distances} is provided, the function will find the \code{event_time
 of each trip at each point in space. If a dataframe is provided, it must
 contain the column \code{distance}. This will use the trajectory's
 inverse function. When using \code{new_distances}, a \code{deriv} value cannot
-be set. See below for a more detailed discussion.
+be set greater than 0. See below for a more detailed discussion.
 }
 
 \subsection{Time & Distance Pairs from Distance Bounds}{
@@ -95,8 +97,8 @@ region of space. This can be done by setting \code{distance_lims} and
 each trip's entrance and exit time through \code{distance_lims}, then create
 a sequence between these entrance and exit times with a step of \code{timestep}.
 Finally, the trajectory's direct function is used to find the distance
-at each of these timepoints. A \code{deriv} value can also be set for the final
-direct interpolation.
+at each of these timepoints. A \code{deriv} value can also be set greater
+than 0 for the final direct interpolation.
 
 If you have a well-defined region of space, this approach allows you to
 interpolate vehicle positions at a very tight timescale over a large
@@ -110,21 +112,22 @@ more points and would be substantially less efficient.
 
 \subsection{Finding Derivatives}{
 
-Depending on the \code{interp_method} used when fitting the trajectory object, a
-its derivative may be able to be found:
+Depending on the \code{interp_method} used when fitting the trajectory object,
+a derivative may be able to be found:
 \itemize{
-\item \code{interp_method = "linear"}. This will not allow derivatives. This is
+\item \code{interp_method = "linear"}: This will not allow derivatives. This is
 because, at each observation, the piecewise linear function is not
 differentiable.
-\item \code{interp_method} is a spline from \code{stats::splinefun()}. This will typically
-be differentiable up to the third degree.
+\item \code{interp_method} is a spline from \code{stats::splinefun()}: This will typically
+be differentiable up to the third degree (i.e., \code{deriv = 0} is position,
+\code{deriv = 1} is speed, etc.).
 }
 
 The derivative returned (as column \code{interp}) is the derivative of distance
 with respect to time. This means the first derivative is velocity, second is
 acceleration, and third is jerk. The derivative is taken from the direct
 trajectory, not the inverse, and the inverse trajectory cannot be used to
-find derivatives. This means that if \code{new_distances} is provided, \code{deriv }
+find derivatives. This means that if \code{new_distances} is provided, \code{deriv}
 must equal 0. If starting from distance values, but derivatives are desired,
 consider interpolating for timepoints first, then using these as \code{new_times}
 to find the derivative.
@@ -132,8 +135,9 @@ to find the derivative.
 
 \subsection{Prevents Extrapolation}{
 
-By default, many fit interpolating curves will allow extrapolation (i.e.,
-the input of an \code{event_timestamp} beyond the original time domain of the
+By default, many interpolating curves provided by R and \code{stats} will allow
+extrapolation (i.e., the input of an \code{event_timestamp} or \code{distance} beyond
+the original time or space domain of the
 trip). In general, this will not be reasonable for transit vehicles:
 time points should be constrained by the time that a trip has actually
 been observed, and distances should be constrained to the part of a route

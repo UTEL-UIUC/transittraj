@@ -1,11 +1,10 @@
-#' Check if an AVL dataframe meets TIDES standards.
+#' Check if AVL data meets TIDES standards
 #'
 #' @description
 #' The transit integrated data exchange standard (TIDES) specifies columns that
 #' should be present in AVL data tables and the data types of these columns.
-#' This function verifies if those columns are present in the input `avl_df`,
-#' and those columns are of the correct data type. See `Details` for
-#' more information.
+#' This function verifies if those columns are present in the input `avl_df`
+#' are of the correct data type. See `Details` for more information.
 #'
 #' @details
 #' The AVL cleaning functions in this package generally require the input
@@ -90,7 +89,7 @@ validate_tides <- function(avl_df) {
   return(validation_results)
 }
 
-#' Check if an AVL dataframe satisfies assumptions of monotonicity.
+#' Check if AVL data satisfies assumptions of monotonicity
 #'
 #' @description
 #' This function checks whether the provided AVL dataframe of linearized
@@ -100,7 +99,7 @@ validate_tides <- function(avl_df) {
 #'
 #' - Strict monotonicty, increasing only
 #'
-#' - Speeds satisfy Fritsch-Carlson constraints
+#' - Fritsch-Carlson constraints for speeds
 #'
 #' See `make_monotonic()` for more information.
 #'
@@ -108,10 +107,10 @@ validate_tides <- function(avl_df) {
 #' `trip_id_performed`, `event_timestamp`, and `distance`. If
 #' `check_speed = TRUE`, must also include `speed`.
 #' @param check_speed Optional. A boolean, should the Fritsch-Carlson conditions
-#' @param return_full Optional. Should a dataframe of each point checked be
-#' returned? Default is `FALSE`.
 #' for slopes be checked? Default is `FALSE`, where the speed check will return
 #' `NA`.
+#' @param return_full Optional. Should a dataframe of each point checked be
+#' returned? Default is `FALSE`.
 #' @return A named vector of booleans indicating whether each of the three
 #' conditions are satisfied.
 #' @export

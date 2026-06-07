@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_prediction.R
 \name{get_trip_extremes}
 \alias{get_trip_extremes}
-\title{Get the distance and time range of each trip in a trajectory object.}
+\title{Get the distance and time range of each trip in a trajectory object}
 \usage{
 get_trip_extremes(trajectory, filter_trips = NULL)
 }
@@ -20,7 +20,7 @@ A dataframe with the columns \code{trip_id_performed}, \code{min_time},
 }
 \description{
 This function extracts the time and distance ranges stored in a trajectory
-object and formats them into a dataframe for each use. The dataframe can
+object and formats them into a dataframe. The dataframe can
 be filtered to a desired set of \code{trip_id_performed}s.
 }
 \examples{
