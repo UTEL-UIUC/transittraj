@@ -2,7 +2,7 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{project_onto_route}
 \alias{project_onto_route}
-\title{Projects points to linear distances along a route shape.}
+\title{Project points to linear distances along a route}
 \usage{
 project_onto_route(
   shape_geometry,
@@ -31,11 +31,13 @@ Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 The \code{points} input (either dataframe or SF) with an appended column
 for the linear distance along the route. If \code{points} is an SFC, a vector of
 numeric distances is returned. Units are those of the spatial projection
-used (e.g., meters if using UTM).
+set in \code{project_crs} (e.g., meters if using WGS UTM).
 }
 \description{
-This function takes spatial points and projects them onto a route, returning
-the linear distance from the beginning terminal of the route.
+This function takes spatial points and projects them onto a route (i.e.,
+"snaps" them to the nearest point on the shape), returning
+the linear distance of each point along the route shape, starting from
+the route's beginning terminal.
 }
 \examples{
 # Set my parameters

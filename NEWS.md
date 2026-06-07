@@ -1,14 +1,15 @@
-# transittraj (development version)
-
 # transittraj 0.1.3.9000 (dev)
 
-*Last update: 6/2/2026*
+*Last update: 6/7/2026*
 
-* Trajectory visualization:
+* Visualization:
 
   * `plot_animated_line()` would throw an error when setting up
   the x-axis of the ggplot if `feature_distances` was not provided (#16).
   This has been resolved, and a plot can now be created without features.
+  
+  * `plot_interactive_gtfs()`'s `color_palette` input is now case-insensitive
+  when set to `"gtfs"` (#13).
   
 * Trajectory prediction:
 

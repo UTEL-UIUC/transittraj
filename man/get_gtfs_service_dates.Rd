@@ -2,7 +2,7 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{get_gtfs_service_dates}
 \alias{get_gtfs_service_dates}
-\title{Get a dataframe of all service dates and their service IDs from a GTFS.}
+\title{Get a dataframe of all service dates and their service IDs from a GTFS}
 \usage{
 get_gtfs_service_dates(
   gtfs,
@@ -14,11 +14,11 @@ get_gtfs_service_dates(
 \arguments{
 \item{gtfs}{A tidygtfs object.}
 
-\item{date_min}{Optional. The starting (earliest possible) Date object for
+\item{date_min}{Optional. The starting (earliest possible) \code{Date} object for
 the returned dataframe. Default is \code{NULL}, where the earliest date in the
 GTFS will be used.}
 
-\item{date_max}{Optional. The ending (latest possible) Date object for the
+\item{date_max}{Optional. The ending (latest possible) \code{Date} object for the
 returned dataframe. Default is \code{NULL}, where the latest date in the GTFS
 will be used.}
 
@@ -27,12 +27,12 @@ will be used.}
 \code{"calendar"} or \code{"calendar_dates"}. Default is \code{"calendar"}.}
 }
 \value{
-A dataframe with Date column \code{date}, and numeric column
+A dataframe with \code{Date} column \code{date} and character column
 \code{service_id}.
 }
 \description{
-This function returns a dataframe of each date covered by a GTFS and the
-\code{service_id} run on this date. This data is extracted from the \code{calendar.txt}
+This function returns a dataframe with each date covered by a GTFS and the
+\code{service_id} run on that date. This data is extracted from the \code{calendar.txt}
 and \code{calendar_dates.txt} files, depending on how the GTFS is structured. See
 \code{Details} for a discussion.
 }
@@ -57,6 +57,13 @@ If \code{use_calendar_table = "calendar"}, the former method will be used; if
 \code{use_calendar_table = "calendar_dates"}, the latter will be used. To
 restrict the date enumeration to only a specific window, set \code{date_min}
 and \code{date_max}.
+
+This function is also intended for GTFS feeds with only one service ID per
+day. Some GTFS providers (including \code{lacmta_gtfs}) have unique \code{service_id}s
+by route, and thus service dates do not have unique \code{service_id}s.
+Consider filtering your GTFS to a single route before using this function
+(see \code{filter_by_route()}). If there are multiple service IDs on a given
+day, the first appearing will be returned.
 }
 \examples{
 # Set parameters

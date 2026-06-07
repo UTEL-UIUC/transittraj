@@ -2,7 +2,7 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{plot_interactive_gtfs}
 \alias{plot_interactive_gtfs}
-\title{Generates a Leaflet viewer of GTFS routes and stops.}
+\title{Generate a Leaflet viewer of GTFS routes and stops}
 \usage{
 plot_interactive_gtfs(
   gtfs,
@@ -35,7 +35,8 @@ feed. As such, formatting options are relatively limited.
 The primary goal of this function is to visualize and explore each GTFS
 shape, including its associated \code{route_id} and \code{direction_id}. This function
 will plot all shapes and stops present in the input \code{gtfs}. To plot only
-a specific route or direction, first the feed using \code{filter_by_route()}.
+a specific route or direction, first filter the feed using
+\code{filter_by_route()}.
 
 Routes have both pop-ups and hover labels. The hover label shows the
 shapes's \code{route_id} (from the \code{trips} file). The pop-up will show the
@@ -51,8 +52,8 @@ point's \code{stop_id} (from the \code{stops} file). The pop-up will show the
 Two formatting options are available through this function: basemaps
 and route color palettes.
 
-The \code{background} parameter allows you to customize the background map below
-the plotted shapes and stops. Esri's light grey canvas is the default, as it
+The \code{background} parameter allows you to customize the background basemap.
+Esri's light grey canvas is the default, as it
 is excellent for providing geographic context while still allowing the
 routes to stand out. To see the available options, type
 \verb{leaflet::providers$} into your console.
@@ -61,8 +62,8 @@ The route colors can be customized in two different ways:
 \itemize{
 \item Using the \code{gtfs}'s colors. Typically, the \code{routes} file in a GTFS feed
 will contain a field \code{route_color}; this is the color you see in most
-public-facing mapping/navigation applications (e.g., Google Maps, Transit,
-etc.). If this is present in the input \code{gtfs} feed, setting
+public-facing mapping/navigation applications (e.g., Google Maps,
+Transit App, etc.). If this is present in the input \code{gtfs} feed, setting
 \code{color_palette = "gtfs"} will use this field to color each shape.
 \item Using a named color palette. Without \code{gtfs} colors, this function
 assigns colors categorically (using \code{leaflet::colorFactor()}). To set

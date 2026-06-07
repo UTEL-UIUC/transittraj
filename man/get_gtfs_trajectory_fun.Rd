@@ -22,7 +22,7 @@ get_gtfs_trajectory_fun(
 )
 }
 \arguments{
-\item{gtfs}{A tidygtfs object.}
+\item{gtfs}{A \code{tidygtfs} object.}
 
 \item{shape_geometry}{Optional. The SF object to project onto. Must include
 the field \code{shape_id}. See \code{get_shape_geometry()}. Default is \code{NULL}, where
@@ -33,11 +33,11 @@ coordinate system to use for spatial calculations. Consider setting to a
 Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 84 ellipsoid).}
 
-\item{date_min}{Optional. The starting (earliest possible) Date object for
+\item{date_min}{Optional. The starting (earliest possible) \code{Date} object for
 the returned dataframe. Default is \code{NULL}, where the earliest date in the
 GTFS will be used.}
 
-\item{date_max}{Optional. The ending (latest possible) Date object for the
+\item{date_max}{Optional. The ending (latest possible) \code{Date} object for the
 returned dataframe. Default is \code{NULL}, where the latest date in the GTFS
 will be used.}
 

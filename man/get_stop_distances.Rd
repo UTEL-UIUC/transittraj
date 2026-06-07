@@ -2,12 +2,12 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{get_stop_distances}
 \alias{get_stop_distances}
-\title{Get the distances of stops along routes.}
+\title{Get the distances of stops along routes}
 \usage{
 get_stop_distances(gtfs, shape_geometry = NULL, project_crs = 4326)
 }
 \arguments{
-\item{gtfs}{A tidygtfs object.}
+\item{gtfs}{A \code{tidygtfs} object.}
 
 \item{shape_geometry}{Optional. The SF object to project onto. Must include
 the field \code{shape_id}. See \code{get_shape_geometry()}. Default is \code{NULL}, where
@@ -21,7 +21,7 @@ Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
 \value{
 A dataframe containing \code{stop_id}, the \code{shape_id} it was projected
 onto, and \code{distance}, in units of the spatial projection (e.g., meters if
-using UTM).
+using WGS UTM).
 }
 \description{
 This function returns the linear distance of each stop along a route shape,
@@ -46,6 +46,7 @@ lineE_shape <- get_shape_geometry(gtfs = lacmta_gtfs, shape = my_shape,
 # Run stop distances function
 lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
                                        shape_geometry = lineE_shape,
-                                       project_crs = my_crs)
+                                       project_crs = my_crs) \%>\%
+   dplyr::select(-c(stop_desc, stop_url, tpis_name, location_type))
 head(lineE_stop_dists)
 }

@@ -1,4 +1,4 @@
-#' Filter GTFS to a desired route(s) and direction(s).
+#' Filter GTFS to a desired route(s) and direction(s)
 #'
 #' @description
 #' This function returns a new `tidygtfs` object with only the information
@@ -18,7 +18,7 @@
 #'
 #' - `stop_times`: with `stop_id` and `trip_id`
 #'
-#' The following files are optional. If they are included, the must include
+#' The following files are optional. If included, they must include
 #' the listed fields:
 #'
 #' - `stops`: with `stop_id`
@@ -42,11 +42,9 @@
 #' GTFS. If any required file or field is missing, an error will be thrown
 #' describing what is missing.
 #'
-#' @param gtfs A tidygtfs object.
-#' @param route_ids A numeric vector or single numeric containing the desired
-#' route ID(s).
-#' @param dir_id Optional. A numeric vector or single numeric containing the
-#' desired direction ID(s).
+#' @param gtfs A `tidygtfs` object.
+#' @param route_ids A vector containing the desired route ID(s).
+#' @param dir_id Optional. A vector containing the desired direction ID(s).
 #' @return A tidygtfs object containing only information relevant to the desired
 #' route and direction.
 #' @export
@@ -288,11 +286,11 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
   return(new_tidygtfs)
 }
 
-#' Get the geometry of a route shape.
+#' Get the geometry of a route shape
 #'
 #' @description
 #' This function returns an SF multilinestring of the route alignments from
-#' GTFS shapes. Similar to tidytransit's `get_geometry()`, but allows filtering
+#' GTFS shapes. Similar to `tidytransit::get_geometry()`, but allows filtering
 #' by `shape_id` and projection to a new coordinate system. See `Details` for
 #' requirements on the input GTFS.
 #'
@@ -309,8 +307,8 @@ filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 #' - `shape_pt_sequence`
 #'
 #' @inheritParams filter_by_route
-#' @param shape Optional. The GTFS shape_id to use. Can be a single value, or
-#' a vector. Default is NULL, where all `shape_id`s in `gtfs` will be used.
+#' @param shape Optional. A vector of GTFS `shape_id`s to pull.
+#' Default is NULL, where all `shape_id`s in `gtfs` will be used.
 #' @param project_crs Optional. A numeric EPSG identifer indicating the
 #' coordinate system to use for spatial calculations. Consider setting to a
 #' Euclidian projection, such as the appropriate UTM zone. Default is 4326 (WGS
@@ -368,11 +366,13 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
   return(shape_sf)
 }
 
-#' Projects points to linear distances along a route shape.
+#' Project points to linear distances along a route
 #'
 #' @description
-#' This function takes spatial points and projects them onto a route, returning
-#' the linear distance from the beginning terminal of the route.
+#' This function takes spatial points and projects them onto a route (i.e.,
+#' "snaps" them to the nearest point on the shape), returning
+#' the linear distance of each point along the route shape, starting from
+#' the route's beginning terminal.
 #'
 #' @inheritParams get_shape_geometry
 #' @param shape_geometry The SF object to project onto. Must include the field
@@ -385,7 +385,7 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 #' @return The `points` input (either dataframe or SF) with an appended column
 #' for the linear distance along the route. If `points` is an SFC, a vector of
 #' numeric distances is returned. Units are those of the spatial projection
-#' used (e.g., meters if using UTM).
+#' set in `project_crs` (e.g., meters if using WGS UTM).
 #' @export
 #' @examples
 #' # Set my parameters
@@ -473,7 +473,7 @@ project_onto_route <- function(shape_geometry, points,
   return(points_dist)
 }
 
-#' Get the distances of stops along routes.
+#' Get the distances of stops along routes
 #'
 #' @description
 #' This function returns the linear distance of each stop along a route shape,
@@ -489,7 +489,7 @@ project_onto_route <- function(shape_geometry, points,
 #' all shapes in `gtfs` will be used.
 #' @return A dataframe containing `stop_id`, the `shape_id` it was projected
 #' onto, and `distance`, in units of the spatial projection (e.g., meters if
-#' using UTM).
+#' using WGS UTM).
 #' @export
 #' @examples
 #' # Set my parameters
@@ -507,7 +507,8 @@ project_onto_route <- function(shape_geometry, points,
 #' # Run stop distances function
 #' lineE_stop_dists <- get_stop_distances(gtfs = lineE_gtfs,
 #'                                        shape_geometry = lineE_shape,
-#'                                        project_crs = my_crs)
+#'                                        project_crs = my_crs) %>%
+#'    dplyr::select(-c(stop_desc, stop_url, tpis_name, location_type))
 #' head(lineE_stop_dists)
 get_stop_distances <- function(gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
@@ -605,7 +606,7 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
   return(stop_dist_df)
 }
 
-#' Generates a Leaflet viewer of GTFS routes and stops.
+#' Generate a Leaflet viewer of GTFS routes and stops
 #'
 #' @description
 #' This function generates a simple Leaflet-based interactive map viewer of a
@@ -619,7 +620,8 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
 #' The primary goal of this function is to visualize and explore each GTFS
 #' shape, including its associated `route_id` and `direction_id`. This function
 #' will plot all shapes and stops present in the input `gtfs`. To plot only
-#' a specific route or direction, first the feed using `filter_by_route()`.
+#' a specific route or direction, first filter the feed using
+#' `filter_by_route()`.
 #'
 #' Routes have both pop-ups and hover labels. The hover label shows the
 #' shapes's `route_id` (from the `trips` file). The pop-up will show the
@@ -634,8 +636,8 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
 #' Two formatting options are available through this function: basemaps
 #' and route color palettes.
 #'
-#' The `background` parameter allows you to customize the background map below
-#' the plotted shapes and stops. Esri's light grey canvas is the default, as it
+#' The `background` parameter allows you to customize the background basemap.
+#' Esri's light grey canvas is the default, as it
 #' is excellent for providing geographic context while still allowing the
 #' routes to stand out. To see the available options, type
 #' `leaflet::providers$` into your console.
@@ -644,8 +646,8 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
 #'
 #' - Using the `gtfs`'s colors. Typically, the `routes` file in a GTFS feed
 #' will contain a field `route_color`; this is the color you see in most
-#' public-facing mapping/navigation applications (e.g., Google Maps, Transit,
-#' etc.). If this is present in the input `gtfs` feed, setting
+#' public-facing mapping/navigation applications (e.g., Google Maps,
+#' Transit App, etc.). If this is present in the input `gtfs` feed, setting
 #' `color_palette = "gtfs"` will use this field to color each shape.
 #'
 #' - Using a named color palette. Without `gtfs` colors, this function
@@ -681,7 +683,7 @@ plot_interactive_gtfs <- function(gtfs,
   validate_gtfs_input(gtfs,
                       table = "trips",
                       needed_fields = c("shape_id", "direction_id", "route_id"))
-  if (color_palette == "gtfs") {
+  if (tolower(color_palette) == "gtfs") {
     validate_gtfs_input(gtfs,
                         table = "routes",
                         needed_fields = c("route_color"))
@@ -716,7 +718,7 @@ plot_interactive_gtfs <- function(gtfs,
   stop_hover <- as.character(stops_sf$stop_id)
 
   # Colors
-  if (color_palette == "gtfs") {
+  if (tolower(color_palette) == "gtfs") {
     # Get color codes and append #
     route_colors <- gtfs$routes %>%
       dplyr::select(route_id, route_color) %>%
@@ -755,10 +757,10 @@ plot_interactive_gtfs <- function(gtfs,
   return(interactive_map)
 }
 
-#' Get a dataframe of all service dates and their service IDs from a GTFS.
+#' Get a dataframe of all service dates and their service IDs from a GTFS
 #'
-#' This function returns a dataframe of each date covered by a GTFS and the
-#' `service_id` run on this date. This data is extracted from the `calendar.txt`
+#' This function returns a dataframe with each date covered by a GTFS and the
+#' `service_id` run on that date. This data is extracted from the `calendar.txt`
 #' and `calendar_dates.txt` files, depending on how the GTFS is structured. See
 #' `Details` for a discussion.
 #'
@@ -784,17 +786,24 @@ plot_interactive_gtfs <- function(gtfs,
 #' restrict the date enumeration to only a specific window, set `date_min`
 #' and `date_max`.
 #'
+#' This function is also intended for GTFS feeds with only one service ID per
+#' day. Some GTFS providers (including `lacmta_gtfs`) have unique `service_id`s
+#' by route, and thus service dates do not have unique `service_id`s.
+#' Consider filtering your GTFS to a single route before using this function
+#' (see `filter_by_route()`). If there are multiple service IDs on a given
+#' day, the first appearing will be returned.
+#'
 #' @param gtfs A tidygtfs object.
-#' @param date_min Optional. The starting (earliest possible) Date object for
+#' @param date_min Optional. The starting (earliest possible) `Date` object for
 #' the returned dataframe. Default is `NULL`, where the earliest date in the
 #' GTFS will be used.
-#' @param date_max Optional. The ending (latest possible) Date object for the
+#' @param date_max Optional. The ending (latest possible) `Date` object for the
 #' returned dataframe. Default is `NULL`, where the latest date in the GTFS
 #' will be used.
 #' @param use_calendar_table Optional. Should the GTFS's `calendar.txt` or
 #' `calendar_dates.txt` be used for the feasible date range? Must be
 #' `"calendar"` or `"calendar_dates"`. Default is `"calendar"`.
-#' @return A dataframe with Date column `date`, and numeric column
+#' @return A dataframe with `Date` column `date` and character column
 #' `service_id`.
 #' @export
 #' @examples

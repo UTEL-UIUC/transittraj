@@ -2,18 +2,16 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{filter_by_route}
 \alias{filter_by_route}
-\title{Filter GTFS to a desired route(s) and direction(s).}
+\title{Filter GTFS to a desired route(s) and direction(s)}
 \usage{
 filter_by_route(gtfs, route_ids, dir_id = NULL)
 }
 \arguments{
-\item{gtfs}{A tidygtfs object.}
+\item{gtfs}{A \code{tidygtfs} object.}
 
-\item{route_ids}{A numeric vector or single numeric containing the desired
-route ID(s).}
+\item{route_ids}{A vector containing the desired route ID(s).}
 
-\item{dir_id}{Optional. A numeric vector or single numeric containing the
-desired direction ID(s).}
+\item{dir_id}{Optional. A vector containing the desired direction ID(s).}
 }
 \value{
 A tidygtfs object containing only information relevant to the desired
@@ -35,7 +33,7 @@ The following files and fields are required for this function:
 \item \code{stop_times}: with \code{stop_id} and \code{trip_id}
 }
 
-The following files are optional. If they are included, the must include
+The following files are optional. If included, they must include
 the listed fields:
 \itemize{
 \item \code{stops}: with \code{stop_id}

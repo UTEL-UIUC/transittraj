@@ -2,15 +2,15 @@
 % Please edit documentation in R/gtfs_helpers.R
 \name{get_shape_geometry}
 \alias{get_shape_geometry}
-\title{Get the geometry of a route shape.}
+\title{Get the geometry of a route shape}
 \usage{
 get_shape_geometry(gtfs, shape = NULL, project_crs = 4326)
 }
 \arguments{
-\item{gtfs}{A tidygtfs object.}
+\item{gtfs}{A \code{tidygtfs} object.}
 
-\item{shape}{Optional. The GTFS shape_id to use. Can be a single value, or
-a vector. Default is NULL, where all \code{shape_id}s in \code{gtfs} will be used.}
+\item{shape}{Optional. A vector of GTFS \code{shape_id}s to pull.
+Default is NULL, where all \code{shape_id}s in \code{gtfs} will be used.}
 
 \item{project_crs}{Optional. A numeric EPSG identifer indicating the
 coordinate system to use for spatial calculations. Consider setting to a
@@ -23,7 +23,7 @@ An SF multilinestring, with one multilinestring object per
 }
 \description{
 This function returns an SF multilinestring of the route alignments from
-GTFS shapes. Similar to tidytransit's \code{get_geometry()}, but allows filtering
+GTFS shapes. Similar to \code{tidytransit::get_geometry()}, but allows filtering
 by \code{shape_id} and projection to a new coordinate system. See \code{Details} for
 requirements on the input GTFS.
 }
