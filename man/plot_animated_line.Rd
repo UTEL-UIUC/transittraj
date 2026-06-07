@@ -3,7 +3,7 @@
 \name{plot_animated_line}
 \alias{plot_animated_line}
 \alias{plot_animated_map}
-\title{Animate vehicle trajectory or AVL data.}
+\title{Animate vehicle trajectory or AVL data}
 \usage{
 plot_animated_line(
   trajectory = NULL,
@@ -89,7 +89,7 @@ is \code{NULL}, which will plot all trips provided in the \code{trajectory} or
 \code{distance_df}.}
 
 \item{timestep}{Optional. If \code{trajectory} is provided, the time interval, in
-seconds, between interpolated observations to plot. Default is 5.}
+seconds, between interpolated observations to plot. Default is \code{5}.}
 
 \item{distance_lims}{Optional. A vector with \verb{(minimum, maximum)} distance
 values to plot.}
@@ -112,14 +112,14 @@ Default is \code{TRUE}.}
 alignment. Default is \code{"coral"}.}
 
 \item{route_width}{Optional. A numeric, the linewidth of the route
-alignment. Default is 3.}
+alignment. Default is \code{3}.}
 
 \item{route_alpha}{Optional. A numeric, the opacity of the route alignment.
-Default is 1.}
+Default is \code{1}.}
 
 \item{feature_shape}{Optional. A numeric specifying the \code{ggplot2} point
 shape, or a dataframe mapping an attribute in \code{feature_distances} to a shape.
-Must contain column \code{shape}. Default is 21 (circle).}
+Must contain column \code{shape}. Default is \code{21} (circle).}
 
 \item{feature_outline}{Optional. A color string, or a dataframe mapping an
 attribute in \code{feature_distances} to a color. Must contain column \code{outline}.
@@ -129,13 +129,13 @@ Default is \code{"black"}.}
 points. Default is \code{"white"}.}
 
 \item{feature_size}{Optional. A numeric, the size of the feature point.
-Default is 2.}
+Default is \code{2}.}
 
 \item{feature_stroke}{Optional. A numeric, the linewidth of the feature point
-outline. Default is 1.25.}
+outline. Default is \code{1.25}.}
 
 \item{feature_alpha}{Optional. A numeric, the opacity of the feature point.
-Default is 1.}
+Default is \code{1}.}
 
 \item{feature_legend}{Optional. A boolean, should a legend be shown for
 feature formatting? Default is \code{NULL}, where a legend will only appear if
@@ -143,7 +143,7 @@ the shape or outline format is mapped to.}
 
 \item{veh_shape}{Optional. A numeric specifying the \code{ggplot2} point shape, or
 a dataframe mapping an attribute in \code{distance_df} or \code{trajectory} to
-a shape. Must contain column \code{shape}. Default is 23 (diamond).}
+a shape. Must contain column \code{shape}. Default is \code{23} (diamond).}
 
 \item{veh_outline}{Optional. A color string, or a dataframe mapping an
 attribute in \code{distance_df} or \code{trajectory} to a color. Must contain column
@@ -153,13 +153,13 @@ attribute in \code{distance_df} or \code{trajectory} to a color. Must contain co
 point. Default is \code{"white"}.}
 
 \item{veh_size}{Optional. A numeric, the size of the vehicle point. Default
-is 3.}
+is \code{3}.}
 
 \item{veh_stroke}{Optional. A numeric, the linewidth of the vehicle point
-outline. Default is 2.}
+outline. Default is \code{2}.}
 
 \item{veh_alpha}{Optional. A numeric, the opacity of the vehicle point.
-Default is 0.8.}
+Default is \code{0.8}.}
 
 \item{veh_legend}{Optional. A boolean, should a legend be shown for
 vehicle formatting? Default is \code{NULL}, where a legend will only appear if
@@ -170,16 +170,16 @@ the shape or outline format is mapped to.}
 where no labels will be plotted.}
 
 \item{label_size}{Optional. The font size of the feature labels. Default is
-3.}
+\code{3}.}
 
 \item{label_alpha}{Optional. The opacity of the feature labels. Default is
-0.6.}
+\code{0.6}.}
 
 \item{label_pos}{Optional. A string specifying the label position on the
 graph. Options include:
 \itemize{
 \item \code{plot_animated_line()}: \code{"left"} or \code{"right"}. Default is \code{"left"}.
-\item \code{plot_animated_map()}: cardinal or intermediate direction (e.g.,
+\item \code{plot_animated_map()}: cardinal or intermediate compass direction (e.g.,
 \code{"N"}, \code{"SW"}, etc.), or \code{"in"}/\code{"out"}. Default is \code{"out"}.
 }}
 
@@ -190,7 +190,7 @@ graph. Options include:
 See \code{rosm::osm.image()}. Default is \code{"cartolight"}.}
 
 \item{background_zoom}{Optional. The zoom, relative to the "correct" level,
-for the background basemap. Default is 0.}
+for the background basemap. Default is \code{0}.}
 
 \item{bbox_expand}{Optional. The distance by which to expand the plotting
 window in both directions. Default is \code{NULL}, which will expand the window by
@@ -216,7 +216,7 @@ and customized as desired.
 \details{
 \subsection{Input Trajectory Data}{
 
-There are two ways to provide data to these plotting functions:
+There are two ways to provide data for these plotting functions:
 \itemize{
 \item A single or grouped trajectory object. This will use the direct
 trajectory function at a resolution controlled by \code{timestep}. This is
@@ -252,7 +252,7 @@ that of the feature they describe. The label placement is controlled by
 \itemize{
 \item \code{plot_animated_line()}: Either \code{"left"} or \code{"right"} of the route line. The
 y-value will be that of the feature it describes.
-\item \code{plot_animated_map()}. A cardinal or intermediate direction (\code{"N"},
+\item \code{plot_animated_map()}. A cardinal or intermediate compass direction (\code{"N"},
 \code{"SE"}, etc.) relative to the feature point. Or, \code{"in"}/\code{"out"}, relative to
 the center of the plot.
 }
@@ -266,8 +266,8 @@ spatial features, see \code{get_stop_distances()} and \code{project_onto_route()
 
 Once a layer is created on a \code{ggplot2} object, it is difficult to change its
 formatting. As such, this function attempts to provide as much flexibility
-in formatting its layers as possible. The resulting plot includes three
-layers:
+in formatting its layers as possible. The resulting plot includes four
+layers in the following order:
 \itemize{
 \item Route line, controlled by \code{route_color}, \code{route_width}, and \code{route_alpha}.
 \item Features, controlled by \code{feature_fill}, \code{feature_outline}, \code{feature_shape},
@@ -320,9 +320,7 @@ box is defined relative to the spatial range of \code{trajectory} or
 \code{distance_lims != NULL}) of the larger dimension (northing or easting) of the
 vehicle location bounding box. To customize, det \code{bbox_expand} to some
 numeric in the distance units of the \code{shape_geometry}'s spatial
-projection (e.g., meters if using a UTM projection).
-
-For examples and a more in-depth discussion, see (xyz).
+projection (e.g., meters if using a WGS UTM projection).
 }
 }
 \examples{

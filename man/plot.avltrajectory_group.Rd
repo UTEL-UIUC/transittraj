@@ -3,7 +3,7 @@
 \name{plot.avltrajectory_group}
 \alias{plot.avltrajectory_group}
 \alias{plot.avltrajectory_single}
-\title{Quickly plots an AVL trajectory.}
+\title{Quickly plot an AVL trajectory}
 \usage{
 \method{plot}{avltrajectory_group}(x, ...)
 
@@ -15,7 +15,7 @@
 \item{...}{Other parameters (not used).}
 }
 \value{
-A ggplot2 object.
+A \code{ggplot2} object.
 }
 \description{
 This function generates a quick plot of a single or grouped trajectory

@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_visualization.R
 \name{export_animation}
 \alias{export_animation}
-\title{Save your animation at a desired quality.}
+\title{Save an animation at a desired quality}
 \usage{
 export_animation(
   anim_object,
@@ -21,19 +21,19 @@ export_animation(
 animation.}
 
 \item{duration}{Optional. A numeric, in seconds, representing the length of
-the animation. Default is 30.}
+the animation. Default is \code{30}.}
 
 \item{fps}{Optional. The frames per second of the saved animation. Default
-is 10.}
+is \code{10}.}
 
 \item{width}{Optional. The width of the exported image, in inches. Default
-is 7.5}
+is \code{7.5}}
 
 \item{height}{Optional. The height of the exported image, in inches. Default
-is 5.5.}
+is \code{5.5}.}
 
 \item{dpi}{Optional. The resolution, in dots per inch, of the image. Default
-is 100.}
+is \code{100}.}
 }
 \description{
 This function is a helepr for \code{gganimate}'s \code{anim_save()}, providing a

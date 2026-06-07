@@ -18,7 +18,7 @@
 #'
 #' ## Input Trajectory Data
 #'
-#' There are two ways to provide data to these plotting functions:
+#' There are two ways to provide data for these plotting functions:
 #'
 #' - A single or grouped trajectory object. This will use the direct
 #' trajectory function at a resolution controlled by `timestep`. This is
@@ -54,7 +54,7 @@
 #' - `plot_animated_line()`: Either `"left"` or `"right"` of the route line. The
 #' y-value will be that of the feature it describes.
 #'
-#' - `plot_animated_map()`. A cardinal or intermediate direction (`"N"`,
+#' - `plot_animated_map()`. A cardinal or intermediate compass direction (`"N"`,
 #' `"SE"`, etc.) relative to the feature point. Or, `"in"`/`"out"`, relative to
 #' the center of the plot.
 #'
@@ -66,8 +66,8 @@
 #'
 #' Once a layer is created on a `ggplot2` object, it is difficult to change its
 #' formatting. As such, this function attempts to provide as much flexibility
-#' in formatting its layers as possible. The resulting plot includes three
-#' layers:
+#' in formatting its layers as possible. The resulting plot includes four
+#' layers in the following order:
 #'
 #' - Route line, controlled by `route_color`, `route_width`, and `route_alpha`.
 #'
@@ -121,16 +121,14 @@
 #' `distance_lims != NULL`) of the larger dimension (northing or easting) of the
 #' vehicle location bounding box. To customize, det `bbox_expand` to some
 #' numeric in the distance units of the `shape_geometry`'s spatial
-#' projection (e.g., meters if using a UTM projection).
-#'
-#' For examples and a more in-depth discussion, see (xyz).
+#' projection (e.g., meters if using a WGS UTM projection).
 #'
 #' @param shape_geometry An SF object representing the route alignment. See
 #' `get_shape_geometry()`.
 #' @param background Optional. The OSM background (basemap) for the animation.
 #' See `rosm::osm.image()`. Default is `"cartolight"`.
 #' @param background_zoom Optional. The zoom, relative to the "correct" level,
-#' for the background basemap. Default is 0.
+#' for the background basemap. Default is `0`.
 #' @param bbox_expand Optional. The distance by which to expand the plotting
 #' window in both directions. Default is `NULL`, which will expand the window by
 #' 0.05% of the larger dimension (or 0.0025% if `distance_lims` is provided).
@@ -144,7 +142,7 @@
 #' is `NULL`, which will plot all trips provided in the `trajectory` or
 #' `distance_df`.
 #' @param timestep Optional. If `trajectory` is provided, the time interval, in
-#' seconds, between interpolated observations to plot. Default is 5.
+#' seconds, between interpolated observations to plot. Default is `5`.
 #' @param convert_to_timezone Optional. Should numeric epoch times be converted
 #' back to readable hour-minute-second time values, using the agency timezone?
 #' Default is `TRUE`.
@@ -160,40 +158,40 @@
 #' @param route_color Optional. A color string for the color of the route
 #' alignment. Default is `"coral"`.
 #' @param route_width Optional. A numeric, the linewidth of the route
-#' alignment. Default is 3.
+#' alignment. Default is `3`.
 #' @param route_alpha Optional. A numeric, the opacity of the route alignment.
-#' Default is 1.
+#' Default is `1`.
 #' @param feature_shape Optional. A numeric specifying the `ggplot2` point
 #' shape, or a dataframe mapping an attribute in `feature_distances` to a shape.
-#' Must contain column `shape`. Default is 21 (circle).
+#' Must contain column `shape`. Default is `21` (circle).
 #' @param feature_outline Optional. A color string, or a dataframe mapping an
 #' attribute in `feature_distances` to a color. Must contain column `outline`.
 #' Default is `"black"`.
 #' @param feature_fill Optional. A color string, the inside fill of feature
 #' points. Default is `"white"`.
 #' @param feature_size Optional. A numeric, the size of the feature point.
-#' Default is 2.
+#' Default is `2`.
 #' @param feature_stroke Optional. A numeric, the linewidth of the feature point
-#' outline. Default is 1.25.
+#' outline. Default is `1.25`.
 #' @param feature_alpha Optional. A numeric, the opacity of the feature point.
-#' Default is 1.
+#' Default is `1`.
 #' @param feature_legend Optional. A boolean, should a legend be shown for
 #' feature formatting? Default is `NULL`, where a legend will only appear if
 #' the shape or outline format is mapped to.
 #' @param veh_shape Optional. A numeric specifying the `ggplot2` point shape, or
 #' a dataframe mapping an attribute in `distance_df` or `trajectory` to
-#' a shape. Must contain column `shape`. Default is 23 (diamond).
+#' a shape. Must contain column `shape`. Default is `23` (diamond).
 #' @param veh_outline Optional. A color string, or a dataframe mapping an
 #' attribute in `distance_df` or `trajectory` to a color. Must contain column
 #' `outline`. Default is `"grey30"`.
 #' @param veh_fill Optional. A color string, the inside fill of the vehicle
 #' point. Default is `"white"`.
 #' @param veh_size Optional. A numeric, the size of the vehicle point. Default
-#' is 3.
+#' is `3`.
 #' @param veh_stroke Optional. A numeric, the linewidth of the vehicle point
-#' outline. Default is 2.
+#' outline. Default is `2`.
 #' @param veh_alpha Optional. A numeric, the opacity of the vehicle point.
-#' Default is 0.8.
+#' Default is `0.8`.
 #' @param veh_legend Optional. A boolean, should a legend be shown for
 #' vehicle formatting? Default is `NULL`, where a legend will only appear if
 #' the shape or outline format is mapped to.
@@ -201,13 +199,13 @@
 #' `feature_distances` with which to label the feature lines. Default is `NULL`,
 #' where no labels will be plotted.
 #' @param label_size Optional. The font size of the feature labels. Default is
-#' 3.
+#' `3`.
 #' @param label_alpha Optional. The opacity of the feature labels. Default is
-#' 0.6.
+#' `0.6`.
 #' @param label_pos Optional. A string specifying the label position on the
 #' graph. Options include:
 #' - `plot_animated_line()`: `"left"` or `"right"`. Default is `"left"`.
-#' - `plot_animated_map()`: cardinal or intermediate direction (e.g.,
+#' - `plot_animated_map()`: cardinal or intermediate compass direction (e.g.,
 #' `"N"`, `"SW"`, etc.), or `"in"`/`"out"`. Default is `"out"`.
 #' @returns A `gganimate` object.
 #' @export
@@ -717,10 +715,10 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
   return(anim_map)
 }
 
-#' Plot vehicle trajectories or AVL data.
+#' Plot vehicle trajectories or AVL data
 #'
 #' @description
-#' This function use the input trajectory object or TIDES AVL data to draw a
+#' This function uses the input trajectory object or TIDES AVL data to draw a
 #' trajectory plot (i.e., linear distance versus time) for each trip. This
 #' function allows for the plotting of spatial features and labels for these
 #' features. A `ggplot2` object is returned, which can be further modified
@@ -730,7 +728,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #'
 #' ## Input Trajectory Data
 #'
-#' There are two ways to provide data to these plotting functions:
+#' There are two ways to provide data to this function:
 #'
 #' - A single or grouped trajectory object. This will use the direct
 #' trajectory function at a resolution controlled by `timestep`. This is
@@ -796,8 +794,8 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' and the values in the mapping column should match the values in
 #' feature or trip column.
 #'
-#' Note that if inputting `trajectory`, instead of `distance_df`, `veh_shape`
-#' and `traj_color` and `traj_type` can only be mapped to `trip_id_performed`.
+#' Note that if inputting `trajectory`, instead of `distance_df`,
+#' `traj_color` and `traj_type` can only be mapped to `trip_id_performed`.
 #' If using `distance_df`, they may be mapped to any column in `distance_df`
 #' (e.g., vehicle or operator IDs).
 #'
@@ -812,9 +810,9 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' `trajectory` to a linetype. Must contain column `linetype`. Default is
 #' `"solid"`.
 #' @param traj_width Optional. A numeric, the width of the trajectory line.
-#' Default is 1.
+#' Default is `1`.
 #' @param traj_alpha Optional. A numeric, the opacity of the trajectory line.
-#' Default is 1.
+#' Default is `1`.
 #' @param traj_legend Optional. A boolean, should a legend be shown for
 #' trajectory formatting? Default is `NULL`, where a legend will only appear if
 #' the linetype or color format is mapped to.
@@ -825,7 +823,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
 #' a dataframe mapping an attribute in `feature_distances` to a linetype. Must
 #' contain column `linetype`. Default is `"dashed"`.
 #' @param feature_width Optional. A numeric, the width of the feature line.
-#' Default is 0.8.
+#' Default is `0.8`.
 #' @param feature_legend Optional. A boolean, should a legend be shown for
 #' feature formatting? Default is `NULL`, where a legend will only appear if
 #' the linetype or color format is mapped to.
@@ -998,7 +996,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
   return(traj_plot)
 }
 
-#' Save your animation at a desired quality.
+#' Save an animation at a desired quality
 #'
 #' This function is a helepr for `gganimate`'s `anim_save()`, providing a
 #' simplified, though less feature-rich, version of these functions. Animations
@@ -1010,15 +1008,15 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
 #' @param path A string representing the desired path and name at which to save
 #' animation.
 #' @param duration Optional. A numeric, in seconds, representing the length of
-#' the animation. Default is 30.
+#' the animation. Default is `30`.
 #' @param fps Optional. The frames per second of the saved animation. Default
-#' is 10.
+#' is `10`.
 #' @param width Optional. The width of the exported image, in inches. Default
-#' is 7.5
+#' is `7.5`
 #' @param height Optional. The height of the exported image, in inches. Default
-#' is 5.5.
+#' is `5.5`.
 #' @param dpi Optional. The resolution, in dots per inch, of the image. Default
-#' is 100.
+#' is `100`.
 #' @export
 #' @examples
 #  # Get input data

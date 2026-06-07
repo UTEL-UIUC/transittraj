@@ -3,7 +3,7 @@
 \name{summary.avltrajectory_group}
 \alias{summary.avltrajectory_group}
 \alias{summary.avltrajectory_single}
-\title{Summary function for AVL trajectories.}
+\title{Summarize an AVL trajectory object}
 \usage{
 \method{summary}{avltrajectory_group}(object, ...)
 
@@ -18,7 +18,7 @@
 A summary character string.
 }
 \description{
-This function prints a summary for grouped or single trajectory object
+This function prints a summary for grouped or single trajectory object.
 If the input is a single trajectory, the trip's ID and distance & time range
 will be printed. If the input is a grouped trajectory, the number of trips
 and the distance & time range across all trips will be printed. For both,

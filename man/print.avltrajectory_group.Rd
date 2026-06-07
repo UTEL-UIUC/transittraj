@@ -3,7 +3,7 @@
 \name{print.avltrajectory_group}
 \alias{print.avltrajectory_group}
 \alias{print.avltrajectory_single}
-\title{Print function for AVL trajectories}
+\title{Print an AVL trajectory object}
 \usage{
 \method{print}{avltrajectory_group}(x, ...)
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory_visualization.R
 \name{plot_trajectory}
 \alias{plot_trajectory}
-\title{Plot vehicle trajectories or AVL data.}
+\title{Plot vehicle trajectories or AVL data}
 \usage{
 plot_trajectory(
   trajectory = NULL,
@@ -43,7 +43,7 @@ is \code{NULL}, which will plot all trips provided in the \code{trajectory} or
 \code{distance_df}.}
 
 \item{timestep}{Optional. If \code{trajectory} is provided, the time interval, in
-seconds, between interpolated observations to plot. Default is 5.}
+seconds, between interpolated observations to plot. Default is \code{5}.}
 
 \item{distance_lims}{Optional. A vector with \verb{(minimum, maximum)} distance
 values to plot.}
@@ -68,10 +68,10 @@ dataframe mapping an attribute in \code{distance_df} or \code{trip_id_performed}
 \code{"solid"}.}
 
 \item{traj_width}{Optional. A numeric, the width of the trajectory line.
-Default is 1.}
+Default is \code{1}.}
 
 \item{traj_alpha}{Optional. A numeric, the opacity of the trajectory line.
-Default is 1.}
+Default is \code{1}.}
 
 \item{traj_legend}{Optional. A boolean, should a legend be shown for
 trajectory formatting? Default is \code{NULL}, where a legend will only appear if
@@ -86,10 +86,10 @@ a dataframe mapping an attribute in \code{feature_distances} to a linetype. Must
 contain column \code{linetype}. Default is \code{"dashed"}.}
 
 \item{feature_width}{Optional. A numeric, the width of the feature line.
-Default is 0.8.}
+Default is \code{0.8}.}
 
 \item{feature_alpha}{Optional. A numeric, the opacity of the feature point.
-Default is 1.}
+Default is \code{1}.}
 
 \item{feature_legend}{Optional. A boolean, should a legend be shown for
 feature formatting? Default is \code{NULL}, where a legend will only appear if
@@ -100,10 +100,10 @@ the linetype or color format is mapped to.}
 where no labels will be plotted.}
 
 \item{label_size}{Optional. The font size of the feature labels. Default is
-3.}
+\code{3}.}
 
 \item{label_alpha}{Optional. The opacity of the feature labels. Default is
-0.6.}
+\code{0.6}.}
 
 \item{label_pos}{Optional. A string specifying the label position on the
 graph. Must be either \code{"left"} or \code{"right"}. Default is \code{"left"}.}
@@ -112,7 +112,7 @@ graph. Must be either \code{"left"} or \code{"right"}. Default is \code{"left"}.
 A \code{ggplot2} object.
 }
 \description{
-This function use the input trajectory object or TIDES AVL data to draw a
+This function uses the input trajectory object or TIDES AVL data to draw a
 trajectory plot (i.e., linear distance versus time) for each trip. This
 function allows for the plotting of spatial features and labels for these
 features. A \code{ggplot2} object is returned, which can be further modified
@@ -121,7 +121,7 @@ and customized as desired.
 \details{
 \subsection{Input Trajectory Data}{
 
-There are two ways to provide data to these plotting functions:
+There are two ways to provide data to this function:
 \itemize{
 \item A single or grouped trajectory object. This will use the direct
 trajectory function at a resolution controlled by \code{timestep}. This is
@@ -188,8 +188,8 @@ and the values in the mapping column should match the values in
 feature or trip column.
 }
 
-Note that if inputting \code{trajectory}, instead of \code{distance_df}, \code{veh_shape}
-and \code{traj_color} and \code{traj_type} can only be mapped to \code{trip_id_performed}.
+Note that if inputting \code{trajectory}, instead of \code{distance_df},
+\code{traj_color} and \code{traj_type} can only be mapped to \code{trip_id_performed}.
 If using \code{distance_df}, they may be mapped to any column in \code{distance_df}
 (e.g., vehicle or operator IDs).
 }
