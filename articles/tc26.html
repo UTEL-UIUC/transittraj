@@ -651,21 +651,21 @@ columns.</p>
 <span>         perc_trips <span class="op">=</span> <span class="va">delta_trips</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_trips</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cleaning_summ</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    step   n_obs n_trips       t_sec delta_n      perc_n delta_trips  perc_trips</span></span>
-<span><span class="co">#&gt; 1  Init 1626581    3177          NA      NA          NA          NA          NA</span></span>
-<span><span class="co">#&gt; 2 1 &amp; 2 1338872    3173 304.4231269 -287709 -17.6879602          -4 -0.12590494</span></span>
-<span><span class="co">#&gt; 3     3 1332860    3158   1.5231349   -6012  -0.4490347         -15 -0.47273873</span></span>
-<span><span class="co">#&gt; 4     4 1330548    3158  54.2799110   -2312  -0.1734616           0  0.00000000</span></span>
-<span><span class="co">#&gt; 5     5 1248044    2897   0.7932529  -82504  -6.2007534        -261 -8.26472451</span></span>
-<span><span class="co">#&gt; 6     6 1241429    2896   0.3037698   -6615  -0.5300294          -1 -0.03451847</span></span>
-<span><span class="co">#&gt; 7     7 1241429    2896 196.2748561       0   0.0000000           0  0.00000000</span></span>
-<span><span class="co">#&gt; 8 Final      NA    2896  35.6595669      NA          NA           0  0.00000000</span></span></code></pre></div>
+<span><span class="co">#&gt;    step   n_obs n_trips      t_sec delta_n      perc_n delta_trips  perc_trips</span></span>
+<span><span class="co">#&gt; 1  Init 1626581    3177         NA      NA          NA          NA          NA</span></span>
+<span><span class="co">#&gt; 2 1 &amp; 2 1338872    3173 460.068712 -287709 -17.6879602          -4 -0.12590494</span></span>
+<span><span class="co">#&gt; 3     3 1332860    3158   4.514257   -6012  -0.4490347         -15 -0.47273873</span></span>
+<span><span class="co">#&gt; 4     4 1330548    3158  72.694884   -2312  -0.1734616           0  0.00000000</span></span>
+<span><span class="co">#&gt; 5     5 1248044    2897   1.229057  -82504  -6.2007534        -261 -8.26472451</span></span>
+<span><span class="co">#&gt; 6     6 1241429    2896   0.542860   -6615  -0.5300294          -1 -0.03451847</span></span>
+<span><span class="co">#&gt; 7     7 1241429    2896 228.407077       0   0.0000000           0  0.00000000</span></span>
+<span><span class="co">#&gt; 8 Final      NA    2896  41.924504      NA          NA           0  0.00000000</span></span></code></pre></div>
 <p>Finding the total time, in seconds:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">total_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cleaning_summ</span><span class="op">$</span><span class="va">t_sec</span>,</span>
 <span>                  na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">total_time</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 593.2576</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 809.3814</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -689,7 +689,7 @@ exit position of the study signal.</p>
 <span>                         new_distances <span class="op">=</span> <span class="va">plot_sig_boundings</span><span class="op">)</span></span>
 <span><span class="va">t_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">t_f</span> <span class="op">-</span> <span class="va">t_0</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time difference of 1.236961 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 1.586715 secs</span></span></code></pre></div>
 <p>Pivot to calculate travel times &amp; delays:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_ff</span> <span class="op">&lt;-</span> <span class="fl">11.7</span></span>
@@ -877,7 +877,7 @@ mph) to be a stop.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distance <span class="op">=</span> <span class="va">interp</span><span class="op">)</span></span>
 <span><span class="va">t_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">t_f</span> <span class="op">-</span> <span class="va">t_0</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time difference of 20.52804 secs</span></span>
+<span><span class="co">#&gt; Time difference of 23.14849 secs</span></span>
 <span></span>
 <span><span class="co"># Predict 2: Get speeds</span></span>
 <span><span class="va">t_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -887,7 +887,7 @@ mph) to be a stop.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="va">interp</span><span class="op">)</span></span>
 <span><span class="va">t_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">t_f</span> <span class="op">-</span> <span class="va">t_0</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time difference of 19.30319 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 21.97966 secs</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set up RLE</span></span>
 <span><span class="va">stop_cutoff</span> <span class="op">&lt;-</span> <span class="fl">2.235</span> <span class="co"># 1.341 # m/s, roughly 5 mph</span></span>
@@ -1067,6 +1067,130 @@ mph) to be a stop.</p>
 <span>                  theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"Verdana"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">combo_plot</span></span></code></pre></div>
 <p><img src="figures/combo_plot_lowres.png" alt="" width="70%"></p>
+</div>
+<div class="section level3">
+<h3 id="animations">Animations<a class="anchor" aria-label="anchor" href="#animations"></a>
+</h3>
+<p>A final component of <code>transittraj</code> worth demonstrating,
+but difficult to show on a poster, are animations. We support two
+types:</p>
+<ul>
+<li><p><em>Animated map</em>: This draws the vehicle’s route spatially,
+then uses the trajectory to show the each vehicle moving through space
+over time. The result will be similar to animated raw GPS points, but
+with the cleaning and interpolation curve we performed earlier.</p></li>
+<li><p><em>Animated line</em>: This is similar, but simplifies the route
+to a single, vertical line on a blank background. This is a good option
+for visualizing the trajectory without adding unneeded spatial
+context.</p></li>
+</ul>
+<p>In this section, we’ll demonstrate each by animating trajectories
+with the average travel times before and after the TSP upgrade. We’ll
+begin by setting up some dataframes used to format our features. For
+more discussion on how this works, see
+<code><a href="../reference/plot_animated_line.html">help(plot_animated_map)</a></code> and
+<code><a href="../articles/intro-trajectories-la.html">vignette("articles/intro-trajectories-la")</a></code>.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># One DF for all features</span></span>
+<span><span class="va">plot_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>  <span class="va">signal_boundings</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="va">model_sig</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">distance</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>feature <span class="op">=</span> <span class="st">"Entrance/Exit"</span><span class="op">)</span>,</span>
+<span>  <span class="va">signals</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="va">model_sig</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">distance</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>feature <span class="op">=</span> <span class="st">"Stopbar"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>Feature <span class="op">=</span> <span class="va">feature</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Trips to plot</span></span>
+<span><span class="va">plot_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2024-07-01-t416-b232E-sl3-N"</span>, <span class="co"># mean travel time before</span></span>
+<span>                <span class="st">"2024-11-29-t79F-b2339-sl3-N"</span><span class="op">)</span> <span class="co"># mean travel time after</span></span>
+<span></span>
+<span><span class="co"># Vehicle &amp; feature formatting DFs</span></span>
+<span><span class="va">veh_format</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Before"</span>, <span class="st">"After"</span><span class="op">)</span>, <span class="co"># `trip_id_performed = plot_trips`</span></span>
+<span>                         shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">21</span>, <span class="fl">23</span><span class="op">)</span>,</span>
+<span>                         outline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">my_red</span>, <span class="va">my_blue</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">feat_format</span> <span class="op">&lt;-</span> <span class="va">plot_features</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Feature</span>, <span class="va">shape</span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="animated-map">Animated Map<a class="anchor" aria-label="anchor" href="#animated-map"></a>
+</h4>
+<p>We’ll begin with an animated map. This requires our trajectory object
+and route geometry.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create base animation</span></span>
+<span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_map</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Setup traj data</span></span>
+<span>  trajectory <span class="op">=</span> <span class="va">traj</span>, plot_trips <span class="op">=</span> <span class="va">plot_trips</span>, center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="co"># Spatial data</span></span>
+<span>  shape_geometry <span class="op">=</span> <span class="va">route_geom</span>, distance_lims <span class="op">=</span> <span class="va">plot_lims</span>, bbox_expand <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  <span class="co"># Route formatting</span></span>
+<span>  route_color <span class="op">=</span> <span class="st">"red4"</span>, route_width <span class="op">=</span> <span class="fl">2.7</span>,</span>
+<span>  <span class="co"># Vehicle formatting</span></span>
+<span>  veh_shape <span class="op">=</span> <span class="va">veh_format</span>, veh_outline <span class="op">=</span> <span class="va">veh_format</span>,</span>
+<span>  veh_stroke <span class="op">=</span> <span class="fl">2.5</span>, veh_alpha <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  <span class="co"># Feature formatting</span></span>
+<span>  feature_distances <span class="op">=</span> <span class="va">plot_features</span>,</span>
+<span>  feature_outline <span class="op">=</span> <span class="st">"grey50"</span>, feature_shape <span class="op">=</span> <span class="va">feat_format</span>,</span>
+<span>  feature_stroke <span class="op">=</span> <span class="fl">2</span>, feature_size <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Add plot formatting</span></span>
+<span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="va">map_anim</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Average trips: `plot_animated_map()`"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">map_anim</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Warning: package 'vembedr' was built under R version 4.4.3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'vembedr'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:lubridate':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     hms</span></span></code></pre>
+<div class="vembedr" align="center">
+<div>
+<iframe src="https://www.youtube.com/embed/K0hC5sWsAJQ" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+</div>
+</div>
+</div>
+<div class="section level4">
+<h4 id="animated-line">Animated Line<a class="anchor" aria-label="anchor" href="#animated-line"></a>
+</h4>
+<p>Next, we can make our animated line. This will look almost identical,
+but does not need the route geometry.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create base animation</span></span>
+<span><span class="va">line_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_map</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Setup traj data</span></span>
+<span>  trajectory <span class="op">=</span> <span class="va">traj</span>, plot_trips <span class="op">=</span> <span class="va">plot_trips</span>, center_vehicles <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="co"># Spatial data</span></span>
+<span>  distance_lims <span class="op">=</span> <span class="va">plot_lims</span>,</span>
+<span>  <span class="co"># Route formatting</span></span>
+<span>  route_color <span class="op">=</span> <span class="st">"red4"</span>, route_width <span class="op">=</span> <span class="fl">2.5</span>,</span>
+<span>  <span class="co"># Vehicle formatting</span></span>
+<span>  veh_shape <span class="op">=</span> <span class="va">veh_format</span>, veh_outline <span class="op">=</span> <span class="va">veh_format</span>,</span>
+<span>  veh_stroke <span class="op">=</span> <span class="fl">2.5</span>, veh_alpha <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  <span class="co"># Feature formatting</span></span>
+<span>  feature_distances <span class="op">=</span> <span class="va">plot_features</span>,</span>
+<span>  feature_outline <span class="op">=</span> <span class="st">"grey50"</span>, feature_shape <span class="op">=</span> <span class="va">feat_format</span>,</span>
+<span>  feature_stroke <span class="op">=</span> <span class="fl">2</span>, feature_size <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Add plot formatting</span></span>
+<span><span class="va">line_anim</span> <span class="op">&lt;-</span> <span class="va">line_anim</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Average trips: `plot_animated_line()`"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">line_anim</span></span></code></pre></div>
+<div class="vembedr" align="center">
+<div>
+<iframe src="https://www.youtube.com/embed/TvhfHtmI9XA" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="section level2">
