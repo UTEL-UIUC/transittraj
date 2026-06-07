@@ -1,4 +1,4 @@
-# Print function for AVL trajectories
+# Print an AVL trajectory object
 
 This function prints a one-line report for grouped or single trajectory
 objects. For a single trajectory, the trip ID will be printed. For

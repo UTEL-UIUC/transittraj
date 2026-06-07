@@ -1,4 +1,4 @@
-# Animate vehicle trajectory or AVL data.
+# Animate vehicle trajectory or AVL data
 
 These functions use the input trajectory object or TIDES AVL data to
 animate vehicles progressing along their routes. This can be visualized
@@ -111,7 +111,7 @@ plot_animated_map(
 - timestep:
 
   Optional. If `trajectory` is provided, the time interval, in seconds,
-  between interpolated observations to plot. Default is 5.
+  between interpolated observations to plot. Default is `5`.
 
 - distance_lims:
 
@@ -148,17 +148,18 @@ plot_animated_map(
 - route_width:
 
   Optional. A numeric, the linewidth of the route alignment. Default is
-  3.
+  `3`.
 
 - route_alpha:
 
-  Optional. A numeric, the opacity of the route alignment. Default is 1.
+  Optional. A numeric, the opacity of the route alignment. Default is
+  `1`.
 
 - feature_shape:
 
   Optional. A numeric specifying the `ggplot2` point shape, or a
   dataframe mapping an attribute in `feature_distances` to a shape. Must
-  contain column `shape`. Default is 21 (circle).
+  contain column `shape`. Default is `21` (circle).
 
 - feature_outline:
 
@@ -173,16 +174,16 @@ plot_animated_map(
 
 - feature_size:
 
-  Optional. A numeric, the size of the feature point. Default is 2.
+  Optional. A numeric, the size of the feature point. Default is `2`.
 
 - feature_stroke:
 
   Optional. A numeric, the linewidth of the feature point outline.
-  Default is 1.25.
+  Default is `1.25`.
 
 - feature_alpha:
 
-  Optional. A numeric, the opacity of the feature point. Default is 1.
+  Optional. A numeric, the opacity of the feature point. Default is `1`.
 
 - feature_legend:
 
@@ -194,7 +195,7 @@ plot_animated_map(
 
   Optional. A numeric specifying the `ggplot2` point shape, or a
   dataframe mapping an attribute in `distance_df` or `trajectory` to a
-  shape. Must contain column `shape`. Default is 23 (diamond).
+  shape. Must contain column `shape`. Default is `23` (diamond).
 
 - veh_outline:
 
@@ -209,16 +210,17 @@ plot_animated_map(
 
 - veh_size:
 
-  Optional. A numeric, the size of the vehicle point. Default is 3.
+  Optional. A numeric, the size of the vehicle point. Default is `3`.
 
 - veh_stroke:
 
   Optional. A numeric, the linewidth of the vehicle point outline.
-  Default is 2.
+  Default is `2`.
 
 - veh_alpha:
 
-  Optional. A numeric, the opacity of the vehicle point. Default is 0.8.
+  Optional. A numeric, the opacity of the vehicle point. Default is
+  `0.8`.
 
 - veh_legend:
 
@@ -234,11 +236,11 @@ plot_animated_map(
 
 - label_size:
 
-  Optional. The font size of the feature labels. Default is 3.
+  Optional. The font size of the feature labels. Default is `3`.
 
 - label_alpha:
 
-  Optional. The opacity of the feature labels. Default is 0.6.
+  Optional. The opacity of the feature labels. Default is `0.6`.
 
 - label_pos:
 
@@ -247,8 +249,8 @@ plot_animated_map(
 
   - `plot_animated_line()`: `"left"` or `"right"`. Default is `"left"`.
 
-  - `plot_animated_map()`: cardinal or intermediate direction (e.g.,
-    `"N"`, `"SW"`, etc.), or `"in"`/`"out"`. Default is `"out"`.
+  - `plot_animated_map()`: cardinal or intermediate compass direction
+    (e.g., `"N"`, `"SW"`, etc.), or `"in"`/`"out"`. Default is `"out"`.
 
 - shape_geometry:
 
@@ -264,7 +266,7 @@ plot_animated_map(
 - background_zoom:
 
   Optional. The zoom, relative to the "correct" level, for the
-  background basemap. Default is 0.
+  background basemap. Default is `0`.
 
 - bbox_expand:
 
@@ -280,7 +282,7 @@ A `gganimate` object.
 
 ### Input Trajectory Data
 
-There are two ways to provide data to these plotting functions:
+There are two ways to provide data for these plotting functions:
 
 - A single or grouped trajectory object. This will use the direct
   trajectory function at a resolution controlled by `timestep`. This is
@@ -321,9 +323,9 @@ available:
 - `plot_animated_line()`: Either `"left"` or `"right"` of the route
   line. The y-value will be that of the feature it describes.
 
-- `plot_animated_map()`. A cardinal or intermediate direction (`"N"`,
-  `"SE"`, etc.) relative to the feature point. Or, `"in"`/`"out"`,
-  relative to the center of the plot.
+- `plot_animated_map()`. A cardinal or intermediate compass direction
+  (`"N"`, `"SE"`, etc.) relative to the feature point. Or,
+  `"in"`/`"out"`, relative to the center of the plot.
 
 Note that for `plot_animated_map()` the `feature_distances` must still
 be linear distances, not a spatial datatype. To retrieve distance values
@@ -337,7 +339,7 @@ and
 Once a layer is created on a `ggplot2` object, it is difficult to change
 its formatting. As such, this function attempts to provide as much
 flexibility in formatting its layers as possible. The resulting plot
-includes three layers:
+includes four layers in the following order:
 
 - Route line, controlled by `route_color`, `route_width`, and
   `route_alpha`.
@@ -394,9 +396,7 @@ box is defined relative to the spatial range of `trajectory` or
 `distance_lims != NULL`) of the larger dimension (northing or easting)
 of the vehicle location bounding box. To customize, det `bbox_expand` to
 some numeric in the distance units of the `shape_geometry`'s spatial
-projection (e.g., meters if using a UTM projection).
-
-For examples and a more in-depth discussion, see (xyz).
+projection (e.g., meters if using a WGS UTM projection).
 
 ## Examples
 

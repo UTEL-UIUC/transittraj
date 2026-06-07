@@ -1,4 +1,4 @@
-# Save your animation at a desired quality.
+# Save an animation at a desired quality
 
 This function is a helepr for `gganimate`'s `anim_save()`, providing a
 simplified, though less feature-rich, version of these functions.
@@ -34,24 +34,26 @@ export_animation(
 - duration:
 
   Optional. A numeric, in seconds, representing the length of the
-  animation. Default is 30.
+  animation. Default is `30`.
 
 - fps:
 
-  Optional. The frames per second of the saved animation. Default is 10.
+  Optional. The frames per second of the saved animation. Default is
+  `10`.
 
 - width:
 
-  Optional. The width of the exported image, in inches. Default is 7.5
+  Optional. The width of the exported image, in inches. Default is `7.5`
 
 - height:
 
-  Optional. The height of the exported image, in inches. Default is 5.5.
+  Optional. The height of the exported image, in inches. Default is
+  `5.5`.
 
 - dpi:
 
   Optional. The resolution, in dots per inch, of the image. Default is
-  100.
+  `100`.
 
 ## Examples
 
@@ -77,7 +79,7 @@ anim_line <- plot_animated_line(trajectory = lineE_traj,
 # Create a place to store your file
 my_file_name <- tempfile("my_animation", fileext = ".gif")
 print(my_file_name)
-#> [1] "/tmp/Rtmp4Krynh/my_animation1e39cdd67df.gif"
+#> [1] "/tmp/RtmpbzhmvP/my_animation1e3f3e1b700e.gif"
 
 # Run function: save animation locally
 if (interactive()) {

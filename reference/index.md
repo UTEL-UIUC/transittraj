@@ -58,14 +58,14 @@ Functions to plot trajectories.
 
 - [`plot(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/plot.avltrajectory_group.md)
   [`plot(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/plot.avltrajectory_group.md)
-  : Quickly plots an AVL trajectory.
+  : Quickly plot an AVL trajectory
 - [`plot_animated_line()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md)
   [`plot_animated_map()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md)
-  : Animate vehicle trajectory or AVL data.
+  : Animate vehicle trajectory or AVL data
 - [`plot_trajectory()`](https://obrien-ben.github.io/transittraj/reference/plot_trajectory.md)
-  : Plot vehicle trajectories or AVL data.
+  : Plot vehicle trajectories or AVL data
 - [`export_animation()`](https://obrien-ben.github.io/transittraj/reference/export_animation.md)
-  : Save your animation at a desired quality.
+  : Save an animation at a desired quality
 
 ## Methods for Trajectories
 
@@ -75,10 +75,10 @@ Functions for using trajectories.
   : Interpolate time or distance points using AVL trajectories.
 - [`print(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)
   [`print(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/print.avltrajectory_group.md)
-  : Print function for AVL trajectories
+  : Print an AVL trajectory object
 - [`summary(`*`<avltrajectory_group>`*`)`](https://obrien-ben.github.io/transittraj/reference/summary.avltrajectory_group.md)
   [`summary(`*`<avltrajectory_single>`*`)`](https://obrien-ben.github.io/transittraj/reference/summary.avltrajectory_group.md)
-  : Summary function for AVL trajectories.
+  : Summarize an AVL trajectory object
 - [`get_trip_extremes()`](https://obrien-ben.github.io/transittraj/reference/get_trip_extremes.md)
   : Get the distance and time range of each trip in a trajectory object.
 

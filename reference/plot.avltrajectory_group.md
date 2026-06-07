@@ -1,4 +1,4 @@
-# Quickly plots an AVL trajectory.
+# Quickly plot an AVL trajectory
 
 This function generates a quick plot of a single or grouped trajectory
 object. Using the trajectory function, the entire trajectory will be
@@ -29,7 +29,7 @@ plot(x, ...)
 
 ## Value
 
-A ggplot2 object.
+A `ggplot2` object.
 
 ## Examples
 

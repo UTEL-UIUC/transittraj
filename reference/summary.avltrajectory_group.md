@@ -1,6 +1,6 @@
-# Summary function for AVL trajectories.
+# Summarize an AVL trajectory object
 
-This function prints a summary for grouped or single trajectory object
+This function prints a summary for grouped or single trajectory object.
 If the input is a single trajectory, the trip's ID and distance & time
 range will be printed. If the input is a grouped trajectory, the number
 of trips and the distance & time range across all trips will be printed.

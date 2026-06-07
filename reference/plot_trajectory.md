@@ -1,6 +1,6 @@
-# Plot vehicle trajectories or AVL data.
+# Plot vehicle trajectories or AVL data
 
-This function use the input trajectory object or TIDES AVL data to draw
+This function uses the input trajectory object or TIDES AVL data to draw
 a trajectory plot (i.e., linear distance versus time) for each trip.
 This function allows for the plotting of spatial features and labels for
 these features. A `ggplot2` object is returned, which can be further
@@ -58,7 +58,7 @@ plot_trajectory(
 - timestep:
 
   Optional. If `trajectory` is provided, the time interval, in seconds,
-  between interpolated observations to plot. Default is 5.
+  between interpolated observations to plot. Default is `5`.
 
 - distance_lims:
 
@@ -95,11 +95,12 @@ plot_trajectory(
 
 - traj_width:
 
-  Optional. A numeric, the width of the trajectory line. Default is 1.
+  Optional. A numeric, the width of the trajectory line. Default is `1`.
 
 - traj_alpha:
 
-  Optional. A numeric, the opacity of the trajectory line. Default is 1.
+  Optional. A numeric, the opacity of the trajectory line. Default is
+  `1`.
 
 - traj_legend:
 
@@ -121,11 +122,11 @@ plot_trajectory(
 
 - feature_width:
 
-  Optional. A numeric, the width of the feature line. Default is 0.8.
+  Optional. A numeric, the width of the feature line. Default is `0.8`.
 
 - feature_alpha:
 
-  Optional. A numeric, the opacity of the feature point. Default is 1.
+  Optional. A numeric, the opacity of the feature point. Default is `1`.
 
 - feature_legend:
 
@@ -141,11 +142,11 @@ plot_trajectory(
 
 - label_size:
 
-  Optional. The font size of the feature labels. Default is 3.
+  Optional. The font size of the feature labels. Default is `3`.
 
 - label_alpha:
 
-  Optional. The opacity of the feature labels. Default is 0.6.
+  Optional. The opacity of the feature labels. Default is `0.6`.
 
 - label_pos:
 
@@ -160,7 +161,7 @@ A `ggplot2` object.
 
 ### Input Trajectory Data
 
-There are two ways to provide data to these plotting functions:
+There are two ways to provide data to this function:
 
 - A single or grouped trajectory object. This will use the direct
   trajectory function at a resolution controlled by `timestep`. This is
@@ -232,9 +233,9 @@ dataframe, mapping them to attributes of the layer:
   the values in feature or trip column.
 
 Note that if inputting `trajectory`, instead of `distance_df`,
-`veh_shape` and `traj_color` and `traj_type` can only be mapped to
-`trip_id_performed`. If using `distance_df`, they may be mapped to any
-column in `distance_df` (e.g., vehicle or operator IDs).
+`traj_color` and `traj_type` can only be mapped to `trip_id_performed`.
+If using `distance_df`, they may be mapped to any column in
+`distance_df` (e.g., vehicle or operator IDs).
 
 ## Examples
 
