@@ -942,24 +942,22 @@ For both of these metric's, we'll want to know how many stops each trip made. We
 ``` {r}
 timestep = 0.1 # seconds
 
-# Predict 1: Get distances
+# Predict: get distances & speeds
 t_0 <- Sys.time()
 trip_dists <- predict(object = traj,
                       distance_lims = plot_sig_boundings$distance,
                       timestep = timestep,
-                      deriv = 0) %>%
-  rename(distance = interp)
+                      deriv = c(0, 1))
 t_f <- Sys.time()
 print(t_f - t_0)
 
-# Predict 2: Get speeds
-t_0 <- Sys.time()
-trip_speeds <- predict(object = traj,
-                       new_times = trip_dists,
-                       deriv = 1) %>%
-  rename(speed = interp)
-t_f <- Sys.time()
-print(t_f - t_0)
+# Pivot wider: give dist & speed separate columns
+trip_dists_piv <- trip_dists %>%
+  pivot_wider(id_cols = c("trip_id_performed", "event_timestamp"),
+              names_from = "deriv", names_glue = "interp_{.name}",
+              values_from = "interp") %>%
+  rename(distance = interp_0,
+         speed = interp_1)
 ```
 
 ``` {r, eval = FALSE}
@@ -972,7 +970,7 @@ stopped_rle_fun <- function(is_stopped, trip_id_performed) {
 }
 
 # RLE
-trip_stops <- trip_speeds %>%
+trip_stops <- trip_dists_piv %>%
   mutate(is_stopped = as.numeric(speed < stop_cutoff)) %>%
   arrange(trip_id_performed, event_timestamp) %>%
   group_by(trip_id_performed) %>%
