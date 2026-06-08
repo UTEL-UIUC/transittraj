@@ -4,6 +4,10 @@
 
 *Release: 6/7/2026*
 
+More substantial improvements to trajectory prediction via
+[`predict()`](https://rdrr.io/r/stats/predict.html), with some smaller
+bug fixes related to visualization.
+
 - Trajectory prediction:
 
   - Vectorization of `deriv` input for `new_times` and `distance_lims`/
@@ -56,7 +60,8 @@
     [`predict()`](https://rdrr.io/r/stats/predict.html) methods include
     `distance_lims` and `timestep`. These allow the user to interpolate
     at a specific time interval over a specific region of space. Read
-    more at `vignette("articles/intro-trajectories")`.
+    more at
+    [`vignette("articles/intro-trajectories-la")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories-la.md).
 
   - Substantial refactoring of internal functions to improve cleanliness
     and readability.
