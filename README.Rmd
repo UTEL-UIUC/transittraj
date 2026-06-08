@@ -41,7 +41,7 @@ knitr::include_graphics("man/figures/README-example2.png")
 ## Installation
 
 You can install the development version of `transittraj` from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/UTEL-UIUC/transittraj) with:
 
 ``` r
 # install.packages("pak")

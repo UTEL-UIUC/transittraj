@@ -2,6 +2,9 @@
 
 *Release: 6/7/2026*
 
+More substantial improvements to trajectory prediction via `predict()`, with
+some smaller bug fixes related to visualization.
+
 * Trajectory prediction:
 
   * Vectorization of `deriv` input for `new_times` and `distance_lims`/
@@ -43,7 +46,7 @@ single grouped trajectory object. Read more at `help(group_trajectories)`.
   * New input parameters for trajectory `predict()` methods include
   `distance_lims` and `timestep`. These allow the user to interpolate at a
   specific time interval over a specific region of space. Read more at
-  `vignette("articles/intro-trajectories")`.
+  `vignette("articles/intro-trajectories-la")`.
   
   * Substantial refactoring of internal functions to improve cleanliness
   and readability.

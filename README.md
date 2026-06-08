@@ -39,7 +39,7 @@ meeting the four requirements discussed below
 ## Installation
 
 You can install the development version of `transittraj` from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/UTEL-UIUC/transittraj) with:
 
 ``` r
 # install.packages("pak")
@@ -147,7 +147,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.3.9000,
+#>   Transit Vehicle Trajectories_. R package version 0.1.4,
 #>   https://utel-uiuc.github.io/transittraj/,
 #>   <https://github.com/UTEL-UIUC/transittraj>.
 #> 
@@ -157,7 +157,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.3.9000, https://utel-uiuc.github.io/transittraj/},
+#>     note = {R package version 0.1.4, https://utel-uiuc.github.io/transittraj/},
 #>     url = {https://github.com/UTEL-UIUC/transittraj},
 #>   }
 ```
