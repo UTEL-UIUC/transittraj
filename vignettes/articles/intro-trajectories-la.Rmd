@@ -23,6 +23,7 @@ Let's begin by loading the libraries we'll be using:
 library(transittraj)
 library(tidytransit)
 library(dplyr)
+library(tidyr)
 library(sf)
 library(ggplot2)
 ```

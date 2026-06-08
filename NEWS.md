@@ -1,6 +1,24 @@
-# transittraj 0.1.3.9000 (dev)
+# transittraj 0.1.4
 
-*Last update: 6/7/2026*
+*Release: 6/7/2026*
+
+* Trajectory prediction:
+
+  * Vectorization of `deriv` input for `new_times` and `distance_lims`/
+  `timestep` approach to prediction. Now, a `predict()` output with either
+  input type will include a column `deriv`, indicating the derivative that
+  row corresponds to. If a vector of length > 1 is input to `deriv` (e.g.,
+  `deriv = c(0, 1)`), then each time & trip pair will have multiple
+  rows (e.g., a row with `deriv = 0` and `deriv = 1`, where for each row,
+  `interp` will correspond to distance speed, respectively).
+
+  * By default, `predict()` will interpolate at the times or distances provided
+  for all trips in the trajectory object. Even if an input dataframe (via
+  `new_distances` or `new_times`) already had point-trip pairs (i.e., had a
+  `trip_id_performed` column), each row would be duplicated for all trips in
+  the trajectory object (#14). This has been changed, so that if
+  `new_distances` or `new_times` already has a column `trip_id_performed`,
+  that row will only be interpolated for that trip.
 
 * Visualization:
 
@@ -10,16 +28,6 @@
   
   * `plot_interactive_gtfs()`'s `color_palette` input is now case-insensitive
   when set to `"gtfs"` (#13).
-  
-* Trajectory prediction:
-
-  * By default, `predict()` will interpolate at the times or distances provided
-  for all trips in the trajectory object. Even if an input dataframe (via
-  `new_distances` or `new_times`) already had point-trip pairs (i.e., had a
-  `trip_id_performed` column), each row would be duplicated for all trips in
-  the trajectory object (#14). This has been changed, so that if
-  `new_distances` or `new_times` already has a column `trip_id_performed`,
-  that row will only be interpolated for that trip.
 
 # transittraj 0.1.3
 
