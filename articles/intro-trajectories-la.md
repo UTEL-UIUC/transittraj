@@ -102,13 +102,13 @@ lineE_time_interp <- predict(
 
 # Print full results
 print(lineE_time_interp)
-#>   event_timestamp trip_id_performed       interp
-#> 1      1779887000          63383915    83.127539
-#> 2      1779887000          63384093 28716.983901
-#> 3      1779887500          63383915  3183.861194
-#> 4      1779887500          63383917     7.874249
-#> 5      1779887500          63383991    79.708636
-#> 6      1779887500          63384093 34439.361240
+#>   event_timestamp trip_id_performed deriv       interp
+#> 1      1779887000          63383915     0    83.127539
+#> 2      1779887000          63384093     0 28716.983901
+#> 3      1779887500          63383915     0  3183.861194
+#> 4      1779887500          63383917     0     7.874249
+#> 5      1779887500          63383991     0    79.708636
+#> 6      1779887500          63384093     0 34439.361240
 ```
 
 Here, `interp` will be the distance in meters from the route’s
@@ -133,13 +133,15 @@ lineE_speed_interp <- predict(
 
 # Print results
 print(lineE_speed_interp)
-#>   event_timestamp trip_id_performed       interp
-#> 1      1779887000          63383915 3.546847e-06
-#> 2      1779887000          63384093 3.059247e+00
-#> 3      1779887500          63383915 1.635106e+01
-#> 4      1779887500          63383917 5.165789e-05
-#> 5      1779887500          63383991 8.797135e-06
-#> 6      1779887500          63384093 1.035537e+01
+#> # A tibble: 6 × 4
+#>   event_timestamp trip_id_performed deriv      interp
+#>             <dbl> <chr>             <dbl>       <dbl>
+#> 1      1779887000 63383915              1  0.00000355
+#> 2      1779887000 63384093              1  3.06      
+#> 3      1779887500 63383915              1 16.4       
+#> 4      1779887500 63383917              1  0.0000517 
+#> 5      1779887500 63383991              1  0.00000880
+#> 6      1779887500 63384093              1 10.4
 ```
 
 Here, `interp` will be the speed in meters per second. Finding speeds
@@ -245,7 +247,7 @@ print(downtown_lims)
 
 Next, we can put this into
 [`predict()`](https://rdrr.io/r/stats/predict.html) using the
-`distance_lims` parameter, alongside a `timestep` of 1 second:
+`distance_lims` parameter, alongside a `timestep` of 2 second:
 
 ``` r
 
@@ -258,22 +260,21 @@ lineE_downtown_interp <- predict(
 
 # Print header
 head(lineE_downtown_interp)
-#> # A tibble: 6 × 3
-#>   trip_id_performed event_timestamp interp
-#>   <chr>                       <dbl>  <dbl>
-#> 1 63383915              1779889926. 23454.
-#> 2 63383915              1779889928. 23459.
-#> 3 63383915              1779889930. 23466.
-#> 4 63383915              1779889932. 23474.
-#> 5 63383915              1779889934. 23483.
-#> 6 63383915              1779889936. 23493.
+#> # A tibble: 6 × 4
+#>   trip_id_performed event_timestamp deriv interp
+#>   <chr>                       <dbl> <dbl>  <dbl>
+#> 1 63383915              1779889926.     0 23454.
+#> 2 63383915              1779889928.     0 23459.
+#> 3 63383915              1779889930.     0 23466.
+#> 4 63383915              1779889932.     0 23474.
+#> 5 63383915              1779889934.     0 23483.
+#> 6 63383915              1779889936.     0 23493.
 ```
 
 We can see that, for the printed trip, the first timepoint occurs at the
-beginning of `downtown_lims`, then `event_timestamp` increments 10
-seconds per row afterwards. The `interp` column is the distance at each
-time (you can also set `deriv` here). To better understand see what this
-did, we’ll generate a plot of these generated points. Below, we first
+beginning of `downtown_lims`, then `event_timestamp` increments 2
+seconds per row afterwards. xxx. To better understand see what this did,
+we’ll generate a plot of these generated points. Below, we first
 “center” each trip to start at 0 seconds, then plot point colored by
 trip:
 

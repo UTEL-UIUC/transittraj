@@ -56,9 +56,10 @@ predict(
 
 - deriv:
 
-  Optional. The derivative with which to calculate at. May only be set
-  if `new_times` or `distance_lims`/`timestep` is provided, and not if
-  `new_distances` is provided. Default is `0` (i.e., position).
+  Optional. The vector of numeric derivative degrees to calculate at.
+  May only be set if `new_times` or `distance_lims`/`timestep` is
+  provided, and not if `new_distances` is provided. Default is `0`
+  (i.e., position).
 
 - trips:
 
@@ -75,7 +76,10 @@ predict(
 
 The input dataframe, with an additional column `interp` of the
 interpolated values requested, and an additional `trip_id_performed`
-column will all trips for which that point is within range.
+column will all trips for which that point is within range. If
+`new_times` or `distance_lims`/`timestep` are used, a column `deriv`
+will also be included, indicating which derivative degree each
+interpolated row corresponds to.
 
 ## Details
 
@@ -198,30 +202,32 @@ lineE_traj <- new_transittraj_data("get_trajectory_fun")
 interp_dists <- predict(object = lineE_traj,
                         new_times = my_times)
 dim(interp_dists)
-#> [1] 115   3
+#> [1] 115   4
 head(interp_dists)
-#>   event_timestamp trip_id_performed       interp
-#> 1      1779890000          63383915 24448.633529
-#> 2      1779890000          63383917 19442.787256
-#> 3      1779890000          63383949     5.021461
-#> 4      1779890000          63383991 22745.011225
-#> 5      1779890000          63384002  8811.392101
-#> 6      1779890000          63384022   487.996271
+#>   event_timestamp trip_id_performed deriv       interp
+#> 1      1779890000          63383915     0 24448.633529
+#> 2      1779890000          63383917     0 19442.787256
+#> 3      1779890000          63383949     0     5.021461
+#> 4      1779890000          63383991     0 22745.011225
+#> 5      1779890000          63384002     0  8811.392101
+#> 6      1779890000          63384022     0   487.996271
 
 # Run function: get speeds from times
 interp_speeds <- predict(object = lineE_traj,
                          new_times = my_times,
                          deriv = 1)
 dim(interp_speeds)
-#> [1] 115   3
+#> [1] 115   4
 head(interp_speeds)
-#>   event_timestamp trip_id_performed       interp
-#> 1      1779890000          63383915 1.627226e+01
-#> 2      1779890000          63383917 8.896095e+00
-#> 3      1779890000          63383949 5.714286e-05
-#> 4      1779890000          63383991 2.101088e+00
-#> 5      1779890000          63384002 1.734515e+01
-#> 6      1779890000          63384022 1.519963e+01
+#> # A tibble: 6 × 4
+#>   event_timestamp trip_id_performed deriv     interp
+#>             <dbl> <chr>             <dbl>      <dbl>
+#> 1      1779890000 63383915              1 16.3      
+#> 2      1779890000 63383917              1  8.90     
+#> 3      1779890000 63383949              1  0.0000571
+#> 4      1779890000 63383991              1  2.10     
+#> 5      1779890000 63384002              1 17.3      
+#> 6      1779890000 63384022              1 15.2      
 
 # Run function: get times from distances
 interp_times <- predict(object = lineE_traj,
@@ -242,15 +248,32 @@ interp_time_dist_pairs <- predict(object = lineE_traj,
                                   distance_lims = my_distance_lims,
                                   timestep = my_timestep)
 dim(interp_time_dist_pairs)
-#> [1] 10  3
+#> [1] 10  4
 head(interp_time_dist_pairs)
-#> # A tibble: 6 × 3
-#>   trip_id_performed event_timestamp interp
-#>   <chr>                       <dbl>  <dbl>
-#> 1 63383915              1779887157.   500.
-#> 2 63383917              1779888133.   500.
-#> 3 63383949              1779890607.   500.
-#> 4 63383991              1779887611.   500.
-#> 5 63384002              1779889141.   500.
-#> 6 63384022              1779890001.   500.
+#> # A tibble: 6 × 4
+#>   trip_id_performed event_timestamp deriv interp
+#>   <chr>                       <dbl> <dbl>  <dbl>
+#> 1 63383915              1779887157.     0   500.
+#> 2 63383917              1779888133.     0   500.
+#> 3 63383949              1779890607.     0   500.
+#> 4 63383991              1779887611.     0   500.
+#> 5 63384002              1779889141.     0   500.
+#> 6 63384022              1779890001.     0   500.
+
+# Run function: vectorized derivatives
+interp_vec <- predict(object = lineE_traj,
+                      new_times = my_times,
+                      deriv = c(0, 1, 2))
+dim(interp_vec)
+#> [1] 345   4
+head(interp_vec)
+#> # A tibble: 6 × 4
+#>   event_timestamp trip_id_performed deriv    interp
+#>             <dbl> <chr>             <dbl>     <dbl>
+#> 1      1779890000 63383915              0 24449.   
+#> 2      1779890000 63383915              1    16.3  
+#> 3      1779890000 63383915              2    -0.559
+#> 4      1779890000 63383917              0 19443.   
+#> 5      1779890000 63383917              1     8.90 
+#> 6      1779890000 63383917              2    -0.469
 ```

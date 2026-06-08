@@ -10,7 +10,8 @@ predict_traj_setup_dist_lims(
   trajectory,
   trip_extremes,
   distance_lims,
-  timestep
+  timestep,
+  deriv
 )
 ```
 
@@ -31,6 +32,10 @@ predict_traj_setup_dist_lims(
 - timestep:
 
   time interval for interpolation
+
+- deriv:
+
+  vector of numeric derivs to interpolate at
 
 ## Value
 

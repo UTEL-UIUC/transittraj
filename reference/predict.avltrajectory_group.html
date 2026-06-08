@@ -109,9 +109,10 @@ provided, <code>distance_lims</code> must also be provided. Default is <code>NUL
 
 
 <dt id="arg-deriv">deriv<a class="anchor" aria-label="anchor" href="#arg-deriv"></a></dt>
-<dd><p>Optional. The derivative with which to calculate at. May
-only be set if <code>new_times</code> or <code>distance_lims</code>/<code>timestep</code> is provided, and
-not if <code>new_distances</code> is provided. Default is <code>0</code> (i.e., position).</p></dd>
+<dd><p>Optional. The vector of numeric derivative degrees to
+calculate at. May only be set if <code>new_times</code> or <code>distance_lims</code>/<code>timestep</code>
+is provided, and not if <code>new_distances</code> is provided. Default is <code>0</code>
+(i.e., position).</p></dd>
 
 
 <dt id="arg-trips">trips<a class="anchor" aria-label="anchor" href="#arg-trips"></a></dt>
@@ -129,7 +130,10 @@ Default is <code>NULL</code>, which will use all trips found in the trajectory o
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The input dataframe, with an additional column <code>interp</code> of the
 interpolated values requested, and an additional <code>trip_id_performed</code>
-column will all trips for which that point is within range.</p>
+column will all trips for which that point is within range. If <code>new_times</code>
+or <code>distance_lims</code>/<code>timestep</code> are used, a column <code>deriv</code> will also be
+included, indicating which derivative degree each interpolated row
+corresponds to.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -263,30 +267,32 @@ single function for that trip.</p>
 <span class="r-in"><span><span class="va">interp_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
 <span class="r-in"><span>                        new_times <span class="op">=</span> <span class="va">my_times</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">interp_dists</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 115   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 115   4</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp_dists</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   event_timestamp trip_id_performed       interp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1779890000          63383915 24448.633529</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1779890000          63383917 19442.787256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1779890000          63383949     5.021461</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1779890000          63383991 22745.011225</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      1779890000          63384002  8811.392101</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1779890000          63384022   487.996271</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   event_timestamp trip_id_performed deriv       interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1779890000          63383915     0 24448.633529</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1779890000          63383917     0 19442.787256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1779890000          63383949     0     5.021461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1779890000          63383991     0 22745.011225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      1779890000          63384002     0  8811.392101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1779890000          63384022     0   487.996271</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: get speeds from times</span></span></span>
 <span class="r-in"><span><span class="va">interp_speeds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
 <span class="r-in"><span>                         new_times <span class="op">=</span> <span class="va">my_times</span>,</span></span>
 <span class="r-in"><span>                         deriv <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">interp_speeds</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 115   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 115   4</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp_speeds</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   event_timestamp trip_id_performed       interp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1779890000          63383915 1.627226e+01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1779890000          63383917 8.896095e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1779890000          63383949 5.714286e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1779890000          63383991 2.101088e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      1779890000          63384002 1.734515e+01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1779890000          63384022 1.519963e+01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   event_timestamp trip_id_performed deriv     interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383915              1 16.3      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383917              1  8.90     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383949              1  0.000<span style="text-decoration: underline;">057</span>1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383991              1  2.10     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63384002              1 17.3      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63384022              1 15.2      </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run function: get times from distances</span></span></span>
 <span class="r-in"><span><span class="va">interp_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
@@ -307,17 +313,34 @@ single function for that trip.</p>
 <span class="r-in"><span>                                  distance_lims <span class="op">=</span> <span class="va">my_distance_lims</span>,</span></span>
 <span class="r-in"><span>                                  timestep <span class="op">=</span> <span class="va">my_timestep</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">interp_time_dist_pairs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10  4</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp_time_dist_pairs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   trip_id_performed event_timestamp interp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>157.   500.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 63383917              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">888</span>133.   500.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 63383949              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>607.   500.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 63383991              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>611.   500.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 63384002              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>141.   500.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 63384022              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>001.   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trip_id_performed event_timestamp deriv interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>157.     0   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 63383917              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">888</span>133.     0   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 63383949              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>607.     0   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 63383991              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>611.     0   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 63384002              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>141.     0   500.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 63384022              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>001.     0   500.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run function: vectorized derivatives</span></span></span>
+<span class="r-in"><span><span class="va">interp_vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
+<span class="r-in"><span>                      new_times <span class="op">=</span> <span class="va">my_times</span>,</span></span>
+<span class="r-in"><span>                      deriv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">interp_vec</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 345   4</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp_vec</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   event_timestamp trip_id_performed deriv    interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383915              0 <span style="text-decoration: underline;">24</span>449.   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383915              1    16.3  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383915              2    -<span style="color: #BB0000;">0.559</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383917              0 <span style="text-decoration: underline;">19</span>443.   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383917              1     8.90 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">890</span>000 63383917              2    -<span style="color: #BB0000;">0.469</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

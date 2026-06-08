@@ -43,7 +43,7 @@ predict_traj_input_validation(
 
 - deriv:
 
-  User-requested derivative
+  vector of numeric derivs to interpolate at
 
 - max_deriv:
 

@@ -6,7 +6,7 @@ times
 ## Usage
 
 ``` r
-predict_traj_setup_new_times(new_times, trip_extremes)
+predict_traj_setup_new_times(new_times, trip_extremes, deriv)
 ```
 
 ## Arguments
@@ -18,6 +18,10 @@ predict_traj_setup_new_times(new_times, trip_extremes)
 - trip_extremes:
 
   DF of trip time & distance extremes
+
+- deriv:
+
+  vector of numeric derivs to interpolate at
 
 ## Value
 

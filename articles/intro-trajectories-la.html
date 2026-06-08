@@ -164,13 +164,13 @@ in time. We can do that by providing <code>new_times</code> to
 <span></span>
 <span><span class="co"># Print full results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_time_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
-<span><span class="co">#&gt; 1      1779887000          63383915    83.127539</span></span>
-<span><span class="co">#&gt; 2      1779887000          63384093 28716.983901</span></span>
-<span><span class="co">#&gt; 3      1779887500          63383915  3183.861194</span></span>
-<span><span class="co">#&gt; 4      1779887500          63383917     7.874249</span></span>
-<span><span class="co">#&gt; 5      1779887500          63383991    79.708636</span></span>
-<span><span class="co">#&gt; 6      1779887500          63384093 34439.361240</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed deriv       interp</span></span>
+<span><span class="co">#&gt; 1      1779887000          63383915     0    83.127539</span></span>
+<span><span class="co">#&gt; 2      1779887000          63384093     0 28716.983901</span></span>
+<span><span class="co">#&gt; 3      1779887500          63383915     0  3183.861194</span></span>
+<span><span class="co">#&gt; 4      1779887500          63383917     0     7.874249</span></span>
+<span><span class="co">#&gt; 5      1779887500          63383991     0    79.708636</span></span>
+<span><span class="co">#&gt; 6      1779887500          63384093     0 34439.361240</span></span></code></pre></div>
 <p>Here, <code>interp</code> will be the distance in meters from the
 route’s beginning. You’ll notice that, even though we have 11 trips,
 there were only two to four distance for each timepoint. This is because
@@ -189,13 +189,15 @@ in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">pr
 <span></span>
 <span><span class="co"># Print results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_speed_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_timestamp trip_id_performed       interp</span></span>
-<span><span class="co">#&gt; 1      1779887000          63383915 3.546847e-06</span></span>
-<span><span class="co">#&gt; 2      1779887000          63384093 3.059247e+00</span></span>
-<span><span class="co">#&gt; 3      1779887500          63383915 1.635106e+01</span></span>
-<span><span class="co">#&gt; 4      1779887500          63383917 5.165789e-05</span></span>
-<span><span class="co">#&gt; 5      1779887500          63383991 8.797135e-06</span></span>
-<span><span class="co">#&gt; 6      1779887500          63384093 1.035537e+01</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   event_timestamp trip_id_performed deriv      interp</span></span>
+<span><span class="co">#&gt;             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>000 63383915              1  0.000<span style="text-decoration: underline;">003</span>55</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>000 63384093              1  3.06      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>500 63383915              1 16.4       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>500 63383917              1  0.000<span style="text-decoration: underline;">051</span>7 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>500 63383991              1  0.000<span style="text-decoration: underline;">008</span>80</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>      <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">887</span>500 63384093              1 10.4</span></span></code></pre></div>
 <p>Here, <code>interp</code> will be the speed in meters per second.
 Finding speeds requires starting from time values; we cannot get speeds
 from distance values.</p>
@@ -289,7 +291,7 @@ and last stop Line E shares with Line A:</p>
 <span><span class="co">#&gt; [1] 23453.64 26944.68</span></span></code></pre></div>
 <p>Next, we can put this into <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> using the
 <code>distance_lims</code> parameter, alongside a <code>timestep</code>
-of 1 second:</p>
+of 2 second:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run interpolating function</span></span>
 <span><span class="va">lineE_downtown_interp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span></span>
@@ -300,23 +302,21 @@ of 1 second:</p>
 <span></span>
 <span><span class="co"># Print header</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_downtown_interp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
-<span><span class="co">#&gt;   trip_id_performed event_timestamp interp</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>926. <span style="text-decoration: underline;">23</span>454.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>928. <span style="text-decoration: underline;">23</span>459.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>930. <span style="text-decoration: underline;">23</span>466.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>932. <span style="text-decoration: underline;">23</span>474.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>934. <span style="text-decoration: underline;">23</span>483.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>936. <span style="text-decoration: underline;">23</span>493.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   trip_id_performed event_timestamp deriv interp</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>926.     0 <span style="text-decoration: underline;">23</span>454.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>928.     0 <span style="text-decoration: underline;">23</span>459.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>930.     0 <span style="text-decoration: underline;">23</span>466.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>932.     0 <span style="text-decoration: underline;">23</span>474.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>934.     0 <span style="text-decoration: underline;">23</span>483.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 63383915              <span style="text-decoration: underline;">1</span>779<span style="text-decoration: underline;">889</span>936.     0 <span style="text-decoration: underline;">23</span>493.</span></span></code></pre></div>
 <p>We can see that, for the printed trip, the first timepoint occurs at
 the beginning of <code>downtown_lims</code>, then
-<code>event_timestamp</code> increments 10 seconds per row afterwards.
-The <code>interp</code> column is the distance at each time (you can
-also set <code>deriv</code> here). To better understand see what this
-did, we’ll generate a plot of these generated points. Below, we first
-“center” each trip to start at 0 seconds, then plot point colored by
-trip:</p>
+<code>event_timestamp</code> increments 2 seconds per row afterwards.
+xxx. To better understand see what this did, we’ll generate a plot of
+these generated points. Below, we first “center” each trip to start at 0
+seconds, then plot point colored by trip:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># "Center" all trips to start at 0 time</span></span>
 <span><span class="va">lineE_downtown_centered</span> <span class="op">&lt;-</span> <span class="va">lineE_downtown_interp</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
