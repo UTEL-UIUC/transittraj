@@ -252,7 +252,7 @@ print(downtown_lims)
 ```
 
 Next, we can put this into `predict()` using the `distance_lims` parameter,
-alongside a `timestep` of 1 second:
+alongside a `timestep` of 2 second:
 
 ``` {r}
 # Run interpolating function
@@ -267,9 +267,9 @@ head(lineE_downtown_interp)
 ```
 
 We can see that, for the printed trip, the first timepoint occurs at the
-beginning of `downtown_lims`, then `event_timestamp` increments 10 seconds per
-row afterwards. The `interp` column is the distance at each time (you can
-also set `deriv` here). To better understand see what this did, we'll
+beginning of `downtown_lims`, then `event_timestamp` increments 2 seconds per
+row afterwards. xxx.
+To better understand see what this did, we'll
 generate a plot of these generated points. Below, we first "center" each
 trip to start at 0 seconds, then plot point colored by trip:
 

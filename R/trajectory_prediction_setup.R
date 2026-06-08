@@ -10,7 +10,7 @@
 #' @param distance_lims A vector of min, max distance, or `NULL`
 #' @param timestep An integer for interpolation timestep, or `NULL`
 #' @param has_inv Boolean, does traj have inv fun?
-#' @param deriv User-requested derivative
+#' @param deriv vector of numeric derivs to interpolate at
 #' @param max_deriv Maximum derivative supported by traj fun
 #' @return Throws error only if not all OK
 #' @keywords internal
@@ -50,19 +50,19 @@ predict_traj_input_validation <- function(new_times, new_distances,
 
   # --- Check Derivative ---
   # Check that derivative is not provided with inv fun
-  if ((deriv > 0) & !is.null(new_distances)) {
+  if ((max(deriv) > 0) & !is.null(new_distances)) {
     rlang::abort(message = "Derivative not allowed for inverse function. Considering finding timepoints first, then derivatives at timepoints.",
                  class = "error_trajpredict_input")
   }
   # If user-requested derivative is larger than function's maximum
-  if (deriv > max_deriv) {
+  if (max(deriv) > max_deriv) {
     rlang::abort(message = paste("Input deriv is larger than trajectory function's maximum (",
                                  max_deriv, ").",
                                  sep = ""),
                  class = "error_trajpredict_input")
   }
   # If user-requested derivative is less than 0
-  if (deriv < 0) {
+  if (min(deriv) < 0) {
     rlang::abort(message = paste("Negative deriv not allowed. Please enter value between 0 and ",
                                  max_deriv, ".",
                                  sep = ""),
@@ -77,10 +77,12 @@ predict_traj_input_validation <- function(new_times, new_distances,
 #' @param trip_extremes DF of trip time & distance extremes
 #' @param distance_lims a vector of (min, max) distance
 #' @param timestep time interval for interpolation
+#' @param deriv vector of numeric derivs to interpolate at
 #' @return DF of trip IDs & times to interpolate at
 #' @keywords internal
 predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
-                                         distance_lims, timestep) {
+                                         distance_lims, timestep,
+                                         deriv) {
 
   # Get observed trip limits & user-defined limits
   trip_extremes_filt <- trip_extremes %>%
@@ -130,7 +132,14 @@ predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
     dplyr::select(-c(max_time, min_time)) %>%
     dplyr::ungroup()
 
-  return(interp_times)
+  # Uncount for derivatives
+  num_derivs <- length(deriv)
+  num_new_points <- dim(interp_times)[1]
+  interp_deriv_times <- interp_times %>%
+    tidyr::uncount(weight = num_derivs) %>%
+    dplyr::mutate(deriv = rep(deriv, num_new_points))
+
+  return(interp_deriv_times)
 }
 
 #' Internal function to set up dataframe for interpolating distances
@@ -138,9 +147,11 @@ predict_traj_setup_dist_lims <- function(trajectory, trip_extremes,
 #'
 #' @param new_times new event_timestamps to interpolate at
 #' @param trip_extremes DF of trip time & distance extremes
+#' @param deriv vector of numeric derivs to interpolate at
 #' @return DF of trip IDs & times to interpolate at
 #' @keywords internal
-predict_traj_setup_new_times <- function(new_times, trip_extremes) {
+predict_traj_setup_new_times <- function(new_times, trip_extremes,
+                                         deriv) {
 
   # --- Validate Input ---
   if (is.data.frame(new_times)) {
@@ -192,9 +203,16 @@ predict_traj_setup_new_times <- function(new_times, trip_extremes) {
   if (dim(new_times_trips)[1] == 0) {
     rlang::abort(message = "No trips within range of new_times.",
                  class = "error_trajpredict_range")
-  } else {
-    return(new_times_trips)
   }
+
+  # Add deriv column -- uncount for each deriv requested
+  num_derivs <- length(deriv)
+  num_new_points <- dim(new_times_trips)[1]
+  new_times_trips_derivs <- new_times_trips %>%
+    tidyr::uncount(weight = num_derivs) %>%
+    dplyr::mutate(deriv = rep(deriv, num_new_points))
+
+  return(new_times_trips_derivs)
 }
 
 #' Internal function to set up dataframe for interpolating times

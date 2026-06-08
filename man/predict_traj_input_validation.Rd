@@ -25,7 +25,7 @@ predict_traj_input_validation(
 
 \item{has_inv}{Boolean, does traj have inv fun?}
 
-\item{deriv}{User-requested derivative}
+\item{deriv}{vector of numeric derivs to interpolate at}
 
 \item{max_deriv}{Maximum derivative supported by traj fun}
 }

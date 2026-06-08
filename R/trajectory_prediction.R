@@ -178,9 +178,10 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 #' @param timestep Optional. A single numeric indicating the time interval
 #' between successive interpolating steps when defining `distance_lims`. If
 #' provided, `distance_lims` must also be provided. Default is `NULL`.
-#' @param deriv Optional. The derivative with which to calculate at. May
-#' only be set if `new_times` or `distance_lims`/`timestep` is provided, and
-#' not if `new_distances` is provided. Default is `0` (i.e., position).
+#' @param deriv Optional. The vector of numeric derivative degrees to
+#' calculate at. May only be set if `new_times` or `distance_lims`/`timestep`
+#' is provided, and not if `new_distances` is provided. Default is `0`
+#' (i.e., position).
 #' @param trips Optional. A vector of `trip_id_performed`s to interpolate for.
 #' Default is `NULL`, which will use all trips found in the trajectory object
 #' (or, if include, in the `trip_id_performed` column of `new_times` or
@@ -188,7 +189,10 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 #' @param ... Other parameters (not used).
 #' @return The input dataframe, with an additional column `interp` of the
 #' interpolated values requested, and an additional `trip_id_performed`
-#' column will all trips for which that point is within range.
+#' column will all trips for which that point is within range. If `new_times`
+#' or `distance_lims`/`timestep` are used, a column `deriv` will also be
+#' included, indicating which derivative degree each interpolated row
+#' corresponds to.
 #' @export
 #' @examples
 #' # Set my parameters
@@ -229,6 +233,13 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 #'                                   timestep = my_timestep)
 #' dim(interp_time_dist_pairs)
 #' head(interp_time_dist_pairs)
+#'
+#' # Run function: vectorized derivatives
+#' interp_vec <- predict(object = lineE_traj,
+#'                       new_times = my_times,
+#'                       deriv = c(0, 1, 2))
+#' dim(interp_vec)
+#' head(interp_vec)
 predict.avltrajectory_group <- function(object, new_times = NULL, new_distances = NULL,
                                         distance_lims = NULL, timestep = NULL,
                                         deriv = 0, trips = NULL, ...) {
@@ -255,10 +266,10 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
   # Find correct function to use
   if (!is.null(new_times)) {
     new_times_trips <- predict_traj_setup_new_times(trip_extremes = trip_extremes,
-                                                    new_times = new_times)
+                                                    new_times = new_times,
+                                                    deriv = deriv)
     interp <- interpolate_distances(trajectory = object,
-                                    new_times_trips = new_times_trips,
-                                    deriv = deriv)
+                                    new_times_trips = new_times_trips)
   }
   if (!is.null(new_distances)) {
     new_dist_trips <- predict_traj_setup_new_dists(trip_extremes = trip_extremes,
@@ -270,10 +281,10 @@ predict.avltrajectory_group <- function(object, new_times = NULL, new_distances 
     new_times_trips <- predict_traj_setup_dist_lims(trajectory = object,
                                                     trip_extremes = trip_extremes,
                                                     distance_lims = distance_lims,
-                                                    timestep = timestep)
+                                                    timestep = timestep,
+                                                    deriv = deriv)
     interp <- interpolate_distances(trajectory = object,
-                                    new_times_trips = new_times_trips,
-                                    deriv = deriv)
+                                    new_times_trips = new_times_trips)
   }
 
   return(interp)

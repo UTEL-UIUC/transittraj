@@ -47,7 +47,7 @@ utils::globalVariables(c(
   "required_field", "fc_alpha", "fc_beta", "sum_sq", "is_fc_speed",
   "field_type_ok", "field_present", "x_spatial", "y_spatial", "stp_time",
   "point_geom", "distance_lims", "excep_id", "sched_id", "wkday",
-  "user_min_dist", "user_max_dist",
+  "user_min_dist", "user_max_dist", "deriv",
   # Exported datasets
   "lacmta_avl", "lacmta_gtfs"
   ))

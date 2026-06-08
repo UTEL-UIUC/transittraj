@@ -36,9 +36,10 @@ bounds over which to interpolate at a given timestep. If provided,
 between successive interpolating steps when defining \code{distance_lims}. If
 provided, \code{distance_lims} must also be provided. Default is \code{NULL}.}
 
-\item{deriv}{Optional. The derivative with which to calculate at. May
-only be set if \code{new_times} or \code{distance_lims}/\code{timestep} is provided, and
-not if \code{new_distances} is provided. Default is \code{0} (i.e., position).}
+\item{deriv}{Optional. The vector of numeric derivative degrees to
+calculate at. May only be set if \code{new_times} or \code{distance_lims}/\code{timestep}
+is provided, and not if \code{new_distances} is provided. Default is \code{0}
+(i.e., position).}
 
 \item{trips}{Optional. A vector of \code{trip_id_performed}s to interpolate for.
 Default is \code{NULL}, which will use all trips found in the trajectory object
@@ -50,7 +51,10 @@ Default is \code{NULL}, which will use all trips found in the trajectory object
 \value{
 The input dataframe, with an additional column \code{interp} of the
 interpolated values requested, and an additional \code{trip_id_performed}
-column will all trips for which that point is within range.
+column will all trips for which that point is within range. If \code{new_times}
+or \code{distance_lims}/\code{timestep} are used, a column \code{deriv} will also be
+included, indicating which derivative degree each interpolated row
+corresponds to.
 }
 \description{
 This function uses a fit interpolating curve stored in a grouped or single
@@ -201,4 +205,11 @@ interp_time_dist_pairs <- predict(object = lineE_traj,
                                   timestep = my_timestep)
 dim(interp_time_dist_pairs)
 head(interp_time_dist_pairs)
+
+# Run function: vectorized derivatives
+interp_vec <- predict(object = lineE_traj,
+                      new_times = my_times,
+                      deriv = c(0, 1, 2))
+dim(interp_vec)
+head(interp_vec)
 }

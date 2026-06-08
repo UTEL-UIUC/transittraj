@@ -9,7 +9,8 @@ predict_traj_setup_dist_lims(
   trajectory,
   trip_extremes,
   distance_lims,
-  timestep
+  timestep,
+  deriv
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ predict_traj_setup_dist_lims(
 \item{distance_lims}{a vector of (min, max) distance}
 
 \item{timestep}{time interval for interpolation}
+
+\item{deriv}{vector of numeric derivs to interpolate at}
 }
 \value{
 DF of trip IDs & times to interpolate at
