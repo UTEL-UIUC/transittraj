@@ -16,6 +16,7 @@ Let’s begin by loading the libraries we’ll be using:
 library(transittraj)
 library(tidytransit)
 library(dplyr)
+library(tidyr)
 library(sf)
 library(ggplot2)
 ```
@@ -112,8 +113,10 @@ print(lineE_time_interp)
 ```
 
 Here, `interp` will be the distance in meters from the route’s
-beginning. You’ll notice that, even though we have 11 trips, there were
-only two to four distance for each timepoint. This is because
+beginning, as indicated by the `deriv` column, which tells us the
+derivative degree each row corresponds to. You’ll notice that, even
+though we have 11 trips, there were only two to four distances for each
+timepoint. This is because
 [`predict()`](https://rdrr.io/r/stats/predict.html) will only
 interpolate a distance value for trips that were actually running at
 that point in time.
@@ -146,7 +149,37 @@ print(lineE_speed_interp)
 
 Here, `interp` will be the speed in meters per second. Finding speeds
 requires starting from time values; we cannot get speeds from distance
-values.
+values. Finally, if so desired, the input to `deriv` can be vectorized,
+allowing you to calculate both position and speed (and acceleration, and
+jerk!) with one function call:
+
+``` r
+
+# Run interpolating function
+lineE_vec_interp <- predict(
+  object = lineE_traj,
+  new_times = c(1779887000, 1779887500),
+  deriv = c(0, 1)
+)
+
+# Print results
+print(lineE_vec_interp)
+#> # A tibble: 12 × 4
+#>    event_timestamp trip_id_performed deriv  interp
+#>              <dbl> <chr>             <dbl>   <dbl>
+#>  1      1779887000 63383915              0 8.31e+1
+#>  2      1779887000 63383915              1 3.55e-6
+#>  3      1779887000 63384093              0 2.87e+4
+#>  4      1779887000 63384093              1 3.06e+0
+#>  5      1779887500 63383915              0 3.18e+3
+#>  6      1779887500 63383915              1 1.64e+1
+#>  7      1779887500 63383917              0 7.87e+0
+#>  8      1779887500 63383917              1 5.17e-5
+#>  9      1779887500 63383991              0 7.97e+1
+#> 10      1779887500 63383991              1 8.80e-6
+#> 11      1779887500 63384093              0 3.44e+4
+#> 12      1779887500 63384093              1 1.04e+1
+```
 
 ### Interpolating for Time from Distance
 
@@ -247,7 +280,9 @@ print(downtown_lims)
 
 Next, we can put this into
 [`predict()`](https://rdrr.io/r/stats/predict.html) using the
-`distance_lims` parameter, alongside a `timestep` of 2 second:
+`distance_lims` parameter, alongside a `timestep` of 1 second. As above,
+we can vectorize the `deriv` input to find both position and speed at
+each timestep:
 
 ``` r
 
@@ -255,55 +290,87 @@ Next, we can put this into
 lineE_downtown_interp <- predict(
   object = lineE_traj,
   distance_lims = downtown_lims,
-  timestep = 2
+  timestep = 1,
+  deriv = c(0, 1)
 )
 
 # Print header
 head(lineE_downtown_interp)
 #> # A tibble: 6 × 4
-#>   trip_id_performed event_timestamp deriv interp
-#>   <chr>                       <dbl> <dbl>  <dbl>
-#> 1 63383915              1779889926.     0 23454.
-#> 2 63383915              1779889928.     0 23459.
-#> 3 63383915              1779889930.     0 23466.
-#> 4 63383915              1779889932.     0 23474.
-#> 5 63383915              1779889934.     0 23483.
-#> 6 63383915              1779889936.     0 23493.
+#>   trip_id_performed event_timestamp deriv   interp
+#>   <chr>                       <dbl> <dbl>    <dbl>
+#> 1 63383915              1779889926.     0 23454.  
+#> 2 63383915              1779889926.     1     2.60
+#> 3 63383915              1779889927.     0 23456.  
+#> 4 63383915              1779889927.     1     2.89
+#> 5 63383915              1779889928.     0 23459.  
+#> 6 63383915              1779889928.     1     3.18
 ```
 
 We can see that, for the printed trip, the first timepoint occurs at the
-beginning of `downtown_lims`, then `event_timestamp` increments 2
-seconds per row afterwards. xxx. To better understand see what this did,
-we’ll generate a plot of these generated points. Below, we first
-“center” each trip to start at 0 seconds, then plot point colored by
-trip:
+beginning of `downtown_lims`, then `event_timestamp` increments 1 second
+per row afterwards. To better understand see what this did, we’ll
+generate a plot of these generated points. Below, we first “pivot” our
+interpolated dataframe to make separate columns for distance and speed
+interpolations (`interp_0` and `interp_1`, respectively):
 
 ``` r
 
-# "Center" all trips to start at 0 time
-lineE_downtown_centered <- lineE_downtown_interp %>%
-  group_by(trip_id_performed) %>%
-  mutate(event_timestamp = event_timestamp - min(event_timestamp)) %>%
-  rename(distance = interp)
+# Pivot, for seprate columns for dist & speed
+lineE_downtown_pivot <- lineE_downtown_interp %>%
+  # Order by time, then filter to the first three complete
+  arrange(event_timestamp) %>%
+  filter(trip_id_performed %in% unique(trip_id_performed)[2:4]) %>%
+  # Pivot to make distance & speed separate columns
+  pivot_wider(id_cols = c("trip_id_performed", "event_timestamp"),
+              names_from = "deriv", names_glue = "interp_{.name}",
+              values_from = "interp") %>%
+  # Convert to timezone
+  mutate(event_timestamp = as.POSIXct(event_timestamp,
+                                      tz = "America/Los_Angeles"))
+
+head(lineE_downtown_pivot)
+#> # A tibble: 6 × 4
+#>   trip_id_performed event_timestamp     interp_0 interp_1
+#>   <chr>             <dttm>                 <dbl>    <dbl>
+#> 1 63383915          2026-05-27 06:52:06   23454.     2.60
+#> 2 63383915          2026-05-27 06:52:07   23456.     2.89
+#> 3 63383915          2026-05-27 06:52:08   23459.     3.18
+#> 4 63383915          2026-05-27 06:52:09   23463.     3.45
+#> 5 63383915          2026-05-27 06:52:10   23466.     3.71
+#> 6 63383915          2026-05-27 06:52:11   23470.     3.96
+```
+
+Next, we’ll draw these points as trajectory lines, with the distance
+column `interp_0` used for the y-axis, and the speed column `interp_1`
+used to apply a color gradient:
+
+``` r
 
 # Create plot
-downtown_plot <- ggplot(data = lineE_downtown_centered) +
+downtown_plot <- ggplot(data = lineE_downtown_pivot) +
   # Add points
-  geom_point(aes(x = event_timestamp, y = distance,
-                 color = trip_id_performed),
-             size = 2, alpha = 0.2) +
+  geom_line(aes(group = trip_id_performed,
+                x = event_timestamp,
+                y = interp_0, # y from interp at deriv 0, i.e. distnace
+                color = interp_1), # color from interp at deriv 1, i.e. speed
+             linewidth = 3, alpha = 1) +
   # Color points by trip
-  scale_color_viridis_d(guide = "none") +
+  scale_color_viridis_c(name = "Speed\n(m/s)") +
   # Theming
   theme_minimal() +
   labs(x = "Time (s)",
        y = "Distance (m)",
-       title = "Line E Two-Second Position",
+       title = "Line E Second-by-Second Speed Profiles",
        subtitle = "Downtown LA")
 downtown_plot
 ```
 
-![](intro-trajectories-la_files/figure-html/unnamed-chunk-11-1.png)
+![](intro-trajectories-la_files/figure-html/unnamed-chunk-13-1.png)
+
+Through this use of [`predict()`](https://rdrr.io/r/stats/predict.html),
+it becomes very easy to identify individual stop-and-go cycles through
+regions of interest.
 
 You could retrieve identical results by giving
 [`predict()`](https://rdrr.io/r/stats/predict.html) a `new_times`
@@ -328,7 +395,7 @@ generate a plot of all trajectories:
 plot(lineE_traj)
 ```
 
-![](intro-trajectories-la_files/figure-html/unnamed-chunk-12-1.png)
+![](intro-trajectories-la_files/figure-html/unnamed-chunk-14-1.png)
 
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) is intended for
 quick visualizations of trajectories, and as such does not allow for
@@ -380,7 +447,7 @@ traj_plot <- plot_trajectory(
 traj_plot
 ```
 
-![](intro-trajectories-la_files/figure-html/unnamed-chunk-14-1.png)
+![](intro-trajectories-la_files/figure-html/unnamed-chunk-16-1.png)
 
 It’s hard to see what’s actually going on here. The benefits of the
 cleaning we did, and of fitting a spline trajectory, become much more
@@ -420,7 +487,7 @@ flower_st_plot <- plot_trajectory(
 flower_st_plot
 ```
 
-![](intro-trajectories-la_files/figure-html/unnamed-chunk-15-1.png)
+![](intro-trajectories-la_files/figure-html/unnamed-chunk-17-1.png)
 
 We can glean some insights from this. Every trip stops at LATTC’s
 station. The Flower & Washington intersection, where Line A joins Line

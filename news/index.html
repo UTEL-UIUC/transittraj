@@ -43,16 +43,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.3.9000" id="transittraj-0139000-dev">transittraj 0.1.3.9000 (dev)<a class="anchor" aria-label="anchor" href="#transittraj-0139000-dev"></a></h2>
-<p><em>Last update: 6/7/2026</em></p>
+<h2 class="pkg-version" data-toc-text="0.1.4" id="transittraj-014">transittraj 0.1.4<a class="anchor" aria-label="anchor" href="#transittraj-014"></a></h2>
+<p><em>Release: 6/7/2026</em></p>
 <ul><li>
+<p>Trajectory prediction:</p>
+<ul><li><p>Vectorization of <code>deriv</code> input for <code>new_times</code> and <code>distance_lims</code>/ <code>timestep</code> approach to prediction. Now, a <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> output with either input type will include a column <code>deriv</code>, indicating the derivative that row corresponds to. If a vector of length &gt; 1 is input to <code>deriv</code> (e.g., <code>deriv = c(0, 1)</code>), then each time &amp; trip pair will have multiple rows (e.g., a row with <code>deriv = 0</code> and <code>deriv = 1</code>, where for each row, <code>interp</code> will correspond to distance speed, respectively).</p></li>
+<li><p>By default, <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will interpolate at the times or distances provided for all trips in the trajectory object. Even if an input dataframe (via <code>new_distances</code> or <code>new_times</code>) already had point-trip pairs (i.e., had a <code>trip_id_performed</code> column), each row would be duplicated for all trips in the trajectory object (<a href="https://github.com/UTEL-UIUC/transittraj/issues/14" class="external-link">#14</a>). This has been changed, so that if <code>new_distances</code> or <code>new_times</code> already has a column <code>trip_id_performed</code>, that row will only be interpolated for that trip.</p></li>
+</ul></li>
+<li>
 <p>Visualization:</p>
 <ul><li><p><code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code> would throw an error when setting up the x-axis of the ggplot if <code>feature_distances</code> was not provided (<a href="https://github.com/UTEL-UIUC/transittraj/issues/16" class="external-link">#16</a>). This has been resolved, and a plot can now be created without features.</p></li>
 <li><p><code><a href="../reference/plot_interactive_gtfs.html">plot_interactive_gtfs()</a></code>’s <code>color_palette</code> input is now case-insensitive when set to <code>"gtfs"</code> (<a href="https://github.com/UTEL-UIUC/transittraj/issues/13" class="external-link">#13</a>).</p></li>
-</ul></li>
-<li>
-<p>Trajectory prediction:</p>
-<ul><li>By default, <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> will interpolate at the times or distances provided for all trips in the trajectory object. Even if an input dataframe (via <code>new_distances</code> or <code>new_times</code>) already had point-trip pairs (i.e., had a <code>trip_id_performed</code> column), each row would be duplicated for all trips in the trajectory object (<a href="https://github.com/UTEL-UIUC/transittraj/issues/14" class="external-link">#14</a>). This has been changed, so that if <code>new_distances</code> or <code>new_times</code> already has a column <code>trip_id_performed</code>, that row will only be interpolated for that trip.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
