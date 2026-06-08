@@ -7,14 +7,15 @@
 - Trajectory prediction:
 
   - Vectorization of `deriv` input for `new_times` and `distance_lims`/
-    `timestep` approach to prediction. Now, a
+    `timestep` approach to prediction
+    ([\#14](https://github.com/UTEL-UIUC/transittraj/issues/14)). Now, a
     [`predict()`](https://rdrr.io/r/stats/predict.html) output with
     either input type will include a column `deriv`, indicating the
     derivative that row corresponds to. If a vector of length \> 1 is
     input to `deriv` (e.g., `deriv = c(0, 1)`), then each time & trip
-    pair will have multiple rows (e.g., a row with `deriv = 0` and
-    `deriv = 1`, where for each row, `interp` will correspond to
-    distance speed, respectively).
+    pair will have multiple rows (e.g., a row with `deriv = 0` followed
+    by a row with `deriv = 1`, where for each row, `interp` will
+    correspond to distance or speed, respectively).
 
   - By default, [`predict()`](https://rdrr.io/r/stats/predict.html) will
     interpolate at the times or distances provided for all trips in the
