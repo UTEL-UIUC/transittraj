@@ -545,7 +545,70 @@ test_that("get_gtfs_service_dates: calendar", {
   )
 })
 
+# --- plot_interactive_gtfs() ---
+test_that("plot_interactive_gtfs: viewer", {
 
+  # expected
+  exp_def_colors <- c("#1B9E77", "#7570B3")
+  exp_gtfs_colors <- c("#0072BC", "#FDB913")
+  exp_routes <- c("801", "804")
+  exp_shapes <- 2 * 2 # 2 routes, 2 directions each
+  exp_stops <- 72
+
+  # default color palette
+  lf <- plot_interactive_gtfs(gtfs = lacmta_gtfs)
+  expect_s3_class(
+    lf,
+    class = "leaflet"
+  )
+  num_shapes <- length(lf$x$calls[[1]]$args[[1]])
+  expect_equal(
+    num_shapes,
+    expected = exp_shapes
+  )
+  num_stops <- length(lf$x$calls[[3]]$args[[9]])
+  expect_equal(
+    num_stops,
+    expected = exp_stops
+  )
+  routes_present <- lf$x$calls[[2]]$args[[1]]$labels
+  expect_setequal(
+    routes_present,
+    expected = exp_routes
+  )
+  line_colors <- unique(lf$x$calls[[1]]$args[[4]]$color)
+  expect_setequal(
+    line_colors,
+    expected = exp_def_colors
+  )
+
+  # GTFS colors
+  lf_2 <- plot_interactive_gtfs(gtfs = lacmta_gtfs,
+                                color_palette = "gtfs")
+  expect_s3_class(
+    lf_2,
+    class = "leaflet"
+  )
+  line_colors_2 <- unique(lf_2$x$calls[[1]]$args[[4]]$color)
+  expect_setequal(
+    line_colors_2,
+    expected = exp_gtfs_colors
+  )
+
+  # GTFS case-insensitive
+  lf_3 <- plot_interactive_gtfs(gtfs = lacmta_gtfs,
+                                color_palette = "gTfS")
+  expect_s3_class(
+    lf_3,
+    class = "leaflet"
+  )
+  line_colors_3 <- unique(lf_3$x$calls[[1]]$args[[4]]$color)
+  expect_setequal(
+    line_colors_3,
+    expected = exp_gtfs_colors
+  )
+
+})
 
 
 
