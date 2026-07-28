@@ -93,6 +93,7 @@ test_that("get_gtfs_service_dates: date input range validation", {
   )
 })
 
+# --- filter_by_route() ---
 test_that("filter_by_route: route validation", {
 
   # One route
@@ -116,7 +117,6 @@ test_that("filter_by_route: route validation", {
     expected = "804"
   )
 })
-
 test_that("filter_by_route: direction validation", {
 
   # One dir
@@ -143,7 +143,6 @@ test_that("filter_by_route: direction validation", {
     expected = 0
   )
 })
-
 test_that("filter_by_route: route expectations", {
 
   # Filter to one route
@@ -166,7 +165,6 @@ test_that("filter_by_route: route expectations", {
   expect_s3_class(gtfs_filt_2,
                   class = "tidygtfs")
 })
-
 test_that("filter_by_route: direction expectations", {
 
   # Filter to one route, one dir
@@ -191,6 +189,67 @@ test_that("filter_by_route: direction expectations", {
   expect_s3_class(gtfs_filt_3,
                   class = "tidygtfs")
 })
+
+# --- get_shape_geometry() ---
+test_that("get_shape_geometry: shape validation", {
+
+  expect_error(
+    get_shape_geometry(lacmta_gtfs,
+                       shape = "does not exist"),
+    class = "error_gtfsshape_none"
+  )
+})
+test_that("get_shape_geometry: shape filter", {
+
+  all_shapes <- c("804EB_RC_221121",
+                  "804WB_RC_221121",
+                  "801NB_P2B_250722",
+                  "801SB_P2B_250722")
+
+  # No shape filter
+  shapes_1 <- get_shape_geometry(lacmta_gtfs)
+  expect_setequal(
+    shapes_1$shape_id,
+    expected = all_shapes
+  )
+  expect_s3_class(
+    shapes_1,
+    class = "sf"
+  )
+
+  # Shape filter
+  shapes_2 <- get_shape_geometry(lacmta_gtfs,
+                                 shape = all_shapes[1])
+  expect_equal(
+    shapes_2$shape_id,
+    expected = all_shapes[1]
+  )
+  expect_s3_class(
+    shapes_2,
+    class = "sf"
+  )
+})
+test_that("get_shape_geometry: spatial projection", {
+
+  # None
+  shapes_1 <- get_shape_geometry(lacmta_gtfs)
+  crs_1 <- sf::st_crs(shapes_1)
+  expect_equal(
+    crs_1$input,
+    expected = "EPSG:4326"
+  )
+
+  # Filter
+  shapes_2 <- get_shape_geometry(lacmta_gtfs,
+                                 project_crs = 32616)
+  crs_2 <- sf::st_crs(shapes_2)
+  expect_equal(
+    crs_2$input,
+    expected = "EPSG:32616"
+  )
+})
+
+
 
 
 

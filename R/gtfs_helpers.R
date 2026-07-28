@@ -353,6 +353,12 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
                   seq = shape_pt_sequence) %>%
     dplyr::arrange(shape_id, seq)
 
+  # Check that shape exists
+  if (dim(shape_waypoints)[1] == 0) {
+    rlang::abort(message = "No matching shape_ids in GTFS.",
+                 class = "error_gtfsshape_none")
+  }
+
   # Convert raw waypoints to SF
   shape_sf <- sf::st_as_sf(shape_waypoints,
                            coords = c("lon", "lat"),
