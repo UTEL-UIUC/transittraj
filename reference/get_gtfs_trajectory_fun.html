@@ -300,32 +300,21 @@ available at <code><a href="../articles/intro-trajectories-la.html">vignette("ar
 <span class="r-in"><span>                                                project_crs <span class="op">=</span> <span class="va">my_crs</span>,</span></span>
 <span class="r-in"><span>                                                date_min <span class="op">=</span> <span class="va">my_start_date</span>,</span></span>
 <span class="r-in"><span>                                                date_max <span class="op">=</span> <span class="va">my_end_date</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in validate_gtfs_input(gtfs, table = "calendar", needed_fields = c("date",     "service_id", "monday", "tuesday", "wednesday", "thursday",     "friday", "saturday", "sunday")):</span> The following fields are missing from calendar : date</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show trajectory: summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lineE_scheduled_traj</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AVL Group Trajectory Object</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trips: 123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Total distance range: 41.19898 to 35314.05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Total time range: 1779878760 to 1779955380</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Trajectory function present: TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Trajectory interpolation method: linear</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Maximum derivative: 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Fit with speeds: FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inverse function present: TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    --&gt; Inverse function tolerance: 0.01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ------</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'lineE_scheduled_traj' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show trajectory: plot (just a handful of trips)</span></span></span>
 <span class="r-in"><span><span class="va">ordered_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_trip_extremes.html">get_trip_extremes</a></span><span class="op">(</span><span class="va">lineE_scheduled_traj</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">min_time</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">trip_id_performed</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'lineE_scheduled_traj' not found</span>
 <span class="r-in"><span><span class="fu"><a href="plot_trajectory.html">plot_trajectory</a></span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">lineE_scheduled_traj</span>,</span></span>
 <span class="r-in"><span>                plot_trips <span class="op">=</span> <span class="va">ordered_trips</span><span class="op">[</span><span class="fl">20</span><span class="op">:</span><span class="fl">25</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>                traj_color <span class="op">=</span> <span class="st">"indianred3"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="get_gtfs_trajectory_fun-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'lineE_scheduled_traj' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
