@@ -52,3 +52,74 @@ test_that("validate_gtfs_input: test fields", {
     class = "error_gtfsval_missing_fields"
   )
 })
+
+# --- validate_shape_geometry() ---
+test_that("validate_shape_geometry: data type", {
+
+  shapes <- get_shape_geometry(gtfs = lacmta_gtfs)
+
+  # no error on standard
+  expect_no_error(
+    validate_shape_geometry(shapes)
+  )
+
+  # error on SFC
+  expect_error(
+    validate_shape_geometry(shapes %>% sf::st_geometry()),
+    class = "error_geomval_datatype"
+  )
+
+  # error on points
+  expect_error(
+    suppressWarnings(validate_shape_geometry(shapes %>%
+                                             sf::st_cast("LINESTRING") %>%
+                                             sf::st_cast("POINT"))),
+    class = "error_geomval_geomtype"
+  )
+
+  # error on non-spatial
+  expect_error(
+    validate_shape_geometry("a string"),
+    class = "error_geomval_datatype"
+  )
+})
+test_that("validate_shape_geometry: shape IDs", {
+
+  shapes <- get_shape_geometry(gtfs = lacmta_gtfs)[, 2]
+
+  expect_error(
+    validate_shape_geometry(shapes,
+                            require_shape_id = TRUE),
+    class = "error_geomval_id"
+  )
+
+  expect_no_error(
+    validate_shape_geometry(shapes,
+                            require_shape_id = FALSE)
+  )
+})
+test_that("validate_shape_geometry: length", {
+
+  shapes <- get_shape_geometry(gtfs = lacmta_gtfs)
+
+  expect_error(
+    validate_shape_geometry(shapes,
+                            max_length = 1),
+    class = "error_geomval_length"
+  )
+
+  expect_no_error(
+    validate_shape_geometry(shapes,
+                            max_length = 10)
+  )
+})
+test_that("validate_shape_geometry: crs", {
+
+  shapes <- get_shape_geometry(gtfs = lacmta_gtfs)
+
+  expect_error(
+    validate_shape_geometry(shapes,
+                            match_crs = 32611),
+    class = "error_geomval_crs"
+  )
+})

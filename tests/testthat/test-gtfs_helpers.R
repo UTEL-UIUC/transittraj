@@ -205,8 +205,8 @@ test_that("project_onto_route: points output testing", {
   # Test points: df
   points_1 <- data.frame(latitude = c(33.8),
                          longitude = c(-118.1))
-  proj_1 <- project_onto_route(shape_geometry = test_shape,
-                               points = points_1)
+  proj_1 <- suppressMessages(project_onto_route(shape_geometry = test_shape,
+                                                points = points_1))
   expect_setequal(
     names(proj_1),
     expected = c("latitude", "longitude", "distance")
@@ -222,8 +222,8 @@ test_that("project_onto_route: points output testing", {
                          longitude = c(-118.1)) %>%
     sf::st_as_sf(coords = c("longitude", "latitude"),
                  crs = 4326)
-  proj_2 <- project_onto_route(shape_geometry = test_shape,
-                               points = points_2)
+  proj_2 <- suppressMessages(project_onto_route(shape_geometry = test_shape,
+                               points = points_2))
   expect_setequal(
     names(proj_2),
     expected = c("distance")
@@ -240,8 +240,8 @@ test_that("project_onto_route: points output testing", {
     sf::st_as_sf(coords = c("longitude", "latitude"),
                  crs = 4326) %>%
     sf::st_geometry()
-  proj_3 <- project_onto_route(shape_geometry = test_shape,
-                               points = points_3)
+  proj_3 <- suppressMessages(project_onto_route(shape_geometry = test_shape,
+                               points = points_3))
   expect_type(
     proj_3,
     type = "double"
@@ -268,9 +268,9 @@ test_that("project_onto_route: projection testing", {
                                      project_crs = 32611)
   points_1 <- data.frame(latitude = c(33.8),
                          longitude = c(-118.1))
-  proj_1 <- project_onto_route(shape_geometry = test_shape_1,
+  proj_1 <- suppressMessages(project_onto_route(shape_geometry = test_shape_1,
                                points = points_1,
-                               project_crs = 32611)
+                               project_crs = 32611))
   expect_equal(
     proj_1$distance,
     expected = exp_UTM,
@@ -280,10 +280,10 @@ test_that("project_onto_route: projection testing", {
   # original and proj CRS
   points_2 <- data.frame(latitude = c(398177.5),
                          longitude = c(3740525))
-  proj_2 <- project_onto_route(shape_geometry = test_shape_1,
+  proj_2 <- suppressMessages(project_onto_route(shape_geometry = test_shape_1,
                                points = points_2,
                                project_crs = 32611,
-                               original_crs = 32611)
+                               original_crs = 32611))
   expect_equal(
     proj_2$distance,
     expected = exp_UTM,
@@ -296,9 +296,9 @@ test_that("project_onto_route: projection testing", {
                                      project_crs = 4326)
   points_3 <- data.frame(latitude = c(398177.5),
                          longitude = c(3740525))
-  proj_3 <- project_onto_route(shape_geometry = test_shape_3,
+  proj_3 <- suppressMessages(project_onto_route(shape_geometry = test_shape_3,
                                points = points_3,
-                               original_crs = 32611)
+                               original_crs = 32611))
   expect_equal(
     proj_2$distance,
     expected = exp_WGS,
@@ -337,8 +337,8 @@ test_that("get_stop_distances: stop dists", {
   # one shape
   shape_lineE <- get_shape_geometry(gtfs = lacmta_gtfs,
                                     shape = EBlineE_shape)
-  stop_dists_1 <- get_stop_distances(gtfs = lacmta_gtfs,
-                                     shape_geometry = shape_lineE)
+  stop_dists_1 <- suppressMessages(get_stop_distances(gtfs = lacmta_gtfs,
+                                     shape_geometry = shape_lineE))
   expect_s3_class(
     stop_dists_1,
     "data.frame"
@@ -360,7 +360,7 @@ test_that("get_stop_distances: stop dists", {
   )
 
   # all shapes
-  stop_dists_2 <- get_stop_distances(gtfs = lacmta_gtfs)
+  stop_dists_2 <- suppressMessages(get_stop_distances(gtfs = lacmta_gtfs))
   expect_s3_class(
     stop_dists_2,
     "data.frame"
