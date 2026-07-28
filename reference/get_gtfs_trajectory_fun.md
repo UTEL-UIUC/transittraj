@@ -256,19 +256,29 @@ lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
                                                 project_crs = my_crs,
                                                 date_min = my_start_date,
                                                 date_max = my_end_date)
-#> Error in validate_gtfs_input(gtfs, table = "calendar", needed_fields = c("date",     "service_id", "monday", "tuesday", "wednesday", "thursday",     "friday", "saturday", "sunday")): The following fields are missing from calendar : date
 
 # Show trajectory: summary
 summary(lineE_scheduled_traj)
-#> Error: object 'lineE_scheduled_traj' not found
+#> ------
+#> AVL Group Trajectory Object
+#> ------
+#> Number of trips: 123
+#> Total distance range: 41.19898 to 35314.05
+#> Total time range: 1779878760 to 1779955380
+#> ------
+#> Trajectory function present: TRUE
+#>    --> Trajectory interpolation method: linear
+#>    --> Maximum derivative: 0
+#>    --> Fit with speeds: FALSE
+#> Inverse function present: TRUE
+#>    --> Inverse function tolerance: 0.01
+#> ------
 
 # Show trajectory: plot (just a handful of trips)
 ordered_trips <- get_trip_extremes(lineE_scheduled_traj) %>%
    dplyr::arrange(min_time) %>%
    dplyr::pull(trip_id_performed)
-#> Error: object 'lineE_scheduled_traj' not found
 plot_trajectory(trajectory = lineE_scheduled_traj,
                 plot_trips = ordered_trips[20:25],
                 traj_color = "indianred3")
-#> Error: object 'lineE_scheduled_traj' not found
 ```

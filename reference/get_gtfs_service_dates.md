@@ -93,7 +93,7 @@ study_service_ids <- get_gtfs_service_dates(gtfs = lineE_gtfs,
                                             date_min = study_date,
                                             date_max = study_date,
                                             use_calendar_table = "calendar")
-#> Error in validate_gtfs_input(gtfs, table = "calendar", needed_fields = c("date",     "service_id", "monday", "tuesday", "wednesday", "thursday",     "friday", "saturday", "sunday")): The following fields are missing from calendar : date
 print(study_service_ids)
-#> Error: object 'study_service_ids' not found
+#>         date              service_id
+#> 1 2026-05-27 RDEC25-804-1_Weekday-90
 ```
