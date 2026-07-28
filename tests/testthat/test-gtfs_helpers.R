@@ -1,98 +1,3 @@
-test_that("get_gtfs_service_dates: date input range validation", {
-  d1 <- as.Date("2026-05-27")
-  d2 <- as.Date("2026-05-28")
-  d3 <- as.Date("1980-01-01")
-  d4 <- as.Date("1980-02-01")
-  d5 <- as.Date("2030-01-01")
-  d6 <- as.Date("2030-02-01")
-
-  # incorrect date data types
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = "2026-01-01",
-                           date_max = "2026-02-01"),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d1,
-                           date_max = "2026-02-01"),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = "2026-01-01",
-                           date_max = d2),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = "2026-01-01"),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_max = "2026-02-01"),
-    class = "error_gtfsdate_inputdata"
-  )
-
-  # date_min > date_max
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d2,
-                           date_max = d1),
-    class = "error_gtfsdate_inputdata"
-  )
-
-  # range too late
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d5),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_max = d6),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d5,
-                           date_max = d6),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d1,
-                           date_max = d6),
-    class = "error_gtfsdate_inputdata"
-  )
-
-  # range too early
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d3),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_max = d4),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d3,
-                           date_max = d4),
-    class = "error_gtfsdate_inputdata"
-  )
-  expect_error(
-    get_gtfs_service_dates(gtfs = lacmta_gtfs,
-                           date_min = d3,
-                           date_max = d2),
-    class = "error_gtfsdate_inputdata"
-  )
-})
-
 # --- filter_by_route() ---
 test_that("filter_by_route: route validation", {
 
@@ -477,6 +382,168 @@ test_that("get_stop_distances: stop dists", {
   )
 })
 
+# --- get_gtfs_service_dates() ---
+test_that("get_gtfs_service_dates: date input range validation", {
+  d1 <- as.Date("2026-05-27")
+  d2 <- as.Date("2026-05-28")
+  d3 <- as.Date("1980-01-01")
+  d4 <- as.Date("1980-02-01")
+  d5 <- as.Date("2030-01-01")
+  d6 <- as.Date("2030-02-01")
+
+  # incorrect date data types
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = "2026-01-01",
+                           date_max = "2026-02-01"),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d1,
+                           date_max = "2026-02-01"),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = "2026-01-01",
+                           date_max = d2),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = "2026-01-01"),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_max = "2026-02-01"),
+    class = "error_gtfsdate_inputdata"
+  )
+
+  # date_min > date_max
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d2,
+                           date_max = d1),
+    class = "error_gtfsdate_inputdata"
+  )
+
+  # range too late
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d5),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_max = d6),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d5,
+                           date_max = d6),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d1,
+                           date_max = d6),
+    class = "error_gtfsdate_inputdata"
+  )
+
+  # range too early
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d3),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_max = d4),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d3,
+                           date_max = d4),
+    class = "error_gtfsdate_inputdata"
+  )
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           date_min = d3,
+                           date_max = d2),
+    class = "error_gtfsdate_inputdata"
+  )
+})
+test_that("get_gtfs_service_dates: calendar type validation", {
+
+  expect_error(
+    get_gtfs_service_dates(gtfs = lacmta_gtfs,
+                           use_calendar_table = "oops"),
+    class = "error_gtfsdate_inputdata"
+  )
+})
+test_that("get_gtfs_service_dates: calendar", {
+
+  exp_date_seq <- seq(from = as.Date("2026-05-27"),
+                      to = as.Date("2026-06-05"),
+                      by = 1)
+  lineE_service_ids <- c("RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90",
+                         NA, NA, # weekends, not included in sample GTFS
+                         "RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90",
+                         "RDEC25-804-1_Weekday-90")
+  gtfs_ELine <- filter_by_route(gtfs = lacmta_gtfs,
+                                route_ids = "804")
+
+  # no filt
+  dates_1 <- get_gtfs_service_dates(gtfs = gtfs_ELine,
+                                    use_calendar_table = "calendar")
+  expect_s3_class(
+    dates_1,
+    "data.frame"
+  )
+  expect_setequal(
+    names(dates_1),
+    expected = c("date", "service_id")
+  )
+  expect_setequal(
+    dates_1$date,
+    expected = exp_date_seq
+  )
+  expect_equal(
+    dates_1$service_id,
+    lineE_service_ids
+  )
+
+  # valid date range
+  dates_2 <- get_gtfs_service_dates(gtfs = gtfs_ELine,
+                                    use_calendar_table = "calendar",
+                                    date_min = exp_date_seq[3],
+                                    date_max = exp_date_seq[4])
+  expect_s3_class(
+    dates_2,
+    "data.frame"
+  )
+  expect_setequal(
+    names(dates_2),
+    expected = c("date", "service_id")
+  )
+  expect_setequal(
+    dates_2$date,
+    expected = exp_date_seq[3:4]
+  )
+  expect_equal(
+    dates_2$service_id,
+    lineE_service_ids[3:4]
+  )
+})
 
 
 
@@ -492,6 +559,4 @@ test_that("get_stop_distances: stop dists", {
 
 
 
-
-
-a
+###
