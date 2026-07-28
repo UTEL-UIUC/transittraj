@@ -14,10 +14,11 @@ validate_gtfs_input <- function(gtfs, table, needed_fields) {
   gtfs_val <- tidytransit::validate_gtfs(gtfs)
 
   # Check table presence
-  table_present <- all(gtfs_val %>%
-                         dplyr::filter(file == table) %>%
-                         dplyr::pull(file_provided_status))
-  if (!table_present) {
+  table_status <- gtfs_val %>%
+    dplyr::filter(file == table) %>%
+    dplyr::pull(file_provided_status)
+  table_present <- all(table_status)
+  if ((length(table_status) == 0) | (!table_present)) {
     rlang::abort(message = paste("Table ", table, " missing from input GTFS",
                                  sep = ""),
                  class = "error_gtfsval_missing_table")
@@ -30,6 +31,18 @@ validate_gtfs_input <- function(gtfs, table, needed_fields) {
     dplyr::select(field, field_provided_status) %>%
     dplyr::arrange(match(field, needed_fields))
 
+  # fields missing, not in validator
+  if (dim(fields_present)[1] < length(needed_fields)) {
+    fields <- fields_present %>%
+      dplyr::pull(field)
+    missing_fields <- needed_fields[!(needed_fields %in% fields)]
+    rlang::abort(message = paste(c("The following fields are missing from",
+                                   table, ":", missing_fields),
+                                 collapse = " "),
+                 class = "error_gtfsval_missing_fields")
+  }
+
+  # fields missing, but in validator
   if (!all(fields_present$field_provided_status)) {
     missing_fields <- fields_present %>%
       dplyr::filter(!field_provided_status) %>%
