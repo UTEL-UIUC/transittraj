@@ -127,6 +127,15 @@ validate_tides <- function(avl_df) {
 validate_monotonicity <- function(distance_df, check_speed = FALSE,
                                   return_full = FALSE) {
 
+  if (check_speed) {
+    needed_fields <- c("trip_id_performed",
+                       "distance", "event_timestamp", "speed")
+  } else {
+    needed_fields <- c("trip_id_performed",
+                       "distance", "event_timestamp")
+  }
+  validate_input_to_tides(needed_fields, distance_df)
+
   # Check for weak and strict position monotonicity by point.
   check_mon <- distance_df %>%
     dplyr::arrange(trip_id_performed, event_timestamp) %>%
