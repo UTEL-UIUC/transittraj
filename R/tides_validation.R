@@ -143,7 +143,7 @@ validate_monotonicity <- function(distance_df, check_speed = FALSE,
       dplyr::arrange(trip_id_performed, event_timestamp) %>%
       dplyr::group_by(trip_id_performed) %>%
       dplyr::mutate(time_sec = as.numeric(event_timestamp),
-                    fc_delta = (dplyr::lead(distance) - distance) / (dplyr::lead(time_sec) / time_sec),
+                    fc_delta = (dplyr::lead(distance) - distance) / (dplyr::lead(time_sec) - time_sec),
                     fc_alpha = speed / fc_delta,
                     fc_beta = dplyr::lead(speed) / fc_delta,
                     sum_sq = fc_alpha^2 + fc_beta^2,
