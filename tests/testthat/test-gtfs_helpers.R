@@ -337,9 +337,9 @@ test_that("project_onto_route: points output testing", {
     sf::st_geometry()
   proj_3 <- project_onto_route(shape_geometry = test_shape,
                                points = points_3)
-  expect_class(
+  expect_type(
     proj_3,
-    class = "numeric"
+    type = "double"
   )
   expect_equal(
     length(proj_3),
@@ -401,8 +401,81 @@ test_that("project_onto_route: projection testing", {
   )
 })
 
+# --- get_stop_distances() ---
+test_that("get_stop_distances: stops-shapes validation", {
 
+  # create test GTFS with A Line only stop
+  test_gtfs <- lacmta_gtfs
+  test_gtfs$stops <- test_gtfs$stops %>%
+    dplyr::filter(stop_id == 80101)
+  shape_lineE <- get_shape_geometry(gtfs = lacmta_gtfs,
+                                    shape = "804EB_RC_221121")
 
+  expect_error(
+    get_stop_distances(gtfs = test_gtfs,
+                       shape_geometry = shape_lineE),
+    class = "error_stopdists_inputshapes"
+  )
+})
+test_that("get_stop_distances: stop dists", {
+
+  # expected values
+  stops_EBlineE <- 29
+  stops_all <- 151
+
+  EBlineE_shape <- "804EB_RC_221121"
+  all_shapes <- c("804EB_RC_221121",
+                  "804WB_RC_221121",
+                  "801NB_P2B_250722",
+                  "801SB_P2B_250722")
+
+  # one shape
+  shape_lineE <- get_shape_geometry(gtfs = lacmta_gtfs,
+                                    shape = EBlineE_shape)
+  stop_dists_1 <- get_stop_distances(gtfs = lacmta_gtfs,
+                                     shape_geometry = shape_lineE)
+  expect_s3_class(
+    stop_dists_1,
+    "data.frame"
+  )
+  expect_true(
+    "distance" %in% names(stop_dists_1)
+  )
+  expect_type(
+    stop_dists_1$distance,
+    "double"
+  )
+  expect_equal(
+    dim(stop_dists_1)[1],
+    expected = stops_EBlineE
+  )
+  expect_equal(
+    unique(stop_dists_1$shape_id),
+    EBlineE_shape
+  )
+
+  # all shapes
+  stop_dists_2 <- get_stop_distances(gtfs = lacmta_gtfs)
+  expect_s3_class(
+    stop_dists_2,
+    "data.frame"
+  )
+  expect_true(
+    "distance" %in% names(stop_dists_2)
+  )
+  expect_type(
+    stop_dists_2$distance,
+    "double"
+  )
+  expect_equal(
+    dim(stop_dists_2)[1],
+    expected = stops_all
+  )
+  expect_setequal(
+    unique(stop_dists_2$shape_id),
+    all_shapes
+  )
+})
 
 
 
