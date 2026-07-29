@@ -143,6 +143,71 @@ test_that("plot_animated_line: plot layers", {
   )
 })
 
+# --- plot_animated_map() ---
+test_that("plot_animated_map: label validation", {
+
+  mono_df <- new_transittraj_data("make_monotonic")
+  traj <- get_trajectory_fun(mono_df)
+  feat_df <- data.frame(name = c("a"),
+                        distance = c(10000))
+  geom <- new_transittraj_data("get_shape_geometry")
+
+  expect_error(
+    plot_animated_map(trajectory = traj,
+                       feature_distances = feat_df,
+                       label_field = "missing",
+                      shape_geometry = geom),
+    class = "error_plottraj_labels"
+  )
+  expect_error(
+    plot_animated_map(trajectory = traj,
+                       feature_distances = feat_df,
+                       label_field = "name",
+                       label_pos = "upside down",
+                      shape_geometry = geom),
+    class = "error_plottraj_labels"
+  )
+})
+test_that("plot_animated_map: plot layers", {
+
+  mono_df <- new_transittraj_data("make_monotonic")
+  traj <- get_trajectory_fun(mono_df)
+  feat_df <- data.frame(name = c("a"),
+                        distance = c(10000))
+  geom <- new_transittraj_data("get_shape_geometry")
+
+  # OK label & features
+  p_1 <- plot_animated_map(trajectory = traj,
+                            feature_distances = feat_df,
+                            label_field = "name",
+                           shape_geometry = geom,
+                           background_zoom = -3)
+  # class
+  expect_s3_class(
+    p_1,
+    class = "gganim"
+  )
+  # layers: basemap, 2xroute, feature point, feature label, vehicles
+  expect_equal(
+    length(p_1$layers),
+    expected = 6
+  )
+
+  # no label & features
+  p_2 <- plot_animated_map(trajectory = traj,
+                           shape_geometry = geom)
+  # class
+  expect_s3_class(
+    p_2,
+    class = "gganim"
+  )
+  # layers: basemap, 2xroute, feature point, feature label, vehicles
+  expect_equal(
+    length(p_2$layers),
+    expected = 4
+  )
+})
+
 # --- export_animation() ---
 test_that("export_animation: name validation", {
 

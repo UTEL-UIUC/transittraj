@@ -571,7 +571,7 @@ plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = N
     # Check that requested field is in feature DF
     if (!(label_field %in% names(feature_distances))) {
       rlang::abort(message = "feature_distances: label_field not found in field names.",
-                   class = "error_plottraj_formatting")
+                   class = "error_plottraj_labels")
     }
 
     # Label position setup
