@@ -25,6 +25,41 @@ test_that("validate_tides: output on sample data", {
   )
 })
 
+# --- validate_input_to_tides() ---
+test_that("validate_input_to_tides: inputs", {
+
+  # fields present
+  expect_no_error(
+    validate_input_to_tides(
+      needed_fields = c("event_timestamp"),
+      avl_df = lacmta_avl
+    )
+  )
+  expect_no_error(
+    validate_input_to_tides(
+      needed_fields = c("event_timestamp", "trip_id_performed"),
+      avl_df = lacmta_avl
+    )
+  )
+  expect_error(
+    validate_input_to_tides(
+      needed_fields = c("event_timestamp"),
+      avl_df = lacmta_avl %>% dplyr::select(-event_timestamp)
+    ),
+    class = "error_tidesval_missing_fields"
+  )
+
+  # field types
+  expect_error(
+    validate_input_to_tides(
+      needed_fields = c("event_timestamp"),
+      avl_df = lacmta_avl %>%
+        dplyr::mutate(event_timestamp = as.numeric(event_timestamp))
+    ),
+    class = "error_tidesval_field_datatype"
+  )
+})
+
 # --- validate_monotonicity() ---
 test_that("validate_monotonicity: output on sample data", {
 
@@ -84,8 +119,6 @@ test_that("validate_monotonicity: output on sample data", {
     expected = dim(non_mono)[1]
   )
 })
-
-
 
 
 
