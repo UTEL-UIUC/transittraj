@@ -148,15 +148,22 @@ test_that("plot_trips_df_setup: range validation", {
 
   # bad distance range
   expect_error(
-    plot_trajectory(distance_df = lineE_mono,
-                    distance_lims = c(50000, 50200)),
+    plot_trips_df_setup(distance_df = lineE_mono,
+                        trajectory = NULL, plot_trips = NULL,
+                        center_vehicles = FALSE, convert_to_timezone = FALSE,
+                        distance_lims = c(50000, 50200)),
     class = "error_plottraj_inputdata"
   )
 
   # bad trips
   expect_error(
-    plot_trajectory(distance_df = lineE_mono,
-                    plot_trips = c("a", "b")),
+    plot_trips_df_setup(distance_df = lineE_mono,
+                        trajectory = NULL, plot_trips = c("a", "b"),
+                        center_vehicles = FALSE, convert_to_timezone = FALSE,
+                        distance_lims = NULL),
     class = "error_plottraj_inputdata"
   )
+
+  # timezone
+  # df_1 <- plo
 })

@@ -183,7 +183,22 @@ plot_trips_df_setup <- function(trajectory, distance_df,
 
   # --- Timezone ---
   if (convert_to_timezone) {
-    agency_tz <- attr(trajectory, "agency_tz")
+
+    # Get timezone info
+    if (!is.null(trajectory)) {
+      # If traj, pull from obj
+      agency_tz <- attr(trajectory, "agency_tz")
+    } else if (class(distance_df$event_timestamp)[1] == "POSIXct") {
+      # If df & posixct, pull from original input
+      agency_tz <- attr(distance_df$event_timestamp, which = "tz")
+    } else {
+      # If neither, throw warning
+      rlang::warn("No timezone information found in input distance_df. Using current system timezone.",
+                  class = "warn_plottraj_inputtz")
+      agency_tz <- ""
+    }
+
+    # Make conversion
     trips_df <- trips_df %>%
       dplyr::mutate(event_timestamp = as.POSIXct(event_timestamp,
                                                  tz = agency_tz))
