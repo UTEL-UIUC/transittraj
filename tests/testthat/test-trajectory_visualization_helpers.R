@@ -167,6 +167,9 @@ test_that("plot_trips_df_setup: range validation", {
 })
 test_that("plot_trips_df_setup: timezones", {
 
+  lineE_mono <- new_transittraj_data("make_monotonic")
+  lineE_traj <- get_trajectory_fun(distance_df = lineE_mono)
+
   # distance_df
   expect_warning(
     plot_trips_df_setup(distance_df = (lineE_mono %>% dplyr::mutate(event_timestamp = as.numeric(event_timestamp))),
@@ -195,6 +198,9 @@ test_that("plot_trips_df_setup: timezones", {
   )
 })
 test_that("plot_trips_df_setup: vehicle centering", {
+
+  lineE_mono <- new_transittraj_data("make_monotonic")
+  lineE_traj <- get_trajectory_fun(distance_df = lineE_mono)
 
   # distance_df
   df_3 <- plot_trips_df_setup(distance_df = lineE_mono,
