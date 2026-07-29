@@ -145,6 +145,7 @@ test_that("plot_trips_df_setup: range validation", {
   # problems w/ traj object will be caught by plot_traj_df_setup,
   # so will only check distance_df here
   lineE_mono <- new_transittraj_data("make_monotonic")
+  lineE_traj <- get_trajectory_fun(distance_df = lineE_mono)
 
   # bad distance range
   expect_error(
@@ -164,6 +165,56 @@ test_that("plot_trips_df_setup: range validation", {
     class = "error_plottraj_inputdata"
   )
 
-  # timezone
-  # df_1 <- plo
+  # - timezone -
+  # distance_df
+  expect_warning(
+    plot_trips_df_setup(distance_df = (lineE_mono %>% dplyr::mutate(event_timestamp = as.numeric(event_timestamp))),
+                        trajectory = NULL, plot_trips = NULL,
+                        center_vehicles = FALSE, convert_to_timezone = TRUE,
+                        distance_lims = NULL),
+    class = "warn_plottraj_inputtz"
+  )
+  df_1 <- plot_trips_df_setup(distance_df = lineE_mono,
+                              trajectory = NULL, plot_trips = NULL,
+                              center_vehicles = FALSE, convert_to_timezone = TRUE,
+                              distance_lims = NULL)
+  expect_equal(
+    attr(df_1$event_timestamp, which = "tz"),
+    expected = "America/Los_Angeles"
+  )
+
+  # traj
+  df_2 <- plot_trips_df_setup(trajectory = lineE_traj,
+                      distance_df = NULL, plot_trips = NULL, timestep = 120,
+                      center_vehicles = FALSE, convert_to_timezone = TRUE,
+                      distance_lims = NULL)
+  expect_equal(
+    attr(df_2$event_timestamp, which = "tz"),
+    expected = "America/Los_Angeles"
+  )
+
+  # - centering -
+  # distance_df
+  df_3 <- plot_trips_df_setup(distance_df = lineE_mono,
+                              trajectory = NULL, plot_trips = NULL,
+                              center_vehicles = TRUE, convert_to_timezone = FALSE,
+                              distance_lims = NULL) %>%
+    dplyr::group_by(trip_id_performed) %>%
+    dplyr::summarize(start_time = min(event_timestamp))
+  expect_all_equal(
+    df_3$start_time,
+    expected = 0
+  )
+
+  # traj
+  df_4 <- plot_trips_df_setup(trajectory = lineE_traj,
+                              distance_df = NULL, plot_trips = NULL, timestep = 120,
+                              center_vehicles = TRUE, convert_to_timezone = FALSE,
+                              distance_lims = NULL) %>%
+    dplyr::group_by(trip_id_performed) %>%
+    dplyr::summarize(start_time = min(event_timestamp))
+  expect_all_equal(
+    df_4$start_time,
+    expected = 0
+  )
 })
