@@ -1,5 +1,5 @@
 # --- validate_tides() ---
-test_that("validate_tides: test output on sample data", {
+test_that("validate_tides: output on sample data", {
 
   base_val <- validate_tides(lacmta_avl)
   edit_val <- validate_tides(lacmta_avl %>%
@@ -26,4 +26,89 @@ test_that("validate_tides: test output on sample data", {
 })
 
 # --- validate_monotonicity() ---
-test_that("validate_monotonicity")
+test_that("validate_monotonicity: output on sample data", {
+
+  # get data
+  non_mono <- new_transittraj_data(func_output = "trim_trips")
+  weak_mono_non_speed <- make_monotonic(distance_df = non_mono,
+                                   correct_speed = FALSE)
+  strict_mono_non_speed <- make_monotonic(distance_df = non_mono,
+                                   correct_speed = FALSE,
+                                   add_distance_error = 0.01)
+  strict_mono_speed <- make_monotonic(distance_df = non_mono,
+                               correct_speed = TRUE,
+                               add_distance_error = 0.01)
+  full_check_df <- validate_monotonicity(strict_mono_speed,
+                                         check_speed = TRUE,
+                                         return_full = TRUE)
+
+  # non-mono
+  expect_all_false(
+    validate_monotonicity(non_mono, check_speed = TRUE)
+  )
+
+  # weak mono
+  expect_equal(
+    validate_monotonicity(weak_mono_non_speed, check_speed = TRUE),
+    expected = c("weak" = TRUE,
+                 "strict" = FALSE,
+                 "speed" = FALSE)
+  )
+
+  # strict mono
+  expect_equal(
+    validate_monotonicity(strict_mono_non_speed, check_speed = TRUE),
+    expected = c("weak" = TRUE,
+                 "strict" = TRUE,
+                 "speed" = FALSE)
+  )
+
+  # mono speed
+  expect_equal(
+    validate_monotonicity(strict_mono_speed, check_speed = TRUE),
+    expected = c("weak" = TRUE,
+                 "strict" = TRUE,
+                 "speed" = TRUE)
+  )
+
+  # return full
+  expect_s3_class(
+    full_check_df,
+    "data.frame"
+  )
+  expect_all_true(
+    full_check_df$all_ok
+  )
+  expect_equal(
+    dim(full_check_df)[1],
+    expected = dim(non_mono)[1]
+  )
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
