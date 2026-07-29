@@ -1,4 +1,4 @@
-# --- plot_traj_input_vaoidation() ---
+# --- plot_traj_input_validation() ---
 test_that("plot_traj_input_validation: input validation", {
 
   lineE_mono <- new_transittraj_data("make_monotonic")
@@ -246,7 +246,6 @@ test_that("plot_feature_df_setup: range validation", {
     expected = "a"
   )
 })
-
 test_that("plot_feature_df_setup: input validation", {
 
   test_features <- data.frame(name = c("a", "b", "c"),
@@ -274,22 +273,144 @@ test_that("plot_feature_df_setup: input validation", {
   )
 })
 
+# --- plot_format_setup() ---
+test_that("plot_format_setup: input validation", {
+
+  # ok inputs
+  plot_df <- data.frame(name = c("a", "b", "c"),
+                        name2 = c("1", "2", "3"),
+                        val = c(1, 2, 3))
+  format_input <- data.frame(color = c("blue"),
+                             name = c("a"))
+  format_type <- "color"
+  format_name <- "p_color"
+
+  # bad input column names
+  expect_error(
+    plot_format_setup(plotting_df = plot_df,
+                      attribute_input = (format_input %>% dplyr::rename(col = color)),
+                      attribute_type = format_type,
+                      attribute_name = format_name,
+                      user_show_legend = FALSE),
+    class = "error_plottraj_format"
+  )
+
+  # no match between format & plotting data
+  expect_error(
+    plot_format_setup(plotting_df = plot_df,
+                      attribute_input = (format_input %>% dplyr::rename(n = name)),
+                      attribute_type = format_type,
+                      attribute_name = format_name,
+                      user_show_legend = FALSE),
+    class = "error_plottraj_format"
+  )
+
+  # multiple matches between format & plotting data
+  expect_error(
+    plot_format_setup(plotting_df = plot_df,
+                      attribute_input = (format_input %>% dplyr::mutate(name2 = "1")),
+                      attribute_type = format_type,
+                      attribute_name = format_name,
+                      user_show_legend = FALSE),
+    class = "error_plottraj_format"
+  )
 
 
+})
+test_that("plot_format_setup: vector outputs", {
 
+  plot_df <- data.frame(name = c("a", "b", "c"),
+                        name2 = c("1", "2", "3"),
+                        val = c(1, 2, 3))
+  format_input_df <- data.frame(color = c("blue"),
+                                name = c("a"))
+  format_input_vec <- "red"
+  format_type <- "color"
+  format_name <- "p_color"
 
+  # - vector input-
+  f_1 <- plot_format_setup(plotting_df = plot_df,
+                           attribute_input = format_input_vec,
+                           attribute_type = format_type,
+                           attribute_name = format_name,
+                           user_show_legend = FALSE)
+  # attribute column name
+  expect_true(
+    f_1[[3]] %in% names(f_1[[1]])
+  )
+  # attribute column dummy value
+  expect_all_equal(
+    f_1[[1]][,f_1[[3]]],
+    expected = names(f_1[[4]])
+  )
+  # format value
+  expect_equal(
+    unname(f_1[[4]]),
+    expected = format_input_vec
+  )
+  # legend status
+  expect_equal(
+    f_1[[2]],
+    expected = "none"
+  )
 
+  f_2 <- plot_format_setup(plotting_df = plot_df,
+                           attribute_input = format_input_vec,
+                           attribute_type = format_type,
+                           attribute_name = format_name,
+                           user_show_legend = TRUE)
+  # legend status
+  expect_equal(
+    f_2[[2]],
+    expected = "legend"
+  )
+})
+test_that("plot_format_setup: df outputs", {
 
+  plot_df <- data.frame(name = c("a", "b", "c"),
+                        name2 = c("1", "2", "3"),
+                        val = c(1, 2, 3))
+  format_input_df <- data.frame(color = c("blue", "red", "green"),
+                                name = c("a", "b", "c"))
+  format_input_vec <- "red"
+  format_type <- "color"
+  format_name <- "p_color"
 
+  f_1 <- plot_format_setup(plotting_df = plot_df,
+                           attribute_input = format_input_df,
+                           attribute_type = format_type,
+                           attribute_name = format_name,
+                           user_show_legend = FALSE)
 
+  # names of attribute values vector
+  expect_setequal(
+    names(f_1[[4]]),
+    expected = plot_df$name
+  )
+  # values of attribute values vector
+  expect_setequal(
+    unname(f_1[[4]]),
+    expected = format_input_df$color
+  )
+  # name of attribute column
+  expect_all_true(
+    c(f_1[[3]] %in% names(format_input_df),
+      f_1[[3]] %in% names(plot_df))
+  )
+  # legend status
+  expect_equal(
+    f_1[[2]],
+    expected = "none"
+  )
 
-
-
-
-
-
-
-
-
-
-#
+  f_2 <- plot_format_setup(plotting_df = plot_df,
+                           attribute_input = format_input_df,
+                           attribute_type = format_type,
+                           attribute_name = format_name,
+                           user_show_legend = TRUE)
+  # legend status
+  expect_equal(
+    f_2[[2]],
+    expected = "legend"
+  )
+})
