@@ -164,8 +164,9 @@ test_that("plot_trips_df_setup: range validation", {
                         distance_lims = NULL),
     class = "error_plottraj_inputdata"
   )
+})
+test_that("plot_trips_df_setup: timezones", {
 
-  # - timezone -
   # distance_df
   expect_warning(
     plot_trips_df_setup(distance_df = (lineE_mono %>% dplyr::mutate(event_timestamp = as.numeric(event_timestamp))),
@@ -185,15 +186,16 @@ test_that("plot_trips_df_setup: range validation", {
 
   # traj
   df_2 <- plot_trips_df_setup(trajectory = lineE_traj,
-                      distance_df = NULL, plot_trips = NULL, timestep = 120,
-                      center_vehicles = FALSE, convert_to_timezone = TRUE,
-                      distance_lims = NULL)
+                              distance_df = NULL, plot_trips = NULL, timestep = 120,
+                              center_vehicles = FALSE, convert_to_timezone = TRUE,
+                              distance_lims = NULL)
   expect_equal(
     attr(df_2$event_timestamp, which = "tz"),
     expected = "America/Los_Angeles"
   )
+})
+test_that("plot_trips_df_setup: vehicle centering", {
 
-  # - centering -
   # distance_df
   df_3 <- plot_trips_df_setup(distance_df = lineE_mono,
                               trajectory = NULL, plot_trips = NULL,
@@ -218,3 +220,76 @@ test_that("plot_trips_df_setup: range validation", {
     expected = 0
   )
 })
+
+# --- plot_feature_df_setup() ---
+test_that("plot_feature_df_setup: range validation", {
+
+  test_features <- data.frame(name = c("a", "b", "c"),
+                              distance = c(100, 500, 1000))
+
+  # bad lims
+  expect_error(
+    plot_feature_df_setup(feature_distances = test_features,
+                          distance_lims = c(0, 10)),
+    class = "error_plottraj_inputdata"
+  )
+
+  # ok lims
+  feats <- plot_feature_df_setup(feature_distances = test_features,
+                                 distance_lims = c(50, 150))
+  expect_equal(
+    dim(feats)[1],
+    expected = 1
+  )
+  expect_equal(
+    feats$name[1],
+    expected = "a"
+  )
+})
+
+test_that("plot_feature_df_setup: input validation", {
+
+  test_features <- data.frame(name = c("a", "b", "c"),
+                              distance = c(100, 500, 1000))
+
+  # bad data type
+  expect_error(
+    plot_feature_df_setup(feature_distances = test_features$distance,
+                          distance_lims = NULL),
+    class = "error_plottraj_features"
+  )
+
+  # bad col name
+  expect_error(
+    plot_feature_df_setup(feature_distances = test_features %>% dplyr::rename(dist = distance),
+                          distance_lims = NULL),
+    class = "error_plottraj_features"
+  )
+
+  # bad col type
+  expect_error(
+    plot_feature_df_setup(feature_distances = test_features %>% dplyr::mutate(distance = as.character(distance)),
+                          distance_lims = NULL),
+    class = "error_plottraj_features"
+  )
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#

@@ -228,20 +228,6 @@ plot_trips_df_setup <- function(trajectory, distance_df,
 plot_feature_df_setup <- function(feature_distances,
                                   distance_lims) {
 
-  # --- Filtering ---
-  # Filter observations to distance limits
-  if (!is.null(distance_lims)) {
-    feature_distances <- feature_distances %>%
-      dplyr::filter((distance >= distance_lims[1]) &
-                      (distance <= distance_lims[2]))
-  }
-
-  # Check that feature values remain after filtering.
-  if (dim(feature_distances)[1] == 0) {
-    rlang::abort(message = "No features within distance limit.",
-                 class = "error_plottraj_inputdata")
-  }
-
   # --- Validation ---
   # Must be dataframe
   if (!is.data.frame(feature_distances)) {
@@ -257,6 +243,20 @@ plot_feature_df_setup <- function(feature_distances,
   if (!is.numeric(feature_distances$distance)) {
     rlang::abort(message = "feature_distances distance column must be numeric.",
                  class = "error_plottraj_features")
+  }
+
+  # --- Filtering ---
+  # Filter observations to distance limits
+  if (!is.null(distance_lims)) {
+    feature_distances <- feature_distances %>%
+      dplyr::filter((distance >= distance_lims[1]) &
+                      (distance <= distance_lims[2]))
+  }
+
+  # Check that feature values remain after filtering.
+  if (dim(feature_distances)[1] == 0) {
+    rlang::abort(message = "No features within distance limit.",
+                 class = "error_plottraj_inputdata")
   }
 
   return(feature_distances)
