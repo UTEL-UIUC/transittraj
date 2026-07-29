@@ -1,3 +1,4 @@
+# --- plot_traj_input_vaoidation() ---
 test_that("plot_traj_input_validation: input validation", {
 
   lineE_mono <- new_transittraj_data("make_monotonic")
@@ -61,21 +62,84 @@ test_that("plot_traj_input_validation: input validation", {
   )
 })
 
+# --- plot_traj_df_setup() ---
 test_that("plot_traj_df_setup: range validation", {
 
   lineE_mono <- new_transittraj_data("make_monotonic")
   lineE_traj_noinv <- get_trajectory_fun(distance_df = lineE_mono,
-                                       find_inverse_function = FALSE)
+                                         find_inverse_function = FALSE)
+  lineE_traj_inv <- get_trajectory_fun(distance_df = lineE_mono,
+                                       find_inverse_function = TRUE)
 
-  # wrong distance lims w/ non-inverse
+  # --- has_inv ---
   # bad lims w/ inverse will be caught by predict() validators
+  # no distance lims
+  df_1 <- plot_traj_df_setup(trajectory = lineE_traj_inv,
+                             has_inv = TRUE,
+                             plot_trips = unique(lineE_mono$trip_id_performed)[1],
+                             timestep = 120,
+                             distance_lims = NULL)
+  obs_range <- lineE_mono %>%
+    dplyr::filter(trip_id_performed == unique(lineE_mono$trip_id_performed)[1]) %>%
+    dplyr::summarize(min_dist = min(distance),
+                     max_dist = max(distance))
+  expect_s3_class(
+    df_1,
+    class = "data.frame"
+  )
+  expect_equal(
+    min(df_1$distance),
+    expected = obs_range$min_dist, tolerance = 1
+  )
+  expect_equal(
+    max(df_1$distance),
+    expected = obs_range$max_dist, tolerance = 1000
+  )
+
+  # distance lims
+  test_lims <- c(500, 1000)
+  df_2 <- plot_traj_df_setup(trajectory = lineE_traj_inv,
+                             has_inv = TRUE,
+                             plot_trips = unique(lineE_mono$trip_id_performed)[1],
+                             timestep = 10,
+                             distance_lims = test_lims)
+  expect_equal(
+    min(df_2$distance),
+    expected = test_lims[1], tolerance = 100
+  )
+  expect_equal(
+    max(df_2$distance),
+    expected = test_lims[2], tolerance = 100
+  )
+
+  # --- no inv ---
+  # bad lims
   expect_error(
-    suppressMessages(plot_trajectory(trajectory = lineE_traj_noinv,
-                                     distance_lims = c(50000, 50200))),
+    suppressMessages(plot_traj_df_setup(trajectory = lineE_traj_noinv,
+                                        has_inv = FALSE,
+                                        plot_trips = unique(lineE_mono$trip_id_performed)[1],
+                                        timestep = 5,
+                                        distance_lims = c(50000, 50200))),
     class = "error_plottraj_input"
+  )
+
+  # ok lims
+  df_3 <- plot_traj_df_setup(trajectory = lineE_traj_noinv,
+                             has_inv = FALSE,
+                             plot_trips = unique(lineE_mono$trip_id_performed)[1],
+                             timestep = 10,
+                             distance_lims = test_lims)
+  expect_equal(
+    min(df_3$distance),
+    expected = test_lims[1], tolerance = 100
+  )
+  expect_equal(
+    max(df_3$distance),
+    expected = test_lims[2], tolerance = 100
   )
 })
 
+# --- plot_trips_df_setup() ---
 test_that("plot_trips_df_setup: range validation", {
 
   # problems w/ traj object will be caught by plot_traj_df_setup,
