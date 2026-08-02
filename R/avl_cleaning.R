@@ -355,7 +355,8 @@ clean_jumps <- function(distance_df, neighborhood_width = 7, t_cutoff = 3,
                         return_removals = FALSE) {
 
   # --- Validate AVL ---
-  needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
+  needed_fields <- c("trip_id_performed", "event_timestamp", "distance",
+                     "location_ping_id")
   validate_input_to_tides(needed_fields, distance_df)
 
   num_obs <- floor(neighborhood_width / 2)

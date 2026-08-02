@@ -643,8 +643,158 @@ test_that("clean_overlapping_subtrips: remove single obseravations", {
   )
 })
 
+# --- clean_jumps() ---
+test_that("clean_jumps: standard", {
 
+  distance_df = data.frame(
+    trip_id_performed = rep("a", 9),
+    distance = c(0, 1, 2, 3, 100, 4, 5, 6, 7), # index 5 is outlier
+    event_timestamp = as.POSIXct(seq(from = 5, by = 5, length.out = 9))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
 
+  # t cutoff
+  t <- clean_jumps(distance_df = distance_df)
+  r <- clean_jumps(distance_df = distance_df,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df[-5,])
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 1
+  )
+  expect_equal(
+    r$location_ping_id[1],
+    expected = "5"
+  )
+
+  # dist cutoff
+  t2 <- clean_jumps(distance_df = distance_df,
+                    t_cutoff = Inf,
+                    min_median_deviation = -10, max_median_deviation = 10)
+  r2 <- clean_jumps(distance_df = distance_df,
+                    t_cutoff = Inf,
+                    min_median_deviation = -10, max_median_deviation = 10,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df[-5,])
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 1
+  )
+  expect_equal(
+    r2$location_ping_id[1],
+    expected = "5"
+  )
+
+  # neither cutoff
+  t3 <- clean_jumps(distance_df = distance_df,
+                    t_cutoff = Inf)
+  r3 <- clean_jumps(distance_df = distance_df,
+                    t_cutoff = Inf,
+                    return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t3),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r3)[1],
+    expected = 0
+  )
+})
+test_that("clean_jumps: implosion", {
+
+  distance_df = data.frame(
+    trip_id_performed = rep("a", 9),
+    distance = c(0, 0, 0, 0, 100, 0, 10, 15, 20), # index 5 is outlier
+    event_timestamp = as.POSIXct(seq(from = 5, by = 5, length.out = 9))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # do not check if implosion
+  t <- clean_jumps(distance_df = distance_df,
+                   evaluate_implosions = FALSE)
+  r <- clean_jumps(distance_df = distance_df,
+                   evaluate_implosions = FALSE,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 0
+  )
+
+  # check if implosion
+  t2 <- clean_jumps(distance_df = distance_df,
+                   evaluate_implosions = TRUE)
+  r2 <- clean_jumps(distance_df = distance_df,
+                   evaluate_implosions = TRUE,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df[-c(4,5),])
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 2
+  )
+  expect_equal(
+    r2$location_ping_id,
+    expected = c("4", "5")
+  )
+})
+test_that("clean_jumps: tails", {
+
+  distance_df = data.frame(
+    trip_id_performed = rep("a", 9),
+    distance = c(0, 100, 2, 3, 4, 5, 6, 7, 8), # index 2 is outlier
+    event_timestamp = as.POSIXct(seq(from = 5, by = 5, length.out = 9))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # do not check tails
+  t <- clean_jumps(distance_df = distance_df,
+                   evaluate_tails = FALSE)
+  r <- clean_jumps(distance_df = distance_df,
+                   evaluate_tails = FALSE,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 0
+  )
+
+  # check tails
+  t2 <- clean_jumps(distance_df = distance_df,
+                   evaluate_tails = TRUE)
+  r2 <- clean_jumps(distance_df = distance_df,
+                   evaluate_tails = TRUE,
+                   return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df[-2,])
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 1
+  )
+  expect_equal(
+    r2$location_ping_id,
+    expected = "2"
+  )
+})
+
+# --- clean_incomplete_trips() ---
+# test_that("clean_incomplete_trips: ", {})
 
 
 
