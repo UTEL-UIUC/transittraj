@@ -458,7 +458,8 @@ clean_incomplete_trips <- function(distance_df,
                                    return_removals = FALSE) {
 
   # --- Validate AVL ---
-  needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
+  needed_fields <- c("trip_id_performed", "event_timestamp", "distance",
+                     "location_ping_id")
   validate_input_to_tides(needed_fields, distance_df)
 
   # Generate necessary summary statistics
@@ -467,7 +468,7 @@ clean_incomplete_trips <- function(distance_df,
     dplyr::group_by(trip_id_performed) %>%
     dplyr::mutate(delta_dist = distance - dplyr::lag(distance),
                   delta_dist = tidyr::replace_na(delta_dist, 0)) %>%
-    dplyr::mutate(delta_time = as.numeric(event_timestamp - dplyr::lag(event_timestamp)),
+    dplyr::mutate(delta_time = as.numeric(difftime(event_timestamp, dplyr::lag(event_timestamp), units = "secs")),
                   delta_time = tidyr::replace_na(delta_time, 0)) %>%
     dplyr::summarise(max_dist = max(distance),
                      min_dist = min(distance),

@@ -794,8 +794,216 @@ test_that("clean_jumps: tails", {
 })
 
 # --- clean_incomplete_trips() ---
-# test_that("clean_incomplete_trips: ", {})
+test_that("clean_incomplete_trips: distance filters", {
 
+  distance_df <- data.frame(
+    trip_id_performed = c("a", "a", "b", "b"),
+    distance = c(0, 100, 0, 50),
+    event_timestamp = as.POSIXct(c(0, 60, 0, 30))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # min dist
+  t <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 50)
+  r <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 50,
+                              return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 0
+  )
+
+  t2 <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 51)
+  r2 <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 51,
+                              return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 1
+  )
+  expect_equal(
+    r2$trip_id_performed,
+    expected = "b"
+  )
+
+  # dist gap
+  t3 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 100)
+  r3 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 100,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t3),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r3)[1],
+    expected = 0
+  )
+
+  t4 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 99)
+  r4 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 99,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t4),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "b"))
+  )
+  expect_equal(
+    dim(r4)[1],
+    expected = 1
+  )
+  expect_equal(
+    r4$trip_id_performed,
+    expected = "a"
+  )
+})
+test_that("clean_incomplete_trips: time filters", {
+
+  distance_df <- data.frame(
+    trip_id_performed = c("a", "a", "b", "b"),
+    distance = c(0, 100, 0, 50),
+    event_timestamp = as.POSIXct(c(0, 60, 0, 30))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # min duration
+  t <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_duration = 30)
+  r <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_duration = 30,
+                              return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 0
+  )
+
+  t2 <- clean_incomplete_trips(distance_df = distance_df,
+                               min_trip_duration = 31)
+  r2 <- clean_incomplete_trips(distance_df = distance_df,
+                               min_trip_duration = 31,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 1
+  )
+  expect_equal(
+    r2$trip_id_performed,
+    expected = "b"
+  )
+
+  # time gap
+  t3 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_time_gap = 60)
+  r3 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_time_gap = 60,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t3),
+    expected = data.table::as.data.table(distance_df)
+  )
+  expect_equal(
+    dim(r3)[1],
+    expected = 0
+  )
+
+  t4 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_time_gap = 59)
+  r4 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_time_gap = 59,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t4),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "b"))
+  )
+  expect_equal(
+    dim(r4)[1],
+    expected = 1
+  )
+  expect_equal(
+    r4$trip_id_performed,
+    expected = "a"
+  )
+})
+test_that("clean_incomplete_trips: time & dist filters", {
+
+  distance_df <- data.frame(
+    trip_id_performed = c("a", "a", "b", "b"),
+    distance = c(0, 100, 0, 50),
+    event_timestamp = as.POSIXct(c(0, 60, 0, 30))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # min dist & duration
+  t <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 51,
+                              min_trip_duration = 31)
+  r <- clean_incomplete_trips(distance_df = distance_df,
+                              min_trip_distance = 51,
+                              min_trip_duration = 31,
+                              return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 1
+  )
+  expect_equal(
+    r$trip_id_performed,
+    expected = "b"
+  )
+
+  # dist & time gaps
+  t2 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 99,
+                               max_time_gap = 29)
+  r2 <- clean_incomplete_trips(distance_df = distance_df,
+                               max_distance_gap = 99,
+                               max_time_gap = 29,
+                               return_removals = TRUE)
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df %>% dplyr::filter(!(trip_id_performed %in% c("a", "b"))))
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 2
+  )
+  expect_equal(
+    r2$trip_id_performed,
+    expected = c("a", "b")
+  )
+  expect_equal(
+    r2$dist_gap_ok,
+    expected = c(FALSE, TRUE)
+  )
+  expect_equal(
+    r2$t_gap_ok,
+    expected = c(FALSE, FALSE)
+  )
+
+})
 
 
 
