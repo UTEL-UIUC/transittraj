@@ -1208,6 +1208,200 @@ test_that("trim_trips: trim both", {
   )
 })
 
+# --- make_monotonic() ---
+test_that("make_monotonic: distance error validation", {
+
+  distance_df <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(0, 1, 2, 3, 4, 5),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  expect_error(
+    make_monotonic(distance_df = distance_df,
+                   add_distance_error = "a"),
+    class = "error_mono_dist_error"
+  )
+})
+test_that("make_monotonic: weak", {
+
+  # change
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 3, 2, 2))
+
+  t1 <- make_monotonic(distance_df = distance_df1,
+                      correct_speed = FALSE,
+                      add_distance_error = 0)
+  r1 <- make_monotonic(distance_df = distance_df1,
+                      correct_speed = FALSE,
+                      add_distance_error = 0,
+                      return_changes = TRUE)
+
+  expect_equal(
+    t1$distance,
+    expected = c(0, 1, 2, 3, 3, 3)
+  )
+  expect_equal(
+    dim(r1)[1],
+    expected = 2
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[5:6]
+  )
+
+  # no change
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 3, 3, 3))
+
+  t2 <- make_monotonic(distance_df = distance_df2,
+                       correct_speed = FALSE,
+                       add_distance_error = 0)
+  r2 <- make_monotonic(distance_df = distance_df2,
+                       correct_speed = FALSE,
+                       add_distance_error = 0,
+                       return_changes = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df2)
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+
+})
+test_that("make_monotonic: strict", {
+
+  # change
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 3, 2, 2))
+
+  t1 <- make_monotonic(distance_df = distance_df1,
+                       correct_speed = FALSE,
+                       add_distance_error = 0.1)
+  r1 <- make_monotonic(distance_df = distance_df1,
+                       correct_speed = FALSE,
+                       add_distance_error = 0.1,
+                       return_changes = TRUE)
+
+  expect_equal(
+    t1$distance,
+    expected = c(0, 1, 2, 3, 3.1, 3.2)
+  )
+  expect_equal(
+    dim(r1)[1],
+    expected = 2
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[5:6]
+  )
+
+  # no change
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 3, 4, 5))
+
+  t2 <- make_monotonic(distance_df = distance_df2,
+                       correct_speed = FALSE,
+                       add_distance_error = 0)
+  r2 <- make_monotonic(distance_df = distance_df2,
+                       correct_speed = FALSE,
+                       add_distance_error = 0,
+                       return_changes = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df2)
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+
+})
+test_that("make_monotonic: prevent overshoot", {
+
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 2, 2, 3))
+
+  t1 <- make_monotonic(distance_df = distance_df1,
+                       correct_speed = FALSE,
+                       add_distance_error = 0.5)
+
+  expect_equal(
+    t1$distance,
+    expected = c(0, 1, 2, 2 + (1 / 4.5), 2 + (2 / 4.5), 3)
+  )
+
+})
+test_that("make_monotonic: speeds", {
+
+  # change
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2, 2, 2, 3),
+                  speed = c(0.2, 0.2, 0, 100, 0, 0.2))
+
+  r1 <- make_monotonic(distance_df = distance_df1,
+                       correct_speed = TRUE,
+                       add_distance_error = 0.01,
+                       return_changes = TRUE)
+
+  expect_equal(
+    dim(r1)[1],
+    expected = 3
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[3:5]
+  )
+
+  # no change
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
+                  distance = c(0, 1, 2.01, 2.02, 2.03, 3),
+                  speed = c(0.2, 0.2, 1e-9, 1e-9, 1e-9, 0.2))
+
+  r2 <- make_monotonic(distance_df = distance_df2,
+                       correct_speed = TRUE,
+                       add_distance_error = 0.01,
+                       return_changes = TRUE)
+
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+
+})
 
 
 

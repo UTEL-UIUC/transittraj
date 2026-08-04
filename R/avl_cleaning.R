@@ -712,9 +712,10 @@ make_monotonic <- function(distance_df,
   # --- Validate AVL ---
   if (correct_speed) {
     needed_fields <- c("trip_id_performed", "event_timestamp", "distance",
-                       "speed")
+                       "speed", "location_ping_id")
   } else {
-    needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
+    needed_fields <- c("trip_id_performed", "event_timestamp", "distance",
+                       "location_ping_id")
   }
   validate_input_to_tides(needed_fields, distance_df)
 
@@ -845,19 +846,34 @@ make_monotonic <- function(distance_df,
   }
 
   if (return_changes) { # If returning changes, calculate differences at each point
-    mono_df_sel <- final_monotonic_df %>%
-      dplyr::select(location_ping_id, distance, speed, correction_applied) %>%
-      dplyr::rename(final_distance = distance,
-                    final_speed = speed)
 
-    changes_df <- distance_df %>%
-      dplyr::select(location_ping_id, trip_id_performed, event_timestamp, distance, speed) %>%
-      dplyr::rename(initial_distance = distance,
-                    initial_speed = speed) %>%
-      dplyr::left_join(y = mono_df_sel, by = "location_ping_id") %>%
-      dplyr::mutate(distance_change = final_distance - initial_distance,
-                    speed_change = final_speed - initial_speed) %>%
-      dplyr::filter(correction_applied)
+    if (correct_speed) {
+      mono_df_sel <- final_monotonic_df %>%
+        dplyr::select(location_ping_id, distance, speed, correction_applied) %>%
+        dplyr::rename(final_distance = distance,
+                      final_speed = speed)
+
+      changes_df <- distance_df %>%
+        dplyr::select(location_ping_id, trip_id_performed, event_timestamp, distance, speed) %>%
+        dplyr::rename(initial_distance = distance,
+                      initial_speed = speed) %>%
+        dplyr::left_join(y = mono_df_sel, by = "location_ping_id") %>%
+        dplyr::mutate(distance_change = final_distance - initial_distance,
+                      speed_change = final_speed - initial_speed) %>%
+        dplyr::filter((distance_change != 0) |
+                        (speed_change != 0))
+    } else {
+      mono_df_sel <- final_monotonic_df %>%
+        dplyr::select(location_ping_id, distance, correction_applied) %>%
+        dplyr::rename(final_distance = distance)
+
+      changes_df <- distance_df %>%
+        dplyr::select(location_ping_id, trip_id_performed, event_timestamp, distance) %>%
+        dplyr::rename(initial_distance = distance) %>%
+        dplyr::left_join(y = mono_df_sel, by = "location_ping_id") %>%
+        dplyr::mutate(distance_change = final_distance - initial_distance) %>%
+        dplyr::filter(distance_change != 0)
+    }
 
     return(changes_df %>% dplyr::select(-correction_applied))
   } else { # Otherwise, return final monotonic df
