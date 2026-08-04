@@ -609,7 +609,7 @@ get_gtfs_trajectory_fun <- function(gtfs,
     # If using arrival times, pull that
     trip_timepoints <- gtfs$stop_times %>%
       dplyr::arrange(trip_id, stop_sequence) %>%
-      dplyr::select(trip_id, stop_id, departure_time) %>%
+      dplyr::select(trip_id, stop_id, arrival_time) %>%
       tidyr::pivot_longer(cols = c("arrival_time"),
                           names_to = "in_out",
                           values_to = "stp_time")
@@ -624,7 +624,7 @@ get_gtfs_trajectory_fun <- function(gtfs,
     num_zero_dwells <- sum(trip_dwells$dwell_time == 0)
     if(num_zero_dwells > 0) {
       # If there are zero-second dwell times
-      if(is.null(add_stop_dwell)) {
+      if(add_stop_dwell == 0) {
         # Stop dwell not provided
         rlang::abort(message = "Zero-second stop dwells detected, but no stop dwell addition provided. Please either: change stop time method, or provide stop dwell time to add.",
                      class = "error_gtfstraj_inputdata")
@@ -697,13 +697,13 @@ get_gtfs_trajectory_fun <- function(gtfs,
                   event_timestamp = as.POSIXct(paste(date, stp_time, sep = " "),
                                                format = "%Y-%m-%d %H:%M:%S",
                                                tz = agency_timezone),
-                  location_ping_id = dplyr::row_number()) %>%
+                  location_ping_id = as.character(dplyr::row_number())) %>%
     dplyr::select(-c(date, hour_num, stp_time)) %>%
     dplyr::rename(trip_id_performed = trip_id)
 
   # Correct for monotonicity
   if (add_distance_error > 0) {
-    trip_distances <- make_monotonic(distance_df = trip_TIDES,
+    trip_TIDES <- make_monotonic(distance_df = trip_TIDES,
                                      correct_speed = FALSE,
                                      add_distance_error = add_distance_error)
   }
