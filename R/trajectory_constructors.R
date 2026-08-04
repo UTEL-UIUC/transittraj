@@ -247,9 +247,11 @@ get_trajectory_fun <- function(distance_df,
     if (interp_method != "monoH.FC") {
       # If method is monoH.FC
       if (interp_method == "linear") {
-        warning("Speeds cannot be used for linear interpolation. Ignoring speeds and performing linear interpolation.")
+        rlang::warn(message = "Speeds cannot be used for linear interpolation. Ignoring speeds and performing linear interpolation.",
+                    class = "warn_traj_type")
       } else {
-        warning("Using speeds for spline interpolation requires method monoH.FC. monoH.FC will be used unless use_speeds set to FALSE.")
+        rlang::warn(message = "Using speeds for spline interpolation requires method monoH.FC. monoH.FC will be used unless use_speeds set to FALSE.",
+                    class = "warn_traj_type")
       }
     }
   }

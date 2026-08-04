@@ -1402,16 +1402,3 @@ test_that("make_monotonic: speeds", {
   )
 
 })
-
-
-
-
-
-
-
-
-
-
-
-
-#
