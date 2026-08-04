@@ -1005,6 +1005,209 @@ test_that("clean_incomplete_trips: time & dist filters", {
 
 })
 
+# --- trim_trips() ---
+test_that("trim_trips: type validation", {
+
+  distance_df <- data.frame(
+    trip_id_performed = rep("a", 7),
+    distance = c(0, 0, 0, 0, 1, 2, 3),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 7))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # error
+  expect_error(
+    trim_trips(distance_df = distance_df,
+               trim_type = "abc"),
+    class = "error_trimtrips_type"
+  )
+
+  # ok inputs
+  expect_no_error(
+    trim_trips(distance_df = distance_df,
+               trim_type = "beginning")
+  )
+  expect_no_error(
+    trim_trips(distance_df = distance_df,
+               trim_type = "end")
+  )
+  expect_no_error(
+    trim_trips(distance_df = distance_df,
+               trim_type = "both")
+  )
+
+})
+test_that("trim_trips: direction warning", {
+
+  distance_df <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(5, 1, 0, 1, 2, 3),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  expect_warning(
+    trim_trips(distance_df = distance_df),
+    class = "warn_trimtrips_dir"
+  )
+})
+test_that("trim_trips: trim beginning", {
+
+  # trim
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(2, 1, 0, 1, 2, 3),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "beginning")
+  r1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "beginning",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t1),
+    expected = data.table::as.data.table(distance_df1[3:6,])
+  )
+  expect_equal(
+    dim(r1)[1],
+    expected = 2
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[1:2]
+  )
+
+  # no trim
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(0, 0, 0, 1, 2, 3),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "beginning")
+  r2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "beginning",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df2)
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+})
+test_that("trim_trips: trim end", {
+
+  # trim
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(0, 1, 3, 4, 3, 2),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "end")
+  r1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "end",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t1),
+    expected = data.table::as.data.table(distance_df1[1:4,])
+  )
+  expect_equal(
+    dim(r1)[1],
+    expected = 2
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[5:6]
+  )
+
+  # no trim
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(1, 2, 3, 4, 5, 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "end")
+  r2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "end",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df2)
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+})
+test_that("trim_trips: trim both", {
+
+  # trim
+  distance_df1 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(1, 0, 1, 2, 3, 1),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "both")
+  r1 <- trim_trips(distance_df = distance_df1,
+                   trim_type = "both",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t1),
+    expected = data.table::as.data.table(distance_df1[2:5,])
+  )
+  expect_equal(
+    dim(r1)[1],
+    expected = 2
+  )
+  expect_equal(
+    r1$location_ping_id,
+    expected = distance_df1$location_ping_id[c(1, 6)]
+  )
+
+  # no trim
+  distance_df2 <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(1, 2, 3, 4, 5, 6),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  t2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "both")
+  r2 <- trim_trips(distance_df = distance_df2,
+                   trim_type = "both",
+                   return_removals = TRUE)
+
+  expect_equal(
+    data.table::as.data.table(t2),
+    expected = data.table::as.data.table(distance_df2)
+  )
+  expect_equal(
+    dim(r2)[1],
+    expected = 0
+  )
+})
+
 
 
 

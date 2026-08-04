@@ -538,7 +538,8 @@ trim_trips <- function(distance_df, trim_type = "both",
                        return_removals = FALSE) {
 
   # --- Validate AVL ---
-  needed_fields <- c("trip_id_performed", "event_timestamp", "distance")
+  needed_fields <- c("trip_id_performed", "event_timestamp", "distance",
+                     "location_ping_id")
   validate_input_to_tides(needed_fields, distance_df)
 
   # Get minimum & maximum distance index of each trip
@@ -560,8 +561,9 @@ trim_trips <- function(distance_df, trim_type = "both",
       dplyr::distinct(trip_id_performed) %>%
       dplyr::pull(trip_id_performed)
 
-    warning(paste("Trips found with maximum at or before minimum point -- potential wrong direction.\nRemoving the following: ",
-                  toString(remove_trips), sep = ""))
+    rlang::warn(message = paste("Trips found with maximum at or before minimum point -- potential wrong direction.\nRemoving the following: ",
+                                toString(remove_trips), sep = ""),
+                class = "warn_trimtrips_dir")
 
     index_df <- index_df %>%
       dplyr::filter(!(trip_id_performed %in% remove_trips))
@@ -610,12 +612,12 @@ trim_trips <- function(distance_df, trim_type = "both",
       trim_df <- index_df %>%
         dplyr::filter(!after_max) %>%
         dplyr::select(-c(min_dist_index, max_dist_index, row_index,
-                         before_min, after_max, obs_ok))
+                         before_min, after_max, obs_ok, remove_trip))
       return(trim_df)
     }
   } else { # If unknown entry, throw error
     rlang::abort(message = "Unknown trim type. Please enter: \"beginning\", \"end\", or \"both\".",
-                 class = "error_trimtips_type")
+                 class = "error_trimtrips_type")
   }
 }
 
