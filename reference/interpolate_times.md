@@ -7,13 +7,13 @@ grouped or single.
 ## Usage
 
 ``` r
-interpolate_times(trajectory, new_dist_trips)
+interpolate_times(trajectory, new_dist_trips, ...)
 
 # S3 method for class 'avltrajectory_single'
-interpolate_times(trajectory, new_dist_trips)
+interpolate_times(trajectory, new_dist_trips, ...)
 
 # S3 method for class 'avltrajectory_group'
-interpolate_times(trajectory, new_dist_trips)
+interpolate_times(trajectory, new_dist_trips, ...)
 ```
 
 ## Arguments
@@ -25,6 +25,10 @@ interpolate_times(trajectory, new_dist_trips)
 - new_dist_trips:
 
   A DF with trip_id_performed and distance
+
+- ...:
+
+  other inputs, not used
 
 ## Value
 
