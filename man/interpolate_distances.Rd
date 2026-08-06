@@ -6,16 +6,18 @@
 \alias{interpolate_distances.avltrajectory_group}
 \title{Internal generic for performing interpolation of distances from times.}
 \usage{
-interpolate_distances(trajectory, new_times_trips)
+interpolate_distances(trajectory, new_times_trips, ...)
 
-\method{interpolate_distances}{avltrajectory_single}(trajectory, new_times_trips)
+\method{interpolate_distances}{avltrajectory_single}(trajectory, new_times_trips, ...)
 
-\method{interpolate_distances}{avltrajectory_group}(trajectory, new_times_trips)
+\method{interpolate_distances}{avltrajectory_group}(trajectory, new_times_trips, ...)
 }
 \arguments{
 \item{trajectory}{Single or grouped trajectory object}
 
 \item{new_times_trips}{DF with trip_id_performed and event_timestamp}
+
+\item{...}{other inputs, not used}
 }
 \value{
 A DF with appended column "interp" of distance (or deriv) values

@@ -6,16 +6,18 @@
 #'
 #' @param trajectory Single or grouped trajectory object
 #' @param new_times_trips DF with trip_id_performed and event_timestamp
+#' @param ... other inputs, not used
 #' @return A DF with appended column "interp" of distance (or deriv) values
 #' @keywords internal
-interpolate_distances <- function(trajectory, new_times_trips) {
+interpolate_distances <- function(trajectory,
+                                  new_times_trips, ...) {
   UseMethod("interpolate_distances")
 }
 
 #' @rdname interpolate_distances
 #' @keywords internal
 interpolate_distances.avltrajectory_single <- function(trajectory,
-                                                       new_times_trips) {
+                                                       new_times_trips, ...) {
 
   # Pull traj fun
   trajectory_function <- attr(trajectory, "traj_fun")
@@ -40,7 +42,7 @@ interpolate_distances.avltrajectory_single <- function(trajectory,
 #' @rdname interpolate_distances
 #' @keywords internal
 interpolate_distances.avltrajectory_group <- function(trajectory,
-                                                      new_times_trips) {
+                                                      new_times_trips, ...) {
 
   # Pull traj fun
   trajectory_function <- attr(trajectory, "traj_fun")
@@ -76,16 +78,17 @@ interpolate_distances.avltrajectory_group <- function(trajectory,
 #'
 #' @param trajectory Single or grouped trajectory object
 #' @param new_dist_trips A DF with trip_id_performed and distance
+#' @param ... other inputs, not used
 #' @return A DF with appended column "interp" of event_timestamp values
 #' @keywords internal
-interpolate_times <- function(trajectory, new_dist_trips) {
+interpolate_times <- function(trajectory, new_dist_trips, ...) {
   UseMethod("interpolate_times")
 }
 
 #' @rdname interpolate_times
 #' @keywords internal
 interpolate_times.avltrajectory_single <- function(trajectory,
-                                                   new_dist_trips) {
+                                                   new_dist_trips, ...) {
   # Pull inv traj fun
   inv_trajectory_function <- attr(trajectory, "inv_traj_fun")
 
@@ -98,7 +101,7 @@ interpolate_times.avltrajectory_single <- function(trajectory,
 #' @rdname interpolate_times
 #' @keywords internal
 interpolate_times.avltrajectory_group <- function(trajectory,
-                                                  new_dist_trips) {
+                                                  new_dist_trips, ...) {
 
   # Pull inv traj fun
   inv_trajectory_function <- attr(trajectory, "inv_traj_fun")
