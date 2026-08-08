@@ -1,15 +1,16 @@
 #' Summarize an AVL trajectory object
 #'
 #' @description
-#' This function prints a summary for grouped or single trajectory object.
-#' If the input is a single trajectory, the trip's ID and distance & time range
-#' will be printed. If the input is a grouped trajectory, the number of trips
-#' and the distance & time range across all trips will be printed. For both,
-#' the interpolating curve methods will be printed.
+#' This function creates and prints a list summarizing a single or grouped
+#' trajectory object. If the input is a single trajectory, the trip's ID
+#' and distance & time range will be printed. If the input is a grouped
+#' trajectory, the number of trips and the distance & time range across
+#' all trips will be printed. For both, the interpolating curve methods
+#' will be printed.
 #'
 #' @param object A single or grouped trajectory object.
 #' @param ... Other parameters (not used).
-#' @return A summary character string.
+#' @return A list summarizing the attributes of a fit trajectory.
 #' @export
 #' @examples
 #' # Get input data
@@ -18,6 +19,10 @@
 #'
 #' # Run function: grouped trajectory object
 #' summary(lineE_traj_grouped)
+#'
+#' # Run functions: store summary object
+#' lineE_summ <- summary(lineE_traj_grouped)
+#' print(lineE_summ$num_trips)
 #'
 #' # Run function: single trajectory object
 #' summary(lineE_traj_singles[[2]])
@@ -35,29 +40,28 @@ summary.avltrajectory_group <- function(object, ...) {
   inv_tol <- attr(object, "inv_tol")
   used_speeds <-attr(object, "used_speeds")
 
-  response <- cat("------",
-                  "\nAVL Group Trajectory Object",
-                  "\n------",
-                  "\nNumber of trips: ", num_trips,
-                  "\nTotal distance range: ", min_dist, " to ", max_dist,
-                  "\nTotal time range: ", min_time, " to ", max_time,
-                  "\n------",
-                  "\nTrajectory function present: ", is_traj,
-                  "\n   --> Trajectory interpolation method: ", traj_type,
-                  "\n   --> Maximum derivative: ", max_deriv,
-                  "\n   --> Fit with speeds: ", used_speeds,
-                  "\nInverse function present: ", is_inv,
-                  "\n   --> Inverse function tolerance: ", inv_tol,
-                  "\n------",
-                  sep = "")
+  summary_obj <- list(
+    num_trips = num_trips,
+    min_dist = min_dist,
+    max_dist = max_dist,
+    min_time = min_time,
+    max_time = max_time,
+    is_traj = is_traj,
+    traj_type = traj_type,
+    max_deriv = max_deriv,
+    is_inv = is_inv,
+    inv_tol = inv_tol,
+    used_speeds = used_speeds
+  )
 
-  invisible(object)
+  class(summary_obj) <- "summary.avltrajectory_group"
+  summary_obj
 }
 
 #' @rdname summary.avltrajectory_group
 #' @export
 summary.avltrajectory_single <- function(object, ...) {
-  trip_id <- unclass(object)
+  trip_id <- unclass(object)[1]
   min_dist <- attr(object, "min_dist")
   max_dist <- attr(object, "max_dist")
   min_time <- attr(object, "min_time")
@@ -70,23 +74,75 @@ summary.avltrajectory_single <- function(object, ...) {
   inv_tol <- attr(object, "inv_tol")
   used_speeds <- attr(object, "used_speeds")
 
-  response <- cat("------",
-                  "\nAVL Single Trajectory Object",
-                  "\n------",
-                  "\nTrip ID: ", trip_id,
-                  "\nTrip distance range: ", min_dist, " to ", max_dist,
-                  "\nTrip time range: ", min_time, " to ", max_time,
-                  "\n------",
-                  "\nTrajectory function present: ", is_traj,
-                  "\n   --> Trajectory interpolation method: ", traj_type,
-                  "\n   --> Maximum derivative: ", max_deriv,
-                  "\n   --> Fit with speeds: ", used_speeds,
-                  "\nInverse function present: ", is_inv,
-                  "\n   --> Inverse function tolerance: ", inv_tol,
-                  "\n------",
-                  sep = "")
+  summary_obj <- list(
+    trip_id = trip_id,
+    min_dist = min_dist,
+    max_dist = max_dist,
+    min_time = min_time,
+    max_time = max_time,
+    is_traj = is_traj,
+    traj_type = traj_type,
+    max_deriv = max_deriv,
+    is_inv = is_inv,
+    inv_tol = inv_tol,
+    used_speeds = used_speeds
+  )
 
-  invisible(object)
+  class(summary_obj) <- "summary.avltrajectory_single"
+  summary_obj
+}
+
+#' Print a trajectory summary.
+#'
+#' @description
+#' Internal functions for printing group and single trajectory summaries.
+#'
+#' @param x A single or trajectory summary object, returned by summary().
+#' @param ... Other parameters (not used).
+#' @return Prints summary to console, invisibly returns input object.
+#' @keywords internal
+print.summary.avltrajectory_group <- function(x, ...) {
+
+  cat("------",
+      "\nAVL Group Trajectory Object",
+      "\n------",
+      "\nNumber of trips: ", x$num_trips,
+      "\nTotal distance range: ", x$min_dist, " to ", x$max_dist,
+      "\nTotal time range: ", x$min_time, " to ", x$max_time,
+      "\n------",
+      "\nTrajectory function present: ", x$is_traj,
+      "\n   --> Trajectory interpolation method: ", x$traj_type,
+      "\n   --> Maximum derivative: ", x$max_deriv,
+      "\n   --> Fit with speeds: ", x$used_speeds,
+      "\nInverse function present: ", x$is_inv,
+      "\n   --> Inverse function tolerance: ", x$inv_tol,
+      "\n------",
+      sep = "")
+
+  invisible(x)
+}
+
+#' @rdname print.summary.avltrajectory_group
+#' @keywords internal
+print.summary.avltrajectory_single <- function(x, ...) {
+
+  cat("------",
+      "\nAVL Single Trajectory Object",
+      "\n------",
+      "\nTrip ID: ", x$trip_id,
+      "\nTrip distance range: ", x$min_dist, " to ", x$max_dist,
+      "\nTrip time range: ", x$min_time, " to ", x$max_time,
+      "\n------",
+      "\nTrajectory function present: ", x$is_traj,
+      "\n   --> Trajectory interpolation method: ", x$traj_type,
+      "\n   --> Maximum derivative: ", x$max_deriv,
+      "\n   --> Fit with speeds: ", x$used_speeds,
+      "\nInverse function present: ", x$is_inv,
+      "\n   --> Inverse function tolerance: ", x$inv_tol,
+      "\n------",
+      sep = "")
+
+  invisible(x)
 }
 
 #' Print an AVL trajectory object

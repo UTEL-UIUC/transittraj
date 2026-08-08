@@ -15,14 +15,15 @@
 \item{...}{Other parameters (not used).}
 }
 \value{
-A summary character string.
+A list summarizing the attributes of a fit trajectory.
 }
 \description{
-This function prints a summary for grouped or single trajectory object.
-If the input is a single trajectory, the trip's ID and distance & time range
-will be printed. If the input is a grouped trajectory, the number of trips
-and the distance & time range across all trips will be printed. For both,
-the interpolating curve methods will be printed.
+This function creates and prints a list summarizing a single or grouped
+trajectory object. If the input is a single trajectory, the trip's ID
+and distance & time range will be printed. If the input is a grouped
+trajectory, the number of trips and the distance & time range across
+all trips will be printed. For both, the interpolating curve methods
+will be printed.
 }
 \examples{
 # Get input data
@@ -31,6 +32,10 @@ lineE_traj_singles <- new_transittraj_data("get_trajectory_fun_single")
 
 # Run function: grouped trajectory object
 summary(lineE_traj_grouped)
+
+# Run functions: store summary object
+lineE_summ <- summary(lineE_traj_grouped)
+print(lineE_summ$num_trips)
 
 # Run function: single trajectory object
 summary(lineE_traj_singles[[2]])

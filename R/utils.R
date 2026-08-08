@@ -48,6 +48,7 @@ utils::globalVariables(c(
   "field_type_ok", "field_present", "x_spatial", "y_spatial", "stp_time",
   "point_geom", "distance_lims", "excep_id", "sched_id", "wkday",
   "user_min_dist", "user_max_dist", "deriv", "distance_change", "speed_change",
+  "is_traj", "traj_type", "max_deriv", "used_speeds", "is_inv", "inv_tol",
   # Exported datasets
   "lacmta_avl", "lacmta_gtfs"
   ))
