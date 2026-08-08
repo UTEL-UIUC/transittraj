@@ -162,20 +162,41 @@ lineE_mono <- new_transittraj_data("make_monotonic")
 # Run function: grouped trajectory object
 lineE_traj_grouped <- get_trajectory_fun(distance_df = lineE_mono)
 summary(lineE_traj_grouped)
-#> ------
-#> AVL Group Trajectory Object
-#> ------
-#> Number of trips: 11
-#> Total distance range: 0.6366599 to 35292.87
-#> Total time range: 1779886240 to 1779898116
-#> ------
-#> Trajectory function present: TRUE
-#>    --> Trajectory interpolation method: monoH.FC
-#>    --> Maximum derivative: 3
-#>    --> Fit with speeds: TRUE
-#> Inverse function present: TRUE
-#>    --> Inverse function tolerance: 0.01
-#> ------
+#> $num_trips
+#> [1] 11
+#> 
+#> $min_dist
+#> [1] 0.6366599
+#> 
+#> $max_dist
+#> [1] 35292.87
+#> 
+#> $min_time
+#> [1] 1779886240
+#> 
+#> $max_time
+#> [1] 1779898116
+#> 
+#> $is_traj
+#> [1] TRUE
+#> 
+#> $traj_type
+#> [1] "monoH.FC"
+#> 
+#> $max_deriv
+#> [1] 3
+#> 
+#> $is_inv
+#> [1] TRUE
+#> 
+#> $inv_tol
+#> [1] 0.01
+#> 
+#> $used_speeds
+#> [1] TRUE
+#> 
+#> attr(,"class")
+#> [1] "summary.avltrajectory_group"
 
 # Run function: list of single trajectory objects
 lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
@@ -183,18 +204,39 @@ lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
 length(lineE_traj_singles)
 #> [1] 11
 summary(lineE_traj_singles[[2]])
-#> ------
-#> AVL Single Trajectory Object
-#> ------
-#> Trip ID: 63383917
-#> Trip distance range: 7.863145 to 35227.39
-#> Trip time range: 1779887281 to 1779892057
-#> ------
-#> Trajectory function present: TRUE
-#>    --> Trajectory interpolation method: monoH.FC
-#>    --> Maximum derivative: 3
-#>    --> Fit with speeds: TRUE
-#> Inverse function present: TRUE
-#>    --> Inverse function tolerance: 0.01
-#> ------
+#> $trip_id
+#> [1] "63383917"
+#> 
+#> $min_dist
+#> [1] 7.863145
+#> 
+#> $max_dist
+#> [1] 35227.39
+#> 
+#> $min_time
+#> [1] 1779887281
+#> 
+#> $max_time
+#> [1] 1779892057
+#> 
+#> $is_traj
+#> [1] TRUE
+#> 
+#> $traj_type
+#> [1] "monoH.FC"
+#> 
+#> $max_deriv
+#> [1] 3
+#> 
+#> $is_inv
+#> [1] TRUE
+#> 
+#> $inv_tol
+#> [1] 0.01
+#> 
+#> $used_speeds
+#> [1] TRUE
+#> 
+#> attr(,"class")
+#> [1] "summary.avltrajectory_single"
 ```
