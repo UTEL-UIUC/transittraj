@@ -101,6 +101,7 @@ summary.avltrajectory_single <- function(object, ...) {
 #' @param ... Other parameters (not used).
 #' @return Prints summary to console, invisibly returns input object.
 #' @keywords internal
+#' @export
 print.summary.avltrajectory_group <- function(x, ...) {
 
   cat("------",
@@ -124,6 +125,7 @@ print.summary.avltrajectory_group <- function(x, ...) {
 
 #' @rdname print.summary.avltrajectory_group
 #' @keywords internal
+#' @export
 print.summary.avltrajectory_single <- function(x, ...) {
 
   cat("------",

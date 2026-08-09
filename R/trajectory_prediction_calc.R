@@ -16,6 +16,7 @@ interpolate_distances <- function(trajectory,
 
 #' @rdname interpolate_distances
 #' @keywords internal
+#' @export
 interpolate_distances.avltrajectory_single <- function(trajectory,
                                                        new_times_trips, ...) {
 
@@ -41,6 +42,7 @@ interpolate_distances.avltrajectory_single <- function(trajectory,
 
 #' @rdname interpolate_distances
 #' @keywords internal
+#' @export
 interpolate_distances.avltrajectory_group <- function(trajectory,
                                                       new_times_trips, ...) {
 
@@ -87,6 +89,7 @@ interpolate_times <- function(trajectory, new_dist_trips, ...) {
 
 #' @rdname interpolate_times
 #' @keywords internal
+#' @export
 interpolate_times.avltrajectory_single <- function(trajectory,
                                                    new_dist_trips, ...) {
   # Pull inv traj fun
@@ -100,6 +103,7 @@ interpolate_times.avltrajectory_single <- function(trajectory,
 
 #' @rdname interpolate_times
 #' @keywords internal
+#' @export
 interpolate_times.avltrajectory_group <- function(trajectory,
                                                   new_dist_trips, ...) {
 
