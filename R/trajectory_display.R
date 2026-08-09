@@ -219,8 +219,8 @@ plot.avltrajectory_group <- function(x, ...) {
   plot_seq <- seq(from = min(trip_extremes$min_time),
                   to = max(trip_extremes$max_time),
                   by = 10)
-  plot_df <- predict(object = x, new_times = plot_seq,
-                     trips = plot_trips) #%>%
+  plot_df <- predict.avltrajectory_group(object = x, new_times = plot_seq,
+                     trips = plot_trips) %>%
     dplyr::rename(distance = interp)
 
   # Generate color palette
