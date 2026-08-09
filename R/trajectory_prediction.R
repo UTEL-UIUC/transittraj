@@ -42,7 +42,7 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
   }
 
   # --- Get extremes ---
-  trip_extremes <- data.frame(trip_id_performed = unclass(trajectory),
+  trip_extremes <- data.frame(trip_id_performed = as.vector(trajectory),
                               min_dist = attr(trajectory, "min_dist"),
                               max_dist = attr(trajectory, "max_dist"),
                               min_time = attr(trajectory, "min_time"),
