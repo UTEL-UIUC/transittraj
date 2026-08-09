@@ -60,41 +60,20 @@ the object:
 ``` r
 
 summary(lineE_traj)
-#> $num_trips
-#> [1] 11
-#> 
-#> $min_dist
-#> [1] 0.6366599
-#> 
-#> $max_dist
-#> [1] 35292.87
-#> 
-#> $min_time
-#> [1] 1779886240
-#> 
-#> $max_time
-#> [1] 1779898116
-#> 
-#> $is_traj
-#> [1] TRUE
-#> 
-#> $traj_type
-#> [1] "monoH.FC"
-#> 
-#> $max_deriv
-#> [1] 3
-#> 
-#> $is_inv
-#> [1] TRUE
-#> 
-#> $inv_tol
-#> [1] 0.01
-#> 
-#> $used_speeds
-#> [1] TRUE
-#> 
-#> attr(,"class")
-#> [1] "summary.avltrajectory_group"
+#> ------
+#> AVL Group Trajectory Object
+#> ------
+#> Number of trips: 11
+#> Total distance range: 0.6366599 to 35292.87
+#> Total time range: 1779886240 to 1779898116
+#> ------
+#> Trajectory function present: TRUE
+#>    --> Trajectory interpolation method: monoH.FC
+#>    --> Maximum derivative: 3
+#>    --> Fit with speeds: TRUE
+#> Inverse function present: TRUE
+#>    --> Inverse function tolerance: 0.01
+#> ------
 ```
 
 ## Interpolating

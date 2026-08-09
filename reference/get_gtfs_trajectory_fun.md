@@ -259,41 +259,20 @@ lineE_scheduled_traj <- get_gtfs_trajectory_fun(gtfs = lineE_gtfs,
 
 # Show trajectory: summary
 summary(lineE_scheduled_traj)
-#> $num_trips
-#> [1] 123
-#> 
-#> $min_dist
-#> [1] 41.19898
-#> 
-#> $max_dist
-#> [1] 35314.05
-#> 
-#> $min_time
-#> [1] 1779878760
-#> 
-#> $max_time
-#> [1] 1779955380
-#> 
-#> $is_traj
-#> [1] TRUE
-#> 
-#> $traj_type
-#> [1] "linear"
-#> 
-#> $max_deriv
-#> [1] 0
-#> 
-#> $is_inv
-#> [1] TRUE
-#> 
-#> $inv_tol
-#> [1] 0.01
-#> 
-#> $used_speeds
-#> [1] FALSE
-#> 
-#> attr(,"class")
-#> [1] "summary.avltrajectory_group"
+#> ------
+#> AVL Group Trajectory Object
+#> ------
+#> Number of trips: 123
+#> Total distance range: 41.19898 to 35314.05
+#> Total time range: 1779878760 to 1779955380
+#> ------
+#> Trajectory function present: TRUE
+#>    --> Trajectory interpolation method: linear
+#>    --> Maximum derivative: 0
+#>    --> Fit with speeds: FALSE
+#> Inverse function present: TRUE
+#>    --> Inverse function tolerance: 0.01
+#> ------
 
 # Show trajectory: plot (just a handful of trips)
 ordered_trips <- get_trip_extremes(lineE_scheduled_traj) %>%
