@@ -1,42 +1,179 @@
 # --- summary() ---
 test_that("summary: group", {
-#
-#   distance_df <- rbind(
-#     data.frame(
-#       event_timestamp = as.POSIXct(c(0, 10)),
-#       distance = c(0, 5),
-#       trip_id_performed = c("a", "a")),
-#     data.frame(
-#       event_timestamp = as.POSIXct(c(0, 10)),
-#       distance = c(0, 5),
-#       trip_id_performed = c("b", "b"))
-#   ) %>%
-#     dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
-#
-#   traj <- get_trajectory_fun(distance_df = distance_df,
-#                              interp_method = "linear",
-#                              use_speeds = FALSE,
-#                              return_group_function = FALSE)
-#
-#   exp_summ <- "------
-# AVL Group Trajectory Object
-# ------
-# Number of trips: 2
-# Total distance range: 0 to 5
-# Total time range: 0 to 10
-# ------
-# Trajectory function present: TRUE
-#    --> Trajectory interpolation method: linear
-#    --> Maximum derivative: 0
-#    --> Fit with speeds: FALSE
-# Inverse function present: TRUE
-#    --> Inverse function tolerance: 0.01
-# ------"
-#   actual_summ <- summary(traj)
-#
-#   expect_equal(
-#     actual_summ,
-#     expected = exp_summ
-#   )
 
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = TRUE)
+
+  exp_summ <- list(
+    num_trips = length(unique(distance_df$trip_id_performed)),
+    min_dist = min(distance_df$distance),
+    max_dist = max(distance_df$distance),
+    min_time = min(distance_df$event_timestamp),
+    max_time = max(distance_df$event_timestamp),
+    is_traj = TRUE,
+    traj_type = "linear",
+    max_deriv = 0,
+    is_inv = TRUE,
+    inv_tol = 0.01,
+    used_speeds = FALSE
+  )
+  actual_summ <- summary(traj)
+
+  exp_print <- "------
+AVL Group Trajectory Object
+------
+Number of trips: 2
+Total distance range: 0 to 5
+Total time range: 0 to 10
+------
+Trajectory function present: TRUE
+   --> Trajectory interpolation method: linear
+   --> Maximum derivative: 0
+   --> Fit with speeds: FALSE
+Inverse function present: TRUE
+   --> Inverse function tolerance: 0.01
+------"
+
+  expect_equal(
+    unclass(actual_summ),
+    expected = exp_summ
+  )
+  expect_output(
+    print(actual_summ),
+    expected = exp_print
+  )
+})
+test_that("summary: single", {
+
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = FALSE)
+
+  exp_summ <- list(
+    trip_id = "a",
+    min_dist = min(distance_df %>%
+                     dplyr::filter(trip_id_performed == "a") %>%
+                     dplyr::pull(distance)),
+    max_dist = max(distance_df %>%
+                     dplyr::filter(trip_id_performed == "a") %>%
+                     dplyr::pull(distance)),
+    min_time = min(distance_df %>%
+                     dplyr::filter(trip_id_performed == "a") %>%
+                     dplyr::pull(event_timestamp)),
+    max_time = max(distance_df %>%
+                     dplyr::filter(trip_id_performed == "a") %>%
+                     dplyr::pull(event_timestamp)),
+    is_traj = TRUE,
+    traj_type = "linear",
+    max_deriv = 0,
+    is_inv = TRUE,
+    inv_tol = 0.01,
+    used_speeds = FALSE
+  )
+  actual_summ <- summary(traj[[1]])
+
+  exp_print <- "------
+AVL Single Trajectory Object
+------
+Trip ID: a
+Trip distance range: 0 to 5
+Trip time range: 0 to 10
+------
+Trajectory function present: TRUE
+   --> Trajectory interpolation method: linear
+   --> Maximum derivative: 0
+   --> Fit with speeds: FALSE
+Inverse function present: TRUE
+   --> Inverse function tolerance: 0.01
+------"
+
+  expect_equal(
+    unclass(actual_summ),
+    expected = exp_summ
+  )
+  expect_output(
+    print(actual_summ),
+    expected = exp_print
+  )
+})
+
+# --- print() ---
+test_that("print: group", {
+
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = TRUE)
+
+  exp_print <- "AVL group trajectory with 2 trips"
+
+  expect_output(
+    print(traj),
+    regexp = exp_print
+  )
+})
+test_that("print: single", {
+
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 10)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = FALSE)
+
+  exp_print <- "AVL single trajectory for trip ID a"
+
+  expect_output(
+    print(traj[[1]]),
+    regexp = exp_print
+  )
 })
