@@ -177,3 +177,111 @@ test_that("print: single", {
     regexp = exp_print
   )
 })
+
+# --- plot() ---
+test_that("plot: trip warnings", {
+
+  distance_df <- data.frame(
+    distance = rep(c(0, 10),
+                   51),
+    event_timestamp = rep(as.POSIXct(c(0, 10)),
+                          51)
+  ) %>%
+    dplyr::mutate(location_ping_id = dplyr::row_number() - 1,
+                  trip_id_performed = floor(location_ping_id / 2),
+                  location_ping_id = as.character(location_ping_id),
+                  trip_id_performed = as.character(trip_id_performed))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = TRUE)
+
+  # 51 trips, throw warning
+  expect_warning(
+    plot(traj),
+    class = "warn_plotting_groupnum"
+  )
+
+  # should be 50 plotted
+  p <- suppressWarnings(plot(traj))
+  expect_equal(
+    length(unique(p$data$trip_id_performed)),
+    expected = 50
+  )
+
+  traj_2 <- get_trajectory_fun(distance_df = distance_df %>%
+                                 dplyr::filter(as.numeric(trip_id_performed) < 50),
+                               interp_method = "linear",
+                               use_speeds = FALSE,
+                               return_group_function = TRUE)
+
+  # 50 trips, no warning
+  expect_no_warning(
+    plot(traj_2)
+  )
+})
+test_that("plot: group layers", {
+
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 20)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(10, 30)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = TRUE)
+
+  p <- plot(traj)
+
+  # class
+  expect_s3_class(
+    p,
+    class = "ggplot2::ggplot"
+  )
+  # layers: 1
+  expect_equal(
+    length(p$layers),
+    expected = 1
+  )
+})
+test_that("plot: single layers", {
+
+  distance_df <- rbind(
+    data.frame(
+      event_timestamp = as.POSIXct(c(0, 20)),
+      distance = c(0, 5),
+      trip_id_performed = c("a", "a")),
+    data.frame(
+      event_timestamp = as.POSIXct(c(10, 30)),
+      distance = c(0, 5),
+      trip_id_performed = c("b", "b"))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = FALSE)
+
+  p <- plot(traj[[1]])
+
+  # class
+  expect_s3_class(
+    p,
+    class = "ggplot2::ggplot"
+  )
+  # layers: 1
+  expect_equal(
+    length(p$layers),
+    expected = 1
+  )
+})
