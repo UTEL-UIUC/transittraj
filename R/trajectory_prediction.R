@@ -30,7 +30,7 @@ get_trip_extremes <- function(trajectory, filter_trips = NULL) {
 
   # Validate trips input: If filter_trips are provided, check that they are in traj functions
   if (!is.null(filter_trips)) {
-    all_trips <- unclass(trajectory)
+    all_trips <- as.vector(trajectory)
     trips_check <- filter_trips %in% all_trips
 
     if (!all(trips_check)) {

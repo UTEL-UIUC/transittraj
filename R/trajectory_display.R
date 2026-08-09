@@ -61,7 +61,7 @@ summary.avltrajectory_group <- function(object, ...) {
 #' @rdname summary.avltrajectory_group
 #' @export
 summary.avltrajectory_single <- function(object, ...) {
-  trip_id <- unclass(object)[1]
+  trip_id <- as.vector(object)[1]
   min_dist <- attr(object, "min_dist")
   max_dist <- attr(object, "max_dist")
   min_time <- attr(object, "min_time")
@@ -176,7 +176,7 @@ print.avltrajectory_group <- function(x, ...) {
 #' @rdname print.avltrajectory_group
 #' @export
 print.avltrajectory_single <- function(x, ...) {
-  print(paste("AVL single trajectory for trip ID ", unclass(x),
+  print(paste("AVL single trajectory for trip ID ", as.vector(x),
               sep = ""))
 }
 
@@ -208,9 +208,9 @@ plot.avltrajectory_group <- function(x, ...) {
   if (length(x) > 50) {
     rlang::warn(message = "Many trajectories detected. Plotting first 50 only. See plot_trajectory() for additional controls.",
                 class = "warn_plotting_groupnum")
-    plot_trips <- unclass(x)[1:50]
+    plot_trips <- as.vector(x)[1:50]
   } else {
-    plot_trips <- unclass(x)
+    plot_trips <- as.vector(x)
   }
 
   # Get DF
@@ -262,6 +262,6 @@ plot.avltrajectory_single <- function(x, ...) {
     ggplot2::labs(x = "Epoch Time (sec)",
                   y = "Distance",
                   title = "Single AVL Trajectory",
-                  subtitle = paste("Trip ", unclass(x), sep = ""))
+                  subtitle = paste("Trip ", as.vector(x), sep = ""))
   traj_plot
 }

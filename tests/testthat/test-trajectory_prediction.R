@@ -52,6 +52,57 @@ test_that("predict: group", {
     expected = as.data.frame(exp_3)
   )
 })
+test_that("predict: single", {
+
+  distance_df <- data.frame(
+    distance = c(0, 2),
+    event_timestamp = as.POSIXct(c(0, 1)),
+    trip_id_performed = rep("a", 2),
+    location_ping_id = c("1", "2")
+  )
+
+  traj <- get_trajectory_fun(distance_df = distance_df,
+                             interp_method = "linear",
+                             use_speeds = FALSE,
+                             return_group_function = FALSE)
+
+  # new times
+  t_1 <- stats::predict(object = traj[[1]],
+                        new_times = c(0.5),
+                        deriv = 0)
+  exp_1 <- data.frame(event_timestamp = 0.5,
+                      trip_id_performed = "a",
+                      deriv = 0,
+                      interp = 1)
+  expect_equal(
+    t_1,
+    expected = as.data.frame(exp_1)
+  )
+
+  # new distances
+  t_2 <- stats::predict(object = traj[[1]],
+                        new_distances = c(1))
+  exp_2 <- data.frame(distance = 1,
+                      trip_id_performed = "a",
+                      interp = 0.5)
+  expect_equal(
+    t_2,
+    expected = as.data.frame(exp_2)
+  )
+
+  # dist lims & timestep
+  t_3 <- stats::predict(object = traj[[1]],
+                        distance_lims = c(0, 1), timestep = 1,
+                        deriv = 0)
+  exp_3 <- data.frame(trip_id_performed = "a",
+                      event_timestamp = 0,
+                      deriv = 0,
+                      interp = 0)
+  expect_equal(
+    as.data.frame(t_3),
+    expected = as.data.frame(exp_3)
+  )
+})
 
 # --- get_trip_extremes() ---
 test_that("get_trip_extremes: input validation", {

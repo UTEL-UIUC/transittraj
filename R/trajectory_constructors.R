@@ -880,7 +880,7 @@ group_trajectories <- function(trajectories,
     num_trips <- length(trajectories)
     single_traj_list <- vector(mode = "list")
     for (current_index in 1:num_trips) {
-      current_trip_id <- unclass(trajectories)[current_index]
+      current_trip_id <- as.vector(trajectories)[current_index]
       current_single_traj <- get_traj_index(group_traj = trajectories,
                                             index_num = current_index,
                                             new_traj_type = new_traj_type,
@@ -915,7 +915,7 @@ get_traj_index <- function(group_traj, index_num,
                            new_used_speeds, new_agency_tz) {
 
   # Trip ID
-  new_trip_id <- unclass(group_traj)[index_num]
+  new_trip_id <- as.vector(group_traj)[index_num]
 
   # Time & distance ranges
   new_min_dist <- attr(group_traj, "min_dist")[index_num]
