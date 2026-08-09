@@ -118,3 +118,68 @@ test_that("new_transittraj_data: step-by-step", {
     expected = traj_s
   )
 })
+
+# --- correct_speeds_fun() ---
+test_that("correct_speeds_fun: input valid", {
+
+  m <- c(1)
+  delta <- c(1)
+
+  expect_error(
+    correct_speeds_fun(m_0 = m, delta = delta),
+    class = "error_avlclean_fc"
+  )
+})
+test_that("correct_speeds_fun: output", {
+
+  # no change
+  m_1 <- c(10, 28, 10)
+  delta_1 <- c(10, 10, 10)
+  t_1 <- correct_speeds_fun(m_0 = m_1, deltas = delta_1)
+  expect_equal(
+    t_1,
+    expected = m_1
+  )
+
+  # change
+  m_2 <- c(10, 29, 10)
+  delta_2 <- c(10, 10, 10)
+  t_2 <- correct_speeds_fun(m_0 = m_2, deltas = delta_2)
+
+  # index 1
+  a_1 <- m_2[1] / delta_2[1]
+  b_1 <- m_2[2] / delta_2[1]
+  ab_1 <- (a_1^2) + (b_1^2)
+  expect_true(
+    ab_1 > 9
+  )
+  tau_1 <- 3 / sqrt(ab_1)
+  exp_1 <- tau_1 * a_1 * delta_2[1]
+  m_2[2] <- tau_1 * b_1 * delta_2[1]
+  expect_equal(
+    t_2[1],
+    expected = exp_1
+  )
+
+  # index 2
+  a_2 <- m_2[2] / delta_2[2]
+  b_2 <- m_2[3] / delta_2[2]
+  ab_2 <- (a_2^2) + (b_2^2)
+  expect_true(
+    ab_2 > 9
+  )
+  tau_2 <- 3 / sqrt(ab_2)
+  exp_2 <- tau_2 * a_2 * delta_2[2]
+  m_2[3] <- tau_2 * b_2 * delta_2[2]
+  expect_equal(
+    t_2[2],
+    expected = exp_2
+  )
+
+  # index 3
+  exp_3 <- m_2[3] # already corrected above
+  expect_equal(
+    t_2[3],
+    expected = exp_3
+  )
+})
