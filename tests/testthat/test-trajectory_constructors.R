@@ -32,6 +32,14 @@ test_that("get_trajectory_fun: monotonicity validation", {
                        use_speeds = TRUE),
     class = "error_tidesval_mono"
   )
+
+  # not finding inverse
+  expect_warning(
+    get_trajectory_fun(distance_df = mono_df,
+                       use_speeds = TRUE,
+                       find_inverse_function = FALSE),
+    class = "warn_tidesval_mono"
+  )
 })
 test_that("get_trajectory_fun: input type warnings", {
 

@@ -236,10 +236,11 @@ get_trajectory_fun <- function(distance_df,
   } else {
     # If not finding inverse function, can proveed but will give warning
     if (!all(checked_conditions)) {
-      warning(paste(c("The following monotonicity conditions are not satisfied:",
-                      names(checked_conditions)[!checked_conditions],
-                      "\nMonotonicity not required for non-inverse function. Proceeding with direct function fitting."),
-                    collapse = " "))
+      rlang::warn(message = paste(c("The following monotonicity conditions are not satisfied:",
+                                    names(checked_conditions)[!checked_conditions],
+                                    "\nMonotonicity not required for non-inverse function. Proceeding with direct function fitting."),
+                                  collapse = " "),
+                  class = "warn_tidesval_mono")
     }
   }
   # Methods
@@ -558,10 +559,6 @@ get_gtfs_trajectory_fun <- function(gtfs,
   # --- Validate GTFS ---
   # Only need to validate the files & fields used by this function uniquely
   # Others will be validated in get_stop_distances()
-  if (!("tidygtfs" %in% class(gtfs))) {
-    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
-                 class = "error_gtfsval_not_tidygtfs")
-  }
   # stop_times: trip_id, stop_id, stop_sequence; others depend on timepoint used
   if (use_stop_time == "departure") {
     stop_times_fields <- c("trip_id", "stop_id", "stop_sequence",
