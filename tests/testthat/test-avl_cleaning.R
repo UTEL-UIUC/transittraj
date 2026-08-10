@@ -706,6 +706,34 @@ test_that("clean_jumps: standard", {
     expected = 0
   )
 })
+test_that("clean_jumps: replacement", {
+
+  distance_df = data.frame(
+    trip_id_performed = rep("a", 9),
+    distance = c(0, 1, 2, 3, 100, 4, 5, 6, 7), # index 5 is outlier
+    event_timestamp = as.POSIXct(seq(from = 5, by = 5, length.out = 9))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  # t cutoff
+  t <- clean_jumps(distance_df = distance_df,
+                   replace_outliers = TRUE)
+  r <- clean_jumps(distance_df = distance_df,
+                   replace_outliers = TRUE,
+                   return_removals = TRUE)
+  expect_equal(
+    t$distance[5],
+    expected = 4
+  )
+  expect_equal(
+    dim(r)[1],
+    expected = 1
+  )
+  expect_equal(
+    r$location_ping_id[1],
+    expected = "5"
+  )
+})
 test_that("clean_jumps: implosion", {
 
   distance_df = data.frame(
