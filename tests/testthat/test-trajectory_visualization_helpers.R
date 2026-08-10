@@ -201,6 +201,8 @@ test_that("plot_trips_df_setup: vehicle centering", {
 
   lineE_mono <- new_transittraj_data("make_monotonic")
   lineE_traj <- get_trajectory_fun(distance_df = lineE_mono)
+  lineE_traj_s <- get_trajectory_fun(distance_df = lineE_mono,
+                                     return_group_function = FALSE)
 
   # distance_df
   df_3 <- plot_trips_df_setup(distance_df = lineE_mono,
@@ -214,7 +216,7 @@ test_that("plot_trips_df_setup: vehicle centering", {
     expected = 0
   )
 
-  # traj
+  # traj group
   df_4 <- plot_trips_df_setup(trajectory = lineE_traj,
                               distance_df = NULL, plot_trips = NULL, timestep = 120,
                               center_vehicles = TRUE, convert_to_timezone = FALSE,
@@ -223,6 +225,18 @@ test_that("plot_trips_df_setup: vehicle centering", {
     dplyr::summarize(start_time = min(event_timestamp))
   expect_all_equal(
     df_4$start_time,
+    expected = 0
+  )
+
+  # traj single
+  df_5 <- plot_trips_df_setup(trajectory = lineE_traj_s[[1]],
+                              distance_df = NULL, plot_trips = NULL, timestep = 120,
+                              center_vehicles = TRUE, convert_to_timezone = FALSE,
+                              distance_lims = NULL) %>%
+    dplyr::group_by(trip_id_performed) %>%
+    dplyr::summarize(start_time = min(event_timestamp))
+  expect_all_equal(
+    df_5$start_time,
     expected = 0
   )
 })
