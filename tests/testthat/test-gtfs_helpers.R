@@ -1,5 +1,5 @@
 # --- filter_by_route() ---
-test_that("filter_by_route: route validation", {
+test_that("filter_by_route: validation", {
 
   # One route
   expect_error(
@@ -96,7 +96,7 @@ test_that("filter_by_route: direction expectations", {
 })
 
 # --- get_shape_geometry() ---
-test_that("get_shape_geometry: shape validation", {
+test_that("get_shape_geometry: validation", {
 
   expect_error(
     get_shape_geometry(lacmta_gtfs,
@@ -542,6 +542,65 @@ test_that("get_gtfs_service_dates: calendar", {
   expect_equal(
     dates_2$service_id,
     lineE_service_ids[3:4]
+  )
+})
+test_that("get_gtfs_service_dates: calendar_dates", {
+
+  # build fake gtfs
+  # will throw many warnings due to missing tables
+  calendar_dates <- data.frame(
+    date = seq(from = as.Date("2026-01-01"),
+               to = as.Date("2026-01-31"),
+               by = 1)
+  ) %>%
+    dplyr::mutate(service_id = dplyr::if_else(condition = (weekdays(x = date) %in% c("Saturday", "Sunday")),
+                                              true = "0",
+                                              false = "1"))
+  gtfs <- suppressWarnings(tidytransit::as_tidygtfs(
+    list("calendar_dates" = calendar_dates)
+  ))
+
+  # no date filter
+  dates_1 <- suppressWarnings(
+    get_gtfs_service_dates(gtfs = gtfs,
+                           use_calendar_table = "calendar_dates")
+  )
+  expect_equal(
+    names(dates_1),
+    expected = c("service_id", "date")
+  )
+  expect_s3_class(
+    dates_1$date,
+    class = "Date"
+  )
+  expect_equal(
+    data.frame(dates_1),
+    data.frame(service_id = gtfs$calendar_dates$service_id,
+               date = gtfs$calendar_dates$date)
+  )
+
+  # date filter
+  dates_2 <- suppressWarnings(
+    get_gtfs_service_dates(gtfs = gtfs,
+                           use_calendar_table = "calendar_dates",
+                           date_min = as.Date("2026-01-15"),
+                           date_max = as.Date("2026-01-16"))
+  )
+  expect_equal(
+    names(dates_2),
+    expected = c("service_id", "date")
+  )
+  expect_s3_class(
+    dates_2$date,
+    class = "Date"
+  )
+  expect_equal(
+    min(dates_2$date),
+    expected = as.Date("2026-01-15")
+  )
+  expect_equal(
+    max(dates_2$date),
+    expected = as.Date("2026-01-16")
   )
 })
 

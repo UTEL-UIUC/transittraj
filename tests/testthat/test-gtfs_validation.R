@@ -1,4 +1,23 @@
 # --- validate_gtfs_input() ---
+test_that("validate_gtfs_input: is gtfs", {
+
+  # not gtfs
+  expect_error(
+    validate_gtfs_input(gtfs = "test",
+                        table = "routes",
+                        needed_fields = "route_id"),
+    class = "error_gtfsval_not_tidygtfs"
+  )
+
+  # gtfs-like object
+  expect_error(
+    validate_gtfs_input(gtfs = unclass(lacmta_gtfs),
+                        table = "routes",
+                        needed_fields = "route_id"),
+    class = "error_gtfsval_not_tidygtfs"
+  )
+
+})
 test_that("validate_gtfs_input: test tables", {
 
   # table present

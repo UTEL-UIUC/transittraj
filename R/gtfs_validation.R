@@ -10,6 +10,12 @@
 #' @keywords internal
 validate_gtfs_input <- function(gtfs, table, needed_fields) {
 
+  # check is tidygtfs
+  if (!("tidygtfs" %in% class(gtfs))) {
+    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
+                 class = "error_gtfsval_not_tidygtfs")
+  }
+
   # Pull validation table
   gtfs_val <- tidytransit::validate_gtfs(gtfs)
 

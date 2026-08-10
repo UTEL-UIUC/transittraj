@@ -60,14 +60,8 @@
 #' summary(lineE_gtfs)
 filter_by_route <- function(gtfs, route_ids, dir_id = NULL) {
 
-  # --- Check GTFS is tidygtfs object ---
-  if (!("tidygtfs" %in% class(gtfs))) {
-    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
-                 class = "error_gtfsval_not_tidygtfs")
-  }
-  gtfs_val <- tidytransit::validate_gtfs(gtfs)
-
   # --- Validate fields ---
+  gtfs_val <- tidytransit::validate_gtfs(gtfs)
   # routes: route_id, agency_id
   validate_gtfs_input(gtfs = gtfs,
                       table = "routes",
@@ -330,10 +324,6 @@ get_shape_geometry <- function(gtfs, shape = NULL, project_crs = 4326) {
 
   # --- Validate ---
   # Check if GTFS is tidygtfs object
-  if (!("tidygtfs" %in% class(gtfs))) {
-    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
-                 class = "error_gtfsval_not_tidygtfs")
-  }
   validate_gtfs_input(gtfs,
                       table = "shapes",
                       needed_fields = c("shape_id", "shape_pt_sequence",
@@ -520,10 +510,6 @@ get_stop_distances <- function(gtfs, shape_geometry = NULL,
                                project_crs = 4326) {
 
   # --- Validate gtfs ---
-  if (!("tidygtfs" %in% class(gtfs))) {
-    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
-                 class = "error_gtfsval_not_tidygtfs")
-  }
   validate_gtfs_input(gtfs,
                       table = "stops",
                       needed_fields = c("stop_id", "stop_lon", "stop_lat"))
@@ -831,11 +817,6 @@ get_gtfs_service_dates <- function(gtfs,
                                    use_calendar_table = "calendar") {
 
   # --- Initial validation ---
-  # GTFS
-  if (!("tidygtfs" %in% class(gtfs))) {
-    rlang::abort(message = "Provided GTFS not a tidygtfs object.",
-                 class = "error_gtfsval_not_tidygtfs")
-  }
   # use_calendar_table
   if (!use_calendar_table %in% c("calendar", "calendar_dates")) {
     rlang::abort(message = "Unrecognized use_calendar_table type. Please input either \"calendar\" or \"calendar_dates\".",
