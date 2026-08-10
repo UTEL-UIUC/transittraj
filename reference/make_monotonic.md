@@ -83,9 +83,8 @@ corrections will be made:
   that point and the previous point.
 
 - For both strict and weak monotonicity, speeds will be adjusted to meet
-  the [Fritsch-Carlson
-  (1980)](https://epubs.siam.org/doi/10.1137/0717021) constraints.
-  Often, only a handful of input `speed` values will be adjusted.
+  the Fritsch-Carlson (1980) constraints. Often, only a handful of input
+  `speed` values will be adjusted.
 
 If recorded speed values are not present, set `correct_speed = FALSE`.
 However, if you are interested in later fitting a velocity-informed
@@ -96,6 +95,18 @@ monotonic interpolating curve.
 After using this function to perform corrections, use
 [`validate_monotonicity()`](https://obrien-ben.github.io/transittraj/reference/validate_monotonicity.md)
 to check if weak, strict, and Fritsch-Carlson speed conditions are met.
+
+## References
+
+Fritsch, F. N., and R. E. Carlson. 1980. “Monotone Piecewise Cubic
+Interpolation.” SIAM Journal on Numerical Analysis.
+https://doi.org/10.1137/0717021.
+
+Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026. “A
+Comparative Study of Spline-Based Trajectory Reconstruction Methods
+Across Varying Automatic Vehicle Location Data Densities.” Paper
+presented at 2026 Transportation Research Board Annual Meeting, January
+11. http://arxiv.org/abs/2509.00119.
 
 ## Examples
 

@@ -129,8 +129,8 @@ non-zero. At each point where the recorded <code>speed == 0</code>, the speed wi
 replaced by <code>add_distance_error</code> divided by the time between that point and
 the previous point.</p></li>
 <li><p>For both strict and weak monotonicity, speeds will be adjusted to meet the
-<a href="https://epubs.siam.org/doi/10.1137/0717021" class="external-link">Fritsch-Carlson (1980)</a>
-constraints. Often, only a handful of input <code>speed</code> values will be adjusted.</p></li>
+Fritsch-Carlson (1980) constraints. Often, only a handful of input
+<code>speed</code> values will be adjusted.</p></li>
 </ul><p>If recorded speed values are not present, set <code>correct_speed = FALSE</code>.
 However, if you are interested in later fitting a velocity-informed
 interpolating curve, such as Fritsch-Carlson's piecewise cubic polynomials,
@@ -139,6 +139,17 @@ interpolating curve.</p>
 <p>After using this function to perform corrections, use
 <code><a href="validate_monotonicity.html">validate_monotonicity()</a></code> to check if weak, strict, and Fritsch-Carlson
 speed conditions are met.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Fritsch, F. N., and R. E. Carlson. 1980. “Monotone Piecewise Cubic
+Interpolation.” SIAM Journal on Numerical Analysis.
+https://doi.org/10.1137/0717021.</p>
+<p>Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026.
+“A Comparative Study of Spline-Based Trajectory Reconstruction Methods
+Across Varying Automatic Vehicle Location Data Densities.” Paper
+presented at 2026 Transportation Research Board Annual Meeting, January 11.
+http://arxiv.org/abs/2509.00119.</p>
     </div>
 
     <div class="section level2">

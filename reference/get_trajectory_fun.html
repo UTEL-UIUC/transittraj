@@ -142,16 +142,18 @@ simple linear function, ignorant to recorded <code>speed</code> values.</p></li>
 or <code>"hyman"</code>.) Only <code>interp_method = "monoH.FC"</code> supports use of recorded
 <code>speed</code> values.</p></li>
 </ul><p>By default, <code>interp_method = "monoH.FC"</code> and <code>use_speeds = TRUE</code>. This will
-yield a continuous, differentiable, monotonic, and invertible trajectory,
-and is the standard transit trajectory interpolation technique. If the input
-<code>distance</code> and <code>speed</code> values satisfy Fritsch-Carlson, the interpolating
-function is guaranteed to be montonic. See <code><a href="make_monotonic.html">make_monotonic()</a></code> and
-<code><a href="validate_monotonicity.html">validate_monotonicity()</a></code>.</p>
+yield a continuous, differentiable, and invertible trajectory.
+If the input <code>distance</code> and <code>speed</code> values satisfy Fritsch-Carlson,
+the interpolating function is guaranteed to be montonic.
+See <code><a href="make_monotonic.html">make_monotonic()</a></code>. This is equivalent to the velocity-informed
+monotonic peicewise cubic Hermite interpolating polynomials with
+monotonic enforcement (VCHIP-ME) technique proposed by
+Robbennolt et al. (2026), and is our recommended approach.</p>
 <p>Note that <code>use_speeds = TRUE</code> requires <code>interp_method = "monoH.FC"</code>, but
 <code>interp_method = "monoH.FC"</code> does not require <code>use_speeds = TRUE</code>. In the
 latter scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
-can be created. If input <code>distance</code> values are monotonic, this curve is
-guaranteed to be monotonic.</p>
+can be created (Huang et al., 2023). If input <code>distance</code> values are
+monotonic, this curve is guaranteed to be monotonic.</p>
 </div>
 
 <div class="section">
@@ -199,6 +201,19 @@ their <code>trip_id_performed</code>.</p>
 available at <code><a href="../articles/intro-trajectories-la.html">vignette("articles/intro-trajectories-la")</a></code>.</p>
 </div>
 
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026.
+“A Comparative Study of Spline-Based Trajectory Reconstruction Methods
+Across Varying Automatic Vehicle Location Data Densities.” Paper
+presented at 2026 Transportation Research Board Annual Meeting, January 11.
+http://arxiv.org/abs/2509.00119.</p>
+<p>Huang, Yuzhu, Awad Abdelhalim, Anson Stewart, Jinhua Zhao, and Haris
+Koutsopoulos. 2023. “Reconstructing Transit Vehicle Trajectory Using
+High-Resolution GPS Data.” 2023 IEEE 26th International Conference on
+Intelligent Transportation Systems (ITSC), September 24, 5247–53.
+https://doi.org/10.1109/ITSC57777.2023.10422524.</p>
     </div>
 
     <div class="section level2">

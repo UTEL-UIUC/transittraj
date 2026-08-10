@@ -121,6 +121,12 @@ treatments, controlled by `replace_outliers`:
   more sensible for this application, given that interpolating curves
   will be fit later in the cleaning process.
 
+## References
+
+Pearson, Ronald K., Yrjö Neuvo, Jaakko Astola, and Moncef Gabbouj. 2016.
+“Generalized Hampel Filters.” EURASIP Journal on Advances in Signal
+Processing 2016 (1): 87. https://doi.org/10.1186/s13634-016-0383-6.
+
 ## Examples
 
 ``` r
