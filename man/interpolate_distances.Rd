@@ -15,7 +15,7 @@ interpolate_distances(trajectory, new_times_trips, ...)
 \arguments{
 \item{trajectory}{Single or grouped trajectory object}
 
-\item{new_times_trips}{DF with trip_id_performed and event_timestamp}
+\item{new_times_trips}{DF with trip_id_performed event_timestamp, and deriv}
 
 \item{...}{other inputs, not used}
 }
@@ -26,5 +26,15 @@ A DF with appended column "interp" of distance (or deriv) values
 Performs interpolation of distance values from a DF of times & trip IDs.
 A generic function, dispatches depending on whether trajectory is grouped
 or single.
+}
+\examples{
+nt <- data.frame(trip_id_performed = c("63383915"),
+                 event_timestamp = 1779890000,
+                 deriv = c(0))
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+
+interp <- transittraj:::interpolate_distances(trajectory = lineE_traj,
+                                 new_times_trips = nt)
+head(interp)
 }
 \keyword{internal}

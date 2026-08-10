@@ -20,4 +20,10 @@ Prints summary to console, invisibly returns input object.
 \description{
 Internal functions for printing group and single trajectory summaries.
 }
+\examples{
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+lineE_summ <- summary(lineE_traj)
+
+print(lineE_summ)
+}
 \keyword{internal}

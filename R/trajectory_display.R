@@ -102,6 +102,11 @@ summary.avltrajectory_single <- function(object, ...) {
 #' @return Prints summary to console, invisibly returns input object.
 #' @keywords internal
 #' @export
+#' @examples
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
+#' lineE_summ <- summary(lineE_traj)
+#'
+#' print(lineE_summ)
 print.summary.avltrajectory_group <- function(x, ...) {
 
   cat("------",

@@ -5,10 +5,19 @@
 #' or single.
 #'
 #' @param trajectory Single or grouped trajectory object
-#' @param new_times_trips DF with trip_id_performed and event_timestamp
+#' @param new_times_trips DF with trip_id_performed event_timestamp, and deriv
 #' @param ... other inputs, not used
 #' @return A DF with appended column "interp" of distance (or deriv) values
 #' @keywords internal
+#' @examples
+#' nt <- data.frame(trip_id_performed = c("63383915"),
+#'                  event_timestamp = 1779890000,
+#'                  deriv = c(0))
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' interp <- transittraj:::interpolate_distances(trajectory = lineE_traj,
+#'                                  new_times_trips = nt)
+#' head(interp)
 interpolate_distances <- function(trajectory,
                                   new_times_trips, ...) {
   UseMethod("interpolate_distances")
@@ -83,6 +92,14 @@ interpolate_distances.avltrajectory_group <- function(trajectory,
 #' @param ... other inputs, not used
 #' @return A DF with appended column "interp" of event_timestamp values
 #' @keywords internal
+#' @examples
+#' nd <- data.frame(trip_id_performed = c("63383915"),
+#'                  distance = 24448.63)
+#' lineE_traj <- new_transittraj_data("get_trajectory_fun")
+#'
+#' interp <- transittraj:::interpolate_times(trajectory = lineE_traj,
+#'                              new_dist_trips = nd)
+#' head(interp)
 interpolate_times <- function(trajectory, new_dist_trips, ...) {
   UseMethod("interpolate_times")
 }
