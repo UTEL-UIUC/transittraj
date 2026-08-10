@@ -73,8 +73,8 @@ non-zero. At each point where the recorded \code{speed == 0}, the speed will be
 replaced by \code{add_distance_error} divided by the time between that point and
 the previous point.
 \item For both strict and weak monotonicity, speeds will be adjusted to meet the
-\href{https://epubs.siam.org/doi/10.1137/0717021}{Fritsch-Carlson (1980)}
-constraints. Often, only a handful of input \code{speed} values will be adjusted.
+Fritsch-Carlson (1980) constraints. Often, only a handful of input
+\code{speed} values will be adjusted.
 }
 
 If recorded speed values are not present, set \code{correct_speed = FALSE}.
@@ -99,4 +99,15 @@ lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
                            add_distance_error = my_dist_err,
                            correct_speed = TRUE)
 head(lineE_mono)
+}
+\references{
+Fritsch, F. N., and R. E. Carlson. 1980. “Monotone Piecewise Cubic
+Interpolation.” SIAM Journal on Numerical Analysis.
+https://doi.org/10.1137/0717021.
+
+Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026.
+“A Comparative Study of Spline-Based Trajectory Reconstruction Methods
+Across Varying Automatic Vehicle Location Data Densities.” Paper
+presented at 2026 Transportation Research Board Annual Meeting, January 11.
+http://arxiv.org/abs/2509.00119.
 }

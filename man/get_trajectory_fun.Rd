@@ -69,17 +69,19 @@ or \code{"hyman"}.) Only \code{interp_method = "monoH.FC"} supports use of recor
 }
 
 By default, \code{interp_method = "monoH.FC"} and \code{use_speeds = TRUE}. This will
-yield a continuous, differentiable, monotonic, and invertible trajectory,
-and is the standard transit trajectory interpolation technique. If the input
-\code{distance} and \code{speed} values satisfy Fritsch-Carlson, the interpolating
-function is guaranteed to be montonic. See \code{make_monotonic()} and
-\code{validate_monotonicity()}.
+yield a continuous, differentiable, and invertible trajectory.
+If the input \code{distance} and \code{speed} values satisfy Fritsch-Carlson,
+the interpolating function is guaranteed to be montonic.
+See \code{make_monotonic()}. This is equivalent to the velocity-informed
+monotonic peicewise cubic Hermite interpolating polynomials with
+monotonic enforcement (VCHIP-ME) technique proposed by
+Robbennolt et al. (2026), and is our recommended approach.
 
 Note that \code{use_speeds = TRUE} requires \code{interp_method = "monoH.FC"}, but
 \code{interp_method = "monoH.FC"} does not require \code{use_speeds = TRUE}. In the
 latter scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
-can be created. If input \code{distance} values are monotonic, this curve is
-guaranteed to be monotonic.
+can be created (Huang et al., 2023). If input \code{distance} values are
+monotonic, this curve is guaranteed to be monotonic.
 }
 
 \subsection{Inverse Functions}{
@@ -142,4 +144,17 @@ lineE_traj_singles <- get_trajectory_fun(distance_df = lineE_mono,
                                          return_group_function = FALSE)
 length(lineE_traj_singles)
 summary(lineE_traj_singles[[2]])
+}
+\references{
+Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026.
+“A Comparative Study of Spline-Based Trajectory Reconstruction Methods
+Across Varying Automatic Vehicle Location Data Densities.” Paper
+presented at 2026 Transportation Research Board Annual Meeting, January 11.
+http://arxiv.org/abs/2509.00119.
+
+Huang, Yuzhu, Awad Abdelhalim, Anson Stewart, Jinhua Zhao, and Haris
+Koutsopoulos. 2023. “Reconstructing Transit Vehicle Trajectory Using
+High-Resolution GPS Data.” 2023 IEEE 26th International Conference on
+Intelligent Transportation Systems (ITSC), September 24, 5247–53.
+https://doi.org/10.1109/ITSC57777.2023.10422524.
 }

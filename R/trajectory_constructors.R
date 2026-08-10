@@ -105,17 +105,19 @@ new_avltrajectory_single <- function(trip_id_performed = character(),
 #' `speed` values.
 #'
 #' By default, `interp_method = "monoH.FC"` and `use_speeds = TRUE`. This will
-#' yield a continuous, differentiable, monotonic, and invertible trajectory,
-#' and is the standard transit trajectory interpolation technique. If the input
-#' `distance` and `speed` values satisfy Fritsch-Carlson, the interpolating
-#' function is guaranteed to be montonic. See `make_monotonic()` and
-#' `validate_monotonicity()`.
+#' yield a continuous, differentiable, and invertible trajectory.
+#' If the input `distance` and `speed` values satisfy Fritsch-Carlson,
+#' the interpolating function is guaranteed to be montonic.
+#' See `make_monotonic()`. This is equivalent to the velocity-informed
+#' monotonic peicewise cubic Hermite interpolating polynomials with
+#' monotonic enforcement (VCHIP-ME) technique proposed by
+#' Robbennolt et al. (2026), and is our recommended approach.
 #'
 #' Note that `use_speeds = TRUE` requires `interp_method = "monoH.FC"`, but
 #' `interp_method = "monoH.FC"` does not require `use_speeds = TRUE`. In the
 #' latter scenario, a "velocity-ignorant' Fritsch-Carlson interpolating function
-#' can be created. If input `distance` values are monotonic, this curve is
-#' guaranteed to be monotonic.
+#' can be created (Huang et al., 2023). If input `distance` values are
+#' monotonic, this curve is guaranteed to be monotonic.
 #'
 #' ## Inverse Functions
 #'
@@ -165,6 +167,19 @@ new_avltrajectory_single <- function(trip_id_performed = character(),
 #'
 #' More information about the trajectory object classes and how to use them is
 #' available at `vignette("articles/intro-trajectories-la")`.
+#'
+#' @references
+#' Robbennolt, Jake, Sirajum Munira, and Stephen D. Boyles. 2026.
+#' “A Comparative Study of Spline-Based Trajectory Reconstruction Methods
+#' Across Varying Automatic Vehicle Location Data Densities.” Paper
+#' presented at 2026 Transportation Research Board Annual Meeting, January 11.
+#' http://arxiv.org/abs/2509.00119.
+#'
+#' Huang, Yuzhu, Awad Abdelhalim, Anson Stewart, Jinhua Zhao, and Haris
+#' Koutsopoulos. 2023. “Reconstructing Transit Vehicle Trajectory Using
+#' High-Resolution GPS Data.” 2023 IEEE 26th International Conference on
+#' Intelligent Transportation Systems (ITSC), September 24, 5247–53.
+#' https://doi.org/10.1109/ITSC57777.2023.10422524.
 #'
 #' @param distance_df A dataframe of linearized AVL data. Must include
 #' `trip_id_performed`, `event_timestamp`, and `distance`. If

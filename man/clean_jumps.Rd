@@ -118,3 +118,8 @@ lineE_no_jumps <- clean_jumps(distance_df = lineE_no_overlaps,
 dim(lineE_no_jumps)
 head(lineE_no_jumps)
 }
+\references{
+Pearson, Ronald K., Yrjö Neuvo, Jaakko Astola, and Moncef Gabbouj. 2016.
+“Generalized Hampel Filters.” EURASIP Journal on Advances in Signal
+Processing 2016 (1): 87. https://doi.org/10.1186/s13634-016-0383-6.
+}
