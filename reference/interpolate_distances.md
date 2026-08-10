@@ -24,7 +24,7 @@ interpolate_distances(trajectory, new_times_trips, ...)
 
 - new_times_trips:
 
-  DF with trip_id_performed and event_timestamp
+  DF with trip_id_performed event_timestamp, and deriv
 
 - ...:
 
@@ -33,3 +33,18 @@ interpolate_distances(trajectory, new_times_trips, ...)
 ## Value
 
 A DF with appended column "interp" of distance (or deriv) values
+
+## Examples
+
+``` r
+nt <- data.frame(trip_id_performed = c("63383915"),
+                 event_timestamp = 1779890000,
+                 deriv = c(0))
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+
+interp <- transittraj:::interpolate_distances(trajectory = lineE_traj,
+                                 new_times_trips = nt)
+head(interp)
+#>   trip_id_performed event_timestamp deriv   interp
+#> 1          63383915      1779890000     0 24448.63
+```

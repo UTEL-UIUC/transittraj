@@ -33,3 +33,17 @@ interpolate_times(trajectory, new_dist_trips, ...)
 ## Value
 
 A DF with appended column "interp" of event_timestamp values
+
+## Examples
+
+``` r
+nd <- data.frame(trip_id_performed = c("63383915"),
+                 distance = 24448.63)
+lineE_traj <- new_transittraj_data("get_trajectory_fun")
+
+interp <- transittraj:::interpolate_times(trajectory = lineE_traj,
+                             new_dist_trips = nd)
+head(interp)
+#>   trip_id_performed distance     interp
+#> 1          63383915 24448.63 1779890000
+```

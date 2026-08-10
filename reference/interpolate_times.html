@@ -85,6 +85,19 @@ or single.</p>
     <p>A DF with appended column "interp" of event_timestamp values</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">nd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>trip_id_performed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"63383915"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 distance <span class="op">=</span> <span class="fl">24448.63</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lineE_traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="new_transittraj_data.html">new_transittraj_data</a></span><span class="op">(</span><span class="st">"get_trajectory_fun"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">interp</span> <span class="op">&lt;-</span> <span class="fu">transittraj</span><span class="fu">:::</span><span class="fu">interpolate_times</span><span class="op">(</span>trajectory <span class="op">=</span> <span class="va">lineE_traj</span>,</span></span>
+<span class="r-in"><span>                             new_dist_trips <span class="op">=</span> <span class="va">nd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">interp</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trip_id_performed distance     interp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          63383915 24448.63 1779890000</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

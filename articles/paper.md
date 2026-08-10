@@ -132,7 +132,7 @@ citation("transittraj")
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
 #>   Transit Vehicle Trajectories_. R package version 0.1.4.9000,
-#>   <https://github.com/UTEL-UIUC/transittraj>.
+#>   <https://utel-uiuc.github.io/transittraj/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -141,6 +141,6 @@ citation("transittraj")
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
 #>     note = {R package version 0.1.4.9000},
-#>     url = {https://github.com/UTEL-UIUC/transittraj},
+#>     url = {https://utel-uiuc.github.io/transittraj/},
 #>   }
 ```
