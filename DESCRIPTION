@@ -1,7 +1,7 @@
 Package: transittraj
 Title: Reconstruct and Visualize Transit Vehicle Trajectories
 Version: 1.0.0
-Date: 2026-02-25
+Date: 2026-08-11
 Authors@R: c(
     person("Benjamin", "O'Brien",
         email = "obrienbenjaminj@gmail.com",
