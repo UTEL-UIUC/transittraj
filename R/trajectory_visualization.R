@@ -1017,6 +1017,7 @@ plot_trajectory <- function(trajectory = NULL, distance_df = NULL, plot_trips = 
 #' is `5.5`.
 #' @param dpi Optional. The resolution, in dots per inch, of the image. Default
 #' is `100`.
+#' @returns File saved to the desired directory.
 #' @export
 #' @examples
 #  # Get input data

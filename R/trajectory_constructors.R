@@ -743,6 +743,8 @@ get_gtfs_trajectory_fun <- function(gtfs,
 #' @param grouping A character string, either `"group"` to group all
 #' trajectories in `trajectories`, or `"split"` to split `trajectories` into
 #' a list of single trajectories.
+#' @return If `grouping = "group"`, a group trajectory object; if
+#' `grouping = "split"`, a list of single trajectory objects.
 #' @export
 #' @examples
 #' # Get input data

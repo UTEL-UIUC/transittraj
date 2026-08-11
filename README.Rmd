@@ -13,13 +13,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# transittraj <a href="https://obrien-ben.github.io/transittraj/"><img src="man/figures/logo.png" align="right" height="138" alt="transittraj website" /></a>
+# transittraj <a href="https://utel-uiuc.github.io/transittraj/"><img src="man/figures/logo.png" align="right" height="138" alt="transittraj website" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
-
-**Transport Chicago 2026 Attendees**: *For code & references related to the*
-`transittraj` *poster, check out* `vignette("articles/tc26")`.
 
 An R package for reconstructing and visualizing transit vehicle trajectories. 
 
@@ -40,12 +37,10 @@ knitr::include_graphics("man/figures/README-example2.png")
 
 ## Installation
 
-You can install the development version of `transittraj` from
-[GitHub](https://github.com/UTEL-UIUC/transittraj) with:
+You can install `transittraj` from CRAN with:
 
 ``` r
-# install.packages("pak")
-pak::pak("UTEL-UIUC/transittraj")
+install.packages("transittraj")
 ```
 
 ## Statement of Need
@@ -110,17 +105,6 @@ Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:
 
 - [Estimating Signal Delays in Indianapolis](https://utel-uiuc.github.io/transittraj/articles/indygo-signals.html)
-
-## Works in Progress
-
-This package is still in early development. In preparation for an eventual
-submission to CRAN, we're still working on the following:
-
-- Examples in all function documentation
-
-- Formal automated testing
-
-- Vignettes demonstrating applications of `transittraj`
 
 Check out the latest updates at our
 [changelog](https://utel-uiuc.github.io/transittraj/news/index.html).

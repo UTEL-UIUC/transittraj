@@ -1,4 +1,10 @@
-# transittraj (development version)
+# transittraj 1.0.0
+
+*Release: 8/11/2026*
+
+* Publication on CRAN
+
+* Completed automated testing suite
 
 # transittraj 0.1.4
 

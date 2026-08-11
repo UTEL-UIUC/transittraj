@@ -9,6 +9,7 @@
 #' @param distance_df a DF with columns distance, event_timestamp,
 #' and trip_id_performed
 #' @param has_inv a boolean, does the traj object have inv fun?
+#' @returns Error if requirements not met.
 #' @keywords internal
 plot_traj_input_validation <- function(trajectory, distance_df, has_inv) {
 
