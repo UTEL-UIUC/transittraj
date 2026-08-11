@@ -131,7 +131,7 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.4.9000,
+#>   Transit Vehicle Trajectories_. R package version 1.0.0,
 #>   <https://utel-uiuc.github.io/transittraj/>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -140,7 +140,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.4.9000},
+#>     note = {R package version 1.0.0},
 #>     url = {https://utel-uiuc.github.io/transittraj/},
 #>   }
 ```

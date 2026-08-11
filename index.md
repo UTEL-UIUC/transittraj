@@ -1,9 +1,5 @@
 # transittraj
 
-**Transport Chicago 2026 Attendees**: *For code & references related to
-the* `transittraj` *poster, check out*
-[`vignette("articles/tc26")`](https://obrien-ben.github.io/transittraj/articles/tc26.md).
-
 An R package for reconstructing and visualizing transit vehicle
 trajectories.
 
@@ -28,13 +24,11 @@ meeting the four requirements discussed below
 
 ## Installation
 
-You can install the development version of `transittraj` from
-[GitHub](https://github.com/UTEL-UIUC/transittraj) with:
+You can install `transittraj` from CRAN with:
 
 ``` r
 
-# install.packages("pak")
-pak::pak("UTEL-UIUC/transittraj")
+install.packages("transittraj")
 ```
 
 ## Statement of Need
@@ -109,17 +103,6 @@ Check out some case studies from the research team that demonstrate
 - [Estimating Signal Delays in
   Indianapolis](https://utel-uiuc.github.io/transittraj/articles/indygo-signals.html)
 
-## Works in Progress
-
-This package is still in early development. In preparation for an
-eventual submission to CRAN, we’re still working on the following:
-
-- Examples in all function documentation
-
-- Formal automated testing
-
-- Vignettes demonstrating applications of `transittraj`
-
 Check out the latest updates at our
 [changelog](https://utel-uiuc.github.io/transittraj/news/index.html).
 
@@ -134,9 +117,8 @@ citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
 #>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 0.1.4,
-#>   https://utel-uiuc.github.io/transittraj/,
-#>   <https://github.com/UTEL-UIUC/transittraj>.
+#>   Transit Vehicle Trajectories_. R package version 1.0.0,
+#>   <https://utel-uiuc.github.io/transittraj/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -144,7 +126,7 @@ citation("transittraj")
 #>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 0.1.4, https://utel-uiuc.github.io/transittraj/},
-#>     url = {https://github.com/UTEL-UIUC/transittraj},
+#>     note = {R package version 1.0.0},
+#>     url = {https://utel-uiuc.github.io/transittraj/},
 #>   }
 ```
