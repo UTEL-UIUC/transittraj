@@ -560,7 +560,7 @@ Unable to execute JavaScript.
 The animation shows us that most trips stop primarily at their stations,
 usually only briefly. There are, though, occasional slow downs between
 stations, most commonly between LATTC and Pico (as we saw in the
-trajectory plot above). Through the rest of dowtown, movements seem to
+trajectory plot above). Through the rest of downtown, movements seem to
 be smoother.
 
 You’ll also notice that we’ve uploaded this animation to YouTube and
@@ -629,4 +629,4 @@ for new time, distance, and speed points along the route. We also
 explored some ways we can plot and visualize the trajectories. Future
 vignettes
 ([`vignette("articles/indygo-signals")`](https://obrien-ben.github.io/transittraj/articles/indygo-signals.md))
-will explore real-world applications of trajectories.
+explore real-world applications of trajectories.

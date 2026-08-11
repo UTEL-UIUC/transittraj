@@ -7,8 +7,9 @@ articles:
   articles/indygo-signals: indygo-signals.html
   articles/input-data-la: input-data-la.html
   articles/intro-trajectories-la: intro-trajectories-la.html
+  intro-trajectories: intro-trajectories.html
   articles/tc26: tc26.html
-last_built: 2026-08-11T18:08Z
+last_built: 2026-08-11T18:40Z
 urls:
   reference: https://obrien-ben.github.io/transittraj/reference
   article: https://obrien-ben.github.io/transittraj/articles

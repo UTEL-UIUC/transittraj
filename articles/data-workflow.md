@@ -993,5 +993,5 @@ identified and corrected both issues.
 That was a lot of cleaning! But we now have a dataset free of outliers
 and deadheading trips, and that we know will produce a monotonic and
 invertible trajectory function. In the next vignette
-([`vignette("articles/intro-trajectories-la")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories-la.md))
+([`vignette("intro-trajectories")`](https://obrien-ben.github.io/transittraj/articles/intro-trajectories.md))
 we will fit and explore these interpolating curves.
