@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Codecov test
+coverage](https://codecov.io/gh/utel-uiuc/transittraj/graph/badge.svg)](https://app.codecov.io/gh/utel-uiuc/transittraj)
 <!-- badges: end -->
 
 An R package for reconstructing and visualizing transit vehicle
