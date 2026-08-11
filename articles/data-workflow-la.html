@@ -593,121 +593,11 @@ filters at <code><a href="../reference/clean_jumps.html">help(clean_jumps)</a></
 </div>
 </div>
 <div class="section level2">
-<h2 id="step-5-clean-incomplete-trips">Step 5: Clean Incomplete Trips<a class="anchor" aria-label="anchor" href="#step-5-clean-incomplete-trips"></a>
-</h2>
-<p>AVL or GTFS-rt data is rarely transmitted perfectly. Often, there may
-be large gaps of missing data in the middle of trips, or you may have
-only a few observations from each trip. For <strong>Step 5</strong>, the
-function <code><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips()</a></code> filters out these trips
-There are two main groups of decision variables for this function:</p>
-<ul>
-<li><p>Minimum and maximum trip distances and durations.</p></li>
-<li><p>Minimum and maximum distance and time gaps between adjacent
-observations.</p></li>
-</ul>
-<p>For this example, we’ll use a minimum trip distance of 1000 meters,
-and a minimum trip duration of 120 seconds. Anything will less data than
-this will be filtered out. Additionally, we’ll remove trips with a gap
-larger than 1000 meters.</p>
-<div class="section level3">
-<h3 id="running-the-code-3">Running the Code<a class="anchor" aria-label="anchor" href="#running-the-code-3"></a>
-</h3>
-<p>Let’s run <code><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips()</a></code> as discussed
-above:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
-<span><span class="va">lineE_min_dist</span> <span class="op">&lt;-</span> <span class="fl">1000</span> <span class="co"># meters</span></span>
-<span><span class="va">lineE_min_time</span> <span class="op">&lt;-</span> <span class="fl">120</span> <span class="co"># seconds</span></span>
-<span><span class="va">lineE_max_gap</span> <span class="op">&lt;-</span> <span class="fl">1000</span> <span class="co"># meters</span></span>
-<span></span>
-<span><span class="co"># Run function</span></span>
-<span><span class="va">lineE_cleaned_incompletes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips</a></span><span class="op">(</span></span>
-<span>  distance_df <span class="op">=</span> <span class="va">lineE_no_jumps</span>,</span>
-<span>  min_trip_distance <span class="op">=</span> <span class="va">lineE_min_dist</span>,</span>
-<span>  min_trip_duration <span class="op">=</span> <span class="va">lineE_min_time</span>,</span>
-<span>  max_distance_gap <span class="op">=</span> <span class="va">lineE_max_gap</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="exploring-the-results-3">Exploring the Results<a class="anchor" aria-label="anchor" href="#exploring-the-results-3"></a>
-</h3>
-<p>Now that we’ve filtered our dataset, let’s see how many trips have
-been removed:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">step5_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_cleaned_incompletes</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">step5_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">lineE_cleaned_incompletes</span><span class="op">$</span><span class="va">trip_id_performed</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">step4_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">lineE_no_jumps</span><span class="op">$</span><span class="va">trip_id_performed</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Initial: "</span>, <span class="va">step4_obs</span>, <span class="st">" obs, "</span>, <span class="va">step4_trips</span>, <span class="st">" trips"</span>,</span>
-<span>    <span class="st">"\nAfter: "</span>, <span class="va">step5_obs</span>, <span class="st">" obs, "</span>, <span class="va">step5_trips</span>, <span class="st">" trips"</span>,</span>
-<span>    <span class="st">"\nDifference: "</span>, <span class="op">(</span><span class="va">step4_obs</span> <span class="op">-</span> <span class="va">step5_obs</span><span class="op">)</span>, <span class="st">" obs, "</span>,</span>
-<span>    <span class="op">(</span><span class="va">step4_trips</span> <span class="op">-</span> <span class="va">step5_trips</span><span class="op">)</span>, <span class="st">" trips removed"</span>,</span>
-<span>    sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Initial: 3085 obs, 15 trips</span></span>
-<span><span class="co">#&gt; After: 2250 obs, 11 trips</span></span>
-<span><span class="co">#&gt; Difference: 835 obs, 4 trips removed</span></span></code></pre></div>
-<p>4 trips violated our requirements, corresponding to roughly 830
-individual observations. As before, we can use
-<code>return_removals</code> to take a look at the violating trips:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lineE_step5_removals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips</a></span><span class="op">(</span></span>
-<span>  <span class="co"># Same settings as before</span></span>
-<span>  distance_df <span class="op">=</span> <span class="va">lineE_no_jumps</span>,</span>
-<span>  min_trip_distance <span class="op">=</span> <span class="va">lineE_min_dist</span>, min_trip_duration <span class="op">=</span> <span class="va">lineE_min_time</span>,</span>
-<span>  max_distance_gap <span class="op">=</span> <span class="va">lineE_max_gap</span>,</span>
-<span>  <span class="co"># Return removals</span></span>
-<span>  return_removals <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_step5_removals</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 16</span></span></span>
-<span><span class="co">#&gt;   trip_id_performed max_dist min_dist max_time            min_time           </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 63383935            <span style="text-decoration: underline;">34</span>944.    18.3  2026-05-27 <span style="color: #949494;">07:52:59</span> 2026-05-27 <span style="color: #949494;">06:26:23</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 63383948            <span style="text-decoration: underline;">35</span>219.    30.7  2026-05-27 <span style="color: #949494;">08:37:39</span> 2026-05-27 <span style="color: #949494;">07:10:41</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 63384081            <span style="text-decoration: underline;">35</span>195.    28.6  2026-05-27 <span style="color: #949494;">08:39:55</span> 2026-05-27 <span style="color: #949494;">07:19:56</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 63384103            <span style="text-decoration: underline;">35</span>130.     4.34 2026-05-27 <span style="color: #949494;">08:26:20</span> 2026-05-27 <span style="color: #949494;">07:04:36</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 11 more variables: max_dist_gap &lt;dbl&gt;, max_t_gap &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   max_dist_gap_id &lt;chr&gt;, max_t_gap_id &lt;chr&gt;, trip_distance &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   duration &lt;dbl&gt;, dist_ok &lt;lgl&gt;, dur_ok &lt;lgl&gt;, dist_gap_ok &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   t_gap_ok &lt;lgl&gt;, all_ok &lt;lgl&gt;</span></span></span></code></pre></div>
-<p>All of these were removed because of a large gap in data. Let’s take
-a look at one, trip 63383948:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Filter dataframe to our tirp &amp; distances</span></span>
-<span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">lineE_no_jumps</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">trip_id_performed</span> <span class="op">==</span> <span class="st">"63383948"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">(</span><span class="va">distance</span> <span class="op">&gt;=</span> <span class="fl">4000</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">distance</span> <span class="op">&lt;=</span> <span class="fl">16000</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create a plot</span></span>
-<span><span class="va">gaps_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Plot the points</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_df</span>,</span>
-<span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_timestamp</span>, y <span class="op">=</span> <span class="va">distance</span><span class="op">)</span>,</span>
-<span>            linewidth <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"lightcoral"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_df</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_timestamp</span>, y <span class="op">=</span> <span class="va">distance</span><span class="op">)</span>,</span>
-<span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"firebrick4"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Format the plot</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time"</span>,</span>
-<span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
-<span>       title <span class="op">=</span> <span class="st">"Gap on Line E"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"Trip 63383948"</span><span class="op">)</span></span>
-<span><span class="va">gaps_plot</span></span></code></pre></div>
-<p><img src="data-workflow-la_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>We can see this trip’s gap between 8,000 and 12,000 meters. The slope
-of this line is reasonable, but is may not be reasonable to interpolate
-between these points, especially if we’re concerned about understanding
-individual stop-and-go cycles. We’ll leave this – and similar trips –
-out of our future analyses.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="step-6-trim-trip-tails">Step 6: Trim Trip Tails<a class="anchor" aria-label="anchor" href="#step-6-trim-trip-tails"></a>
+<h2 id="step-5-trim-trip-tails">Step 5: Trim Trip Tails<a class="anchor" aria-label="anchor" href="#step-5-trim-trip-tails"></a>
 </h2>
 <p>Earlier in this vignette, we used a spatial buffer to clean what
 appeared to be deadheads. But what if a trip deadheads close to – or
-along – its route alignment? In <strong>Step 6</strong>, the function
+along – its route alignment? In <strong>Step 5</strong>, the function
 <code><a href="../reference/trim_trips.html">trim_trips()</a></code> is designed to handle these scenarios by
 trimming the tails off of trips.</p>
 <p>The function identifies the observations with the minimum and maximum
@@ -716,45 +606,45 @@ these points. There is one main decision variable here: should beginning
 tails be trimmed, ending tails, or both? For this example, we’ll trim
 both ends of trips.</p>
 <div class="section level3">
-<h3 id="running-the-code-4">Running the Code<a class="anchor" aria-label="anchor" href="#running-the-code-4"></a>
+<h3 id="running-the-code-3">Running the Code<a class="anchor" aria-label="anchor" href="#running-the-code-3"></a>
 </h3>
 <p>Let’s run <code><a href="../reference/trim_trips.html">trim_trips()</a></code>, trimming both the beginning and
 ends of each trip:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
 <span><span class="va">lineE_trim_type</span> <span class="op">&lt;-</span> <span class="st">"both"</span></span>
 <span></span>
 <span><span class="co"># Run function</span></span>
-<span><span class="va">lineE_trimmed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trim_trips.html">trim_trips</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_cleaned_incompletes</span>,</span>
-<span>                          trim_type <span class="op">=</span> <span class="va">lineE_trim_type</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">lineE_trimmed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trim_trips.html">trim_trips</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_no_jumps</span>,</span>
+<span>                            trim_type <span class="op">=</span> <span class="va">lineE_trim_type</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="exploring-the-results-4">Exploring the Results<a class="anchor" aria-label="anchor" href="#exploring-the-results-4"></a>
+<h3 id="exploring-the-results-3">Exploring the Results<a class="anchor" aria-label="anchor" href="#exploring-the-results-3"></a>
 </h3>
 <p>Let’s see what was removed:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Pull dimensions</span></span>
-<span><span class="va">step6_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_trimmed</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">step5_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_trimmed</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Print</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Initial: "</span>, <span class="va">step5_obs</span>, <span class="st">" obs"</span>,</span>
-<span>    <span class="st">"\nAfter: "</span>, <span class="va">step6_obs</span>, <span class="st">" obs"</span>,</span>
-<span>    <span class="st">"\nDifference: "</span>, <span class="op">(</span><span class="va">step5_obs</span> <span class="op">-</span> <span class="va">step6_obs</span><span class="op">)</span>, <span class="st">" obs removed"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Initial:  2250  obs </span></span>
-<span><span class="co">#&gt; After:  2130  obs </span></span>
-<span><span class="co">#&gt; Difference:  120  obs removed</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Initial: "</span>, <span class="va">step4_obs</span>, <span class="st">" obs"</span>,</span>
+<span>    <span class="st">"\nAfter: "</span>, <span class="va">step5_obs</span>, <span class="st">" obs"</span>,</span>
+<span>    <span class="st">"\nDifference: "</span>, <span class="op">(</span><span class="va">step4_obs</span> <span class="op">-</span> <span class="va">step5_obs</span><span class="op">)</span>, <span class="st">" obs removed"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Initial:  3085  obs </span></span>
+<span><span class="co">#&gt; After:  2924  obs </span></span>
+<span><span class="co">#&gt; Difference:  161  obs removed</span></span></code></pre></div>
 <p>For this example, some long deadheads may have been removed. Let’s
 take a look at a the points removed:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lineE_step6_removals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trim_trips.html">trim_trips</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lineE_step5_removals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trim_trips.html">trim_trips</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Same settings as before</span></span>
-<span>  distance_df <span class="op">=</span> <span class="va">lineE_cleaned_incompletes</span>,</span>
+<span>  distance_df <span class="op">=</span> <span class="va">lineE_no_jumps</span>,</span>
 <span>  trim_type <span class="op">=</span> <span class="va">lineE_trim_type</span>,</span>
 <span>  <span class="co"># Return removals</span></span>
 <span>  return_removals <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_step6_removals</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_step5_removals</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 10</span></span></span>
 <span><span class="co">#&gt;   trip_id_performed event_timestamp     distance min_dist_index max_dist_index</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
@@ -767,13 +657,13 @@ take a look at a the points removed:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: row_index &lt;int&gt;, before_min &lt;lgl&gt;, after_max &lt;lgl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   obs_ok &lt;lgl&gt;, location_ping_id &lt;chr&gt;</span></span></span></code></pre></div>
 <p>We’ll plot the points removed along trip 63383991:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter dataframe to our tirp &amp; distances</span></span>
-<span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">lineE_cleaned_incompletes</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">lineE_no_jumps</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">trip_id_performed</span> <span class="op">==</span> <span class="st">"63383991"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">distance</span> <span class="op">&lt;=</span> <span class="fl">5000</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># Join removals</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">(</span><span class="va">lineE_step6_removals</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">location_ping_id</span>, <span class="va">obs_ok</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">(</span><span class="va">lineE_step5_removals</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">location_ping_id</span>, <span class="va">obs_ok</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            by <span class="op">=</span> <span class="st">"location_ping_id"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>obs_ok <span class="op">=</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">obs_ok</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -795,12 +685,122 @@ take a look at a the points removed:</p>
 <span>       title <span class="op">=</span> <span class="st">"Trimmed Trips on Line E"</span>,</span>
 <span>       subtitle <span class="op">=</span> <span class="st">"Trip 63383991"</span><span class="op">)</span></span>
 <span><span class="va">trimmed_plot</span></span></code></pre></div>
-<p><img src="data-workflow-la_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="data-workflow-la_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>This train travels along its route for quite a while before reaching
 the western terminal and turning around. This is likely a deadhead, or a
 revenue trip logged into the wrong trip ID. Regardless, in order to
 achieve a clean, monotonic trajectory, we’ll throw out the points
 occurring before the trip’s starting terminal.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="step-6-clean-incomplete-trips">Step 6: Clean Incomplete Trips<a class="anchor" aria-label="anchor" href="#step-6-clean-incomplete-trips"></a>
+</h2>
+<p>AVL or GTFS-rt data is rarely transmitted perfectly. Often, there may
+be large gaps of missing data in the middle of trips, or you may have
+only a few observations from each trip. For <strong>Step 6</strong>, the
+function <code><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips()</a></code> filters out these trips
+There are two main groups of decision variables for this function:</p>
+<ul>
+<li><p>Minimum and maximum trip distances and durations.</p></li>
+<li><p>Minimum and maximum distance and time gaps between adjacent
+observations.</p></li>
+</ul>
+<p>For this example, we’ll use a minimum trip distance of 1000 meters,
+and a minimum trip duration of 120 seconds. Anything will less data than
+this will be filtered out. Additionally, we’ll remove trips with a gap
+larger than 1000 meters.</p>
+<div class="section level3">
+<h3 id="running-the-code-4">Running the Code<a class="anchor" aria-label="anchor" href="#running-the-code-4"></a>
+</h3>
+<p>Let’s run <code><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips()</a></code> as discussed
+above:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Set parameters</span></span>
+<span><span class="va">lineE_min_dist</span> <span class="op">&lt;-</span> <span class="fl">1000</span> <span class="co"># meters</span></span>
+<span><span class="va">lineE_min_time</span> <span class="op">&lt;-</span> <span class="fl">120</span> <span class="co"># seconds</span></span>
+<span><span class="va">lineE_max_gap</span> <span class="op">&lt;-</span> <span class="fl">1000</span> <span class="co"># meters</span></span>
+<span></span>
+<span><span class="co"># Run function</span></span>
+<span><span class="va">lineE_cleaned_incompletes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips</a></span><span class="op">(</span></span>
+<span>  distance_df <span class="op">=</span> <span class="va">lineE_trimmed</span>,</span>
+<span>  min_trip_distance <span class="op">=</span> <span class="va">lineE_min_dist</span>,</span>
+<span>  min_trip_duration <span class="op">=</span> <span class="va">lineE_min_time</span>,</span>
+<span>  max_distance_gap <span class="op">=</span> <span class="va">lineE_max_gap</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="exploring-the-results-4">Exploring the Results<a class="anchor" aria-label="anchor" href="#exploring-the-results-4"></a>
+</h3>
+<p>Now that we’ve filtered our dataset, let’s see how many trips have
+been removed:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">step6_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">lineE_cleaned_incompletes</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">step6_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">lineE_cleaned_incompletes</span><span class="op">$</span><span class="va">trip_id_performed</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">step5_trips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">lineE_trimmed</span><span class="op">$</span><span class="va">trip_id_performed</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Initial: "</span>, <span class="va">step5_obs</span>, <span class="st">" obs, "</span>, <span class="va">step5_trips</span>, <span class="st">" trips"</span>,</span>
+<span>    <span class="st">"\nAfter: "</span>, <span class="va">step6_obs</span>, <span class="st">" obs, "</span>, <span class="va">step6_trips</span>, <span class="st">" trips"</span>,</span>
+<span>    <span class="st">"\nDifference: "</span>, <span class="op">(</span><span class="va">step5_obs</span> <span class="op">-</span> <span class="va">step6_obs</span><span class="op">)</span>, <span class="st">" obs, "</span>,</span>
+<span>    <span class="op">(</span><span class="va">step5_trips</span> <span class="op">-</span> <span class="va">step6_trips</span><span class="op">)</span>, <span class="st">" trips removed"</span>,</span>
+<span>    sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Initial: 2924 obs, 15 trips</span></span>
+<span><span class="co">#&gt; After: 2130 obs, 11 trips</span></span>
+<span><span class="co">#&gt; Difference: 794 obs, 4 trips removed</span></span></code></pre></div>
+<p>4 trips violated our requirements, corresponding to roughly 830
+individual observations. As before, we can use
+<code>return_removals</code> to take a look at the violating trips:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lineE_step6_removals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clean_incomplete_trips.html">clean_incomplete_trips</a></span><span class="op">(</span></span>
+<span>  <span class="co"># Same settings as before</span></span>
+<span>  distance_df <span class="op">=</span> <span class="va">lineE_trimmed</span>,</span>
+<span>  min_trip_distance <span class="op">=</span> <span class="va">lineE_min_dist</span>, min_trip_duration <span class="op">=</span> <span class="va">lineE_min_time</span>,</span>
+<span>  max_distance_gap <span class="op">=</span> <span class="va">lineE_max_gap</span>,</span>
+<span>  <span class="co"># Return removals</span></span>
+<span>  return_removals <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lineE_step6_removals</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 16</span></span></span>
+<span><span class="co">#&gt;   trip_id_performed max_dist min_dist max_time            min_time           </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 63383935            <span style="text-decoration: underline;">34</span>944.    18.3  2026-05-27 <span style="color: #949494;">07:52:59</span> 2026-05-27 <span style="color: #949494;">06:46:37</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 63383948            <span style="text-decoration: underline;">35</span>219.    30.7  2026-05-27 <span style="color: #949494;">08:37:39</span> 2026-05-27 <span style="color: #949494;">07:10:41</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 63384081            <span style="text-decoration: underline;">35</span>195.    28.6  2026-05-27 <span style="color: #949494;">08:39:55</span> 2026-05-27 <span style="color: #949494;">07:22:59</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 63384103            <span style="text-decoration: underline;">35</span>130.     4.34 2026-05-27 <span style="color: #949494;">08:25:54</span> 2026-05-27 <span style="color: #949494;">07:06:17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 11 more variables: max_dist_gap &lt;dbl&gt;, max_t_gap &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   max_dist_gap_id &lt;chr&gt;, max_t_gap_id &lt;chr&gt;, trip_distance &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   duration &lt;dbl&gt;, dist_ok &lt;lgl&gt;, dur_ok &lt;lgl&gt;, dist_gap_ok &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   t_gap_ok &lt;lgl&gt;, all_ok &lt;lgl&gt;</span></span></span></code></pre></div>
+<p>All of these were removed because of a large gap in data. Let’s take
+a look at one, trip 63383948:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Filter dataframe to our tirp &amp; distances</span></span>
+<span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">lineE_trimmed</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">trip_id_performed</span> <span class="op">==</span> <span class="st">"63383948"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">(</span><span class="va">distance</span> <span class="op">&gt;=</span> <span class="fl">4000</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">distance</span> <span class="op">&lt;=</span> <span class="fl">16000</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a plot</span></span>
+<span><span class="va">gaps_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Plot the points</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_df</span>,</span>
+<span>            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_timestamp</span>, y <span class="op">=</span> <span class="va">distance</span><span class="op">)</span>,</span>
+<span>            linewidth <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"lightcoral"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">plot_df</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_timestamp</span>, y <span class="op">=</span> <span class="va">distance</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"firebrick4"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Format the plot</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Time"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Gap on Line E"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Trip 63383948"</span><span class="op">)</span></span>
+<span><span class="va">gaps_plot</span></span></code></pre></div>
+<p><img src="data-workflow-la_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>We can see this trip’s gap between 8,000 and 12,000 meters. The slope
+of this line is reasonable, but is may not be reasonable to interpolate
+between these points, especially if we’re concerned about understanding
+individual stop-and-go cycles. We’ll leave this – and similar trips –
+out of our future analyses.</p>
 </div>
 </div>
 <div class="section level2">
@@ -845,9 +845,9 @@ discussed above:</p>
 <span><span class="va">lineE_correct_speeds</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
 <span></span>
 <span><span class="co"># Run function</span></span>
-<span><span class="va">lineE_mono</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_monotonic.html">make_monotonic</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_trimmed</span>,</span>
-<span>                           correct_speed <span class="op">=</span> <span class="va">lineE_correct_speeds</span>,</span>
-<span>                           add_distance_error <span class="op">=</span> <span class="va">lineE_dist_error</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">lineE_mono</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_monotonic.html">make_monotonic</a></span><span class="op">(</span>distance_df <span class="op">=</span> <span class="va">lineE_cleaned_incompletes</span>,</span>
+<span>                             correct_speed <span class="op">=</span> <span class="va">lineE_correct_speeds</span>,</span>
+<span>                             add_distance_error <span class="op">=</span> <span class="va">lineE_dist_error</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="exploring-the-results-5">Exploring the Results<a class="anchor" aria-label="anchor" href="#exploring-the-results-5"></a>

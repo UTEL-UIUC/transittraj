@@ -577,11 +577,128 @@ your data. Read more about these options and the theory behind median
 filters at
 [`help(clean_jumps)`](https://obrien-ben.github.io/transittraj/reference/clean_jumps.md).
 
-## Step 5: Clean Incomplete Trips
+## Step 5: Trim Trip Tails
+
+Earlier in this vignette, we used a spatial buffer to clean what
+appeared to be deadheads. But what if a trip deadheads close to – or
+along – its route alignment? In **Step 5**, the function
+[`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md)
+is designed to handle these scenarios by trimming the tails off of
+trips.
+
+The function identifies the observations with the minimum and maximum
+distance values, and removes any observations which occur before/after
+these points. There is one main decision variable here: should beginning
+tails be trimmed, ending tails, or both? For this example, we’ll trim
+both ends of trips.
+
+### Running the Code
+
+Let’s run
+[`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md),
+trimming both the beginning and ends of each trip:
+
+``` r
+
+# Set parameters
+lineE_trim_type <- "both"
+
+# Run function
+lineE_trimmed <- trim_trips(distance_df = lineE_no_jumps,
+                            trim_type = lineE_trim_type)
+```
+
+### Exploring the Results
+
+Let’s see what was removed:
+
+``` r
+
+# Pull dimensions
+step5_obs <- dim(lineE_trimmed)[1]
+
+# Print
+cat("Initial: ", step4_obs, " obs",
+    "\nAfter: ", step5_obs, " obs",
+    "\nDifference: ", (step4_obs - step5_obs), " obs removed")
+#> Initial:  3085  obs 
+#> After:  2924  obs 
+#> Difference:  161  obs removed
+```
+
+For this example, some long deadheads may have been removed. Let’s take
+a look at a the points removed:
+
+``` r
+
+lineE_step5_removals <- trim_trips(
+  # Same settings as before
+  distance_df = lineE_no_jumps,
+  trim_type = lineE_trim_type,
+  # Return removals
+  return_removals = TRUE
+)
+
+head(lineE_step5_removals)
+#> # A tibble: 6 × 10
+#>   trip_id_performed event_timestamp     distance min_dist_index max_dist_index
+#>   <chr>             <dttm>                 <dbl>          <int>          <int>
+#> 1 63383915          2026-05-27 05:48:58    198.               6            243
+#> 2 63383915          2026-05-27 05:49:19     99.2              6            243
+#> 3 63383915          2026-05-27 05:49:40     98.7              6            243
+#> 4 63383915          2026-05-27 05:49:59     62.7              6            243
+#> 5 63383915          2026-05-27 05:50:20     83.1              6            243
+#> 6 63383917          2026-05-27 06:07:20     55.3              3            210
+#> # ℹ 5 more variables: row_index <int>, before_min <lgl>, after_max <lgl>,
+#> #   obs_ok <lgl>, location_ping_id <chr>
+```
+
+We’ll plot the points removed along trip 63383991:
+
+``` r
+
+# Filter dataframe to our tirp & distances
+plot_df <- lineE_no_jumps %>%
+  filter(trip_id_performed == "63383991") %>%
+  filter(distance <= 5000) %>%
+  # Join removals
+  left_join(y = (lineE_step5_removals %>% select(location_ping_id, obs_ok)),
+            by = "location_ping_id") %>%
+  mutate(obs_ok = tidyr::replace_na(obs_ok, TRUE))
+
+# Create a plot
+trimmed_plot <- ggplot() +
+  # Plot the points
+  geom_line(data = plot_df,
+            aes(x = event_timestamp, y = distance,
+                color = obs_ok),
+            linewidth = 2) +
+  # Format the points
+  scale_color_manual(name = "Point OK?",
+                     values = c("FALSE" = "#f43155",
+                                "TRUE" = "#2f6ff8")) +
+  # Format the plot
+  theme_minimal() +
+  labs(x = "Time",
+       y = "Distance (m)",
+       title = "Trimmed Trips on Line E",
+       subtitle = "Trip 63383991")
+trimmed_plot
+```
+
+![](data-workflow-la_files/figure-html/unnamed-chunk-24-1.png)
+
+This train travels along its route for quite a while before reaching the
+western terminal and turning around. This is likely a deadhead, or a
+revenue trip logged into the wrong trip ID. Regardless, in order to
+achieve a clean, monotonic trajectory, we’ll throw out the points
+occurring before the trip’s starting terminal.
+
+## Step 6: Clean Incomplete Trips
 
 AVL or GTFS-rt data is rarely transmitted perfectly. Often, there may be
 large gaps of missing data in the middle of trips, or you may have only
-a few observations from each trip. For **Step 5**, the function
+a few observations from each trip. For **Step 6**, the function
 [`clean_incomplete_trips()`](https://obrien-ben.github.io/transittraj/reference/clean_incomplete_trips.md)
 filters out these trips There are two main groups of decision variables
 for this function:
@@ -611,7 +728,7 @@ lineE_max_gap <- 1000 # meters
 
 # Run function
 lineE_cleaned_incompletes <- clean_incomplete_trips(
-  distance_df = lineE_no_jumps,
+  distance_df = lineE_trimmed,
   min_trip_distance = lineE_min_dist,
   min_trip_duration = lineE_min_time,
   max_distance_gap = lineE_max_gap
@@ -625,18 +742,18 @@ removed:
 
 ``` r
 
-step5_obs <- dim(lineE_cleaned_incompletes)[1]
-step5_trips <- length(unique(lineE_cleaned_incompletes$trip_id_performed))
-step4_trips <- length(unique(lineE_no_jumps$trip_id_performed))
+step6_obs <- dim(lineE_cleaned_incompletes)[1]
+step6_trips <- length(unique(lineE_cleaned_incompletes$trip_id_performed))
+step5_trips <- length(unique(lineE_trimmed$trip_id_performed))
 
-cat("Initial: ", step4_obs, " obs, ", step4_trips, " trips",
-    "\nAfter: ", step5_obs, " obs, ", step5_trips, " trips",
-    "\nDifference: ", (step4_obs - step5_obs), " obs, ",
-    (step4_trips - step5_trips), " trips removed",
+cat("Initial: ", step5_obs, " obs, ", step5_trips, " trips",
+    "\nAfter: ", step6_obs, " obs, ", step6_trips, " trips",
+    "\nDifference: ", (step5_obs - step6_obs), " obs, ",
+    (step5_trips - step6_trips), " trips removed",
     sep = "")
-#> Initial: 3085 obs, 15 trips
-#> After: 2250 obs, 11 trips
-#> Difference: 835 obs, 4 trips removed
+#> Initial: 2924 obs, 15 trips
+#> After: 2130 obs, 11 trips
+#> Difference: 794 obs, 4 trips removed
 ```
 
 4 trips violated our requirements, corresponding to roughly 830
@@ -645,22 +762,22 @@ a look at the violating trips:
 
 ``` r
 
-lineE_step5_removals <- clean_incomplete_trips(
+lineE_step6_removals <- clean_incomplete_trips(
   # Same settings as before
-  distance_df = lineE_no_jumps,
+  distance_df = lineE_trimmed,
   min_trip_distance = lineE_min_dist, min_trip_duration = lineE_min_time,
   max_distance_gap = lineE_max_gap,
   # Return removals
   return_removals = TRUE
 )
-print(lineE_step5_removals)
+print(lineE_step6_removals)
 #> # A tibble: 4 × 16
 #>   trip_id_performed max_dist min_dist max_time            min_time           
 #>   <chr>                <dbl>    <dbl> <dttm>              <dttm>             
-#> 1 63383935            34944.    18.3  2026-05-27 07:52:59 2026-05-27 06:26:23
+#> 1 63383935            34944.    18.3  2026-05-27 07:52:59 2026-05-27 06:46:37
 #> 2 63383948            35219.    30.7  2026-05-27 08:37:39 2026-05-27 07:10:41
-#> 3 63384081            35195.    28.6  2026-05-27 08:39:55 2026-05-27 07:19:56
-#> 4 63384103            35130.     4.34 2026-05-27 08:26:20 2026-05-27 07:04:36
+#> 3 63384081            35195.    28.6  2026-05-27 08:39:55 2026-05-27 07:22:59
+#> 4 63384103            35130.     4.34 2026-05-27 08:25:54 2026-05-27 07:06:17
 #> # ℹ 11 more variables: max_dist_gap <dbl>, max_t_gap <dbl>,
 #> #   max_dist_gap_id <chr>, max_t_gap_id <chr>, trip_distance <dbl>,
 #> #   duration <dbl>, dist_ok <lgl>, dur_ok <lgl>, dist_gap_ok <lgl>,
@@ -673,7 +790,7 @@ look at one, trip 63383948:
 ``` r
 
 # Filter dataframe to our tirp & distances
-plot_df <- lineE_no_jumps %>%
+plot_df <- lineE_trimmed %>%
   filter(trip_id_performed == "63383948") %>%
   filter((distance >= 4000) & (distance <= 16000))
 
@@ -695,130 +812,13 @@ gaps_plot <- ggplot() +
 gaps_plot
 ```
 
-![](data-workflow-la_files/figure-html/unnamed-chunk-24-1.png)
+![](data-workflow-la_files/figure-html/unnamed-chunk-28-1.png)
 
 We can see this trip’s gap between 8,000 and 12,000 meters. The slope of
 this line is reasonable, but is may not be reasonable to interpolate
 between these points, especially if we’re concerned about understanding
 individual stop-and-go cycles. We’ll leave this – and similar trips –
 out of our future analyses.
-
-## Step 6: Trim Trip Tails
-
-Earlier in this vignette, we used a spatial buffer to clean what
-appeared to be deadheads. But what if a trip deadheads close to – or
-along – its route alignment? In **Step 6**, the function
-[`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md)
-is designed to handle these scenarios by trimming the tails off of
-trips.
-
-The function identifies the observations with the minimum and maximum
-distance values, and removes any observations which occur before/after
-these points. There is one main decision variable here: should beginning
-tails be trimmed, ending tails, or both? For this example, we’ll trim
-both ends of trips.
-
-### Running the Code
-
-Let’s run
-[`trim_trips()`](https://obrien-ben.github.io/transittraj/reference/trim_trips.md),
-trimming both the beginning and ends of each trip:
-
-``` r
-
-# Set parameters
-lineE_trim_type <- "both"
-
-# Run function
-lineE_trimmed <- trim_trips(distance_df = lineE_cleaned_incompletes,
-                          trim_type = lineE_trim_type)
-```
-
-### Exploring the Results
-
-Let’s see what was removed:
-
-``` r
-
-# Pull dimensions
-step6_obs <- dim(lineE_trimmed)[1]
-
-# Print
-cat("Initial: ", step5_obs, " obs",
-    "\nAfter: ", step6_obs, " obs",
-    "\nDifference: ", (step5_obs - step6_obs), " obs removed")
-#> Initial:  2250  obs 
-#> After:  2130  obs 
-#> Difference:  120  obs removed
-```
-
-For this example, some long deadheads may have been removed. Let’s take
-a look at a the points removed:
-
-``` r
-
-lineE_step6_removals <- trim_trips(
-  # Same settings as before
-  distance_df = lineE_cleaned_incompletes,
-  trim_type = lineE_trim_type,
-  # Return removals
-  return_removals = TRUE
-)
-
-head(lineE_step6_removals)
-#> # A tibble: 6 × 10
-#>   trip_id_performed event_timestamp     distance min_dist_index max_dist_index
-#>   <chr>             <dttm>                 <dbl>          <int>          <int>
-#> 1 63383915          2026-05-27 05:48:58    198.               6            243
-#> 2 63383915          2026-05-27 05:49:19     99.2              6            243
-#> 3 63383915          2026-05-27 05:49:40     98.7              6            243
-#> 4 63383915          2026-05-27 05:49:59     62.7              6            243
-#> 5 63383915          2026-05-27 05:50:20     83.1              6            243
-#> 6 63383917          2026-05-27 06:07:20     55.3              3            210
-#> # ℹ 5 more variables: row_index <int>, before_min <lgl>, after_max <lgl>,
-#> #   obs_ok <lgl>, location_ping_id <chr>
-```
-
-We’ll plot the points removed along trip 63383991:
-
-``` r
-
-# Filter dataframe to our tirp & distances
-plot_df <- lineE_cleaned_incompletes %>%
-  filter(trip_id_performed == "63383991") %>%
-  filter(distance <= 5000) %>%
-  # Join removals
-  left_join(y = (lineE_step6_removals %>% select(location_ping_id, obs_ok)),
-            by = "location_ping_id") %>%
-  mutate(obs_ok = tidyr::replace_na(obs_ok, TRUE))
-
-# Create a plot
-trimmed_plot <- ggplot() +
-  # Plot the points
-  geom_line(data = plot_df,
-            aes(x = event_timestamp, y = distance,
-                color = obs_ok),
-            linewidth = 2) +
-  # Format the points
-  scale_color_manual(name = "Point OK?",
-                     values = c("FALSE" = "#f43155",
-                                "TRUE" = "#2f6ff8")) +
-  # Format the plot
-  theme_minimal() +
-  labs(x = "Time",
-       y = "Distance (m)",
-       title = "Trimmed Trips on Line E",
-       subtitle = "Trip 63383991")
-trimmed_plot
-```
-
-![](data-workflow-la_files/figure-html/unnamed-chunk-28-1.png)
-
-This train travels along its route for quite a while before reaching the
-western terminal and turning around. This is likely a deadhead, or a
-revenue trip logged into the wrong trip ID. Regardless, in order to
-achieve a clean, monotonic trajectory, we’ll throw out the points
-occurring before the trip’s starting terminal.
 
 ## Step 7: Correct for Monotonicity
 
@@ -868,9 +868,9 @@ lineE_dist_error <- 0.001
 lineE_correct_speeds <- TRUE
 
 # Run function
-lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
-                           correct_speed = lineE_correct_speeds,
-                           add_distance_error = lineE_dist_error)
+lineE_mono <- make_monotonic(distance_df = lineE_cleaned_incompletes,
+                             correct_speed = lineE_correct_speeds,
+                             add_distance_error = lineE_dist_error)
 ```
 
 ### Exploring the Results
