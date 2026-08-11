@@ -108,9 +108,11 @@ Check out the following vignettes to learn more about how to use
 
 - [The AVL Cleaning
   Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow-la.html)
+  (available offline at `vignette("data-workflow")`)
 
 - [Using
   Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
+  (available offline at `vignette("intro-trajectories")`)
 
 Check out some case studies from the research team that demonstrate
 `transittraj` in real-world projects:

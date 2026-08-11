@@ -1,18 +1,25 @@
 ---
 title: "Introduction to Trajectories"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Trajectories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  rmarkdown.html_vignette.check_title = FALSE
+  dpi = 120,
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
 # Introduction
 
-In the previous vignette (`vignette("articles/data-workflow-la")`), we saw how we
+In the previous vignette (`vignette("data-workflow")`), we saw how we
 can use `transittraj` to clean our AVL data. We took care of outliers, 
 deadheading trips, noise, and non-monotonic observations. In this vignette,
 we'll apply the cleaned data (`lineE_mono`) to fit a trajectory function.
@@ -314,7 +321,7 @@ Next, we'll draw these points as trajectory lines, with the distance column
 `interp_0` used for the y-axis, and the speed column `interp_1` used to apply
 a color gradient:
 
-``` {r, out.width = "100%", dpi = 600, fig.align = "center"}
+``` {r}
 # Create plot
 downtown_plot <- ggplot(data = lineE_downtown_pivot) +
   # Add points
@@ -353,7 +360,7 @@ a specific region in space.
 Now its time for the fun part -- plotting our trajectory curves. We
 can use `plot()` to easily generate a plot of all trajectories:
 
-``` {r, out.width = "100%", dpi = 600, fig.align = "center"}
+``` {r}
 plot(lineE_traj)
 ```
 
@@ -383,7 +390,7 @@ telling `transittraj` which feature they describe.
 
 We can plug all that in to `plot_trajectory()` to generate our formatted plot:
 
-``` {r, out.width = "100%", dpi = 600, fig.align = "center"}
+``` {r}
 # Run plotting function
 traj_plot <- plot_trajectory(
   # Provide input data
@@ -412,7 +419,7 @@ will center each trajectory to start at the same point in time. Second,
 `label_field` will create a label on our feature lines using the specified
 field from `lineE_stops`.
 
-``` {r, out.width = "100%", dpi = 600, fig.align = "center"}
+``` {r}
 # Set parameters
 flower_st_lims <- c(21900, 22800)
 
@@ -500,22 +507,12 @@ gganimate::animate(line_anim,
                    renderer = gganimate::av_renderer())
 ```
 
-``` {r, echo = FALSE}
-library(vembedr)
-embed_url("https://www.youtube.com/watch?v=ctW5dI1069o") %>%
-  use_align("center")
-```
-
+You can view the line animation online at
+[this link](https://www.youtube.com/watch?v=ctW5dI1069o). 
 The animation shows us that most trips stop primarily at their stations,
 usually only briefly. There are, though, occasional slow downs between
 stations, most commonly between LATTC and Pico (as we saw in the trajectory
 plot above). Through the rest of downtown, movements seem to be smoother.
-
-You'll also notice that we've uploaded this animation to YouTube and embedded
-it in the vignette. We did this so we could produce a smooth, high-resolution
-video that doesn't need to be re-rendered every time this vignette is built. By
-default, `transittraj`'s animation functions will return a `gif`. Check out
-`gganimate::animate()` for options to render videos.
 
 ## Map Animations
 
@@ -555,11 +552,8 @@ gganimate::animate(map_anim + theme(text = element_text(size = 16)),
                    renderer = gganimate::av_renderer())
 ```
 
-``` {r, echo = FALSE}
-embed_url("https://www.youtube.com/watch?v=F9Cg8bZNk5A") %>%
-  use_align("center")
-```
-
+You can view the map animation line at
+[this link](https://www.youtube.com/watch?v=F9Cg8bZNk5A).
 These animations help give additional spatial context to some patterns noticed
 earlier. Many slowdowns between stations that were visible in the trajectories
 now clearly occur at intersections. For example, a particularly long delay
@@ -578,3 +572,4 @@ distance, and speed points along the route. We also explored some ways we can
 plot and visualize the trajectories. Future vignettes 
 (`vignette("articles/indygo-signals")`) explore real-world
 applications of trajectories.
+

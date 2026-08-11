@@ -833,5 +833,5 @@ acceleration curve to guarantee a monotonic spline.
 That was a lot of cleaning! But we now have a dataset free of outliers and
 deadheading trips, and that we know will produce a monotonic and invertible
 trajectory function. In the next vignette
-(`vignette("articles/intro-trajectories-la")`) we will fit and explore these
+(`vignette("intro-trajectories")`) we will fit and explore these
 interpolating curves.
