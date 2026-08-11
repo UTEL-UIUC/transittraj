@@ -850,12 +850,11 @@ has two decision variables:
 - Should speeds be corrected to satisfy monotonicity? AVL speed location
   can help fit an excellent interpolating curve, but the values of
   observed speeds must meet certain conditions (known as
-  [Fritsch-Carlson
-  constraints](https://epubs.siam.org/doi/10.1137/0717021)) in order to
-  produce a monotonic spline. If your AVL data has speed information,
-  and you plan to use it when fitting a spline (the recommended
-  interpolation method), set `correct_speed = TRUE` to guarantee the fit
-  is monotonic.
+  [Fritsch-Carlson constraints](https://doi.org/10.1137/0717021)) in
+  order to produce a monotonic spline. If your AVL data has speed
+  information, and you plan to use it when fitting a spline (the
+  recommended interpolation method), set `correct_speed = TRUE` to
+  guarantee the fit is monotonic.
 
 - Should the trajectory be made *strictly* monotonic? This will identify
   perfectly flat regions can give them a slight upward slope. To be
