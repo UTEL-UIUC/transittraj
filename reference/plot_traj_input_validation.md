@@ -24,3 +24,7 @@ plot_traj_input_validation(trajectory, distance_df, has_inv)
 - has_inv:
 
   a boolean, does the traj object have inv fun?
+
+## Value
+
+Error if requirements not met.

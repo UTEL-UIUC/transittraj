@@ -27,6 +27,11 @@ group_trajectories(trajectories, grouping)
   `trajectories`, or `"split"` to split `trajectories` into a list of
   single trajectories.
 
+## Value
+
+If `grouping = "group"`, a group trajectory object; if
+`grouping = "split"`, a list of single trajectory objects.
+
 ## Examples
 
 ``` r

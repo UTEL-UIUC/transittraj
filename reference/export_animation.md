@@ -55,6 +55,10 @@ export_animation(
   Optional. The resolution, in dots per inch, of the image. Default is
   `100`.
 
+## Value
+
+File saved to the desired directory.
+
 ## Examples
 
 ``` r
@@ -79,7 +83,7 @@ anim_line <- plot_animated_line(trajectory = lineE_traj,
 # Create a place to store your file
 my_file_name <- tempfile("my_animation", fileext = ".gif")
 print(my_file_name)
-#> [1] "/tmp/Rtmp5fT8HN/my_animation1e578d9c387.gif"
+#> [1] "/tmp/RtmpyKa7Y9/my_animation1df938a9040.gif"
 
 # Run function: save animation locally
 if (interactive()) {

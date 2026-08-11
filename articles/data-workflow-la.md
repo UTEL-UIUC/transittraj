@@ -202,8 +202,8 @@ section.
 
 ## Steps 1 & 2: Buffer & Linearize
 
-Now that we have our data, we can begin cleaning and processesing it.
-The first two steps we recommend are:
+Now that we have our data, we can begin cleaning and processing it. The
+first two steps we recommend are:
 
 - **Step 1: Buffer**. Clip GPS points to within a certain distance of
   the route alignment.
