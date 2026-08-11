@@ -14,6 +14,9 @@ and trip_id_performed}
 
 \item{has_inv}{a boolean, does the traj object have inv fun?}
 }
+\value{
+Error if requirements not met.
+}
 \description{
 This function validates that an appropriate combination of trajectory
 and distance_df are provided, and that they have the necessary features.

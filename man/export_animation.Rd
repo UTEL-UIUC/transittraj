@@ -35,6 +35,9 @@ is \code{5.5}.}
 \item{dpi}{Optional. The resolution, in dots per inch, of the image. Default
 is \code{100}.}
 }
+\value{
+File saved to the desired directory.
+}
 \description{
 This function is a helepr for \code{gganimate}'s \code{anim_save()}, providing a
 simplified, though less feature-rich, version of these functions. Animations

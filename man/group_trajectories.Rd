@@ -15,6 +15,10 @@ trajectory.}
 trajectories in \code{trajectories}, or \code{"split"} to split \code{trajectories} into
 a list of single trajectories.}
 }
+\value{
+If \code{grouping = "group"}, a group trajectory object; if
+\code{grouping = "split"}, a list of single trajectory objects.
+}
 \description{
 Trajectory objects hold the trajectory functions, and related information,
 from one or more trip IDs. This function groups the fit trajectories from
