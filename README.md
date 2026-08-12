@@ -7,6 +7,7 @@
 
 [![Codecov test
 coverage](https://codecov.io/gh/utel-uiuc/transittraj/graph/badge.svg)](https://app.codecov.io/gh/utel-uiuc/transittraj)
+[![R-CMD-check](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 An R package for reconstructing and visualizing transit vehicle
