@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/UTEL-UIUC/transittraj/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/UTEL-UIUC/transittraj/blob/v1.1.0/inst/CITATION)
 
 O'Brien B, Lehe L (2026). “A Tool for Reconstructing Transit Vehicle
 Trajectories: A Case Study at IndyGo.” *arXiv preprint*.
