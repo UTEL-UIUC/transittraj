@@ -43,6 +43,20 @@ This functions projects raw AVL data, as GPS latitude-longitude points, onto
 a provided route geometry, returning each point's distance of that point
 along the shape its the beginning terminal.
 }
+\details{
+To simplify the user experience, this function takes in \code{shape_geometry}
+as an \code{sf} object. The internal calculations, however, are performed using
+the \code{geos} library, as it is substantially faster and more memory-efficient
+for large datasets.
+
+A limitation of \code{geos}, however, is that it only performs planar, not
+ellipsoid, calculations. Given the relatively small spatial range of most
+local transit routes, this is reasonable if the data is appropriately
+projected into a Euclidean coordinate system. Consider setting
+\code{project_crs} to a relevant local plane when performing both
+\code{get_linear_distances()} and when retrieving shape geometries
+through \code{get_shape_geometry()}.
+}
 \examples{
 # Set my parameters
 my_buffer <- 50 # meters

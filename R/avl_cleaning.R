@@ -5,6 +5,20 @@
 #' a provided route geometry, returning each point's distance of that point
 #' along the shape its the beginning terminal.
 #'
+#' @details
+#' To simplify the user experience, this function takes in `shape_geometry`
+#' as an `sf` object. The internal calculations, however, are performed using
+#' the `geos` library, as it is substantially faster and more memory-efficient
+#' for large datasets.
+#'
+#' A limitation of `geos`, however, is that it only performs planar, not
+#' ellipsoid, calculations. Given the relatively small spatial range of most
+#' local transit routes, this is reasonable if the data is appropriately
+#' projected into a Euclidean coordinate system. Consider setting
+#' `project_crs` to a relevant local plane when performing both
+#' `get_linear_distances()` and when retrieving shape geometries
+#' through `get_shape_geometry()`.
+#'
 #' @inheritParams project_onto_route
 #' @param avl_df A dataframe of raw AVL data. Must include at least `longitude`
 #' and `latitude` columns. See `validate_tides()`.
@@ -48,47 +62,37 @@ get_linear_distances <- function(avl_df, shape_geometry, clip_buffer = NULL,
                           require_shape_id = FALSE,
                           match_crs = project_crs)
 
-  # --- Spatial ---
-  # Get SFC -- needed for some spatial calculations
-  shape_geometry_sfc <- sf::st_geometry(shape_geometry)
+  # --- Spatial Setup ---
+  # Get geos route
+  shape_geos <- geos::as_geos_geometry(shape_geometry)
 
-  # Convert DF to SF
-  avl_sf <- avl_df %>%
+  # AVL df
+  avl_geos <- avl_df %>%
+    # Start with SF; easier to transform
     sf::st_as_sf(coords = c("longitude", "latitude")) %>%
     sf::st_set_crs(original_crs) %>%
-    sf::st_transform(crs = project_crs)
+    sf::st_transform(crs = project_crs) %>%
+    # Create geos
+    dplyr::mutate(geos_geom = geos::as_geos_geometry(geometry)) %>%
+    sf::st_drop_geometry()
 
-  # Clip to near line
+  # --- Buffer ---
   if (!is.null(clip_buffer)) {
-    route_buffer <- sf::st_buffer(shape_geometry_sfc, clip_buffer)
-    # Intersection will warn of non-constant attributes -- that's ok here
-    avl_clipped <- suppressWarnings(
-      sf::st_intersection(x = avl_sf, y = route_buffer))
+    route_buffer <- geos::geos_buffer(geom = shape_geos,
+                                      distance = clip_buffer)
 
-    # Convert SF to SFC
-    avl_sfc <- sf::st_geometry(avl_clipped)
-
-    # Save DF for later
-    dist_df <- sf::st_drop_geometry(avl_clipped)
-
-  } else {
-    # Convert SF to SFC
-    avl_sfc <- sf::st_geometry(avl_sf)
-
-    # Save DF for later
-    dist_df <- sf::st_drop_geometry(avl_sf)
+    avl_geos <- avl_geos %>%
+      dplyr::mutate(in_buffer = geos::geos_prepared_intersects(geom1 = route_buffer,
+                                                               geom2 = geos_geom)) %>%
+      dplyr::filter(in_buffer) %>%
+      dplyr::select(-in_buffer)
   }
 
-  # Project points onto line
-  shape_len <- sf::st_length(shape_geometry)
-  avl_dist_norm <- sf::st_line_project(line = shape_geometry_sfc, point = avl_sfc,
-                                       normalized = TRUE)
-  avl_dist = avl_dist_norm * shape_len
-
-  # Clean AVL distances & merge to DF
-  units(avl_dist) <- NULL
-  dist_df <- dist_df %>%
-    dplyr::mutate(distance = avl_dist)
+  # --- Projection ---
+  dist_df <- avl_geos %>%
+    dplyr::mutate(distance = geos::geos_project(geom2 = geos_geom,
+                                                geom1 = shape_geos)) %>%
+    dplyr::select(-geos_geom)
 
   return(dist_df)
 }

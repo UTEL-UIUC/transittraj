@@ -7,7 +7,9 @@
 
 [![Codecov test
 coverage](https://codecov.io/gh/utel-uiuc/transittraj/graph/badge.svg)](https://app.codecov.io/gh/utel-uiuc/transittraj)
-[![R-CMD-check](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/UTEL-UIUC/transittraj/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UTEL-UIUC/transittraj/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/transittraj)](https://CRAN.R-project.org/package=transittraj)
 <!-- badges: end -->
 
 An R package for reconstructing and visualizing transit vehicle
@@ -110,8 +112,8 @@ Check out the following vignettes to learn more about how to use
   Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data-la.html)
 
 - [The AVL Cleaning
-  Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow-la.html)
-  (available offline at `vignette("data-workflow")`)
+  Workflow](https://utel-uiuc.github.io/transittraj/articles/avl-data-workflow-la.html)
+  (available offline at `vignette("avl-data-workflow")`)
 
 - [Using
   Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
@@ -135,17 +137,18 @@ helpful, we’d appreciate a citation:
 citation("transittraj")
 #> To cite package 'transittraj' in publications use:
 #> 
-#>   O'Brien B, Lehe L (2026). _transittraj: Reconstruct and Visualize
-#>   Transit Vehicle Trajectories_. R package version 1.0.0,
-#>   <https://utel-uiuc.github.io/transittraj/>.
+#>   O'Brien B, Lehe L (2026). "A Tool for Reconstructing Transit Vehicle
+#>   Trajectories: A Case Study at IndyGo." _arXiv preprint_.
+#>   doi:10.48550/arXiv.2608.31078
+#>   <https://doi.org/10.48550/arXiv.2608.31078>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
-#>   @Manual{,
-#>     title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
+#>   @Article{,
+#>     title = {A Tool for Reconstructing Transit Vehicle Trajectories: A Case Study at IndyGo},
 #>     author = {Benjamin O'Brien and Lewis Lehe},
 #>     year = {2026},
-#>     note = {R package version 1.0.0},
-#>     url = {https://utel-uiuc.github.io/transittraj/},
+#>     doi = {10.48550/arXiv.2608.31078},
+#>     journal = {arXiv preprint},
 #>   }
 ```

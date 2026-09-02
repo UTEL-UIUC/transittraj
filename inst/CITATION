@@ -1,0 +1,8 @@
+bibentry(
+  bibtype = "Article",
+  title = "A Tool for Reconstructing Transit Vehicle Trajectories: A Case Study at IndyGo",
+  author = "Benjamin O'Brien, Lewis Lehe",
+  year = 2026,
+  doi = "10.48550/arXiv.2608.31078",
+  journal = "arXiv preprint"
+)

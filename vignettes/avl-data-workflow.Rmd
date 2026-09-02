@@ -27,7 +27,7 @@ trips. This seven-step process is summarized below:
   route are removed.
   
   2. **Project onto route**: AVL latitude-longitude points are projected
-  onto the route alignment and coverted to one-dimensional distances.
+  onto the route alignment and converted to one-dimensional distances.
   
   3. **Remove overlapping subtrips**: Trips with multiple vehicles and/or
   operators are removed.
@@ -167,9 +167,6 @@ lineE_sf <- lineE_avl %>%
 
 # Generate a map
 avl_map <- ggplot() +
-  # Basemap from OSM
-  ggspatial::annotation_map_tile(type = "cartolight", zoomin = 0,
-                                 progress = "none") +
   # Add alignment & points
   geom_sf(data = lineE_shape, color = "#f43155", linewidth = 1.5) +
   geom_sf(data = lineE_sf, color = "#2f6ff8",

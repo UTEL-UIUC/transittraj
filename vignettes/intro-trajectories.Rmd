@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In the previous vignette (`vignette("data-workflow")`), we saw how we
+In the previous vignette (`vignette("avl-data-workflow")`), we saw how we
 can use `transittraj` to clean our AVL data. We took care of outliers, 
 deadheading trips, noise, and non-monotonic observations. In this vignette,
 we'll apply the cleaned data (`lineE_mono`) to fit a trajectory function.

@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/utel-uiuc/transittraj/graph/badge.svg)](https://app.codecov.io/gh/utel-uiuc/transittraj)
-[![R-CMD-check](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/obrien-ben/transittraj/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/UTEL-UIUC/transittraj/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UTEL-UIUC/transittraj/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/transittraj)](https://CRAN.R-project.org/package=transittraj)
 <!-- badges: end -->
 
 An R package for reconstructing and visualizing transit vehicle trajectories. 
@@ -99,8 +100,8 @@ Check out the following vignettes to learn more about how to use `transittraj`:
 
 - [Understanding Data Inputs](https://utel-uiuc.github.io/transittraj/articles/input-data-la.html)
 
-- [The AVL Cleaning Workflow](https://utel-uiuc.github.io/transittraj/articles/data-workflow-la.html)
-(available offline at `vignette("data-workflow")`)
+- [The AVL Cleaning Workflow](https://utel-uiuc.github.io/transittraj/articles/avl-data-workflow-la.html)
+(available offline at `vignette("avl-data-workflow")`)
 
 - [Using Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
 (available offline at `vignette("intro-trajectories")`)

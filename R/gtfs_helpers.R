@@ -444,16 +444,17 @@ project_onto_route <- function(shape_geometry, points,
                  class = "error_pointsval_geomtype")
   }
 
-  # Get route line SFC
-  line_sfc <- sf::st_geometry(shape_geometry)
-  line_len <- sf::st_length(line_sfc)
+  # Convert cleaned SFC points to geos
+  points_geos <- geos::as_geos_geometry(points_sfc)
 
-  # Project and calculate distance
-  dist_norm <- sf::st_line_project(line = line_sfc, point = points_sfc,
-                                   normalized = TRUE)
-  dist = dist_norm * line_len
-  units(dist) <- NULL
+  # --- Route ---
+  shape_geos <- geos::as_geos_geometry(shape_geometry)
 
+  # --- Projection ---
+  dist <- geos::geos_project(geom2 = points_geos,
+                             geom1 = shape_geos)
+
+  # --- Cleanup ---
   # If input points are SFC, no other attributes to return; just give dist
   if ("sfc" %in% class(points)) {
     return(dist)

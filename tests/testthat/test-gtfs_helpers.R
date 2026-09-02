@@ -193,18 +193,17 @@ test_that("project_onto_route: points validation", {
     class = "error_pointsval_datatype"
   )
 })
-test_that("project_onto_route: points output testing", {
+test_that("project_onto_route: ellispoid testing", {
 
   # expected results, depending on coord sys
-  exp_WGS <- 35405.46
-  exp_UTM <- 35443.62
+  exp_WGS <- 0.2383
 
   test_shape <- get_shape_geometry(gtfs = lacmta_gtfs,
                                    shape = "804EB_RC_221121")
 
   # Test points: df
-  points_1 <- data.frame(latitude = c(33.8),
-                         longitude = c(-118.1))
+  points_1 <- data.frame(latitude = c(34.033895),
+                         longitude = c(-118.270924))
   proj_1 <- suppressMessages(project_onto_route(shape_geometry = test_shape,
                                                 points = points_1))
   expect_setequal(
@@ -214,16 +213,16 @@ test_that("project_onto_route: points output testing", {
   expect_equal(
     proj_1$distance,
     expected = exp_WGS,
-    tolerance = 0.01
+    tolerance = 0.001
   )
 
   # Test points: sf
-  points_2 <- data.frame(latitude = c(33.8),
-                         longitude = c(-118.1)) %>%
+  points_2 <- data.frame(latitude = c(34.033895),
+                         longitude = c(-118.270924)) %>%
     sf::st_as_sf(coords = c("longitude", "latitude"),
                  crs = 4326)
   proj_2 <- suppressMessages(project_onto_route(shape_geometry = test_shape,
-                               points = points_2))
+                             points = points_2))
   expect_setequal(
     names(proj_2),
     expected = c("distance")
@@ -231,12 +230,12 @@ test_that("project_onto_route: points output testing", {
   expect_equal(
     proj_2$distance,
     expected = exp_WGS,
-    tolerance = 0.01
+    tolerance = 0.001
   )
 
   # Test points: sfc
-  points_3 <- data.frame(latitude = c(33.8),
-                         longitude = c(-118.1)) %>%
+  points_3 <- data.frame(latitude = c(34.033895),
+                         longitude = c(-118.270924)) %>%
     sf::st_as_sf(coords = c("longitude", "latitude"),
                  crs = 4326) %>%
     sf::st_geometry()
@@ -253,21 +252,21 @@ test_that("project_onto_route: points output testing", {
   expect_equal(
     proj_3,
     expected = exp_WGS,
-    tolerance = 0.01
+    tolerance = 0.001
   )
 })
 test_that("project_onto_route: projection testing", {
 
   # expected results, depending on coord sys
-  exp_WGS <- 35405.46
-  exp_UTM <- 35443.62
+  exp_UTM <- 22573.28
+  exp_WGS <- 0.2383
 
   # projection CRS
   test_shape_1 <- get_shape_geometry(gtfs = lacmta_gtfs,
                                      shape = "804EB_RC_221121",
                                      project_crs = 32611)
-  points_1 <- data.frame(latitude = c(33.8),
-                         longitude = c(-118.1))
+  points_1 <- data.frame(latitude = c(34.033895),
+                         longitude = c(-118.270924))
   proj_1 <- suppressMessages(project_onto_route(shape_geometry = test_shape_1,
                                points = points_1,
                                project_crs = 32611))
@@ -278,8 +277,8 @@ test_that("project_onto_route: projection testing", {
   )
 
   # original and proj CRS
-  points_2 <- data.frame(latitude = c(398177.5),
-                         longitude = c(3740525))
+  points_2 <- data.frame(latitude = c(3766643),
+                         longitude = c(382675.9))
   proj_2 <- suppressMessages(project_onto_route(shape_geometry = test_shape_1,
                                points = points_2,
                                project_crs = 32611,
@@ -294,13 +293,13 @@ test_that("project_onto_route: projection testing", {
   test_shape_3 <- get_shape_geometry(gtfs = lacmta_gtfs,
                                      shape = "804EB_RC_221121",
                                      project_crs = 4326)
-  points_3 <- data.frame(latitude = c(398177.5),
-                         longitude = c(3740525))
+  points_3 <- data.frame(latitude = c(3766643),
+                         longitude = c(382675.9))
   proj_3 <- suppressMessages(project_onto_route(shape_geometry = test_shape_3,
                                points = points_3,
                                original_crs = 32611))
   expect_equal(
-    proj_2$distance,
+    proj_3$distance,
     expected = exp_WGS,
     tolerance = 0.01
   )

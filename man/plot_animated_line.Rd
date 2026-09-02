@@ -47,7 +47,7 @@ plot_animated_map(
   distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
-  background = "cartolight",
+  background = "osm",
   background_zoom = 0,
   bbox_expand = NULL,
   transition_style = "linear",
@@ -305,7 +305,7 @@ vehicle or operator IDs).
 
 The function \code{plot_animated_map()} has one additional layer to format: the
 basemap beneath the route alignment. OpenStreetMaps basemaps are used here.
-See a full list of available basemaps using \code{rosm::osm.image()}.
+See a full list of available basemaps using \code{rosm::osm.types()}.
 
 In addition to the map itself, the zoom level on the map can be
 adjusted using \code{background_zoom}. This will describe a zoom level relative

@@ -106,7 +106,7 @@
 #'
 #' The function `plot_animated_map()` has one additional layer to format: the
 #' basemap beneath the route alignment. OpenStreetMaps basemaps are used here.
-#' See a full list of available basemaps using `rosm::osm.image()`.
+#' See a full list of available basemaps using `rosm::osm.types()`.
 #'
 #' In addition to the map itself, the zoom level on the map can be
 #' adjusted using `background_zoom`. This will describe a zoom level relative
@@ -451,7 +451,7 @@ plot_animated_line <- function(trajectory = NULL, distance_df = NULL, plot_trips
 plot_animated_map <- function(shape_geometry, trajectory = NULL, distance_df = NULL,
                               plot_trips = NULL, timestep = 5, distance_lims = NULL,
                               center_vehicles = FALSE, feature_distances = NULL,
-                              background = "cartolight", background_zoom = 0,
+                              background = "osm", background_zoom = 0,
                               bbox_expand = NULL, transition_style = "linear",
                               convert_to_timezone = TRUE,
                               # Format route

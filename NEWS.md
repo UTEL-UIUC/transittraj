@@ -1,3 +1,18 @@
+# transittraj 1.1.0
+
+* Rewritten backend of spatial functions to use `geos`:
+
+  * For simplicity, all user-facing inputs and outputs still utilize `sf`; only
+  backend code has changed.
+
+* Carto basemaps now require an API key. Removed reliance on or
+references to Carto in:
+
+  * Data workflow vignettes mapping raw AVL (`vignette("avl-data-workflow")`
+  and `vignette("articles/avl-data-workflow-la")`).
+  
+  * Default basemap for `plot_animated_map()`.
+
 # transittraj 1.0.0
 
 *Release: 8/11/2026*

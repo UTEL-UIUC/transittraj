@@ -73,7 +73,7 @@ navbar:
         - text: Overview of Data
           href: articles/input-data-la.html
         - text: AVL Cleaning
-          href: articles/data-workflow-la.html
+          href: articles/avl-data-workflow-la.html
         - text: Intro to Trajectories
           href: articles/intro-trajectories-la.html
         - text: Applications

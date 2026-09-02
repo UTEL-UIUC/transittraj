@@ -27,14 +27,4 @@ Performs interpolation of distance values from a DF of times & trip IDs.
 A generic function, dispatches depending on whether trajectory is grouped
 or single.
 }
-\examples{
-nt <- data.frame(trip_id_performed = c("63383915"),
-                 event_timestamp = 1779890000,
-                 deriv = c(0))
-lineE_traj <- new_transittraj_data("get_trajectory_fun")
-
-interp <- transittraj:::interpolate_distances(trajectory = lineE_traj,
-                                 new_times_trips = nt)
-head(interp)
-}
 \keyword{internal}
