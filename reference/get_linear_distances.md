@@ -55,6 +55,21 @@ The input `avl_df` with `latitude` and `longitude` columns replaced by a
 `distance` column, in the units of the spatial projection used (e.g.,
 meters if using WGS UTM).
 
+## Details
+
+To simplify the user experience, this function takes in `shape_geometry`
+as an `sf` object. The internal calculations, however, are performed
+using the `geos` library, as it is substantially faster and more
+memory-efficient for large datasets.
+
+A limitation of `geos`, however, is that it only performs planar, not
+ellipsoid, calculations. Given the relatively small spatial range of
+most local transit routes, this is reasonable if the data is
+appropriately projected into a Euclidean coordinate system. Consider
+setting `project_crs` to a relevant local plane when performing both
+`get_linear_distances()` and when retrieving shape geometries through
+[`get_shape_geometry()`](https://obrien-ben.github.io/transittraj/reference/get_shape_geometry.md).
+
 ## Examples
 
 ``` r

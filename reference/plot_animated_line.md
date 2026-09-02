@@ -59,7 +59,7 @@ plot_animated_map(
   distance_lims = NULL,
   center_vehicles = FALSE,
   feature_distances = NULL,
-  background = "cartolight",
+  background = "osm",
   background_zoom = 0,
   bbox_expand = NULL,
   transition_style = "linear",
@@ -381,7 +381,7 @@ If using `distance_df`, they may be mapped to any column in
 The function `plot_animated_map()` has one additional layer to format:
 the basemap beneath the route alignment. OpenStreetMaps basemaps are
 used here. See a full list of available basemaps using
-[`rosm::osm.image()`](https://rdrr.io/pkg/rosm/man/deprecated.html).
+[`rosm::osm.types()`](https://rdrr.io/pkg/rosm/man/deprecated.html).
 
 In addition to the map itself, the zoom level on the map can be adjusted
 using `background_zoom`. This will describe a zoom level relative to the

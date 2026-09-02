@@ -3,7 +3,7 @@
 ## Introduction
 
 In the previous vignette
-([`vignette("data-workflow")`](https://obrien-ben.github.io/transittraj/articles/data-workflow.md)),
+([`vignette("avl-data-workflow")`](https://obrien-ben.github.io/transittraj/articles/avl-data-workflow.md)),
 we saw how we can use `transittraj` to clean our AVL data. We took care
 of outliers, deadheading trips, noise, and non-monotonic observations.
 In this vignette, we’ll apply the cleaned data (`lineE_mono`) to fit a

@@ -1,14 +1,13 @@
 # Fit continuous trajectory interpolating curves from AVL data
 
 This function fits a continuous vehicle trajectory to cleaned AVL points
-(see
-[`vignette("articles/data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/data-workflow-la.md)).
-This function operates as a "function factory", returning a function
-(closure) which takes a timestamp and returns each trip's position. A
-separate curve is fit for each trip, and stored in a special trajectory
-object class. The default interpolating method is a velocity-informed
-piecewise cubic interpolating polynomial, but linear interpolation and
-other spline-based techniques are also supported. See `Details` for a
+(see `vignette("articles/data-workflow-la")`). This function operates as
+a "function factory", returning a function (closure) which takes a
+timestamp and returns each trip's position. A separate curve is fit for
+each trip, and stored in a special trajectory object class. The default
+interpolating method is a velocity-informed piecewise cubic
+interpolating polynomial, but linear interpolation and other
+spline-based techniques are also supported. See `Details` for a
 discussion.
 
 ## Usage

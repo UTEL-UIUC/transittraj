@@ -5,8 +5,7 @@ reconstruction workflow up until a certain point (as defined by
 `func_output`), then returns the object at that point. A subset of the
 `lacmta_avl` dataset is used. This is primarily intended for use in
 testing and examples. The workflow applied here is the same as what is
-in
-[`vignette("articles/data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/data-workflow-la.md).
+in `vignette("articles/data-workflow-la")`.
 
 ## Usage
 

@@ -174,5 +174,5 @@ or
 to check your data.
 
 In the next vignette
-([`vignette("articles/data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/data-workflow-la.md)),
+([`vignette("articles/avl-data-workflow-la")`](https://obrien-ben.github.io/transittraj/articles/avl-data-workflow-la.md)),
 we’ll explore the AVL cleaning process.

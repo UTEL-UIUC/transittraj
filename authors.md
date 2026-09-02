@@ -9,16 +9,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/UTEL-UIUC/transittraj/blob/main/DESCRIPTION)
+[`inst/CITATION`](https://github.com/UTEL-UIUC/transittraj/blob/main/inst/CITATION)
 
-O'Brien B, Lehe L (2026). *transittraj: Reconstruct and Visualize
-Transit Vehicle Trajectories*. R package version 1.0.0,
-<https://utel-uiuc.github.io/transittraj/>.
+O'Brien B, Lehe L (2026). “A Tool for Reconstructing Transit Vehicle
+Trajectories: A Case Study at IndyGo.” *arXiv preprint*.
+[doi:10.48550/arXiv.2608.31078](https://doi.org/10.48550/arXiv.2608.31078).
 
-    @Manual{,
-      title = {transittraj: Reconstruct and Visualize Transit Vehicle Trajectories},
+    @Article{,
+      title = {A Tool for Reconstructing Transit Vehicle Trajectories: A Case Study at IndyGo},
       author = {Benjamin O'Brien and Lewis Lehe},
       year = {2026},
-      note = {R package version 1.0.0},
-      url = {https://utel-uiuc.github.io/transittraj/},
+      doi = {10.48550/arXiv.2608.31078},
+      journal = {arXiv preprint},
     }
