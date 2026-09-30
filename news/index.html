@@ -39,14 +39,16 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/v1.1.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/UTEL-UIUC/transittraj/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.0" id="transittraj-110">transittraj 1.1.0<a class="anchor" aria-label="anchor" href="#transittraj-110"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.0" id="transittraj-110">transittraj 1.1.0<a class="anchor" aria-label="anchor" href="#transittraj-110"></a></h2><p class="text-muted">CRAN release: 2026-09-02</p>
+<p><em>Release: 9/2/2026</em></p>
 <ul><li>
-<p>Rewritten backend of spatial functions to use <code>geos</code>:</p>
-<ul><li>For simplicity, all user-facing inputs and outputs still utilize <code>sf</code>; only backend code has changed.</li>
+<p>Rewritten backend of spatial functions (<code><a href="../reference/get_linear_distances.html">get_linear_distances()</a></code> and <code><a href="../reference/project_onto_route.html">project_onto_route()</a></code>) to use <code>geos</code>:</p>
+<ul><li><p>For simplicity, all user-facing inputs and outputs still utilize <code>sf</code>; only backend code has changed.</p></li>
+<li><p>Performance is improved substantially; up to an order-of-magnitude processing time improvements for large datasets in <code><a href="../reference/get_linear_distances.html">get_linear_distances()</a></code>.</p></li>
 </ul></li>
 <li>
 <p>Carto basemaps now require an API key. Removed reliance on or references to Carto in:</p>
@@ -55,7 +57,7 @@
 </ul></li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.0" id="transittraj-100">transittraj 1.0.0<a class="anchor" aria-label="anchor" href="#transittraj-100"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="transittraj-100">transittraj 1.0.0<a class="anchor" aria-label="anchor" href="#transittraj-100"></a></h2><p class="text-muted">CRAN release: 2026-08-31</p>
 <p><em>Release: 8/11/2026</em></p>
 <ul><li><p>Publication on CRAN</p></li>
 <li><p>Completed automated testing suite</p></li>

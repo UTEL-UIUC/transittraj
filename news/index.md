@@ -2,10 +2,22 @@
 
 ## transittraj 1.1.0
 
-- Rewritten backend of spatial functions to use `geos`:
+CRAN release: 2026-09-02
+
+*Release: 9/2/2026*
+
+- Rewritten backend of spatial functions
+  ([`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md)
+  and
+  [`project_onto_route()`](https://obrien-ben.github.io/transittraj/reference/project_onto_route.md))
+  to use `geos`:
 
   - For simplicity, all user-facing inputs and outputs still utilize
     `sf`; only backend code has changed.
+
+  - Performance is improved substantially; up to an order-of-magnitude
+    processing time improvements for large datasets in
+    [`get_linear_distances()`](https://obrien-ben.github.io/transittraj/reference/get_linear_distances.md).
 
 - Carto basemaps now require an API key. Removed reliance on or
   references to Carto in:
@@ -19,6 +31,8 @@
     [`plot_animated_map()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md).
 
 ## transittraj 1.0.0
+
+CRAN release: 2026-08-31
 
 *Release: 8/11/2026*
 
