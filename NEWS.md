@@ -1,9 +1,15 @@
 # transittraj 1.1.0
 
-* Rewritten backend of spatial functions to use `geos`:
+*Release: 9/2/2026*
+
+* Rewritten backend of spatial functions (`get_linear_distances()` and
+`project_onto_route()`) to use `geos`:
 
   * For simplicity, all user-facing inputs and outputs still utilize `sf`; only
   backend code has changed.
+  
+  * Performance is improved substantially; up to an order-of-magnitude
+  processing time improvements for large datasets in `get_linear_distances()`.
 
 * Carto basemaps now require an API key. Removed reliance on or
 references to Carto in:
