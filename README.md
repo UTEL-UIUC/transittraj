@@ -119,12 +119,12 @@ Check out the following vignettes to learn more about how to use
   Trajectories](https://utel-uiuc.github.io/transittraj/articles/intro-trajectories-la.html)
   (available offline at `vignette("intro-trajectories")`)
 
-Check out some case studies from the research team that demonstrate
-`transittraj` in real-world projects:
-
-- [Estimating Signal Delays in
+- [Application: Signal Delays in
   Indianapolis](https://utel-uiuc.github.io/transittraj/articles/indygo-signals.html)
 
+For resources related to our academic paper and conference
+presentations, check out our [paper-related
+vignettes](https://utel-uiuc.github.io/transittraj/articles/paper_intro.html).
 Check out the latest updates at our
 [changelog](https://utel-uiuc.github.io/transittraj/news/index.html).
 

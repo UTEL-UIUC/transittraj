@@ -69,16 +69,21 @@ navbar:
     articles:
       text: Articles
       menu:
-        - text: Data
+        - text: Tutorials
         - text: Overview of Data
           href: articles/input-data-la.html
         - text: AVL Cleaning
           href: articles/avl-data-workflow-la.html
         - text: Intro to Trajectories
           href: articles/intro-trajectories-la.html
-        - text: Applications
-        - text: Signal Delays in Indianapolis
+        - text: Application to Signal Delays
           href: articles/indygo-signals.html
-        - text: Presentations
-        - text: Transport Chicago 2026
-          href: articles/tc26.html
+        - text: Paper
+        - text: Introduction
+          href: articles/paper_intro.html
+        - text: AVL Cleaning Evaluation
+          href: articles/paper_cleaning.html
+        - text: Signal Performance Metrics
+          href: articles/paper_tspms.html
+        - text: Trajectory Accuracy
+          href: articles/paper_robustness.html
