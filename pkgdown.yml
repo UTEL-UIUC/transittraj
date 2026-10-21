@@ -8,8 +8,12 @@ articles:
   articles/input-data-la: input-data-la.html
   articles/intro-trajectories-la: intro-trajectories-la.html
   intro-trajectories: intro-trajectories.html
+  articles/paper_cleaning: paper_cleaning.html
+  articles/paper_intro: paper_intro.html
+  articles/paper_robustness: paper_robustness.html
+  articles/paper_tspms: paper_tspms.html
   articles/tc26: tc26.html
-last_built: 2026-09-30T16:18Z
+last_built: 2026-10-20T23:57Z
 urls:
   reference: https://obrien-ben.github.io/transittraj/reference
   article: https://obrien-ben.github.io/transittraj/articles
