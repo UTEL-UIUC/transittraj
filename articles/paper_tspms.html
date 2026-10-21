@@ -878,15 +878,12 @@ output video to YouTube and embedded it below.</p>
 <span><span class="va">map_anim</span> <span class="op">&lt;-</span> <span class="va">map_anim</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Example Trajectories"</span><span class="op">)</span></span>
 <span><span class="va">map_anim</span></span></code></pre></div>
-<div class="vembedr">
-<div>
-<pre><code>&lt;iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=hCGx4Ki3GRM" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"&gt;&lt;/iframe&gt;</code></pre>
-</div>
-</div>
+<iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=hCGx4Ki3GRM" width="533" height="300" frameborder="0" allowfullscreen data-external="1">
+</iframe>
 <p>Finally, we’ll generate an animated line using
 <code><a href="../reference/plot_animated_line.html">plot_animated_line()</a></code>. We can use the same formatting
 parameters defined above.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Base anim</span></span>
 <span><span class="va">line_anim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_animated_line.html">plot_animated_line</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Traj data</span></span>
@@ -910,11 +907,8 @@ parameters defined above.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Example Trajectories"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Distance (m)"</span><span class="op">)</span></span>
 <span><span class="va">line_anim</span></span></code></pre></div>
-<div class="vembedr">
-<div>
-<pre><code>&lt;iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=60AkEtYd9O0" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"&gt;&lt;/iframe&gt;</code></pre>
-</div>
-</div>
+<iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=60AkEtYd9O0" width="533" height="300" frameborder="0" allowfullscreen data-external="1">
+</iframe>
 </div>
 <div class="section level3">
 <h3 id="performance-metrics">Performance Metrics<a class="anchor" aria-label="anchor" href="#performance-metrics"></a>
@@ -922,7 +916,7 @@ parameters defined above.</p>
 <p>Next we’ll generate some plots visualizing the metrics aggregated by
 signal. We’ll generate violin plots to show the distribution of signal
 delays, and column charts to visualize the portion of AoG and SF:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># - Delay (A) -</span></span>
 <span><span class="va">lab_df1</span> <span class="op">&lt;-</span> <span class="va">sig_ff</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>mean_tt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_tt</span>, <span class="fl">1</span><span class="op">)</span>,</span>
@@ -1060,7 +1054,7 @@ delays, and column charts to visualize the portion of AoG and SF:</p>
 <p>The final relevant component is the computation time required for
 each of the two <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> calls. These are stored in the
 benchmarking objects:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Time for signal delay interp (seconds)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bm_crossings</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 13</span></span>

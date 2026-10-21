@@ -854,7 +854,9 @@ map_anim <- map_anim +
 map_anim
 ```
 
-    <iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=hCGx4Ki3GRM" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+# An error occurred.
+
+Unable to execute JavaScript.
 
 Finally, we’ll generate an animated line using
 [`plot_animated_line()`](https://obrien-ben.github.io/transittraj/reference/plot_animated_line.md).
@@ -887,7 +889,9 @@ line_anim <- line_anim +
 line_anim
 ```
 
-    <iframe src="https://www.youtube.com/embed/https://www.youtube.com/watch?v=60AkEtYd9O0" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+# An error occurred.
+
+Unable to execute JavaScript.
 
 ### Performance Metrics
 
