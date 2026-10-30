@@ -119,17 +119,52 @@ test_that("new_transittraj_data: step-by-step", {
   )
 })
 
-# --- correct_speeds_fun() ---
-test_that("correct_speeds_fun: input valid", {
+# --- correct_dists_fun() ---
+test_that("correct_dists_fun: input valid", {
 
-  m <- c(1)
-  delta <- c(1)
+  x <- c(1)
 
   expect_error(
-    correct_speeds_fun(m_0 = m, delta = delta),
-    class = "error_avlclean_fc"
+    correct_dists_fun(d_0 = x),
+    class = "error_avlclean_mono-obs"
   )
 })
+test_that("correct_dists_fun: output", {
+
+  # no change
+  d_1 <- c(10, 11, 12)
+  t_1 <- correct_dists_fun(d_0 = d_1)
+  expect_equal(
+    t_1,
+    expected = d_1
+  )
+
+  # weakly monotonic
+  d_2 <- c(10, 11, 10)
+  t_2 <- correct_dists_fun(d_0 = d_2)
+  expect_equal(
+    t_2,
+    expected = c(10, 11, 11)
+  )
+
+  # strictly monotonic
+  d_e3 <- 0.1
+  t_3 <- correct_dists_fun(d_0 = d_2, d_e = d_e3)
+  expect_equal(
+    t_3,
+    expected = c(10, 11, 11 + d_e3)
+  )
+
+  # with overshoot
+  d_4 <- c(10, 9.98, 9.99)
+  t_4 <- correct_dists_fun(d_0 = d_4, d_e = d_e3)
+  expect_equal(
+    t_4,
+    expected = c(10, 10 + d_e3, 10 + (2 * d_e3))
+  )
+})
+
+# --- correct_speeds_fun() ---
 test_that("correct_speeds_fun: output", {
 
   # no change

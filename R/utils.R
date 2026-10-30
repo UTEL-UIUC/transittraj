@@ -49,7 +49,7 @@ utils::globalVariables(c(
   "point_geom", "distance_lims", "excep_id", "sched_id", "wkday",
   "user_min_dist", "user_max_dist", "deriv", "distance_change", "speed_change",
   "is_traj", "traj_type", "max_deriv", "used_speeds", "is_inv", "inv_tol",
-  "in_buffer", "geos_geom", "geometry",
+  "in_buffer", "geos_geom", "geometry", "monotonic_speeds",
   # Exported datasets
   "lacmta_avl", "lacmta_gtfs"
   ))
@@ -71,6 +71,42 @@ get_inverse_traj <- function(f, lower, upper, inv_tol) {
   })
 }
 
+#' Corrects distances to be (strictly) monotonic, recursively. Should be for
+#' one single trip.
+#'
+#' Internal function. Note intended for external use.
+#'
+#' @param d_0 A numeric vector of initial positions.
+#' @param d_e A numeric distance perturbation to add.
+#' @return A numeric vector of strictly monotonic positions.
+#' @keywords internal
+correct_dists_fun <- function(d_0, d_e = 0) {
+
+  n_obs <- length(d_0)
+
+  # validate
+  if (n_obs < 2) {
+    rlang::abort(message = "Must have at least two observations per trip to correct for monotonicity.",
+                 class = "error_avlclean_mono-obs")
+  }
+
+  if (d_e == 0) {
+    # if no error to add (weak monotonicity), use faster built-in cummax
+    d_0 <- cummax(d_0)
+  } else {
+    # otherwise, recursive algorithm -- loop through each of d_0
+    for (iter in 2:n_obs) {
+      if (d_0[iter] <= d_0[iter - 1]) {
+        d_0[iter] <- d_0[iter - 1] + d_e
+      }
+    }
+  }
+
+  # return corrected vector
+  return(d_0)
+}
+
+
 #' Corrects speeds to Fristch-Carlson constraints, recursively.
 #'
 #' Internal function. Not intended for external use.
@@ -81,11 +117,8 @@ get_inverse_traj <- function(f, lower, upper, inv_tol) {
 #' @keywords internal
 correct_speeds_fun <- function(m_0, deltas) {
 
-  # validate
-  if (length(m_0) < 2) {
-    rlang::abort(message = "Must have at least two observations to correct speeds.",
-                 class = "error_avlclean_fc")
-  }
+  # remove final delta
+  deltas <- deltas[-length(deltas)]
 
   # Algorithm is recursive -- loop through each of m_0
   for (iter in 1:(length(m_0) - 1)) {

@@ -658,8 +658,8 @@ test_that("clean_jumps: standard", {
   r <- clean_jumps(distance_df = distance_df,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df[-5,])
+    as.data.frame(t),
+    expected = as.data.frame(distance_df[-5,], row.names = 1:8)
   )
   expect_equal(
     dim(r)[1],
@@ -679,8 +679,8 @@ test_that("clean_jumps: standard", {
                     min_median_deviation = -10, max_median_deviation = 10,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df[-5,])
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df[-5,], row.names = 1:8)
   )
   expect_equal(
     dim(r2)[1],
@@ -698,8 +698,8 @@ test_that("clean_jumps: standard", {
                     t_cutoff = Inf,
                     return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t3),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t3),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r3)[1],
@@ -750,8 +750,8 @@ test_that("clean_jumps: implosion", {
                    evaluate_implosions = FALSE,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r)[1],
@@ -765,8 +765,8 @@ test_that("clean_jumps: implosion", {
                    evaluate_implosions = TRUE,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df[-c(4,5),])
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df[-c(4,5),], row.names = 1:7)
   )
   expect_equal(
     dim(r2)[1],
@@ -793,8 +793,8 @@ test_that("clean_jumps: tails", {
                    evaluate_tails = FALSE,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r)[1],
@@ -808,8 +808,8 @@ test_that("clean_jumps: tails", {
                    evaluate_tails = TRUE,
                    return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df[-2,])
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df[-2,], row.names = 1:8)
   )
   expect_equal(
     dim(r2)[1],
@@ -838,8 +838,8 @@ test_that("clean_incomplete_trips: distance filters", {
                               min_trip_distance = 50,
                               return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r)[1],
@@ -852,8 +852,8 @@ test_that("clean_incomplete_trips: distance filters", {
                               min_trip_distance = 51,
                               return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df %>% dplyr::filter(trip_id_performed == "a"))
   )
   expect_equal(
     dim(r2)[1],
@@ -871,8 +871,8 @@ test_that("clean_incomplete_trips: distance filters", {
                                max_distance_gap = 100,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t3),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t3),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r3)[1],
@@ -885,8 +885,8 @@ test_that("clean_incomplete_trips: distance filters", {
                                max_distance_gap = 99,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t4),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "b"))
+    as.data.frame(t4),
+    expected = as.data.frame(distance_df %>% dplyr::filter(trip_id_performed == "b"))
   )
   expect_equal(
     dim(r4)[1],
@@ -913,8 +913,8 @@ test_that("clean_incomplete_trips: time filters", {
                               min_trip_duration = 30,
                               return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r)[1],
@@ -927,8 +927,8 @@ test_that("clean_incomplete_trips: time filters", {
                                min_trip_duration = 31,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df %>% dplyr::filter(trip_id_performed == "a"))
   )
   expect_equal(
     dim(r2)[1],
@@ -946,8 +946,8 @@ test_that("clean_incomplete_trips: time filters", {
                                max_time_gap = 60,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t3),
-    expected = data.table::as.data.table(distance_df)
+    as.data.frame(t3),
+    expected = as.data.frame(distance_df)
   )
   expect_equal(
     dim(r3)[1],
@@ -960,8 +960,8 @@ test_that("clean_incomplete_trips: time filters", {
                                max_time_gap = 59,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t4),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "b"))
+    as.data.frame(t4),
+    expected = as.data.frame(distance_df %>% dplyr::filter(trip_id_performed == "b"))
   )
   expect_equal(
     dim(r4)[1],
@@ -990,8 +990,8 @@ test_that("clean_incomplete_trips: time & dist filters", {
                               min_trip_duration = 31,
                               return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(trip_id_performed == "a"))
+    as.data.frame(t),
+    expected = as.data.frame(distance_df %>% dplyr::filter(trip_id_performed == "a"))
   )
   expect_equal(
     dim(r)[1],
@@ -1011,8 +1011,8 @@ test_that("clean_incomplete_trips: time & dist filters", {
                                max_time_gap = 29,
                                return_removals = TRUE)
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df %>% dplyr::filter(!(trip_id_performed %in% c("a", "b"))))
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df %>% dplyr::filter(!(trip_id_performed %in% c("a", "b"))))
   )
   expect_equal(
     dim(r2)[1],
@@ -1096,8 +1096,8 @@ test_that("trim_trips: trim beginning", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t1),
-    expected = data.table::as.data.table(distance_df1[3:6,])
+    as.data.frame(t1),
+    expected = as.data.frame(distance_df1[3:6,], row.names = 1:4)
   )
   expect_equal(
     dim(r1)[1],
@@ -1123,8 +1123,8 @@ test_that("trim_trips: trim beginning", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df2)
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df2)
   )
   expect_equal(
     dim(r2)[1],
@@ -1148,8 +1148,8 @@ test_that("trim_trips: trim end", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t1),
-    expected = data.table::as.data.table(distance_df1[1:4,])
+    as.data.frame(t1),
+    expected = as.data.frame(distance_df1[1:4,], row.names = 1:4)
   )
   expect_equal(
     dim(r1)[1],
@@ -1175,8 +1175,8 @@ test_that("trim_trips: trim end", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df2)
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df2)
   )
   expect_equal(
     dim(r2)[1],
@@ -1200,8 +1200,8 @@ test_that("trim_trips: trim both", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t1),
-    expected = data.table::as.data.table(distance_df1[2:5,])
+    as.data.frame(t1),
+    expected = as.data.frame(distance_df1[2:5,], row.names = 1:4)
   )
   expect_equal(
     dim(r1)[1],
@@ -1227,8 +1227,8 @@ test_that("trim_trips: trim both", {
                    return_removals = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df2)
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df2)
   )
   expect_equal(
     dim(r2)[1],
@@ -1300,8 +1300,8 @@ test_that("make_monotonic: weak", {
                        return_changes = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df2)
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df2)
   )
   expect_equal(
     dim(r2)[1],
@@ -1357,31 +1357,12 @@ test_that("make_monotonic: strict", {
                        return_changes = TRUE)
 
   expect_equal(
-    data.table::as.data.table(t2),
-    expected = data.table::as.data.table(distance_df2)
+    as.data.frame(t2),
+    expected = as.data.frame(distance_df2)
   )
   expect_equal(
     dim(r2)[1],
     expected = 0
-  )
-
-})
-test_that("make_monotonic: prevent overshoot", {
-
-  distance_df1 <- data.frame(
-    trip_id_performed = rep("a", 6),
-    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
-  ) %>%
-    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()),
-                  distance = c(0, 1, 2, 2, 2, 3))
-
-  t1 <- make_monotonic(distance_df = distance_df1,
-                       correct_speed = FALSE,
-                       add_distance_error = 0.5)
-
-  expect_equal(
-    t1$distance,
-    expected = c(0, 1, 2, 2 + (1 / 4.5), 2 + (2 / 4.5), 3)
   )
 
 })

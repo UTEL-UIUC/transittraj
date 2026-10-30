@@ -745,76 +745,36 @@ make_monotonic <- function(distance_df,
                  class = "error_mono_dist_error")
   }
 
-  # --- Weak montonicity ---
-  mon_df <- distance_df %>%
+  # --- Correct all speeds to be non-zero ---
+  # only should be done if strict monotonicity is desired
+  if (correct_speed & (add_distance_error > 0)) {
+    mon_df <- distance_df %>%
+      dplyr::group_by(trip_id_performed) %>%
+      dplyr::mutate(speed = dplyr::if_else(condition = (speed == 0),
+                                           true = add_distance_error / as.numeric(event_timestamp - dplyr::lag(event_timestamp)),
+                                           false = speed),
+                    speed = dplyr::if_else(condition = is.na(speed),
+                                           true = add_distance_error / as.numeric(dplyr::lead(event_timestamp) - event_timestamp),
+                                           false = speed)) %>%
+      dplyr::ungroup()
+  } else {
+    mon_df <- distance_df
+  }
+
+  # --- Monotonicity ---
+  mon_df <- mon_df %>%
     dplyr::arrange(trip_id_performed, event_timestamp) %>%
     dplyr::group_by(trip_id_performed) %>%
-    dplyr::mutate(monotonic_dist = cummax(distance),
-                  correction_applied = distance < monotonic_dist) %>%
+    dplyr::mutate(monotonic_dist = correct_dists_fun(d_0 = distance,
+                                                     d_e = add_distance_error),
+                  correction_applied = distance != monotonic_dist) %>%
     dplyr::ungroup() %>%
     dplyr::select(-distance) %>%
     dplyr::rename(distance = monotonic_dist)
 
-  # --- Strict monotonicity ---
-  if(add_distance_error != 0) {
-
-    mon_df <- mon_df %>%
-      # Order data
-      dplyr::arrange(trip_id_performed, event_timestamp) %>%
-      # Identify groupings of constant run lengths
-      dplyr::mutate(constant_id = data.table::rleid(distance)) %>%
-      dplyr::group_by(constant_id) %>%
-      # Get total run length, and index of each row within length
-      dplyr::mutate(run_length = dplyr::n(),
-             row_index = dplyr::row_number()) %>%
-      dplyr::group_by(trip_id_performed) %>%
-      dplyr::mutate(
-        # Calculate initial, naiive adjustment up
-        initial_adjustment = distance + (add_distance_error * (row_index - 1)),
-        # Identify rows where initial adjustment violates monotonicity
-        # Establish a new target maximum, instead of using add_distance_error
-        target_dist = dplyr::if_else(condition = ((row_index != 1) & (dplyr::lead(row_index) == 1)),
-                              true = dplyr::if_else(condition = (initial_adjustment >= dplyr::lead(distance)),
-                                             true = distance + ((dplyr::lead(distance) - distance) * ((row_index - 1) / run_length)),
-                                             false = 0),
-                              false = 0),
-        target_dist = tidyr::replace_na(target_dist, 0)) %>%
-      dplyr::group_by(constant_id) %>%
-      dplyr::mutate(
-        # Final max in that group
-        target_max = max(target_dist),
-        # If a new target max exists, above 0, interpolate (by row) to it linearly
-        # Otherwise, keep at initial adjustment
-        final_distance = dplyr::if_else(condition = (target_max > 0),
-                                        true = (distance + (target_max - distance) * ((row_index - 1) / run_length)),
-                                        false = initial_adjustment),
-        # Check if a new correction has been applied
-        correction_applied = dplyr::if_else(condition = correction_applied,
-                                            true = correction_applied,
-                                            false = (final_distance != distance))) %>%
-      dplyr::ungroup() %>%
-      # Remove & rename columns
-      dplyr::select(-c(distance, constant_id, run_length, row_index,
-                       initial_adjustment, target_dist, target_max)) %>%
-      dplyr::rename(distance = final_distance)
-
-    if (correct_speed) { # Correct all speeds to be non-zero
-      mon_df <- mon_df %>%
-        dplyr::group_by(trip_id_performed) %>%
-        dplyr::mutate(speed = dplyr::if_else(condition = (speed == 0),
-                                             true = add_distance_error / as.numeric(event_timestamp - dplyr::lag(event_timestamp)),
-                                             false = speed),
-                      speed = dplyr::if_else(condition = is.na(speed),
-                                             true = add_distance_error / as.numeric(dplyr::lead(event_timestamp) - event_timestamp),
-                                             false = speed)) %>%
-        dplyr::ungroup()
-    }
-  }
-
   # --- FC constraints for speeds ---
   if (correct_speed) {
-    # Calculate FC delta
-    # And, if a correction has been made, adjust speed as needed
+    # Calculate FC delta & correct if correction had been applied
     mon_df <- mon_df %>%
       dplyr::group_by(trip_id_performed) %>%
       dplyr::mutate(time_sec = as.numeric(event_timestamp),
@@ -823,52 +783,25 @@ make_monotonic <- function(distance_df,
                     corrected_implied_speed = (dplyr::lead(distance) - dplyr::lag(distance)) /
                       (dplyr::lead(time_sec) - dplyr::lag(time_sec)),
                     corrected_implied_speed = tidyr::replace_na(corrected_implied_speed, 0),
+                    # if correction applied, max of observed & implied speed
                     speed = dplyr::if_else(condition = correction_applied,
                                            true = pmax(speed, corrected_implied_speed),
-                                           false = speed)) %>%
+                                           false = speed),
+                    # monotonic FC speeds
+                    monotonic_speeds = correct_speeds_fun(m_0 = speed,
+                                                          deltas = fc_delta)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-corrected_implied_speed)
-
-    # Loop through each trip
-    # Each trip must be evaluated separately because each is monotonic to only itself
-    trips <- unique(mon_df$trip_id_performed)
-    num_trips <- length(trips)
-    mon_df_list <- vector("list", num_trips) # Initialize list to store each dataframe
-    for (index in 1:num_trips) {
-      current_trip <- trips[index]
-
-      # Filter DF for current trip, pull speeds and deltas
-      trip_df <- mon_df %>%
-        dplyr::filter(trip_id_performed == current_trip)
-      trip_m_0 <- trip_df$speed
-      trip_delta <- trip_df$fc_delta[-length(trip_df$fc_delta)]
-
-      # Call internal stats C function to adjust speeds to meet FC constraints
-      monotonic_speeds <- correct_speeds_fun(m_0 = trip_m_0,
-                                             deltas = trip_delta)
-      #monotonic_speeds <- .Call(stats:::C_monoFC_m, trip_m_0, trip_delta)
-
-      # Replace speeds with corrected monotonic speeds, remove unneeded columns
-      trip_df <- trip_df %>%
-        dplyr::mutate(speed = monotonic_speeds) %>%
-        dplyr::select(-c(fc_delta, time_sec))
-
-      # Store in global list
-      mon_df_list[[index]] <- trip_df
-    }
-
-    # Combine list to one dataframe
-    final_monotonic_df <- purrr::list_rbind(mon_df_list)
-
-  } else {
-    # If not correcting speeds
-    final_monotonic_df <- mon_df
+      dplyr::select(-c(corrected_implied_speed, speed,
+                       fc_delta, time_sec)) %>%
+      dplyr::rename(speed = monotonic_speeds)
   }
 
-  if (return_changes) { # If returning changes, calculate differences at each point
+  # --- If returning changes ---
+  # If returning changes, calculate differences at each point
+  if (return_changes) {
 
     if (correct_speed) {
-      mono_df_sel <- final_monotonic_df %>%
+      mono_df_sel <- mon_df %>%
         dplyr::select(location_ping_id, distance, speed, correction_applied) %>%
         dplyr::rename(final_distance = distance,
                       final_speed = speed)
@@ -883,7 +816,7 @@ make_monotonic <- function(distance_df,
         dplyr::filter((distance_change != 0) |
                         (speed_change != 0))
     } else {
-      mono_df_sel <- final_monotonic_df %>%
+      mono_df_sel <- mon_df %>%
         dplyr::select(location_ping_id, distance, correction_applied) %>%
         dplyr::rename(final_distance = distance)
 
@@ -897,6 +830,6 @@ make_monotonic <- function(distance_df,
 
     return(changes_df %>% dplyr::select(-correction_applied))
   } else { # Otherwise, return final monotonic df
-    return(final_monotonic_df %>% dplyr::select(-correction_applied))
+    return(mon_df %>% dplyr::select(-correction_applied))
   }
 }
