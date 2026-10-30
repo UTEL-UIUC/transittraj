@@ -15,7 +15,7 @@ Details for more information."><meta property="og:image" content="https://obrien
 
     <a class="navbar-brand me-2" href="../index.html">transittraj</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -168,16 +168,16 @@ http://arxiv.org/abs/2509.00119.</p>
 <span class="r-in"><span>                           correct_speed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lineE_mono</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 10</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id             service_date trip_id_performed   speed vehicle_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 0eeafa189aab82fe0bff169a9dc… 2026-05-27   63383915          5.26<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 3436b03ae5feecd4947d7a0d1d4… 2026-05-27   63383915          1.91<span style="color: #949494;">e</span><span style="color: #BB0000;">-8</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 02939a6bc750b44fad6c842fa8b… 2026-05-27   63383915          1.76<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 1a479dd51a750a1e37b7be112ee… 2026-05-27   63383915          4   <span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 55ecfed9996432eeca7dfcb0167… 2026-05-27   63383915          6.67<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 822d16b82b32c422ce9d25ec61f… 2026-05-27   63383915          4.88<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> 1047-1048…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: event_timestamp &lt;dttm&gt;, direction_id &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   shape_id &lt;chr&gt;, route_id &lt;chr&gt;, distance &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   location_ping_id service_date trip_id_performed vehicle_id event_timestamp    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 0eeafa189aab82f… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:50:40</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 3436b03ae5feecd… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:50:59</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 02939a6bc750b44… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:51:16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 1a479dd51a750a1… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:51:41</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 55ecfed9996432e… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:51:56</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 822d16b82b32c42… 2026-05-27   63383915          1047-1048… 2026-05-27 <span style="color: #949494;">05:52:17</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: direction_id &lt;int&gt;, shape_id &lt;chr&gt;, route_id &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   distance &lt;dbl&gt;, speed &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

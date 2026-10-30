@@ -123,14 +123,14 @@ lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
                            correct_speed = TRUE)
 head(lineE_mono)
 #> # A tibble: 6 × 10
-#>   location_ping_id             service_date trip_id_performed   speed vehicle_id
-#>   <chr>                        <chr>        <chr>               <dbl> <chr>     
-#> 1 0eeafa189aab82fe0bff169a9dc… 2026-05-27   63383915          5.26e-5 1047-1048…
-#> 2 3436b03ae5feecd4947d7a0d1d4… 2026-05-27   63383915          1.91e-8 1047-1048…
-#> 3 02939a6bc750b44fad6c842fa8b… 2026-05-27   63383915          1.76e-4 1047-1048…
-#> 4 1a479dd51a750a1e37b7be112ee… 2026-05-27   63383915          4   e-5 1047-1048…
-#> 5 55ecfed9996432eeca7dfcb0167… 2026-05-27   63383915          6.67e-5 1047-1048…
-#> 6 822d16b82b32c422ce9d25ec61f… 2026-05-27   63383915          4.88e-5 1047-1048…
-#> # ℹ 5 more variables: event_timestamp <dttm>, direction_id <int>,
-#> #   shape_id <chr>, route_id <chr>, distance <dbl>
+#>   location_ping_id service_date trip_id_performed vehicle_id event_timestamp    
+#>   <chr>            <chr>        <chr>             <chr>      <dttm>             
+#> 1 0eeafa189aab82f… 2026-05-27   63383915          1047-1048… 2026-05-27 05:50:40
+#> 2 3436b03ae5feecd… 2026-05-27   63383915          1047-1048… 2026-05-27 05:50:59
+#> 3 02939a6bc750b44… 2026-05-27   63383915          1047-1048… 2026-05-27 05:51:16
+#> 4 1a479dd51a750a1… 2026-05-27   63383915          1047-1048… 2026-05-27 05:51:41
+#> 5 55ecfed9996432e… 2026-05-27   63383915          1047-1048… 2026-05-27 05:51:56
+#> 6 822d16b82b32c42… 2026-05-27   63383915          1047-1048… 2026-05-27 05:52:17
+#> # ℹ 5 more variables: direction_id <int>, shape_id <chr>, route_id <chr>,
+#> #   distance <dbl>, speed <dbl>
 ```
