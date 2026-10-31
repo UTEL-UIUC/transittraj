@@ -1,6 +1,6 @@
 # Changelog
 
-## transittraj (development version)
+## transittraj 1.1.1
 
 ## transittraj 1.1.0
 

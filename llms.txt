@@ -33,9 +33,9 @@ install.packages("transittraj")
 
 ## Statement of Need
 
-The primary goal of `transittraj` is to reconstruct *trajectories* of
-transit vehicles from AVL data. A trajectory is a function which
-describes the one-dimensional position (i.e., the distance from a trip’s
+The primary goal of `transittraj` is to reconstruct transit vehicle
+*trajectories* from AVL data. A trajectory is a function which describes
+the one-dimensional position (i.e., the distance from a trip’s
 beginning) of a transit vehicle over time. Vehicle trajectories are
 incredibly powerful and versatile tools, and are widely used by traffic
 engineers and operations researchers for planning and system performance
