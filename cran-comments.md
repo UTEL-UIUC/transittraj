@@ -1,17 +1,17 @@
 ## Submission Details
 
-This is a minor-version package update. In this version we have:
+This is a patch package update. In this version we have:
 
-* Resolved check error due to a missing API key in a vignette. The vignette
-no longer relies on Internet access or that API.
+* Rewrote an exported functions (`make_monotonic()`) and its tests, with
+a new internal function (`correct_dists_fun()`) to support. User-facing
+functionality has not changed, but performance is greatly improved.
 
-* Rewrote some exported functions (`get_linear_distances()`,
-`project_onto_route()`) and their tests. User-facing functionality has not
-changed, but performance is greatly improved.
+* Removed import of `data.table` package; this was used only by the old version
+of `make_monotonic()`.
 
-* Added import of `geos` package.
+* Reorganized `README` to list new vignettes on the package website.
 
-* Incremented package version to 1.1.0.
+* Incremented package version to 1.1.1.
 
 ## R CMD check results
 
