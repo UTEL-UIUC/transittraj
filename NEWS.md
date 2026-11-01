@@ -2,7 +2,7 @@
 
 # transittarj 1.1.1
 
-*Release: 10/31/2026*
+*Release: 11/1/2026*
 
 * Refactoring of monotonic position enforcement (via `make_monotonic()`) for
 performance enhancement (~10x faster). No changes to inputs or outputs.

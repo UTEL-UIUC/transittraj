@@ -13,6 +13,9 @@ of `make_monotonic()`.
 
 * Incremented package version to 1.1.1.
 
+A previous CRAN submission for this version failed due to an old date in
+DESCRIPTION. This has been updated.
+
 ## R CMD check results
 
 0 errors | 0 warnings | 0 note
