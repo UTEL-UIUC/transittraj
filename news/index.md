@@ -2,6 +2,8 @@
 
 ## transittraj 1.1.1
 
+CRAN release: 2026-11-01
+
 ## transittraj 1.1.0
 
 CRAN release: 2026-09-02
