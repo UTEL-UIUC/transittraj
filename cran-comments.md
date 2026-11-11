@@ -1,20 +1,17 @@
 ## Submission Details
 
-This is a patch package update. In this version we have:
+This is a minor package update. In this version we have:
 
-* Rewrote an exported functions (`make_monotonic()`) and its tests, with
-a new internal function (`correct_dists_fun()`) to support. User-facing
-functionality has not changed, but performance is greatly improved.
+* Changed the back-end algorithms and user-facing functionality of
+`make_monotonic()`. This includes:
 
-* Removed import of `data.table` package; this was used only by the old version
-of `make_monotonic()`.
+  * Two new internal functions to support `make_monotonic()`.
+  
+  * A new user input, `direction`.
+  
+  * Revised test suite for the new functionality.
 
-* Reorganized `README` to list new vignettes on the package website.
-
-* Incremented package version to 1.1.1.
-
-A previous CRAN submission for this version failed due to an old date in
-DESCRIPTION. This has been updated.
+* Incremented package version to 1.2.0.
 
 ## R CMD check results
 
