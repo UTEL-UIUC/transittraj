@@ -1252,6 +1252,22 @@ test_that("make_monotonic: distance error validation", {
     class = "error_mono_dist_error"
   )
 })
+test_that("make_monotonic: direction validation", {
+
+  distance_df <- data.frame(
+    trip_id_performed = rep("a", 6),
+    distance = c(0, 1, 2, 3, 4, 5),
+    event_timestamp = as.POSIXct(seq(from = 0, by = 5, length.out = 6))
+  ) %>%
+    dplyr::mutate(location_ping_id = as.character(dplyr::row_number()))
+
+  expect_error(
+    make_monotonic(distance_df = distance_df,
+                   direction = "f"),
+    class = "error_mono_dir"
+  )
+
+})
 test_that("make_monotonic: weak", {
 
   # change
@@ -1264,11 +1280,13 @@ test_that("make_monotonic: weak", {
 
   t1 <- make_monotonic(distance_df = distance_df1,
                       correct_speed = FALSE,
-                      add_distance_error = 0)
+                      add_distance_error = 0,
+                      direction = "forward")
   r1 <- make_monotonic(distance_df = distance_df1,
                       correct_speed = FALSE,
                       add_distance_error = 0,
-                      return_changes = TRUE)
+                      return_changes = TRUE,
+                      direction = "forward")
 
   expect_equal(
     t1$distance,
@@ -1293,11 +1311,13 @@ test_that("make_monotonic: weak", {
 
   t2 <- make_monotonic(distance_df = distance_df2,
                        correct_speed = FALSE,
-                       add_distance_error = 0)
+                       add_distance_error = 0,
+                       direction = "forward")
   r2 <- make_monotonic(distance_df = distance_df2,
                        correct_speed = FALSE,
                        add_distance_error = 0,
-                       return_changes = TRUE)
+                       return_changes = TRUE,
+                       direction = "forward")
 
   expect_equal(
     as.data.frame(t2),
@@ -1321,11 +1341,13 @@ test_that("make_monotonic: strict", {
 
   t1 <- make_monotonic(distance_df = distance_df1,
                        correct_speed = FALSE,
-                       add_distance_error = 0.1)
+                       add_distance_error = 0.1,
+                       direction = "forward")
   r1 <- make_monotonic(distance_df = distance_df1,
                        correct_speed = FALSE,
                        add_distance_error = 0.1,
-                       return_changes = TRUE)
+                       return_changes = TRUE,
+                       direction = "forward")
 
   expect_equal(
     t1$distance,
@@ -1350,11 +1372,13 @@ test_that("make_monotonic: strict", {
 
   t2 <- make_monotonic(distance_df = distance_df2,
                        correct_speed = FALSE,
-                       add_distance_error = 0)
+                       add_distance_error = 0,
+                       direction = "forward")
   r2 <- make_monotonic(distance_df = distance_df2,
                        correct_speed = FALSE,
                        add_distance_error = 0,
-                       return_changes = TRUE)
+                       return_changes = TRUE,
+                       direction = "forward")
 
   expect_equal(
     as.data.frame(t2),
@@ -1380,7 +1404,8 @@ test_that("make_monotonic: speeds", {
   r1 <- make_monotonic(distance_df = distance_df1,
                        correct_speed = TRUE,
                        add_distance_error = 0.01,
-                       return_changes = TRUE)
+                       return_changes = TRUE,
+                       direction = "forward")
 
   expect_equal(
     dim(r1)[1],
@@ -1403,7 +1428,8 @@ test_that("make_monotonic: speeds", {
   r2 <- make_monotonic(distance_df = distance_df2,
                        correct_speed = TRUE,
                        add_distance_error = 0.01,
-                       return_changes = TRUE)
+                       return_changes = TRUE,
+                       direction = "forward")
 
   expect_equal(
     dim(r2)[1],

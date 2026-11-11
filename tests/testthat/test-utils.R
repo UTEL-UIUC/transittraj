@@ -119,6 +119,84 @@ test_that("new_transittraj_data: step-by-step", {
   )
 })
 
+# --- correct_dists_forward() ---
+test_that("correct_dists_forward: weakly monotonic", {
+
+  # no change
+  d_1 <- c(10, 11, 12)
+  t_1 <- correct_dists_forward(d_0 = d_1, d_e = 0)
+  expect_equal(
+    t_1,
+    expected = d_1
+  )
+
+  # weakly monotonic
+  d_2 <- c(10, 11, 10)
+  t_2 <- correct_dists_forward(d_0 = d_2, d_e = 0)
+  expect_equal(
+    t_2,
+    expected = c(10, 11, 11)
+  )
+})
+test_that("correct_dists_forward: strictly monotonic", {
+
+  # strictly monotonic
+  d_2 <- c(10, 11, 10)
+  d_e3 <- 0.1
+  t_3 <- correct_dists_forward(d_0 = d_2, d_e = d_e3)
+  expect_equal(
+    t_3,
+    expected = c(10, 11, 11 + d_e3)
+  )
+
+  # with overshoot
+  d_4 <- c(10, 9.98, 9.99)
+  t_4 <- correct_dists_forward(d_0 = d_4, d_e = d_e3)
+  expect_equal(
+    t_4,
+    expected = c(10, 10 + d_e3, 10 + (2 * d_e3))
+  )
+})
+
+# --- correct_dists_backward() ---
+test_that("correct_dists_forward: weakly monotonic", {
+
+  # no change
+  d_1 <- c(10, 11, 12)
+  t_1 <- correct_dists_backward(d_0 = d_1, d_e = 0)
+  expect_equal(
+    t_1,
+    expected = d_1
+  )
+
+  # weakly monotonic
+  d_2 <- c(9, 11, 10)
+  t_2 <- correct_dists_backward(d_0 = d_2, d_e = 0)
+  expect_equal(
+    t_2,
+    expected = c(9, 10, 10)
+  )
+})
+test_that("correct_dists_forward: strictly monotonic", {
+
+  # strictly monotonic
+  d_2 <- c(9, 11, 10)
+  d_e3 <- 0.1
+  t_3 <- correct_dists_backward(d_0 = d_2, d_e = d_e3)
+  expect_equal(
+    t_3,
+    expected = c(9, 10 - d_e3, 10)
+  )
+
+  # with undershoot
+  d_4 <- c(9.99, 10, 9.99)
+  t_4 <- correct_dists_backward(d_0 = d_4, d_e = d_e3)
+  expect_equal(
+    t_4,
+    expected = c(9.99 - (2 * d_e3), 9.99 - d_e3, 9.99)
+  )
+})
+
 # --- correct_dists_fun() ---
 test_that("correct_dists_fun: input valid", {
 
@@ -129,38 +207,29 @@ test_that("correct_dists_fun: input valid", {
     class = "error_avlclean_mono-obs"
   )
 })
-test_that("correct_dists_fun: output", {
+test_that("correct_dists_fun: dispatch", {
 
-  # no change
-  d_1 <- c(10, 11, 12)
-  t_1 <- correct_dists_fun(d_0 = d_1)
+  d <- c(9, 11, 10)
+
+  # forward
   expect_equal(
-    t_1,
-    expected = d_1
+    correct_dists_forward(d_0 = d, d_e = 0),
+    expected = c(9, 11, 11)
   )
 
-  # weakly monotonic
-  d_2 <- c(10, 11, 10)
-  t_2 <- correct_dists_fun(d_0 = d_2)
+  # backward
   expect_equal(
-    t_2,
-    expected = c(10, 11, 11)
+    correct_dists_backward(d_0 = d, d_e = 0),
+    expected = c(9, 10, 10)
   )
+})
+test_that("correct_dists_fun: bidirectional output", {
 
-  # strictly monotonic
-  d_e3 <- 0.1
-  t_3 <- correct_dists_fun(d_0 = d_2, d_e = d_e3)
-  expect_equal(
-    t_3,
-    expected = c(10, 11, 11 + d_e3)
-  )
+  d <- c(9, 11, 10)
 
-  # with overshoot
-  d_4 <- c(10, 9.98, 9.99)
-  t_4 <- correct_dists_fun(d_0 = d_4, d_e = d_e3)
   expect_equal(
-    t_4,
-    expected = c(10, 10 + d_e3, 10 + (2 * d_e3))
+    correct_dists_fun(d_0 = d, d_e = 0, direction = "bidirectional"),
+    expected = c(9, 10.5, 10.5)
   )
 })
 

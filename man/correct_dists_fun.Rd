@@ -5,17 +5,21 @@
 \title{Corrects distances to be (strictly) monotonic, recursively. Should be for
 one single trip.}
 \usage{
-correct_dists_fun(d_0, d_e = 0)
+correct_dists_fun(d_0, d_e, direction)
 }
 \arguments{
 \item{d_0}{A numeric vector of initial positions.}
 
 \item{d_e}{A numeric distance perturbation to add.}
+
+\item{direction}{A character string indicating the filter direction.}
 }
 \value{
 A numeric vector of strictly monotonic positions.
 }
 \description{
-Internal function. Note intended for external use.
+Internal function. Note intended for external use. Calls to
+\code{correct_dists_forward()} and/or \code{correct_dists_backward()}, depending
+on user-input \code{direction}.
 }
 \keyword{internal}

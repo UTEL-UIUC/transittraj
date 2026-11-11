@@ -71,24 +71,19 @@ get_inverse_traj <- function(f, lower, upper, inv_tol) {
   })
 }
 
-#' Corrects distances to be (strictly) monotonic, recursively. Should be for
-#' one single trip.
+#' Corrects distances to be (strictly) monotonic, recursively, in the forward
+#' direction (i.e., pulling up backwards drifting). Should be for one single
+#' trip.
 #'
-#' Internal function. Note intended for external use.
+#' Internal function. Not intended for external use.
 #'
 #' @param d_0 A numeric vector of initial positions.
 #' @param d_e A numeric distance perturbation to add.
 #' @return A numeric vector of strictly monotonic positions.
 #' @keywords internal
-correct_dists_fun <- function(d_0, d_e = 0) {
+correct_dists_forward <- function(d_0, d_e) {
 
   n_obs <- length(d_0)
-
-  # validate
-  if (n_obs < 2) {
-    rlang::abort(message = "Must have at least two observations per trip to correct for monotonicity.",
-                 class = "error_avlclean_mono-obs")
-  }
 
   if (d_e == 0) {
     # if no error to add (weak monotonicity), use faster built-in cummax
@@ -102,10 +97,68 @@ correct_dists_fun <- function(d_0, d_e = 0) {
     }
   }
 
-  # return corrected vector
   return(d_0)
 }
 
+#' Corrects distances to be (strictly) monotonic, recursively, in the backward
+#' direction (i.e., pulling down forward drifting). Should be for one single
+#' trip.
+#'
+#' Internal function. Not intended for external use.
+#'
+#' @param d_0 A numeric vector of initial positions.
+#' @param d_e A numeric distance perturbation to add.
+#' @return A numeric vector of strictly monotonic positions.
+#' @keywords internal
+correct_dists_backward <- function(d_0, d_e) {
+
+  n_obs <- length(d_0)
+
+  if (d_e == 0) {
+    # if no error to add (weak monotonicity), use faster built-in cummin
+    d_0 <- rev(cummin(rev(d_0)))
+  } else {
+    # otherwise, recursive algorithm -- loop through each of d_0
+    for (iter in (n_obs - 1):1) {
+      if (d_0[iter] >= d_0[iter + 1]) {
+        d_0[iter] <- d_0[iter + 1] - d_e
+      }
+    }
+  }
+
+  return(d_0)
+}
+
+#' Corrects distances to be (strictly) monotonic, recursively. Should be for
+#' one single trip.
+#'
+#' Internal function. Note intended for external use. Calls to
+#' `correct_dists_forward()` and/or `correct_dists_backward()`, depending
+#' on user-input `direction`.
+#'
+#' @param d_0 A numeric vector of initial positions.
+#' @param d_e A numeric distance perturbation to add.
+#' @param direction A character string indicating the filter direction.
+#' @return A numeric vector of strictly monotonic positions.
+#' @keywords internal
+correct_dists_fun <- function(d_0, d_e, direction) {
+
+  # validate
+  if (length(d_0) < 2) {
+    rlang::abort(message = "Must have at least two observations per trip to correct for monotonicity.",
+                 class = "error_avlclean_mono-obs")
+  }
+
+  if (direction == "forward") { # forward-stepping
+    return(correct_dists_forward(d_0 = d_0, d_e = d_e))
+  } else if (direction == "backward") { # backward-stepping
+    return(correct_dists_backward(d_0 = d_0, d_e = d_e))
+  } else { # bidirectional
+    d_for <- correct_dists_forward(d_0 = d_0, d_e = d_e)
+    d_back <- correct_dists_backward(d_0 = d_0, d_e = d_e)
+    return((d_for + d_back) / 2)
+  }
+}
 
 #' Corrects speeds to Fristch-Carlson constraints, recursively.
 #'

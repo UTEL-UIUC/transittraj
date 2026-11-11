@@ -643,27 +643,50 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' @details
 #' There are two primary types of monotonicity:
 #'
-#' - Weak monotonicity: The trajectory is increasing or constant. To make points
-#' weakly monotonic, this function replaces each point with the cumulative
-#' maximum `distance` value at that point in the trip. This means that
-#' backtracking points will be "pulled up."
+#' - Weak, allowing the function to be increasing or constant
 #'
-#' - Strict monotonicity: The trajectory is increasing only, never constant. To
-#' make points strictly monotonic, we first begin with a weakly monotonic
-#' trajectory. Then, constant portions (adjacent points with equal `distance`
-#' values) are identified, and `add_distance_error` is added to each point. The
-#' function identifies and prevents "overshoots," ensuring that an adjusted
-#' point never moves past an observed point sometime after it. Effectively,
-#' this gives flat portions of the trajectory a slight upward slope.
+#' - Strict, forcing the function to always increase and never stand still.
 #'
-#' Weak monotonicity most accurately describes real transit vehicle trajectories:
+#' While we know that, in practice, transit vehicles rarely move backwards
+#' (i.e., reverse) along their route, random noise in GPS observations will
+#' introduce non-monotonicities (i.e., drifting backwards). Weak monotonicity
+#' most accurately describes real transit vehicle trajectories:
 #' we expect the vehicle to either move forwards, or stand still at a stop.
 #' However, strict monotonicity is a convenient mathematical property that
 #' allows us to find the inverse trajectory (i.e., retrieve time as a
-#' function of distance). Choose between these two options by setting
+#' function of distance).
+#'
+#' There are three ways in which monotonicity can be enforced upon a function's
+#' position:
+#'
+#' - Forward-stepping: Beginning at the beginning of a trip, iterate forwards
+#' in time through distance observations. If the distance ever drifts backward,
+#' it will be "pulled up" to the cumulative maximum distance observed by that
+#' point.
+#'
+#' - Backward-stepping: Beginning at the end of a trip, iterate backwards in
+#' time through distance observations. If the distance ever drifts forward,
+#' it will be "pushed down" to the cumulative minimum distance observed
+#' by that point.
+#'
+#' - Bidirectional: Because noise in the distance observations occurs
+#' randomly in both directions, during stationary periods, forward-stepping
+#' will bias the trajectory positively (i.e., the trajectory is ahead of the
+#' actual vehicle position), and backward-stepping will bias the
+#' trajectory negatively (i.e., the trajectory is behind the actual vehicle
+#' position). Additionally, forward-stepping can disrupt the
+#' acceleration cycle at the end of a stationary period, and backward-stepping
+#' can disrupt the deceleration cycle at the beginning of a stationary
+#' period. The bidirectional approach remedies this by performing both
+#' directions of correction on the original data, then averaging the two
+#' outcomes.
+#'
+#' Choose between the two monotonicity types by setting
 #' `add_distance_error`. If `add_distance_error = 0` (the default), a weakly
 #' monotonic trajectory is returned; otherwise, the trajectory will be
-#' strictly monotonic.
+#' strictly monotonic, with a perturbation of `add_distance_error` added (for
+#' forward-stepping) or subtracted (for backward-stepping) in flat regions.
+#' Choose between the two step directions using `direction`.
 #'
 #' In addition to distance corrections, some applications (e.g., fitting a
 #' velocity-informed interpolation spline) require speeds to satisfy certain
@@ -708,6 +731,9 @@ trim_trips <- function(distance_df, trim_type = "both",
 #' @param add_distance_error Optional. If non-zero, each "flat" observation will
 #' be adjusted by this amount forwards, in units of input `distance`. Default is
 #' `0`.
+#' @param direction Optional. The step direction for monotonic enforcement.
+#' One of `"forward"`, `"backward"`, or `"bidirectional"`. Default is
+#' `"bidirectional"`.
 #' @param return_changes Optional. Should a dataframe of each observation
 #' changed be returned? Default is `FALSE`.
 #' @return The input `distance_df` with distances and speeds adjusted. If
@@ -722,11 +748,12 @@ trim_trips <- function(distance_df, trim_type = "both",
 #'
 #' # Run function
 #' lineE_mono <- make_monotonic(distance_df = lineE_trimmed,
-#'                            add_distance_error = my_dist_err,
-#'                            correct_speed = TRUE)
+#'                              add_distance_error = my_dist_err,
+#'                              correct_speed = TRUE)
 #' head(lineE_mono)
 make_monotonic <- function(distance_df,
                            correct_speed = FALSE, add_distance_error = 0,
+                           direction = "bidirectional",
                            return_changes = FALSE) {
 
   # --- Validate AVL ---
@@ -743,6 +770,12 @@ make_monotonic <- function(distance_df,
   if (!is.numeric(add_distance_error)) {
     rlang::abort(message = "Please input numeric add_distance_error.",
                  class = "error_mono_dist_error")
+  }
+
+  # --- Validate direction step input ---
+  if (!(direction %in% c("bidirectional", "forward", "backward"))) {
+    rlang::abort(message = "Unrecognized monotonic enforcement direction. Please input 'forward', 'backward', or 'bidirectional'.",
+                 class = "error_mono_dir")
   }
 
   # --- Correct all speeds to be non-zero ---
@@ -766,7 +799,8 @@ make_monotonic <- function(distance_df,
     dplyr::arrange(trip_id_performed, event_timestamp) %>%
     dplyr::group_by(trip_id_performed) %>%
     dplyr::mutate(monotonic_dist = correct_dists_fun(d_0 = distance,
-                                                     d_e = add_distance_error),
+                                                     d_e = add_distance_error,
+                                                     direction = direction),
                   correction_applied = distance != monotonic_dist) %>%
     dplyr::ungroup() %>%
     dplyr::select(-distance) %>%

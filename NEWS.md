@@ -1,4 +1,18 @@
-# transittraj 1.1.1
+# transittraj 1.2.0
+
+*Release: 11/11/2026*
+
+* Redesign of monotonic position enforcement algorithm (via `make_monotonic()`),
+including the user interface. Previously, only forward-stepping monotonic
+enforcement was supported; now, backwards-stepping and bidirectional (two-
+pass) enforcement can be performed. This is controlled through the new
+`direction` input parameter.
+
+  * By default, `direction = "bidirectional"`. This will perform bidirectional
+  enforcement.
+  
+  * Set `direction = "forward"` to achieve identical results to previous
+  package versions.
 
 # transittarj 1.1.1
 
