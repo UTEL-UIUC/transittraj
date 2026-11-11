@@ -179,7 +179,7 @@ summary(lineE_traj_grouped)
 #> AVL Group Trajectory Object
 #> ------
 #> Number of trips: 11
-#> Total distance range: 0.6366599 to 35292.87
+#> Total distance range: 0.6261599 to 35292.87
 #> Total time range: 1779886240 to 1779898116
 #> ------
 #> Trajectory function present: TRUE
@@ -200,7 +200,7 @@ summary(lineE_traj_singles[[2]])
 #> AVL Single Trajectory Object
 #> ------
 #> Trip ID: 63383917
-#> Trip distance range: 7.863145 to 35227.39
+#> Trip distance range: 7.852145 to 35227.39
 #> Trip time range: 1779887281 to 1779892057
 #> ------
 #> Trajectory function present: TRUE

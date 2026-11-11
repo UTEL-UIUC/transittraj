@@ -38,7 +38,7 @@ The primary goal of `transittraj` is to reconstruct transit vehicle
 the one-dimensional position (i.e., the distance from a trip’s
 beginning) of a transit vehicle over time. Vehicle trajectories are
 incredibly powerful and versatile tools, and are widely used by traffic
-engineers and operations researchers for planning and system performance
+engineers and operations researchers in planning and system performance
 studies.
 
 Transit professionals, however, rarely have the opportunity to see
